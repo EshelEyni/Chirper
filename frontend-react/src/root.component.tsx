@@ -1,3 +1,11 @@
+import { BrowserRouter } from 'react-router-dom';
+import { SideBar } from './components/side-bar';
+
 export default function Root(props) {
-  return <section>{props.name} is mounted!</section>;
+  console.log("props", props);
+  return (
+    <BrowserRouter>
+      <SideBar></SideBar>
+    </BrowserRouter>
+  )
 }

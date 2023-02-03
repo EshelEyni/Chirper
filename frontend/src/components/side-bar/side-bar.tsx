@@ -1,12 +1,18 @@
+import { BtnCreatePost } from '../btns/btn-create-post';
 import { Logo } from '../other/logo';
+import { UserPreview } from '../user/user-preview';
+import { NavList } from './nav-list';
 
 export const SideBar = () => {
 
     return (
         <div className="side-bar">
-            <Logo />
-
-            <h1>SIDE BAR</h1>
+            <div className="main-container">
+                <Logo />
+                <NavList />
+                <BtnCreatePost />
+            </div>
+            <UserPreview />
         </div>
     );
 }

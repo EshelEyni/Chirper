@@ -1,18 +1,17 @@
-import { BtnCreatePost } from '../btns/btn-create-post';
-import { Logo } from '../other/logo';
-import { UserPreview } from '../user/user-preview';
-import { NavList } from './nav-list';
+import { BtnCreatePost } from "../btns/btn-create-post";
+import { Logo } from "../other/logo";
+import { UserPreview } from "../user/user-preview";
+import { NavList } from "./nav-list";
 
 export const SideBar = () => {
-
-    return (
-        <div className="side-bar">
-            <div className="main-container">
-                <Logo />
-                <NavList />
-                <BtnCreatePost />
-            </div>
-            <UserPreview />
-        </div>
-    );
-}
+  return (
+    <div className="side-bar">
+      <div className="main-container">
+        <Logo />
+        <NavList />
+        <BtnCreatePost isNestedPage={true} />
+      </div>
+      <UserPreview />
+    </div>
+  );
+};

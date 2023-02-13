@@ -1,33 +1,33 @@
 .nav-list {
+  li {
+    a {
+      display: flex;
+      align-items: center;
+      gap: rem(15px);
+      height: rem(60px);
+      .active-icon,
+      .unactive-icon {
+        width: rem(26px);
+        height: rem(26px);
+      }
 
-    li {
-        a {
-            display: flex;
-            gap: rem(10px);
-
-            .active-icon,
-            .unactive-icon {
-                width: rem(24px);
-                height: rem(24px);
-            }
-
-            &.active {
-                .unactive-icon {
-                    display: none;
-                }
-
-                .active-icon {
-                    display: block;
-                }
-            }
-
-            .active-icon {
-                display: none;
-            }
-
-            span {
-                font-size: rem(20px);
-            }
+      &.active {
+        .unactive-icon {
+          display: none;
         }
+
+        .active-icon {
+          display: block;
+        }
+      }
+
+      .active-icon {
+        display: none;
+      }
+
+      span {
+        font-size: rem(20px);
+      }
     }
+  }
 }

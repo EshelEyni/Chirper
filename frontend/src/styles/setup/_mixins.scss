@@ -55,3 +55,8 @@
     object-fit: cover;
   }
 }
+
+
+@mixin page {
+  max-width: rem(620px);
+}

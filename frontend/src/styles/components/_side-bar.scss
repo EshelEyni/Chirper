@@ -1,8 +1,28 @@
 .side-bar {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: rem(16px);
+
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16px);
+
     .logo-container {
-        img {
-            width: rem(32px);
-            height: rem(32px);
-        }
+      padding: rem(16px) 0;
+
+      img {
+        width: rem(32px);
+        height: rem(32px);
+      }
     }
+  }
+
+  .btn-create-post {
+    font-size: rem(18px);
+    height: rem(50px);
+    width: rem(225px);
+  }
 }

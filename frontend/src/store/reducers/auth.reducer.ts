@@ -7,7 +7,7 @@ const initialState: {
     loggedinUser: userService.getLoggedinUser(),
 }
 
-export function userReducer(state = initialState, action: { type: string; user: User; }) {
+export function authReducer(state = initialState, action: { type: string; user: User; }) {
     switch (action.type) {
         case 'SET_LOGGEDIN_USER':
             return { loggedinUser: action.user }

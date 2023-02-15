@@ -11,6 +11,7 @@
 
 // Pages
 @import "pages/home";
+@import "pages/compose";
 
 // Components
 @import "components/side-bar";
@@ -18,3 +19,4 @@
 @import "components/logo";
 @import "components/btn-create-post";
 @import "components/page-loader";
+@import "components/post-edit";

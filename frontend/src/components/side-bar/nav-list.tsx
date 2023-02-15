@@ -57,11 +57,13 @@ export const NavList = () => {
     <ul className="nav-list">
       {links.map((link, index) => (
         <li key={index}>
-          <NavLink to={link.path}>
-            {link.iconActive}
-            {link.iconUnActive}
-            <span>{link.title}</span>
-          </NavLink>
+          <div className="link-container">
+            <NavLink to={link.path}>
+              {link.iconActive}
+              {link.iconUnActive}
+              <span>{link.title}</span>
+            </NavLink>
+          </div>
         </li>
       ))}
     </ul>

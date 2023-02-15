@@ -1,9 +1,12 @@
+import { Outlet } from "react-router-dom";
+
 export const HomePage = () => {
 
 
     return (
-        <div>
+        <main className="home">
             <h1>Home Page</h1>
-        </div>
+            <Outlet/>
+        </main>
     );
 };

@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
 interface BtnCreatePostProps {
-  isNestedPage: boolean;
+  isLinkToNestedPage: boolean;
 }
 
 export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
-  isNestedPage,
+  isLinkToNestedPage,
 }) => {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onClickBtn = () => {
-    if (isNestedPage) {
-        navigate("/compose-chirp");
+    if (isLinkToNestedPage) {
+      navigate( "/compose");
       // do something
     } else {
       // do something else

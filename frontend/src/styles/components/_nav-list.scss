@@ -1,32 +1,43 @@
 .nav-list {
   li {
-    a {
-      display: flex;
-      align-items: center;
-      gap: rem(15px);
-      height: rem(60px);
-      .active-icon,
-      .unactive-icon {
-        width: rem(26px);
-        height: rem(26px);
+    height: rem(60px);
+
+    .link-container {
+      width: fit-content;
+      border-radius: 35px;
+      padding: rem(10px);
+
+      &:hover {
+        background-color: rgb(0, 0, 0, 0.15);
       }
 
-      &.active {
+      a {
+        display: flex;
+        align-items: center;
+        gap: rem(15px);
+        .active-icon,
         .unactive-icon {
-          display: none;
+          width: rem(26px);
+          height: rem(26px);
+        }
+
+        &.active {
+          .unactive-icon {
+            display: none;
+          }
+
+          .active-icon {
+            display: block;
+          }
         }
 
         .active-icon {
-          display: block;
+          display: none;
         }
-      }
 
-      .active-icon {
-        display: none;
-      }
-
-      span {
-        font-size: rem(20px);
+        span {
+          font-size: rem(20px);
+        }
       }
     }
   }

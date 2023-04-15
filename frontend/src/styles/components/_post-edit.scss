@@ -4,22 +4,23 @@
 
   width: rem(600px);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--color-background);
   padding: rem(5px) rem(16px);
 
-  .btn-container{
+  .btn-container {
     padding: rem(5px) 0;
-    .btn-close{
-      > svg{
+    .btn-close {
+      > svg {
         width: rem(20px);
         height: rem(20px);
       }
     }
   }
+
   .content-container {
     display: flex;
-    gap: rem(16px);
     flex-grow: 1;
+    gap: rem(16px);
 
     .post-edit-user-img {
       width: rem(45px);
@@ -29,9 +30,14 @@
 
     .main-content {
       display: flex;
+      justify-content: center;
       flex-direction: column;
       gap: rem(24px);
       width: 100%;
+
+      &.gap-0 {
+        gap: 0;
+      }
 
       .post-edit-header {
         display: flex;
@@ -58,11 +64,20 @@
 
       .post-edit-text-area {
         border: none;
+        outline: none;
         resize: none;
         min-height: rem(100px);
         font-size: rem(14px);
         color: var(--color-text);
         line-height: 1.5;
+
+        &.home-page-height {
+          min-height: rem(16px);
+        }
+
+        &.pt-10 {
+          padding-top: 10px;
+        }
 
         &::placeholder {
           font-size: rem(18px);
@@ -90,9 +105,13 @@
     .btns-container {
       display: flex;
       justify-content: space-between;
-      border-top: 1px solid var(--color-border);
       padding: rem(12px);
       width: 100%;
+
+      &.border-show {
+        border-top: 1px solid var(--color-border);
+      }
+
       .post-edit-action-btns {
         display: flex;
         gap: rem(10px);
@@ -104,11 +123,29 @@
           }
         }
       }
-      .btn-create-post {
-        font-size: rem(14px);
-        width: rem(60px);
-        padding: rem(7.5px);
+
+      .secondary-action-container{
+        display: flex;
+        align-items: center;
+        gap: rem(10px);
+
+        .btn-add-thread {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: rem(22px);
+          width: rem(22px);
+          border: 1px solid var(--color-border);
+          border-radius: 50%;
+        }
+
+        .btn-create-post {
+          font-size: rem(14px);
+          width: rem(60px);
+          padding: rem(7.5px);
+        }
       }
+
     }
   }
 }

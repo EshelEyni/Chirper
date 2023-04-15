@@ -8,14 +8,20 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { BtnCreatePost } from "../btns/btn-create-post";
 import { PostEditActionBtns } from "../btns/post-edit-action-btns";
-interface PostEditProps {}
+import { TextIndicator } from "../other/text-indicator";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BsBorderAll } from "react-icons/bs";
+
+interface PostEditProps {
+  isHomePage?: boolean;
+}
 
 interface repliersElements {
   title: string;
   icon: ReactElement;
 }
 
-export const PostEdit = () => {
+export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const [audience, setAudience] = useState<string>("everyone");
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
@@ -24,53 +30,98 @@ export const PostEdit = () => {
     icon: <FaGlobeAmericas />,
   });
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
+  const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
+  const [text, setText] = useState<string>("");
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
     if (type === "repliers") setIsRepliersOpen(!isRepliersOpen);
   };
 
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
+  };
+
   return (
     <section className="post-edit">
-      <div className="btn-container">
-        <button className="btn-close">
-          <IoClose />
-        </button>
-      </div>
+      {!isHomePage && (
+        <div className="btn-container">
+          <button className="btn-close">
+            <IoClose />
+          </button>
+        </div>
+      )}
 
       <div className="content-container">
-        <img
-          className="post-edit-user-img"
-          src={loggedinUser?.imgUrl}
-          alt="profile-img"
-        />
-        <main className="main-content">
-          <div className="post-edit-header">
-            <button
-              className="btn-toggle-audience"
-              onClick={() => toggleModal("audience")}
-            >
-              <span>{audience}</span>
-              <IoChevronDownOutline />
-            </button>
-            {isAudienceOpen && <AudiencePickerModal />}
-          </div>
-          <textarea
-            className="post-edit-text-area"
-            placeholder="What's happening?"
+        <div>
+          <img
+            className="post-edit-user-img"
+            src={loggedinUser?.imgUrl}
+            alt="profile-img"
           />
-          <button
-            className="btn-toggle-repliers"
-            onClick={() => toggleModal("repliers")}
-          >
-            {whoCanReply.icon}
-            <span>{whoCanReply.title}</span>
-            can reply
-          </button>
+        </div>
+
+        <main
+          className={
+            "main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")
+          }
+        >
+          {isPickerShown && (
+            <div className="post-edit-header">
+              <button
+                className="btn-toggle-audience"
+                onClick={() => toggleModal("audience")}
+              >
+                <span>{audience}</span>
+                <IoChevronDownOutline />
+              </button>
+              {isAudienceOpen && <AudiencePickerModal />}
+            </div>
+          )}
+          <textarea
+            className={
+              "post-edit-text-area" +
+              (isHomePage ? " home-page-height" : "") +
+              (isHomePage && !isPickerShown ? " pt-10" : "")
+            }
+            placeholder="What's happening?"
+            value={text}
+            onChange={handleTextChange}
+            onClick={() => {
+              if (isHomePage) setIsPickerShown(true);
+            }}
+          />
+          {isPickerShown && (
+            <button
+              className="btn-toggle-repliers"
+              onClick={() => toggleModal("repliers")}
+            >
+              {whoCanReply.icon}
+              <span>{whoCanReply.title}</span>
+              can reply
+            </button>
+          )}
           {isRepliersOpen && <RepliersPickerModal />}
-          <div className="btns-container">
-            <PostEditActionBtns/>
-            <BtnCreatePost isLinkToNestedPage={false}/>
+          <div
+            className={"btns-container" + (isPickerShown ? " border-show" : "")}
+          >
+            <PostEditActionBtns />
+            <div className="secondary-action-container">
+              <TextIndicator textLength={text.length} />
+              <hr className="vertical" />
+              <button className="btn-add-thread">
+                <AiOutlinePlus
+                  style={{
+                    color: "var(--color-primary)",
+                    height: "16px",
+                    width: "16px",
+                  }}
+                />
+              </button>
+              <BtnCreatePost isLinkToNestedPage={false} />
+            </div>
           </div>
         </main>
       </div>

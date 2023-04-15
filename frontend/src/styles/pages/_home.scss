@@ -1,3 +1,24 @@
-.home{
-    width: rem(600px);
+.home {
+  width: rem(600px);
+  border-right: 1px solid var(--color-secondary-border);
+  border-left: 1px solid var(--color-secondary-border);
+
+  .title-container {
+    display: flex;
+    align-items: center;
+    padding: 0 rem(20px);
+    height: rem(60px);
+    width: 100%;
+    border-bottom: 1px solid var(--color-secondary-border);
+    
+    h1 {
+      font-size: rem(20px);
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+  .post-edit-container{
+    border-bottom: 1px solid var(--color-secondary-border);
+  }
 }

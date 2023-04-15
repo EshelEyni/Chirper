@@ -2,13 +2,15 @@ import { SystemState } from "../../models/reducer";
 
 const initialState: SystemState = {
   isPageLoading: false,
+  isSideBarShown: true,
 };
 
 export function systemReducer(
   state = initialState,
   action: {
     type: string;
-    isPageLoading: boolean;
+    isPageLoading?: boolean;
+    isSideBarShown?: boolean;
   }
 ) {
   switch (action.type) {

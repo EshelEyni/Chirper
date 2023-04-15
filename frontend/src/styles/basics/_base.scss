@@ -4,11 +4,19 @@
 
 html {
   font-family: var(--font-primary);
-  line-height: 1.8;
-  line-height: lh(26px);
 }
 
 body {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
   padding: 0;
 }
@@ -61,6 +69,17 @@ button {
   width: 100vw;
   height: 100vh;
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.65);
-  z-index: 10;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 100;
+
+  &.dark {
+    background-color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+hr.vertical {
+  border: none;
+  border-left: 1px solid var(--color-border);
+  height: 100%; 
+  width: 0; 
 }

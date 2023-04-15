@@ -9,7 +9,7 @@ export const ComposePage = () => {
 
   return (
     <main className="compose">
-      <div className="main-screen" onClick={onGoBack}></div>
+      <div className="main-screen dark" onClick={onGoBack}></div>
       <PostEdit />
     </main>
   );

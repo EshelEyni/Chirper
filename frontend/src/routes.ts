@@ -1,5 +1,5 @@
+import { AnalyticsPage } from "./pages/analytics";
 import { BookmarksPage } from "./pages/bookmarks";
-import { ComposePage } from "./pages/compose";
 import { ExplorePage } from "./pages/explore";
 import { HomePage } from "./pages/home";
 import { MessagesPage } from "./pages/messages";
@@ -35,6 +35,10 @@ const routes: Route[] = [
   {
     path: "profile/:id?",
     component: ProfileDetails,
+  },
+  {
+    path: "analytics",
+    component: AnalyticsPage,
   },
 ];
 

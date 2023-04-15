@@ -1,8 +1,15 @@
 // COLOR PALETTE
 :root {
   --color-primary: rgb(19, 190, 190);
+  --color-warning: rgb(255, 212, 0);
+  --color-danger: rgb(244, 33, 46);
 
   --color-border: rgb(207, 217, 222);
+  --color-secondary-border: rgb(247, 247, 247);
+  --color-hover: rgb(0, 0, 0, 0.15);
+  --color-hover-light: rgb(0, 0, 0, 0.05);
+
+  --color-background: rgb(255, 255, 255);
 
   --color-text: rgb(15, 20, 25);
   --color-placeholder: rgb(83, 100, 113);

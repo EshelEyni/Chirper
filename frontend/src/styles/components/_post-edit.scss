@@ -124,19 +124,26 @@
         }
       }
 
-      .secondary-action-container{
+      .secondary-action-container {
         display: flex;
         align-items: center;
         gap: rem(10px);
 
-        .btn-add-thread {
+        .indicator-thread-btn-container {
           display: flex;
-          justify-content: center;
           align-items: center;
-          height: rem(22px);
-          width: rem(22px);
-          border: 1px solid var(--color-border);
-          border-radius: 50%;
+          gap: rem(10px);
+          height: 100%;
+
+          .btn-add-thread {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: rem(22px);
+            width: rem(22px);
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+          }
         }
 
         .btn-create-post {
@@ -145,7 +152,6 @@
           padding: rem(7.5px);
         }
       }
-
     }
   }
 }

@@ -1,7 +1,7 @@
 import { SystemState } from "../../models/reducer";
 
 const initialState: SystemState = {
-  isPageLoading: false,
+  isPageLoading: true,
   isSideBarShown: true,
 };
 

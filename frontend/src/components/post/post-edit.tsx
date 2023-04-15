@@ -109,18 +109,25 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
           >
             <PostEditActionBtns />
             <div className="secondary-action-container">
-              <TextIndicator textLength={text.length} />
-              <hr className="vertical" />
-              <button className="btn-add-thread">
-                <AiOutlinePlus
-                  style={{
-                    color: "var(--color-primary)",
-                    height: "16px",
-                    width: "16px",
-                  }}
-                />
-              </button>
-              <BtnCreatePost isLinkToNestedPage={false} />
+              {text.length > 0 && (
+                <div className="indicator-thread-btn-container">
+                  <TextIndicator textLength={text.length} />
+                  <hr className="vertical" />
+                  <button className="btn-add-thread">
+                    <AiOutlinePlus
+                      style={{
+                        color: "var(--color-primary)",
+                        height: "16px",
+                        width: "16px",
+                      }}
+                    />
+                  </button>
+                </div>
+              )}
+              <BtnCreatePost
+                isLinkToNestedPage={false}
+                isValid={0 < text.length && text.length <= 247}
+              />
             </div>
           </div>
         </main>

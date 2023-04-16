@@ -1,0 +1,36 @@
+.post-preview {
+  display: flex;
+  width: 100%;
+
+  .user-img {
+    width: rem(50px);
+    height: rem(50px);
+    border-radius: 50%;
+  }
+
+  .main-container {
+    width: 100%;
+
+    .post-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .post-preview-header-main {
+        display: flex;
+        align-items: center;
+
+        .user-info {
+          display: flex;
+          font-size: rem(14px);
+          font-weight: 700;
+          margin-right: rem(5px);
+        }
+
+        .post-time {
+          font-size: rem(12px);
+        }
+      }
+    }
+  }
+}

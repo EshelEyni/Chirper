@@ -19,8 +19,6 @@ export const HomePage = () => {
 
   useEffect(() => {
     document.title = "Home • Chirper";
-    console.log("Home page loaded");
-    console.log(posts);
     if (!posts.length) dispatch(getPosts());
     else dispatch(setIsPageLoading(false));
   }, [posts]);

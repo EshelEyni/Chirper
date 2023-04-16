@@ -4,7 +4,7 @@ const posts: Post[] = [
   {
     _id: "1",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
-    createdAt: "2020-10-10T10:10:10.000Z",
+    createdAt: 168167876339,
     commentSum: 0,
     shares: 0,
     likes: 0,
@@ -13,13 +13,13 @@ const posts: Post[] = [
       _id: 1,
       username: "user1",
       fullname: "User 1",
-      imgUrl: "https://www.w3schools.com/howto/img_avatar.png",
+      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
     },
   },
   {
     _id: "2",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
-    createdAt: "2020-10-10T10:10:10.000Z",
+    createdAt: 1681677765116,
     commentSum: 0,
     shares: 0,
     likes: 0,
@@ -28,7 +28,7 @@ const posts: Post[] = [
       _id: 2,
       username: "user2",
       fullname: "User 2",
-      imgUrl: "https://www.w3schools.com/howto/img_avatar.png",
+      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
     },
   },
 ];
@@ -44,7 +44,7 @@ async function query(): Promise<Post[] | void> {
 return new Promise((resolve, reject) => {
     setTimeout(() => {
         resolve(posts);
-    }, 2000);
+    }, 1);
 });
 }
 

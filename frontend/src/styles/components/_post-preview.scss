@@ -1,15 +1,29 @@
 .post-preview {
   display: flex;
+  gap: rem(12px);
   width: 100%;
+  padding: rem(12px) rem(16px);
+  border-bottom: 1px solid var(--color-secondary-border);
 
-  .user-img {
+  .user-img-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: rem(50px);
     height: rem(50px);
-    border-radius: 50%;
+
+    img {
+      border-radius: 50%;
+      transition: filter 0.3s ease-in-out;
+    }
+
+    img:hover {
+      filter: brightness(75%);
+    }
   }
 
   .main-container {
-    width: 100%;
+    flex: 1;
 
     .post-preview-header {
       display: flex;
@@ -32,5 +46,10 @@
         }
       }
     }
+  }
+
+  &:hover {
+    background-color: var(--color-hover-light);
+    border-bottom: 1px solid var(--color-hover-light);
   }
 }

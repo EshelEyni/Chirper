@@ -3,7 +3,7 @@ export interface Post {
   text: string;
   createdAt: number;
   commentSum: number;
-  shares: number;
+  rechirps: number;
   likes: number;
   views: number;
   imgUrl?: string | null;

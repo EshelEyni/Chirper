@@ -1,6 +1,7 @@
 import { Post } from "../../models/post";
-import { utilService } from "../../services/utils.service";
+import { utilService } from "../../services/util.service/utils.service";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";
 
 interface PostPreviewProps {
   post: Post;
@@ -9,7 +10,7 @@ interface PostPreviewProps {
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   return (
     <article className="post-preview">
-      <div className="user-img">
+      <div className="user-img-container">
         <img src={post.user.imgUrl} alt="user-avatar" />
       </div>
       <div className="main-container">
@@ -28,6 +29,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             <IoEllipsisHorizontalSharp />
           </div>
         </header>
+        <div className="post-preview-body">
+          <p>{post.text}</p>
+        </div>
+        <footer className="flex">
+          <PostPreviewActionBtns post={post} />
+          
+        </footer>
       </div>
     </article>
   );

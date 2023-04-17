@@ -1,0 +1,87 @@
+@mixin hover-effect($color) {
+  &:hover {
+    .icon-container {
+      &::before {
+        background-color: $color;
+        opacity: 0.2;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .icon,
+    .count {
+      color: $color;
+    }
+  }
+}
+
+.post-preview-action-btns {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  height: rem(32px);
+
+  .btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      height: rem(32px);
+      width: rem(32px);
+      border: none;
+      position: relative;
+      padding: rem(5px);
+
+      .icon {
+        height: rem(15px);
+        width: rem(15px);
+        color: var(--color-btn-primary);
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+        transition: opacity 0.1s, transform 0.1s;
+      }
+    }
+
+    span {
+      color: var(--color-btn-primary);
+      font-size: rem(12px);
+      font-weight: 400;
+      font-family: var(--font-primary);
+      margin: 0 rem(12px);
+    }
+
+    &.comment,
+    &.view,
+    &.share {
+      @include hover-effect(var(--color-info));
+    }
+
+    &.rechirp {
+      @include hover-effect(var(--color-primary));
+    }
+
+    &.like {
+      @include hover-effect(var(--color-like));
+    }
+  }
+
+  &:last-child {
+    margin-right: rem(50px);
+  }
+}

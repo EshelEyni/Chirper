@@ -5,10 +5,10 @@ const posts: Post[] = [
     _id: "1",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
     createdAt: 168167876339,
-    commentSum: 0,
-    shares: 0,
-    likes: 0,
-    views: 0,
+    commentSum: 12,
+    rechirps: 12,
+    likes: 12,
+    views: 12,
     user: {
       _id: 1,
       username: "user1",
@@ -21,7 +21,7 @@ const posts: Post[] = [
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
     createdAt: 1681677765116,
     commentSum: 0,
-    shares: 0,
+    rechirps: 0,
     likes: 0,
     views: 0,
     user: {

@@ -84,4 +84,4 @@ dist
 .env.production.local
 
 # Config files with sensitive information
-config/dev.ts
+backend/config/dev.ts

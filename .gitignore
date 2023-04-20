@@ -82,3 +82,6 @@ dist
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Config files with sensitive information
+config/dev.ts

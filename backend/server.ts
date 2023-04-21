@@ -3,7 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
-import { info } from "./services/logger.service";
+import { logger } from "./services/logger.service";
 
 const app = express();
 const http = require("http").createServer(app);
@@ -24,8 +24,8 @@ if (process.env.NODE_ENV === "production") {
     origin: [
       "http://127.0.0.1:8080",
       "http://localhost:8080",
-      "http://127.0.0.1:3000",
-      "http://localhost:3000",
+      "http://127.0.0.1:5173",
+      "http://localhost:5173",
     ],
     credentials: true,
   };
@@ -35,14 +35,14 @@ if (process.env.NODE_ENV === "production") {
 // Express Routing:
 app.all("*", setupAsyncLocalStorage);
 
-import dataRoutes from "./api/data/data.routes";
+import postRoutes from "./api/post/post.routes";
 import userRoutes from "./api/user/user.routes";
-import authRoutes from "./api/auth/auth.routes";
+// import authRoutes from "./api/auth/auth.routes";
 // import { setupSocketAPI } from "./services/socket.service";
 
-app.use("/api/data", dataRoutes);
+app.use("/api/post", postRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/auth", authRoutes);
+// app.use("/api/auth", authRoutes);
 // setupSocketAPI(http);
 
 app.get("/**", (req: any, res: { sendFile: (arg0: any) => void }) => {
@@ -51,5 +51,5 @@ app.get("/**", (req: any, res: { sendFile: (arg0: any) => void }) => {
 
 const port = process.env.PORT || 3030;
 http.listen(port, () => {
-  info("Server is running on port: " + port);
+  logger.info("Server is running on port: " + port);
 });

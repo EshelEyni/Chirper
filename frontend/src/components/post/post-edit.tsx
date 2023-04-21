@@ -24,7 +24,7 @@ interface repliersElements {
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const [audience, setAudience] = useState<string>("everyone");
-  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
+  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(true);
   const [whoCanReply, setWhoCanReply] = useState<repliersElements>({
     title: "Everyone",
     icon: <FaGlobeAmericas />,
@@ -77,7 +77,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
                 <span>{audience}</span>
                 <IoChevronDownOutline />
               </button>
-              {isAudienceOpen && <AudiencePickerModal />}
+              {isAudienceOpen && (
+                <AudiencePickerModal
+                  audience={audience}
+                  setAudience={setAudience}
+                />
+              )}
             </div>
           )}
           <textarea

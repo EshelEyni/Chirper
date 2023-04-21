@@ -1,4 +1,4 @@
-import { Post } from "../../models/post";
+import { Post } from "../../types/post.interface";
 import { utilService } from "../../services/util.service/utils.service";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";

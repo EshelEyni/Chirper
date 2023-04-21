@@ -1,4 +1,4 @@
-import { User } from "../../models/user.model";
+import { User } from "../../../../shared/interfaces/user.interface";
 
 const initialState: {
   users: User[];

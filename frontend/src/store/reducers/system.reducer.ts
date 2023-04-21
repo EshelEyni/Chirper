@@ -1,4 +1,4 @@
-import { SystemState } from "../../models/reducer";
+import { SystemState } from "../../types/reducer.interface";
 
 const initialState: SystemState = {
   isPageLoading: true,

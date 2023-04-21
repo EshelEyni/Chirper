@@ -5,8 +5,8 @@ export interface User {
   fullname: string;
   imgUrl: string;
   isAdmin: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isVerified: boolean;
+  createdAt: number;
 }
 
 export interface MiniUser {

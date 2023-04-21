@@ -1,4 +1,4 @@
-import { Post } from "./../../models/post";
+import { Post } from "../../types/post.interface";
 
 const initialState: {
   posts: Post[];

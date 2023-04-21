@@ -1,81 +1,59 @@
-import { Post } from "../models/post";
-
-const posts: Post[] = [
-  {
-    _id: "1",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
-    createdAt: 168167876339,
-    commentSum: 12,
-    rechirps: 12,
-    likes: 12,
-    views: 12,
-    user: {
-      _id: 1,
-      username: "user1",
-      fullname: "User 1",
-      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
-    },
-  },
-  {
-    _id: "2",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc. Donec auctor, nisl eget ultricies lacinia, nunc nisl aliquam nisl, eget aliquam nunc nisl eget nunc.",
-    createdAt: 1681677765116,
-    commentSum: 0,
-    rechirps: 0,
-    likes: 0,
-    views: 0,
-    user: {
-      _id: 2,
-      username: "user2",
-      fullname: "User 2",
-      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
-    },
-  },
-];
+import { httpService } from "./http.service";
+import { Post } from "../../../shared/interfaces/post.interface";
 
 export const postService = {
   query,
   getById,
   remove,
-  save,
+  add,
+  update,
 };
 
 async function query(): Promise<Post[] | void> {
-return new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve(posts);
-    }, 1);
-});
+  try {
+    const posts = await httpService.get("post");
+    return posts;
+  } catch (err) {
+    console.log("postService: Cannot get posts");
+    throw err;
+  }
 }
 
 async function getById(postId: string) {
-  const post = posts.find((post) => post._id === postId);
-  return Promise.resolve(post);
+  try {
+    const post = await httpService.get(`post/${postId}`);
+    return post;
+  } catch (err) {
+    console.log("postService: Cannot get post");
+    throw err;
+  }
 }
 
 async function remove(postId: string) {
-  const idx = posts.findIndex((post) => post._id === postId);
-  if (idx !== -1) posts.splice(idx, 1);
-  return Promise.resolve();
+  try {
+    await httpService.delete(`post/${postId}`);
+  } catch (err) {
+    console.log("postService: Cannot remove post");
+    throw err;
+  }
 }
 
-async function save(post: Post) {
-  if (post._id) {
-    const idx = posts.findIndex((currPost) => currPost._id === post._id);
-    posts.splice(idx, 1, post);
-  } else {
-    post._id = _makeId();
-    posts.unshift(post);
+async function add(post: Post) {
+  try {
+    const addedPost = await httpService.post("post", post);
+    return addedPost;
+  } catch (err) {
+    console.log("postService: Cannot add post");
+    throw err;
   }
-  return Promise.resolve(post);
 }
 
-function _makeId(length = 5) {
-  var txt = "";
-  var possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < length; i++) {
-    txt += possible.charAt(Math.floor(Math.random() * possible.length));
+async function update(post: Post) {
+  try {
+    const updatedPost = await httpService.put(`post/${post._id}`, post);
+    return updatedPost;
+  } catch (err) {
+    console.log("postService: Cannot update post");
+    throw err;
   }
-  return txt;
 }

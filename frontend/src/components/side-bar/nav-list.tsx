@@ -10,7 +10,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { BsBell, BsFillBellFill } from "react-icons/bs";
-import { NavLink as NavLinkType } from "../../models/elements";
+import { NavLink as NavLinkType } from "../../types/elements.interface";
 import { NavLink } from "react-router-dom";
 
 export const NavList = () => {

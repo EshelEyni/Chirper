@@ -1,0 +1,15 @@
+.audience-picker-modal {
+  width: rem(260px);
+  height: 250px;
+  background-color: white;
+  border-radius: 25px;
+  position: absolute;
+  bottom: 55%;
+  left: 35%;
+  padding: rem(12px);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+  h1 {
+    padding: rem(4px) 0;
+  }
+}

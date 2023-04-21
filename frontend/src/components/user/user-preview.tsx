@@ -1,4 +1,4 @@
-import { MiniUser } from "../../models/user.model";
+import { MiniUser } from "../../types/user.interface";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 
 interface UserPreviewProps {

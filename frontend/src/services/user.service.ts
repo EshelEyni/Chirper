@@ -1,4 +1,4 @@
-import { MiniUser, User } from "../models/user.model";
+import { MiniUser, User } from "../types/user.interface";
 import { storageService } from "./storage.service";
 
 function getLoggedinUser(): User | null {

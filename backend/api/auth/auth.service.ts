@@ -1,21 +1,14 @@
-// const Cryptr = require('cryptr')
-
-// const bcrypt = require('bcrypt')
-// const userService = require('../user/user.service')
-// const logger = require('../../services/logger.service')
-// const config = require('../../config')
-
 import Cryptr from "cryptr";
 import bcrypt from "bcrypt";
 import { userService } from "../user/user.service";
-import { debug } from "../../services/logger.service";
+import { logger } from "../../services/logger.service";
 import config from "../../config";
-import { User } from "../../models/user.model";
+import { User } from "../../../shared/interfaces/user.interface";
 
 const cryptr = new Cryptr(config.sessionKey);
 
-async function login(username, password) {
-  debug(`auth.service - login with username: ${username}`);
+async function login(username: string, password: string | Buffer) {
+  logger.debug(`auth.service - login with username: ${username}`);
 
   const user = await userService.getByUsername(username);
   if (!user) return Promise.reject("Invalid username or password");
@@ -26,10 +19,14 @@ async function login(username, password) {
   return user;
 }
 
-async function signup(username, password, fullname) {
+async function signup(
+  username: any,
+  password: string | Buffer,
+  fullname: string
+) {
   const saltRounds = 10;
 
-  debug(
+  logger.debug(
     `auth.service - signup with username: ${username}, fullname: ${fullname}`
   );
   if (!username || !password || !fullname)
@@ -39,14 +36,15 @@ async function signup(username, password, fullname) {
     return Promise.reject("username already exists!");
   }
   const hash = await bcrypt.hash(password, saltRounds);
-  return userService.add({ username, password: hash, fullname });
+  // return userService.add({ username, password: hash, fullname });
+  const user = await userService.add({ username } as User);
 }
 
-function getLoginToken(user) {
+function getLoginToken(user: User) {
   return cryptr.encrypt(JSON.stringify(user._id));
 }
 
-async function validateToken(loginToken): Promise<User | null> {
+async function validateToken(loginToken: string): Promise<User | null> {
   try {
     const json = cryptr.decrypt(loginToken);
     const loggedinUserId = JSON.parse(json);

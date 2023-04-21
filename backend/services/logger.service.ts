@@ -1,6 +1,6 @@
 import fs from "fs";
-import { asyncLocalStorage } from "./als.service.js";
-import { User } from "../models/user.model.js";
+import { asyncLocalStorage } from "./als.service";
+import { User } from "../../shared/interfaces/user.interface";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) {
@@ -36,19 +36,26 @@ function doLog(
   });
 }
 
-export function debug(...args) {
+function debug(...args: string[]) {
   if (process.env.NODE_NEV === "production") return;
   doLog("DEBUG", ...args);
 }
 
-export function info(...args) {
+function info(...args: any[]) {
   doLog("INFO", ...args);
 }
 
-export function warn(...args) {
+function warn(...args: any[]) {
   doLog("WARN", ...args);
 }
 
-export function error(...args) {
+function error(...args: Array<string | Error>) {
   doLog("ERROR", ...args);
 }
+
+export const logger = {
+  debug,
+  info,
+  warn,
+  error,
+};

@@ -2,7 +2,8 @@ import { RiUserHeartFill } from "react-icons/ri";
 import { GoGraph, GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
 import { authService } from "../../services/auth.service";
-import { MiniUser } from "../../models/user.model";
+import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import {ReactComponent as ChirperCircleIcon} from "../../assets/svg/chirper-circle-outline.svg";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -37,21 +38,21 @@ export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
         className="side-bar-options-modal-item"
         onClick={() => navigateTo("/chirper-circle")}
       >
-        <RiUserHeartFill />
+        <ChirperCircleIcon className="icon" />
         <p>Chirper Circle</p>
       </div>
       <div
         className="side-bar-options-modal-item"
         onClick={() => navigateTo("/analytics")}
       >
-        <GoGraph />
+        <GoGraph className="icon"/>
         <p>Analytics</p>
       </div>
       <div
         className="side-bar-options-modal-item display"
         onClick={() => navigateTo("/display")}
       >
-        <IoIosBrush />
+        <IoIosBrush className="icon"/>
         <p>Display</p>
       </div>
       <button className="side-bar-options-modal-item">

@@ -1,6 +1,6 @@
-import { User } from "../../models/user.model";
+import { User } from "../../../shared/interfaces/user.interface";
 import { getCollection } from "../../services/db.service";
-import { error } from "../../services/logger.service";
+import { logger } from "../../services/logger.service";
 import { ObjectId } from "mongodb";
 
 export const userService = {
@@ -23,29 +23,35 @@ async function query() {
     });
     return users;
   } catch (err) {
-    error("cannot find users", err);
+    logger.error("cannot find users", err as Error);
     throw err;
   }
 }
 
-async function getById(userId: string) {
+async function getById(userId: string): Promise<User> {
   try {
     const collection = await getCollection("user");
     const user = await collection.findOne({ _id: new ObjectId(userId) });
-    // delete user.password;
-    return user;
+
+    if (!user) {
+      throw new Error(`User not found: ${userId}`);
+    }
+
+    delete user.password;
+    return user as unknown as User;
   } catch (err) {
-    error(`while finding user ${userId}`, err);
+    logger.error(`while finding user ${userId}`, err as Error);
     throw err;
   }
 }
+
 async function getByUsername(username: string) {
   try {
     const collection = await getCollection("user");
     const user = await collection.findOne({ username });
     return user;
   } catch (err) {
-    error(`while finding user ${username}`, err);
+    logger.error(`while finding user ${username}`, err as Error);
     throw err;
   }
 }
@@ -55,7 +61,7 @@ async function remove(userId: string) {
     const collection = await getCollection("user");
     await collection.deleteOne({ _id: new ObjectId(userId) });
   } catch (err) {
-    error(`cannot remove user ${userId}`, err);
+    logger.error(`cannot remove user ${userId}`, err as Error);
     throw err;
   }
 }
@@ -68,27 +74,29 @@ async function update(user: User): Promise<User> {
     await collection.updateOne({ _id: id }, { $set: { ...userWithoutId } });
     return { _id: id.toString(), ...userWithoutId };
   } catch (err) {
-    error(`cannot update user ${user._id}`, err);
+    logger.error(`cannot update user ${user._id}`, err as Error);
     throw err;
   }
 }
 
-async function add(user) {
+async function add(user: User): Promise<User> {
   try {
     // peek only updatable fields!
     const userToAdd = {
       username: user.username,
-      //   password: user.password,
-      //   fullname: user.fullname,
-      //   isAdmin: false,
+      password: user.password,
+      fullname: user.fullname,
+      isAdmin: false,
+      isVerified: false,
       imgUrl:
         "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
+      createdAt: Date.now(),
     };
     const collection = await getCollection("user");
-    await collection.insertOne(userToAdd);
-    return userToAdd;
+    const { insertedId } = await collection.insertOne(userToAdd);
+    return { _id: insertedId.toString(), ...userToAdd };
   } catch (err) {
-    error("cannot insert user", err);
+    logger.error("cannot insert user", err as Error);
     throw err;
   }
 }

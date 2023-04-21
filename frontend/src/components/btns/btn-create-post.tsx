@@ -3,20 +3,22 @@ import { useNavigate } from "react-router-dom";
 interface BtnCreatePostProps {
   isLinkToNestedPage: boolean;
   isValid: boolean;
+  onAddPost?: () => void;
 }
 
 export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   isLinkToNestedPage,
   isValid,
+  onAddPost = null,
 }) => {
   const navigate = useNavigate();
 
   const onClickBtn = () => {
     if (isLinkToNestedPage) {
       navigate("/compose");
-      // do something
     } else {
-      // do something else
+      if(!isValid) return;
+      onAddPost && onAddPost();
     }
   };
 

@@ -1,4 +1,4 @@
-import { Post } from "../../types/post.interface";
+import { Post } from "../../../../shared/interfaces/post.interface";
 
 const initialState: {
   posts: Post[];
@@ -28,6 +28,8 @@ export function postReducer(
         ...state,
         posts: state.posts.filter((post) => post._id !== action.postId),
       };
+    case "ADD_POST":
+      return { ...state, posts: [action.post, ...state.posts] };
     case "UPDATE_POST":
       return { ...state, post: action.updatedPost };
     default:

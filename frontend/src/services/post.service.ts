@@ -1,5 +1,5 @@
 import { httpService } from "./http.service";
-import { Post } from "../../../shared/interfaces/post.interface";
+import { NewPost, Post } from "../../../shared/interfaces/post.interface";
 
 export const postService = {
   query,
@@ -38,7 +38,7 @@ async function remove(postId: string) {
   }
 }
 
-async function add(post: Post) {
+async function add(post: NewPost): Promise<Post> {
   try {
     const addedPost = await httpService.post("post", post);
     return addedPost;

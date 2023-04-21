@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { PostPreview } from "./post-preview";
 import { RootState } from "../../store/store";
-import { Post } from "../../types/post.interface";
+import { Post } from "../../../../shared/interfaces/post.interface" 
 
 interface PostListProps {
   posts: Post[];

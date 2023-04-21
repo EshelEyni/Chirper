@@ -57,7 +57,7 @@ async function add(post: NewPost): Promise<Post> {
     rechirps: 0,
     likes: 0,
     views: 0,
-    imgUrl: post.imgUrl,
+    imgUrls: post.imgUrls,
     videoUrl: post.videoUrl,
     gifUrl: post.gifUrl,
     poll_id: post.poll_id,

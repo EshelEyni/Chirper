@@ -1,4 +1,4 @@
-import { MiniUser, User } from "../types/user.interface";
+import { MiniUser, User } from "../../../shared/interfaces/user.interface";
 import { storageService } from "./storage.service";
 
 function getLoggedinUser(): User | null {

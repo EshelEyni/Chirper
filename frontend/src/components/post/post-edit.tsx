@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AudiencePickerModal } from "../modals/audience-picker-modal";
 import { RepliersPickerModal } from "../modals/repliers-picker-modal";
@@ -10,28 +10,49 @@ import { BtnCreatePost } from "../btns/btn-create-post";
 import { PostEditActionBtns } from "../btns/post-edit-action-btns";
 import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
-import { BsBorderAll } from "react-icons/bs";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { AppDispatch } from "../../store/types";
+import { addPost } from "../../store/actions/post.actions";
+import { PostEditImg } from "./post-edit-img";
 
 interface PostEditProps {
   isHomePage?: boolean;
 }
 
-interface repliersElements {
+interface audienceSettings {
+  title: string;
+  value: string;
+}
+
+interface repliersSetting {
   title: string;
   icon: ReactElement;
+  value: string;
 }
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
+  const dispatch: AppDispatch = useDispatch();
+
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const [audience, setAudience] = useState<string>("everyone");
-  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(true);
-  const [whoCanReply, setWhoCanReply] = useState<repliersElements>({
+
+  const [audienceSetting, setAudienceSetting] = useState<audienceSettings>({
+    title: "Everyone",
+    value: "everyone",
+  });
+  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
+  const [replierSetting, setReplierSetting] = useState<repliersSetting>({
     title: "Everyone",
     icon: <FaGlobeAmericas />,
+    value: "everyone",
   });
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [text, setText] = useState<string>("");
+  const [imgUrls, setImgUrls] = useState<string[]>([
+    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675072753/wxgggjhzxdbuntjb9agg.jpg",
+    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675069390/dixq40dcbhqomxet64x2.png",
+    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
+  ]);
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -42,6 +63,24 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
     setText(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
+  };
+
+  const onAddPost = async () => {
+    if (!loggedinUser) return;
+    const post: NewPost = {
+      text,
+      audience: audienceSetting.value,
+      repliersType: replierSetting.title,
+      user: {
+        _id: loggedinUser._id,
+        username: loggedinUser.username,
+        fullname: loggedinUser.fullname,
+        imgUrl: loggedinUser.imgUrl,
+      },
+    };
+    await dispatch(addPost(post));
+    setText("");
+    setIsPickerShown(false);
   };
 
   return (
@@ -74,13 +113,14 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
                 className="btn-toggle-audience"
                 onClick={() => toggleModal("audience")}
               >
-                <span>{audience}</span>
+                <span>{audienceSetting.title}</span>
                 <IoChevronDownOutline />
               </button>
               {isAudienceOpen && (
                 <AudiencePickerModal
-                  audience={audience}
-                  setAudience={setAudience}
+                  audience={audienceSetting}
+                  setAudience={setAudienceSetting}
+                  toggleModal={toggleModal}
                 />
               )}
             </div>
@@ -98,40 +138,47 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
               if (isHomePage) setIsPickerShown(true);
             }}
           />
-          {isPickerShown && (
-            <button
-              className="btn-toggle-repliers"
-              onClick={() => toggleModal("repliers")}
-            >
-              {whoCanReply.icon}
-              <span>{whoCanReply.title}</span>
-              can reply
-            </button>
+          {imgUrls.length > 0 && (
+            <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />
           )}
-          {isRepliersOpen && <RepliersPickerModal />}
+
+          {isPickerShown && (
+            <div className="btn-toggle-repliers-container">
+              <button
+                className="btn-toggle-repliers"
+                onClick={() => toggleModal("repliers")}
+              >
+                {replierSetting.icon}
+                <span>{replierSetting.title}</span>
+                can reply
+              </button>
+              {isRepliersOpen && (
+                <RepliersPickerModal
+                  replierSetting={replierSetting}
+                  setReplierSetting={setReplierSetting}
+                  toggleModal={toggleModal}
+                />
+              )}
+            </div>
+          )}
           <div
             className={"btns-container" + (isPickerShown ? " border-show" : "")}
           >
-            <PostEditActionBtns />
+            <PostEditActionBtns imgUrls={imgUrls} setImgUrls={setImgUrls} />
             <div className="secondary-action-container">
               {text.length > 0 && (
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={text.length} />
                   <hr className="vertical" />
                   <button className="btn-add-thread">
-                    <AiOutlinePlus
-                      style={{
-                        color: "var(--color-primary)",
-                        height: "16px",
-                        width: "16px",
-                      }}
-                    />
+                    <AiOutlinePlus className="btn-add-thread-icon" />
                   </button>
                 </div>
               )}
               <BtnCreatePost
                 isLinkToNestedPage={false}
                 isValid={0 < text.length && text.length <= 247}
+                onAddPost={onAddPost}
               />
             </div>
           </div>

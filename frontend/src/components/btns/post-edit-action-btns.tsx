@@ -6,50 +6,69 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { PostEditGiffPickerModal } from "../post/post-edit-gif-picker";
 
 interface PostEditActionBtnsProps {
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
+  giffUrl: string;
+  setGiffUrl: (url: string) => void;
 }
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   imgUrls,
   setImgUrls,
+  giffUrl,
+  setGiffUrl,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
+  const [isGiffPickerShown, setIsGiffPickerShown] = useState(false);
 
   useEffect(() => {
     if (imgUrls.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
   }, [imgUrls]);
 
-  const btns = [
+  const btns: {
+    name: string;
+    icon: JSX.Element;
+    type?: string;
+    isDisabled: boolean;
+    onClickFn?: () => void;
+  }[] = [
     {
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
+      isDisabled: imgUrls.length === 4,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
+      isDisabled: imgUrls.length > 0 || !!giffUrl,
+      onClickFn: () => setIsGiffPickerShown(true),
     },
     {
       name: "poll",
       icon: <FiList />,
+      isDisabled: imgUrls.length > 0 || !!giffUrl,
     },
     {
       name: "emoji",
       icon: <BsEmojiSmile />,
+      isDisabled: false,
     },
     {
       name: "schedule",
       icon: <CiCalendarDate />,
+      isDisabled: false,
     },
     {
       name: "location",
       icon: <HiOutlineLocationMarker />,
+      isDisabled: false,
     },
   ];
 
@@ -98,38 +117,55 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   };
 
   return (
-    <div className="post-edit-action-btns">
-      {btns.map((btn, idx) => {
-        if (btn.name === "img-upload") {
-          return (
-            <div
-              key={idx}
-              className={
-                "post-edit-action-btn-container" +
-                (imgUrls.length === 4 ? " disabled" : "")
-              }
-            >
-              <label htmlFor={btn.name} className="post-edit-action-btn">
-                {btn.icon}
+    <React.Fragment>
+      <div className="post-edit-action-btns">
+        {btns.map((btn, idx) => {
+          if (btn.name === "img-upload") {
+            return (
+              <label
+                htmlFor={btn.name}
+                key={idx}
+                className={
+                  "post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")
+                }
+              >
+                <div className="post-edit-action-icon-container">
+                  {btn.icon}
+                </div>
+                <input
+                  type={btn.type}
+                  multiple={isMultiple}
+                  disabled={imgUrls.length === 4}
+                  id={btn.name}
+                  onChange={onUploadImgs}
+                  style={{ display: "none" }}
+                />
               </label>
-              <input
-                type={btn.type}
-                multiple={isMultiple}
-                disabled={imgUrls.length === 4}
-                id={btn.name}
-                onChange={onUploadImgs}
-                style={{ display: "none" }}
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div key={idx} className="post-edit-action-btn-container">
-              <button className="post-edit-action-btn">{btn.icon}</button>
-            </div>
-          );
-        }
-      })}
-    </div>
+            );
+          } else {
+            return (
+              <button
+                key={idx}
+                className={
+                  "post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")
+                }
+                onClick={btn.onClickFn}
+              >
+                <div className="post-edit-action-icon-container">
+                  {btn.icon}
+                </div>
+              </button>
+            );
+          }
+        })}
+      </div>
+      {isGiffPickerShown && (
+        <PostEditGiffPickerModal
+          giffUrl={giffUrl}
+          setGiffUrl={setGiffUrl}
+          setIsGiffPickerShown={setIsGiffPickerShown}
+        />
+      )}
+    </React.Fragment>
   );
 };

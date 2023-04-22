@@ -2,7 +2,7 @@
   display: flex;
   gap: rem(5px);
 
-  .post-edit-action-btn-container {
+  .post-edit-action-btn {
     height: rem(36px);
     width: rem(36px);
     border-radius: 50%;
@@ -16,7 +16,7 @@
     cursor: pointer;
 
     &.disabled {
-      .post-edit-action-btn {
+      .post-edit-action-icon-container {
         cursor: default;
         > * {
           opacity: 0.5;
@@ -24,9 +24,11 @@
       }
     }
 
-    .post-edit-action-btn {
+    .post-edit-action-icon-container {
       z-index: 100;
-      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       > * {
         height: rem(18px);

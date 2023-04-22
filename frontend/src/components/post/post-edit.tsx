@@ -13,7 +13,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import { addPost } from "../../store/actions/post.actions";
-import { PostEditImg } from "./post-edit-img";
+import { PostEditImg } from "./post-edit-img-container";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -55,6 +55,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
       // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
     ]
   );
+
+  const [giffUrl, setGiffUrl] = useState<string>("");
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -167,7 +169,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
           <div
             className={"btns-container" + (isPickerShown ? " border-show" : "")}
           >
-            <PostEditActionBtns imgUrls={imgUrls} setImgUrls={setImgUrls} />
+            <PostEditActionBtns
+              imgUrls={imgUrls}
+              setImgUrls={setImgUrls}
+              giffUrl={giffUrl}
+              setGiffUrl={setGiffUrl}
+            />
             <div className="secondary-action-container">
               {text.length > 0 && (
                 <div className="indicator-thread-btn-container">

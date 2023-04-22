@@ -1,0 +1,44 @@
+.post-edit-giff-picker {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: white;
+  border-radius: 15px;
+  width: rem(600px);
+  height: rem(400px);
+
+  .post-edit-giff-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: rem(16px);
+    height: rem(60px);
+    width: 100%;
+
+    .post-edit-giff-picker-header-title {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .post-edit-giff-picker-header-close {
+      height: rem(35px);
+      width: rem(35px);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease-in-out;
+
+      > * {
+        width: rem(22px);
+        height: rem(22px);
+      }
+
+      &:hover {
+        background-color: var(--color-hover-light);
+      }
+    }
+  }
+}

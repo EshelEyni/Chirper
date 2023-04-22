@@ -48,11 +48,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [text, setText] = useState<string>("");
-  const [imgUrls, setImgUrls] = useState<string[]>([
-    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675072753/wxgggjhzxdbuntjb9agg.jpg",
-    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675069390/dixq40dcbhqomxet64x2.png",
-    // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
-  ]);
+  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>(
+    [
+      // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675072753/wxgggjhzxdbuntjb9agg.jpg",
+      // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1675069390/dixq40dcbhqomxet64x2.png",
+      // "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
+    ]
+  );
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -71,6 +73,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
       text,
       audience: audienceSetting.value,
       repliersType: replierSetting.title,
+      imgUrls: imgUrls.map((img) => img.url),
       user: {
         _id: loggedinUser._id,
         username: loggedinUser.username,

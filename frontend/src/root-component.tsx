@@ -6,9 +6,14 @@ import { PageLoader } from "./components/loaders/page-loader";
 import { ComposePage } from "./pages/compose";
 import { DisplayPage } from "./pages/display";
 import { ChirperCirclePage } from "./pages/chirper-circle";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store";
+import { UserMsg } from "./components/other/user-msg";
 
 function RootComponent() {
-   const isSideBarShown = window.location.pathname !== "/analytics";
+  const { isSideBarShown, userMsg } = useSelector(
+    (state: RootState) => state.systemModule
+  );
 
   return (
     <div className="app">
@@ -23,6 +28,7 @@ function RootComponent() {
             </Route>
           ))}
         </Routes>
+        {userMsg && <UserMsg/>}
       </div>
     </div>
   );

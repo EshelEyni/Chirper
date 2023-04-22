@@ -15,6 +15,15 @@
     padding: rem(5px);
     cursor: pointer;
 
+    &.disabled {
+      .post-edit-action-btn {
+        cursor: default;
+        > * {
+          opacity: 0.5;
+        }
+      }
+    }
+
     .post-edit-action-btn {
       z-index: 100;
       cursor: pointer;
@@ -26,11 +35,13 @@
       }
     }
 
-    &:hover {
-      &::before {
-        background-color: var(--color-primary);
-        opacity: 0.2;
-        transform: translate(-50%, -50%) scale(1);
+    &:not(.disabled) {
+      &:hover {
+        &::before {
+          background-color: var(--color-primary);
+          opacity: 0.2;
+          transform: translate(-50%, -50%) scale(1);
+        }
       }
     }
 

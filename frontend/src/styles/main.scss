@@ -18,7 +18,6 @@
 @import "components/nav-list";
 @import "components/logo";
 @import "components/btn-create-post";
-@import "components/page-loader";
 @import "components/post-edit";
 @import "components/user-preview";
 @import "components/text-indicator";
@@ -27,6 +26,12 @@
 @import "components/post-edit-action-btns";
 @import "components/post-edit-img";
 
+@import "components/user-msg";
+
 // Modals
 @import "components/side-bar-options-modal";
 @import "components/picker-modal";
+
+// Loaders
+@import "components/page-loader";
+@import "components/content-loader";

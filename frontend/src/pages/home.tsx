@@ -9,6 +9,7 @@ import { PostList } from "../components/post/post-list";
 import { AppDispatch } from "../store/types";
 import { setIsPageLoading } from "../store/actions/system.actions";
 import { PageLoader } from "../components/loaders/page-loader";
+import { ContentLoader } from "../components/loaders/content-loader";
 
 export const HomePage = () => {
   const { isPageLoading } = useSelector(

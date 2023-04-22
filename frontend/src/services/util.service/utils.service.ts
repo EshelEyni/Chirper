@@ -24,7 +24,7 @@ function formatTime(timestamp: number): string {
   }
 }
 
- function formatCount(count: number): string {
+function formatCount(count: number): string {
   if (count >= 10000) {
     const formattedCount = (count / 1000).toFixed(1);
     return `${formattedCount}k`;
@@ -33,7 +33,18 @@ function formatTime(timestamp: number): string {
   }
 }
 
+function makeKey(length = 5): string {
+  let txt = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < length; i++) {
+    txt += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return txt;
+}
+
 export const utilService = {
   formatTime,
   formatCount,
+  makeKey,
 };

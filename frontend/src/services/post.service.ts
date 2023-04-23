@@ -7,6 +7,7 @@ export const postService = {
   remove,
   add,
   update,
+  getGifsBySearchTerm,
 };
 
 async function query(): Promise<Post[] | void> {
@@ -54,6 +55,16 @@ async function update(post: Post) {
     return updatedPost;
   } catch (err) {
     console.log("postService: Cannot update post");
+    throw err;
+  }
+}
+
+async function getGifsBySearchTerm(searchTerm: string): Promise<any> {
+  try {
+    const gifs = await httpService.get(`gif/search?searchTerm=${searchTerm}`);
+    return gifs;
+  } catch (err) {
+    console.log("gifService: Cannot get gifs");
     throw err;
   }
 }

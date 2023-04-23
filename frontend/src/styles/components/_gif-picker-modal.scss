@@ -1,4 +1,4 @@
-.post-edit-giff-picker {
+.post-edit-gif-picker {
   position: fixed;
   top: 10%;
   left: 50%;
@@ -9,7 +9,7 @@
   width: rem(600px);
   height: rem(400px);
 
-  .post-edit-giff-picker-header {
+  .post-edit-gif-picker-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,12 +17,12 @@
     height: rem(60px);
     width: 100%;
 
-    .post-edit-giff-picker-header-title {
+    .post-edit-gif-picker-header-title {
       font-size: 1.2rem;
       font-weight: 500;
     }
 
-    .post-edit-giff-picker-header-close {
+    .post-edit-gif-picker-header-close {
       height: rem(35px);
       width: rem(35px);
       border-radius: 50%;

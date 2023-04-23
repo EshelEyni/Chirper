@@ -1,7 +1,12 @@
 import devConfig from "./dev";
 import prodConfig from "./prod";
 
-let config: { dbURL: any; sessionKey: any; note?: string };
+let config: {
+  dbURL: any;
+  sessionKey: any;
+  giphyApiKey: any;
+  note?: string;
+};
 
 // keys.ts - figure out what set of credentials to return
 if (process.env.NODE_ENV === "production") {

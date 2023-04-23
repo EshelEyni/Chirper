@@ -7,24 +7,24 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState } from "react";
-import { PostEditGiffPickerModal } from "../post/post-edit-gif-picker";
+import { PostEditgifPickerModal } from "../post/post-edit-gif-picker";
 
 interface PostEditActionBtnsProps {
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
-  giffUrl: string;
-  setGiffUrl: (url: string) => void;
+  gifUrl: string;
+  setgifUrl: (url: string) => void;
 }
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   imgUrls,
   setImgUrls,
-  giffUrl,
-  setGiffUrl,
+  gifUrl,
+  setgifUrl,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const [isGiffPickerShown, setIsGiffPickerShown] = useState(false);
+  const [isgifPickerShown, setIsgifPickerShown] = useState(true);
 
   useEffect(() => {
     if (imgUrls.length < 3) setIsMultiple(true);
@@ -47,13 +47,13 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: imgUrls.length > 0 || !!giffUrl,
-      onClickFn: () => setIsGiffPickerShown(true),
+      isDisabled: imgUrls.length > 0 || !!gifUrl,
+      onClickFn: () => setIsgifPickerShown(true),
     },
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgUrls.length > 0 || !!giffUrl,
+      isDisabled: imgUrls.length > 0 || !!gifUrl,
     },
     {
       name: "emoji",
@@ -159,11 +159,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
           }
         })}
       </div>
-      {isGiffPickerShown && (
-        <PostEditGiffPickerModal
-          giffUrl={giffUrl}
-          setGiffUrl={setGiffUrl}
-          setIsGiffPickerShown={setIsGiffPickerShown}
+      {isgifPickerShown && (
+        <PostEditgifPickerModal
+          gifUrl={gifUrl}
+          setgifUrl={setgifUrl}
+          setIsgifPickerShown={setIsgifPickerShown}
         />
       )}
     </React.Fragment>

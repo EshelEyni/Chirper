@@ -3,6 +3,10 @@ import { getCollection } from "../../services/db.service";
 import { logger } from "../../services/logger.service";
 import { ObjectId } from "mongodb";
 
+import fetch from "cross-fetch";
+
+(global as any).fetch = fetch;
+
 async function query() {
   try {
     const postCollection = await getCollection("post");

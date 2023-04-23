@@ -56,7 +56,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
     ]
   );
 
-  const [giffUrl, setGiffUrl] = useState<string>("");
+  const [gifUrl, setgifUrl] = useState<string>("");
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -172,8 +172,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
             <PostEditActionBtns
               imgUrls={imgUrls}
               setImgUrls={setImgUrls}
-              giffUrl={giffUrl}
-              setGiffUrl={setGiffUrl}
+              gifUrl={gifUrl}
+              setgifUrl={setgifUrl}
             />
             <div className="secondary-action-container">
               {text.length > 0 && (

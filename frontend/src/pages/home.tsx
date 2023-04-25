@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { PostEdit } from "../components/post/post-edit";
-import { TextIndicator } from "../components/other/text-indicator";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { getPosts } from "../store/actions/post.actions";
@@ -9,7 +8,6 @@ import { PostList } from "../components/post/post-category-list";
 import { AppDispatch } from "../store/types";
 import { setIsPageLoading } from "../store/actions/system.actions";
 import { PageLoader } from "../components/loaders/page-loader";
-import { ContentLoader } from "../components/loaders/content-loader";
 
 export const HomePage = () => {
   const { isPageLoading } = useSelector(
@@ -27,7 +25,7 @@ export const HomePage = () => {
   return (
     <React.Fragment>
       {isPageLoading && <PageLoader />}
-      {(!isPageLoading ) && (
+      {!isPageLoading && (
         <main className="home">
           <div className="title-container">
             <h1>Home</h1>

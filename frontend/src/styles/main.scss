@@ -21,7 +21,6 @@
 @import "components/user-preview";
 @import "components/text-indicator";
 @import "components/user-msg";
-@import "components/gif-list";
 
 // Post Components
 @import "components/post-edit";
@@ -29,6 +28,10 @@
 @import "components/post-preview-action-btns";
 @import "components/post-edit-action-btns";
 @import "components/post-edit-img";
+
+// Gif Components
+@import "components/gif-category-list";
+@import "components/gif-list";
 
 // Modals
 @import "components/side-bar-options-modal";

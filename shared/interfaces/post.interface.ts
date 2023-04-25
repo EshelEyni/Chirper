@@ -1,8 +1,10 @@
+import { GifUrl } from "./gif.interface";
+
 export interface NewPost {
   text: string;
   imgUrls?: string[];
   videoUrl?: string;
-  gifUrl?: string;
+  gifUrl?: GifUrl;
   poll_id?: string;
   schedule?: string;
   location?: string;

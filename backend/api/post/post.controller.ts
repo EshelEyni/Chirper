@@ -30,7 +30,6 @@ export async function getPostById(req: Request, res: Response): Promise<void> {
 export async function addPost(req: Request, res: Response): Promise<void> {
   try {
     const currPost = req.body;
-    console.log("currPost", currPost);
     const post = await postService.add(currPost);
 
     res.send(post);

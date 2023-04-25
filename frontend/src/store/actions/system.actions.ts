@@ -7,6 +7,7 @@ export function setIsPageLoading(
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async (dispatch) => {
     try {
+      console.log("setIsPageLoading: isPageLoading", isPageLoading);
       dispatch({ type: "SET_IS_PAGE_LOADING", isPageLoading });
     } catch (err) {
       console.log("PostActions: err in getPosts", err);

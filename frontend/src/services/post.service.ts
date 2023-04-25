@@ -1,7 +1,6 @@
 import { httpService } from "./http.service";
 import { NewPost, Post } from "../../../shared/interfaces/post.interface";
-import { GifFromDB, GifHeader } from "../../../shared/interfaces/gif.interface";
-import { IGif } from "@giphy/js-types";
+import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 
 export const postService = {
   query,
@@ -10,8 +9,8 @@ export const postService = {
   add,
   update,
   getGifsBySearchTerm,
-  getGifsHeaders,
-  getGifByCategory
+  getGifCategroies,
+  getGifByCategory,
 };
 
 async function query(): Promise<Post[] | void> {
@@ -63,30 +62,30 @@ async function update(post: Post) {
   }
 }
 
-async function getGifsBySearchTerm(searchTerm: string): Promise<IGif[]> {
+async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   try {
     const gifs = await httpService.get(`gif/search?searchTerm=${searchTerm}`);
-    return gifs as IGif[];
+    return gifs as Gif[];
   } catch (err) {
     console.log("gifService: Cannot get gifs");
     throw err;
   }
 }
 
-async function getGifsHeaders(): Promise<GifHeader[]> {
+async function getGifCategroies(): Promise<GifCategory[]> {
   try {
-    const gifs = await httpService.get(`gif/headers`);
-    return gifs as GifHeader[];
+    const gifs = await httpService.get(`gif/categories`);
+    return gifs as GifCategory[];
   } catch (err) {
     console.log("gifService: Cannot get gifs");
     throw err;
   }
 }
 
-async function getGifByCategory(category: string): Promise<GifFromDB[]> {
+async function getGifByCategory(category: string): Promise<Gif[]> {
   try {
     const gifs = await httpService.get(`gif/category/${category}`);
-    return gifs as GifFromDB[];
+    return gifs as Gif[];
   } catch (err) {
     console.log("gifService: Cannot get gifs");
     throw err;

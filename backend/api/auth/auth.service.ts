@@ -51,7 +51,7 @@ async function validateToken(loginToken: string): Promise<User | null> {
     const loggedinUser = await userService.getById(loggedinUserId);
     return loggedinUser;
   } catch (err) {
-    console.log("Invalid login token: " + err);
+    logger.error("Invalid login token: " + err);
   }
   return null;
 }

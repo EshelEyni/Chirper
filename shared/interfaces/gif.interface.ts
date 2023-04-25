@@ -1,15 +1,19 @@
-import IGif from "@giphy/js-types/dist/gif";
-
-export interface GifHeader {
+export interface GifCategory {
   _id: string;
   name: string;
-  gif: IGif;
+  img: string;
   sortOrder: number;
 }
 
-// export interface GifFromDB {
-//   _id: string;
-//   category: string;
-//   sortOrder: number;
-//   gif: IGif;
-// }
+export interface Gif {
+  _id: string;
+  category?: string;
+  sortOrder: number;
+  gif: string;
+  img: string;
+}
+
+export interface GifUrl {
+  url: string;
+  staticUrl: string;
+}

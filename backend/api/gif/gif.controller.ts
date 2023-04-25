@@ -17,9 +17,9 @@ export async function getGifsBySearchTerm(req: Request, res: Response): Promise<
 }
 
 
-export async function getGifHeaders(req: Request, res: Response): Promise<void> {
+export async function getGifCategories(req: Request, res: Response): Promise<void> {
   try {
-    const gifHeaders = await gifService.getGifHeaders();
+    const gifHeaders = await gifService.getGifCategories();
     res.send(gifHeaders);
   } catch (err) {
     logger.error("Failed to get gif headers", err as Error);

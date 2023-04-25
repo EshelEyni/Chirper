@@ -24,7 +24,7 @@ async function query() {
 
     return posts;
   } catch (err) {
-    console.log("Cannot get post: ", err as Error);
+    logger.error("cannot find posts", err as Error);
     throw err;
   }
 }

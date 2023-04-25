@@ -1,6 +1,7 @@
 import fs from "fs";
 import { asyncLocalStorage } from "./als.service";
 import { User } from "../../shared/interfaces/user.interface";
+import ansiColors from "ansi-colors";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) {
@@ -30,9 +31,23 @@ function doLog(
   const userId = (store as Record<string, User | undefined>)?.loggedinUser?._id;
   const str = userId ? `(userId: ${userId})` : "";
   line = `${getTime()} - ${level} - ${line} ${str}\n`;
+  switch (level) {
+    case "DEBUG":
+      line = ansiColors.bgBlue(line);
+      break;
+    case "INFO":
+      line = ansiColors.bgGreen(line);
+      break;
+    case "WARN":
+      line = ansiColors.bgYellow(line);
+      break;
+    case "ERROR":
+      line = ansiColors.bgRed(line);
+      break;
+  }
   console.log(line);
   fs.appendFile("./logs/backend.log", line, (err) => {
-    if (err) console.log("FATAL: cannot write to log file");
+    if (err) console.log(ansiColors.red("FATAL: cannot write to log file"));
   });
 }
 

@@ -1,15 +1,17 @@
-import { Gif } from "@giphy/react-components";
-import { IGif } from "@giphy/js-types";
 import { useState, useEffect } from "react";
 import { postService } from "../../services/post.service";
 import { ContentLoader } from "../loaders/content-loader";
+import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
 
 interface GifListProps {
   category: string;
+  setGifUrl: (url: GifUrl | null) => void;
+  setIsgifPickerShown: (isShown: boolean) => void;
 }
 
-export const GifList: React.FC<GifListProps> = ({ category }) => {
-  const [gifs, setGifs] = useState<IGif[]>([]);
+export const GifList: React.FC<GifListProps> = ({ category, setGifUrl ,setIsgifPickerShown}) => {
+  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
     if (category && !gifs.length) getGifsByCategory();
@@ -20,19 +22,31 @@ export const GifList: React.FC<GifListProps> = ({ category }) => {
   }, []);
 
   const getGifsByCategory = async () => {
-    const gifs = await postService.getGifByCategory(category);
-    console.log(gifs);
+    const gifs: Gif[] = await postService.getGifByCategory(category);
     setGifs(gifs);
   };
 
+  const handleGifClick = (gif: Gif) => {
+    setGifUrl({ url: gif.gif, staticUrl: gif.img });
+    setIsgifPickerShown(false);
+  };
+
   return (
-    <div className="gif-details">
+    <div className="gif-list">
       {gifs.length === 0 && <ContentLoader />}
       {gifs.length > 0 &&
-        gifs.map((gif) => {
+        gifs.map((gif, idx) => {
           return (
-            <div className="gif-container" key={gif.id}>
-              <Gif gif={gif} width={200} />
+            <div
+              className="gif-container"
+              key={idx}
+              onClick={() => handleGifClick(gif)}
+            >
+              {isPlaying ? (
+                <img src={gif.gif} alt="gif" loading="lazy" />
+              ) : (
+                <img src={gif.img} alt="img" loading="lazy" />
+              )}
             </div>
           );
         })}

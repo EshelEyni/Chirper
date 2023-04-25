@@ -1,4 +1,4 @@
-.post-edit-gif-picker {
+.gif-picker {
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -14,7 +14,7 @@
   overflow-x: hidden;
   @include scrollbar-hidden;
 
-  .post-edit-gif-picker-header {
+  .gif-picker-header {
     position: -webkit-sticky; /* For Safari */
     position: sticky;
     top: 0;
@@ -28,12 +28,12 @@
     background-color: white;
     opacity: 0.85;
 
-    .post-edit-gif-picker-header-title {
+    .gif-picker-header-title {
       font-size: 1.2rem;
       font-weight: 500;
     }
 
-    .post-edit-gif-picker-header-close {
+    .gif-picker-header-btn {
       height: rem(35px);
       width: rem(35px);
       border-radius: 50%;

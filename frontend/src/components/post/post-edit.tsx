@@ -14,6 +14,7 @@ import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import { addPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img-container";
+import { GifUrl } from "../../../../shared/interfaces/gif.interface";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -56,7 +57,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
     ]
   );
 
-  const [gifUrl, setgifUrl] = useState<string>("");
+  const [gifUrl, setgifUrl] = useState<GifUrl | null>(null);
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -150,6 +151,18 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
           />
           {imgUrls.length > 0 && (
             <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />
+          )}
+          
+          {gifUrl && (
+            <div className="gif-container">
+              <img src={gifUrl.url} alt="gif" />
+              <button
+                className="btn-remove-gif"
+                onClick={() => setgifUrl(null)}
+              >
+                <IoClose />
+              </button>
+            </div>
           )}
 
           {isPickerShown && (

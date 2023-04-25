@@ -60,3 +60,23 @@
 @mixin page {
   max-width: rem(620px);
 }
+
+
+@mixin scrollbar-hidden {
+  &::-webkit-scrollbar {
+      display: none;
+  }
+
+  & {
+      scrollbar-width: none;
+  }
+
+  & {
+      -ms-overflow-style: none;
+  }
+
+  &::-webkit-scrollbar {
+      width: 0.2em;
+      background-color: transparent;
+  }
+}

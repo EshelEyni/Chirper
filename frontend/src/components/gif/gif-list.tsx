@@ -1,60 +1,41 @@
 import { Gif } from "@giphy/react-components";
+import { IGif } from "@giphy/js-types";
+import { useState, useEffect } from "react";
+import { postService } from "../../services/post.service";
+import { ContentLoader } from "../loaders/content-loader";
 
-export const GifList: React.FC = () => {
-  const catgerories = [
-    {
-      title: "agree",
-      img: "https://media1.giphy.com/media/8YsjVmpIpEjNKlrL3D/giphy.gif?cid=40d877031acicx3qzcicw42yl9ft78qnwkz2dxiafxre2prd&rid=giphy.gif&ct=g",
-    },
-    // "applause",
-    // "aww",
-    // "dance",
-    // "deal with it",
-    // "dont not want",
-    // "eww",
-    // "eye roll",
-    // "facepalm",
-    // "fist bump",
-    // "good luck",
-    // "happy dance",
-    // "hearts",
-    // "high five",
-    // "hug",
-    // "idk",
-    // "kiss",
-    // "mic drop",
-    // "no",
-    // "OMG",
-    // "oh snap",
-    // "ok",
-    // "oops",
-    // "please",
-    // "popcorn",
-    // "SMH",
-    // "scared",
-    // "seriously",
-    // "shocked",
-    // "shrug",
-    // "sigh",
-    // "slow clap",
-    // "sorry",
-    // "thank you",
-    // "thumbs down",
-    // "thumbs up",
-    // "want",
-    // "win",
-    // "wink",
-    // "yolo",
-    // "yawn",
-    // "yes",
-    // "you got this",
-  ];
+interface GifListProps {
+  category: string;
+}
+
+export const GifList: React.FC<GifListProps> = ({ category }) => {
+  const [gifs, setGifs] = useState<IGif[]>([]);
+
+  useEffect(() => {
+    if (category && !gifs.length) getGifsByCategory();
+
+    return () => {
+      setGifs([]);
+    };
+  }, []);
+
+  const getGifsByCategory = async () => {
+    const gifs = await postService.getGifByCategory(category);
+    console.log(gifs);
+    setGifs(gifs);
+  };
 
   return (
-    <div className="gif-list">
-      <div className="gif-list-item">
-        <img src={catgerories[0].img} alt="" />
-      </div>
+    <div className="gif-details">
+      {gifs.length === 0 && <ContentLoader />}
+      {gifs.length > 0 &&
+        gifs.map((gif) => {
+          return (
+            <div className="gif-container" key={gif.id}>
+              <Gif gif={gif} width={200} />
+            </div>
+          );
+        })}
     </div>
   );
 };

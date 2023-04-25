@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { postService } from "../../services/post.service";
 import { Gif } from "@giphy/react-components";
-import { GifList } from "../gif/gif-list";
+import { GifCategoryList } from "../gif/gif-category-list";
 
 interface PostEditgifPickerProps {
   gifUrl: string;
@@ -17,9 +17,7 @@ export const PostEditgifPickerModal: React.FC<PostEditgifPickerProps> = ({
 }) => {
   const [gifs, setgifs] = React.useState<any[]>([]);
 
-  useEffect(() => {
-    getgifs("cats");
-  }, []);
+  useEffect(() => {}, []);
 
   const getgifs = async (searchTerm: string) => {
     const gifs = await postService.getGifsBySearchTerm(searchTerm);
@@ -42,8 +40,8 @@ export const PostEditgifPickerModal: React.FC<PostEditgifPickerProps> = ({
             <AiOutlineClose />
           </button>
         </header>
-        {/* {gifs.length > 0 && <Gif gif={gifs[0]} width={200} />} */}
-        <GifList />
+
+        <GifCategoryList />
       </div>
     </React.Fragment>
   );

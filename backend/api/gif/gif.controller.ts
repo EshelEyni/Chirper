@@ -4,14 +4,36 @@ import { Request, Response } from "express";
 
 
 
-export async function getGiffsBySearchTerm(req: Request, res: Response): Promise<void> {
+export async function getGifsBySearchTerm(req: Request, res: Response): Promise<void> {
   try {
     // const { searchTerm } = req.params;
     const searchTerm = req.query.searchTerm as string;
-    const giff = await gifService.getGiffsBySearchTerm(searchTerm);
-    res.send(giff);
+    const gif = await gifService.getGifsBySearchTerm(searchTerm);
+    res.send(gif);
   } catch (err) {
-    logger.error("Failed to get giff", err as Error);
-    res.status(500).send({ err: "Failed to get giff" });
+    logger.error("Failed to get gif", err as Error);
+    res.status(500).send({ err: "Failed to get gif" });
+  }
+}
+
+
+export async function getGifHeaders(req: Request, res: Response): Promise<void> {
+  try {
+    const gifHeaders = await gifService.getGifHeaders();
+    res.send(gifHeaders);
+  } catch (err) {
+    logger.error("Failed to get gif headers", err as Error);
+    res.status(500).send({ err: "Failed to get gif headers" });
+  }
+}
+
+export async function getGifByCategory(req: Request, res: Response): Promise<void> {
+  try {
+    const { category } = req.params;
+    const gifs = await gifService.getGifByCategory(category);
+    res.send(gifs);
+  } catch (err) {
+    logger.error("Failed to get gif", err as Error);
+    res.status(500).send({ err: "Failed to get gif" });
   }
 }

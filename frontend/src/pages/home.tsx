@@ -5,7 +5,7 @@ import { TextIndicator } from "../components/other/text-indicator";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { getPosts } from "../store/actions/post.actions";
-import { PostList } from "../components/post/post-list";
+import { PostList } from "../components/post/post-category-list";
 import { AppDispatch } from "../store/types";
 import { setIsPageLoading } from "../store/actions/system.actions";
 import { PageLoader } from "../components/loaders/page-loader";

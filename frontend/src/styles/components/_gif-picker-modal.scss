@@ -1,21 +1,32 @@
 .post-edit-gif-picker {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 500;
   background-color: white;
   border-radius: 15px;
+  height: rem(650px);
   width: rem(600px);
-  height: rem(400px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  @include scrollbar-hidden;
 
   .post-edit-gif-picker-header {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: rem(16px);
-    height: rem(60px);
+    padding: rem(5px);
+    height: rem(50px);
     width: 100%;
+    background-color: white;
+    opacity: 0.85;
 
     .post-edit-gif-picker-header-title {
       font-size: 1.2rem;

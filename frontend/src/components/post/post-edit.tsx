@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -32,7 +32,7 @@ interface repliersSetting {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
   const dispatch: AppDispatch = useDispatch();
-
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const [audienceSetting, setAudienceSetting] = useState<audienceSettings>({
@@ -88,8 +88,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
     setIsPickerShown(false);
   };
 
+  const openPicker = () => {
+    if (isHomePage) {
+      setIsPickerShown(true);
+      textAreaRef.current?.focus();
+    }
+  };
+
   return (
-    <section className="post-edit">
+    <section className="post-edit" onClick={openPicker}>
       {!isHomePage && (
         <div className="btn-container">
           <button className="btn-close">
@@ -139,9 +146,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
             placeholder="What's happening?"
             value={text}
             onChange={handleTextChange}
-            onClick={() => {
-              if (isHomePage) setIsPickerShown(true);
-            }}
+            ref={textAreaRef}
           />
           {imgUrls.length > 0 && (
             <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />
@@ -174,6 +179,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
               setImgUrls={setImgUrls}
               gifUrl={gifUrl}
               setgifUrl={setgifUrl}
+              isPickerShown={isPickerShown}
             />
             <div className="secondary-action-container">
               {text.length > 0 && (

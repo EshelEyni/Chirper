@@ -14,6 +14,7 @@ interface PostEditActionBtnsProps {
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
   gifUrl: string;
   setgifUrl: (url: string) => void;
+  isPickerShown: boolean;
 }
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
@@ -21,10 +22,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   setImgUrls,
   gifUrl,
   setgifUrl,
+  isPickerShown,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const [isgifPickerShown, setIsgifPickerShown] = useState(true);
+  const [isgifPickerShown, setIsgifPickerShown] = useState(false);
 
   useEffect(() => {
     if (imgUrls.length < 3) setIsMultiple(true);
@@ -48,7 +50,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "gif-upload",
       icon: <RiFileGifLine />,
       isDisabled: imgUrls.length > 0 || !!gifUrl,
-      onClickFn: () => setIsgifPickerShown(true),
+      onClickFn: () => {
+        if (!isPickerShown) return;
+        setIsgifPickerShown(true);
+      },
     },
     {
       name: "poll",
@@ -122,25 +127,28 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
         {btns.map((btn, idx) => {
           if (btn.name === "img-upload") {
             return (
-              <label
-                htmlFor={btn.name}
+              <button
                 key={idx}
                 className={
                   "post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")
                 }
               >
-                <div className="post-edit-action-icon-container">
+                <label
+                  className="post-edit-action-icon-container"
+                  style={{ pointerEvents: isPickerShown ? "all" : "none" }}
+                  htmlFor={btn.name}
+                >
                   {btn.icon}
-                </div>
+                </label>
                 <input
                   type={btn.type}
                   multiple={isMultiple}
-                  disabled={imgUrls.length === 4}
+                  disabled={imgUrls.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadImgs}
                   style={{ display: "none" }}
                 />
-              </label>
+              </button>
             );
           } else {
             return (

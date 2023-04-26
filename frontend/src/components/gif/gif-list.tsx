@@ -1,55 +1,74 @@
-import { useState, useEffect } from "react";
-import { postService } from "../../services/post.service";
+import { useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 interface GifListProps {
-  category: string;
+  gifs: Gif[];
   setGifUrl: (url: GifUrl | null) => void;
   setIsgifPickerShown: (isShown: boolean) => void;
 }
 
-export const GifList: React.FC<GifListProps> = ({ category, setGifUrl ,setIsgifPickerShown}) => {
-  const [gifs, setGifs] = useState<Gif[]>([]);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (category && !gifs.length) getGifsByCategory();
-
-    return () => {
-      setGifs([]);
-    };
-  }, []);
-
-  const getGifsByCategory = async () => {
-    const gifs: Gif[] = await postService.getGifByCategory(category);
-    setGifs(gifs);
-  };
+export const GifList: React.FC<GifListProps> = ({
+  gifs,
+  setGifUrl,
+  setIsgifPickerShown,
+}) => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
     setGifUrl({ url: gif.gif, staticUrl: gif.img });
+    console.log(gif);
     setIsgifPickerShown(false);
+  };
+
+  const handleChange = () => {
+    setIsPlaying(!isPlaying);
   };
 
   return (
     <div className="gif-list">
-      {gifs.length === 0 && <ContentLoader />}
-      {gifs.length > 0 &&
-        gifs.map((gif, idx) => {
-          return (
-            <div
-              className="gif-container"
-              key={idx}
-              onClick={() => handleGifClick(gif)}
-            >
-              {isPlaying ? (
-                <img src={gif.gif} alt="gif" loading="lazy" />
-              ) : (
-                <img src={gif.img} alt="img" loading="lazy" />
-              )}
-            </div>
-          );
-        })}
+      <div className="play-btn-container">
+        <span>Auto-play GIFs</span>
+        <Switch
+          checked={isPlaying}
+          onChange={handleChange}
+          sx={{
+            "&.MuiSwitch-root .MuiSwitch-thumb": {
+              backgroundColor: isPlaying ? "var(--color-primary)" : "white",
+            },
+            "&.MuiSwitch-root .Mui-checked + .MuiSwitch-track": {
+              backgroundColor: "var(--color-primary-light)",
+            },
+            "& .MuiSwitch-track": {
+              width: "40px",
+            },
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              transform: "translateX(24px)",
+            },
+          }}
+        />
+      </div>
+      <div className="gif-list-main-container">
+        {gifs.length === 0 && <ContentLoader />}
+        {gifs.length > 0 &&
+          gifs.map((gif, idx) => {
+            return (
+              <div
+                className="gif-list-item"
+                key={idx}
+                onClick={() => handleGifClick(gif)}
+              >
+                {isPlaying ? (
+                  <img src={gif.gif} alt="gif" />
+                ) : (
+                  <img src={gif.img} alt="img" />
+                )}
+              </div>
+            );
+          })}
+      </div>
     </div>
   );
 };

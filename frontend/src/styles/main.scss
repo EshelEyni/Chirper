@@ -30,13 +30,15 @@
 @import "components/post-edit-img";
 
 // Gif Components
+@import "components/gif-picker-modal";
+@import "components/gif-search-bar";
 @import "components/gif-category-list";
 @import "components/gif-list";
+@import "components/gif";
 
 // Modals
 @import "components/side-bar-options-modal";
 @import "components/picker-modal";
-@import "components/gif-picker-modal";
 
 // Loaders
 @import "components/page-loader";

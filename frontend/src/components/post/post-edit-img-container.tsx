@@ -30,8 +30,8 @@ export const PostEditImg: React.FC<PostEditImgProps> = ({
           className={"post-edit-img-container" + ` img-${idx + 1}`}
           key={utilService.makeKey()}
         >
-          <button className="btn-remove-img" onClick={() => onRemoveImg(idx)}>
-            <AiOutlineClose className="remove-img-icon" />
+          <button className="btn-remove-content" onClick={() => onRemoveImg(idx)}>
+            <AiOutlineClose className="remove-content-icon" />
           </button>
           {imgUrl.isLoading ? (
             <ContentLoader />

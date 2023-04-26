@@ -1,31 +1,35 @@
-import { postService } from "../../services/post.service";
 import { useState, useEffect } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { GifList } from "./gif-list";
-import { GifCategory } from "../../../../shared/interfaces/gif.interface";
+import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
+import { gifService } from "../../services/gif.service";
 
 interface GifCategoryListProps {
   currCategory: string;
   setCurrCategory: (category: string) => void;
+  setGifs: (gifs: Gif[]) => void;
 }
 
 export const GifCategoryList: React.FC<GifCategoryListProps> = ({
   currCategory,
   setCurrCategory,
+  setGifs,
 }) => {
   const [gifCategories, setGifCategories] = useState<GifCategory[]>([]);
 
   useEffect(() => {
-    if (!gifCategories.length) getGifHeaders();
-
-    return () => {
-      setGifCategories([]);
-    };
+    getGifCategories();
   }, []);
 
-  const getGifHeaders = async () => {
-    const gifs = await postService.getGifCategroies();
+  const getGifCategories = async () => {
+    const gifs = await gifService.getGifCategroies();
     setGifCategories(gifs);
+  };
+
+  const handleCategoryClick = async (category: string) => {
+    setCurrCategory(category);
+    const gifs = await gifService.getGifByCategory(category);
+    setGifs(gifs);
   };
 
   return (
@@ -40,7 +44,7 @@ export const GifCategoryList: React.FC<GifCategoryListProps> = ({
                 (idx === gifCategories.length - 1 ? " last" : "")
               }
               key={gifCategory._id}
-              onClick={() => setCurrCategory(gifCategory.name)}
+              onClick={() => handleCategoryClick(gifCategory.name)}
             >
               <img src={gifCategory.img} alt="gif-category" />
               <h5 className="gif-category-preview-title">{gifCategory.name}</h5>

@@ -6,7 +6,6 @@ import { Request, Response } from "express";
 
 export async function getGifsBySearchTerm(req: Request, res: Response): Promise<void> {
   try {
-    // const { searchTerm } = req.params;
     const searchTerm = req.query.searchTerm as string;
     const gif = await gifService.getGifsBySearchTerm(searchTerm);
     res.send(gif);

@@ -22,11 +22,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: rem(5px);
+    padding: rem(5px) rem(10px);
     height: rem(50px);
     width: 100%;
     background-color: white;
     opacity: 0.85;
+
 
     .gif-picker-header-title {
       font-size: 1.2rem;
@@ -37,14 +38,11 @@
       height: rem(35px);
       width: rem(35px);
       border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       transition: all 0.3s ease-in-out;
 
       > * {
-        width: rem(22px);
-        height: rem(22px);
+        width: rem(18px);
+        height: rem(18px);
       }
 
       &:hover {

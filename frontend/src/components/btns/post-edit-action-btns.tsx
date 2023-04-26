@@ -14,7 +14,7 @@ interface PostEditActionBtnsProps {
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
   gifUrl: GifUrl | null;
-  setgifUrl: (url: GifUrl | null) => void;
+  setGifUrl: (url: GifUrl | null) => void;
   isPickerShown: boolean;
 }
 
@@ -22,12 +22,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   imgUrls,
   setImgUrls,
   gifUrl,
-  setgifUrl,
+  setGifUrl,
   isPickerShown,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const [isGifPickerShown, setIsGifPickerShown] = useState(true);
+  const [isGifPickerShown, setIsGifPickerShown] = useState(false);
 
   useEffect(() => {
     if (imgUrls.length < 3) setIsMultiple(true);
@@ -171,7 +171,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       {isGifPickerShown && (
         <GifPickerModal
           gifUrl={gifUrl}
-          setgifUrl={setgifUrl}
+          setGifUrl={setGifUrl}
           setIsgifPickerShown={setIsGifPickerShown}
         />
       )}

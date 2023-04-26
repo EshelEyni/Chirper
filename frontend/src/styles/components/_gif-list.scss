@@ -1,8 +1,24 @@
 .gif-list {
-  column-count: 3;
-  column-gap: rem(4px);
+  position: relative;
 
-  .gif-container{
-    margin-bottom: rem(4px);
+  .play-btn-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem(10px);
+
+    span {
+      color: var(--color-text-gray);
+    }
+  }
+
+  .gif-list-main-container {
+    column-count: 3;
+    column-gap: rem(4px);
+  }
+  .gif-list-item {
+    position: relative;
+    cursor: pointer;
   }
 }

@@ -41,7 +41,7 @@
       .icon {
         height: rem(15px);
         width: rem(15px);
-        color: var(--color-btn-primary);
+        color: var(--color-text-gray);
       }
 
       &::before {
@@ -59,7 +59,7 @@
     }
 
     span {
-      color: var(--color-btn-primary);
+      color: var(--color-text-gray);
       font-size: rem(12px);
       font-weight: 400;
       font-family: var(--font-primary);

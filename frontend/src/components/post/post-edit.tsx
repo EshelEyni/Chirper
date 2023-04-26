@@ -15,6 +15,7 @@ import { AppDispatch } from "../../store/types";
 import { addPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img-container";
 import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif } from "../gif/gif";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -57,7 +58,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
     ]
   );
 
-  const [gifUrl, setgifUrl] = useState<GifUrl | null>(null);
+  const [gifUrl, setGifUrl] = useState<GifUrl | null>({
+    url: "https://media0.giphy.com/media/l4Ep3mmmj7Bw3adWw/giphy.gif?cid=40d87703jz0fdl3tagat206yqf1y9zbxs9jtul6ea0iq0o02&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+    staticUrl: "https://media0.giphy.com/media/l4Ep3mmmj7Bw3adWw/giphy_s.gif?cid=40d87703jz0fdl3tagat206yqf1y9zbxs9jtul6ea0iq0o02&ep=v1_gifs_search&rid=giphy_s.gif&ct=g"
+});
 
   const toggleModal = (type: string) => {
     if (type === "audience") setIsAudienceOpen(!isAudienceOpen);
@@ -90,7 +94,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
   };
 
   const openPicker = () => {
-    if (isHomePage) {
+    if (isHomePage && !isPickerShown) {
       setIsPickerShown(true);
       textAreaRef.current?.focus();
     }
@@ -152,17 +156,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
           {imgUrls.length > 0 && (
             <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />
           )}
-          
+
           {gifUrl && (
-            <div className="gif-container">
-              <img src={gifUrl.url} alt="gif" />
-              <button
-                className="btn-remove-gif"
-                onClick={() => setgifUrl(null)}
-              >
-                <IoClose />
-              </button>
-            </div>
+            <Gif
+              gifUrl={gifUrl}
+              setGifUrl={setGifUrl}
+            />
           )}
 
           {isPickerShown && (
@@ -191,7 +190,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false }) => {
               imgUrls={imgUrls}
               setImgUrls={setImgUrls}
               gifUrl={gifUrl}
-              setgifUrl={setgifUrl}
+              setGifUrl={setGifUrl}
               isPickerShown={isPickerShown}
             />
             <div className="secondary-action-container">

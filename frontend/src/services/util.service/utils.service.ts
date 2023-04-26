@@ -43,8 +43,17 @@ function makeKey(length = 5): string {
   return txt;
 }
 
+function debounce(func: Function, delay: number) {
+  let inDebounce: any;
+  return function (this: any, ...args: any[]) {
+    clearTimeout(inDebounce);
+    inDebounce = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
 export const utilService = {
   formatTime,
   formatCount,
   makeKey,
+  debounce,
 };

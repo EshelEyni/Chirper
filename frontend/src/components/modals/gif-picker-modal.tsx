@@ -1,38 +1,36 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { postService } from "../../services/post.service";
 import { GifCategoryList } from "../gif/gif-category-list";
 import { GifList } from "../gif/gif-list";
 import { IoArrowBackSharp } from "react-icons/io5";
-import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { GifSearchBar } from "../gif/gif-search-bar";
+import { ContentLoader } from "../loaders/content-loader";
 
 interface GifPickerProps {
   gifUrl: GifUrl | null;
-  setgifUrl: (url: GifUrl | null) => void;
+  setGifUrl: (url: GifUrl | null) => void;
   setIsgifPickerShown: (isShown: boolean) => void;
 }
 
 export const GifPickerModal: React.FC<GifPickerProps> = ({
   gifUrl,
-  setgifUrl,
+  setGifUrl,
   setIsgifPickerShown,
 }) => {
-  const [gifs, setgifs] = useState<any[]>([]);
-  const [currCategory, setCurrCategory] = useState<string>("agree");
+  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  useEffect(() => {}, []);
-
-  const getgifs = async (searchTerm: string) => {
-    const gifs = await postService.getGifsBySearchTerm(searchTerm);
-    console.log(gifs);
-    setgifs(gifs);
-  };
+  const SearchBarInputRef = useRef<HTMLInputElement>(null);
 
   const handleHeaderBtnClick = () => {
-    if (!currCategory && !gifs.length) {
+    if (!gifs.length) {
       setIsgifPickerShown(false);
     } else {
-      setCurrCategory("");
+      setGifs([]);
+      setSearchTerm("");
+      SearchBarInputRef.current!.value = "";
     }
   };
 
@@ -48,24 +46,31 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
             className="gif-picker-header-btn"
             onClick={handleHeaderBtnClick}
           >
-            {!currCategory && !gifs.length ? (
-              <AiOutlineClose />
-            ) : (
-              <IoArrowBackSharp />
-            )}
+            {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
           </button>
+          <GifSearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            setGifs={setGifs}
+            SearchBarInputRef={SearchBarInputRef}
+          />
         </header>
 
-        {currCategory ? (
+        {gifs.length > 0 ? (
           <GifList
-            category={currCategory}
-            setGifUrl={setgifUrl}
+            setGifUrl={setGifUrl}
             setIsgifPickerShown={setIsgifPickerShown}
+            gifs={gifs}
           />
         ) : (
+          <ContentLoader />
+        )}
+
+        {!searchTerm && (
           <GifCategoryList
-            currCategory={currCategory}
-            setCurrCategory={setCurrCategory}
+            currCategory={searchTerm}
+            setCurrCategory={setSearchTerm}
+            setGifs={setGifs}
           />
         )}
       </div>

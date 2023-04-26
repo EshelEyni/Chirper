@@ -7,12 +7,13 @@
   grid-auto-rows: minmax(rem(150px), auto);
   gap: rem(4px);
 
+  
   .gif-category-preview {
     position: relative;
     width: rem(298px);
     height: rem(150px);
     cursor: pointer;
-    
+
     img {
       object-fit: fill;
     }
@@ -25,10 +26,6 @@
       font-size: rem(20px);
       font-weight: 700;
       margin: rem(8px);
-
-      &::first-letter {
-        text-transform: uppercase;
-      }
     }
   }
 

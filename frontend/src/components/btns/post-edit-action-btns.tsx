@@ -6,9 +6,10 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
 import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Poll } from "../../../../shared/interfaces/post.interface";
 
 interface PostEditActionBtnsProps {
   imgUrls: { url: string; isLoading: boolean }[];
@@ -16,6 +17,8 @@ interface PostEditActionBtnsProps {
   gifUrl: GifUrl | null;
   setGifUrl: (url: GifUrl | null) => void;
   isPickerShown: boolean;
+  poll: Poll | null;
+  setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
 }
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
@@ -24,10 +27,13 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   gifUrl,
   setGifUrl,
   isPickerShown,
+  poll,
+  setPoll,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
   const [isGifPickerShown, setIsGifPickerShown] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (imgUrls.length < 3) setIsMultiple(true);
@@ -59,7 +65,19 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgUrls.length > 0 || !!gifUrl,
+      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll,
+      onClickFn: () => {
+        if (!isPickerShown) return;
+        setPoll({
+          choices: [" Choice 1", " Choice 2"],
+          length: {
+            days: 1,
+            hours: 0,
+            minutes: 0,
+          },
+          createdAt: Date.now(),
+        });
+      },
     },
     {
       name: "emoji",
@@ -133,6 +151,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                 className={
                   "post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")
                 }
+                onClick={() => {
+                  if (fileRef.current && !btn.isDisabled && isPickerShown)
+                    fileRef.current.click();
+                }}
               >
                 <label
                   className="post-edit-action-icon-container"
@@ -148,6 +170,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                   id={btn.name}
                   onChange={onUploadImgs}
                   style={{ display: "none" }}
+                  ref={fileRef}
                 />
               </button>
             );

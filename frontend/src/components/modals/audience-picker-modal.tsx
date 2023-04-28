@@ -2,21 +2,17 @@ import React from "react";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-solid.svg";
 import { AiOutlineCheck } from "react-icons/ai";
+import { postSettings } from "../post/post-edit";
 
 interface AudiencePickerModalProps {
-  audience: { title: string; value: string };
-  setAudience: React.Dispatch<
-    React.SetStateAction<{
-      title: string;
-      value: string;
-    }>
-  >;
+  postSettings: postSettings;
+  SetPostSettings: React.Dispatch<React.SetStateAction<postSettings>>;
   toggleModal: (type: string) => void;
 }
 
 export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
-  audience,
-  setAudience,
+  postSettings,
+  SetPostSettings,
   toggleModal,
 }) => {
   const iconClassName = "picker-modal-option-icon";
@@ -25,13 +21,13 @@ export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
       title: "Everyone",
       icon: <GoGlobe className={iconClassName} />,
       value: "everyone",
-      isSelected: audience.value === "everyone",
+      isSelected: postSettings.audience.value === "everyone",
     },
     {
       title: "Chirper Circle",
       icon: <ChirperCircleIcon className={iconClassName} />,
       value: "chirper-circle",
-      isSelected: audience.value === "chirper-circle",
+      isSelected: postSettings.audience.value === "chirper-circle",
     },
   ];
 
@@ -46,7 +42,13 @@ export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
               key={option.title}
               className="picker-modal-option"
               onClick={() => {
-                setAudience(option);
+                SetPostSettings({
+                  ...postSettings,
+                  audience: {
+                    title: option.title,
+                    value: option.value,
+                  },
+                });
                 toggleModal("audience");
               }}
             >
@@ -54,11 +56,9 @@ export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
                 <div className="picker-modal-option-icon-container">
                   {option.icon}
                 </div>
-                <div className="picker-modal-option-text">
-                  {option.title}
-                </div>
+                <div className="picker-modal-option-text">{option.title}</div>
               </div>
-              {option.isSelected && <AiOutlineCheck className="check-icon"/>}
+              {option.isSelected && <AiOutlineCheck className="check-icon" />}
             </div>
           ))}
         </div>

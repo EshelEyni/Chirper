@@ -1,22 +1,17 @@
 import React from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
+import { postSettings } from "../post/post-edit";
 
 interface RepliersPickerModalProps {
-  replierSetting: { title: string; icon: React.ReactElement; value: string };
-  setReplierSetting: React.Dispatch<
-    React.SetStateAction<{
-      title: string;
-      icon: React.ReactElement;
-      value: string;
-    }>
-  >;
+  postSettings: postSettings;
+  setPostSettings: React.Dispatch<React.SetStateAction<postSettings>>;
   toggleModal: (type: string) => void;
 }
 
 export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
-  replierSetting,
-  setReplierSetting,
+  postSettings,
+  setPostSettings,
   toggleModal,
 }) => {
   const iconClassName = "picker-modal-option-icon";
@@ -26,19 +21,19 @@ export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
       title: "Everyone",
       icon: <FaGlobeAmericas className={iconClassName} />,
       value: "everyone",
-      isSelected: replierSetting.value === "everyone",
+      isSelected: postSettings.repliersType.value === "everyone",
     },
     {
       title: "Only people you follow",
       icon: <FaUserCheck className={iconClassName} />,
       value: "chirper-circle",
-      isSelected: replierSetting.value === "chirper-circle",
+      isSelected: postSettings.repliersType.value === "chirper-circle",
     },
     {
       title: "Only people you mentioned",
       icon: <FaAt className={iconClassName} />,
       value: "mentioned",
-      isSelected: replierSetting.value === "mentioned",
+      isSelected: postSettings.repliersType.value === "mentioned",
     },
   ];
 
@@ -53,7 +48,14 @@ export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
               key={option.title}
               className="picker-modal-option"
               onClick={() => {
-                setReplierSetting(option);
+                setPostSettings({
+                  ...postSettings,
+                  repliersType: {
+                    title: option.title,
+                    icon: option.icon,
+                    value: option.value,
+                  },
+                });
                 toggleModal("repliers");
               }}
             >
@@ -61,7 +63,9 @@ export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
                 <div className="picker-modal-option-icon-container">
                   {option.icon}
                 </div>
-                <div className="picker-modal-option-text repliers">{option.title}</div>
+                <div className="picker-modal-option-text repliers">
+                  {option.title}
+                </div>
               </div>
               {option.isSelected && <AiOutlineCheck className="check-icon" />}
             </div>

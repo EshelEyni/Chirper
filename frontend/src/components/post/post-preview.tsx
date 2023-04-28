@@ -1,7 +1,8 @@
-import { Post } from "../../types/post.interface";
+import { Post } from "../../../../shared/interfaces/post.interface";
 import { utilService } from "../../services/util.service/utils.service";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";
+import { UserImg } from "../user/user-img";
 
 interface PostPreviewProps {
   post: Post;
@@ -11,7 +12,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   return (
     <article className="post-preview">
       <div className="user-img-container">
-        <img src={post.user.imgUrl} alt="user-avatar" />
+        <UserImg imgUrl={post.user.imgUrl} />
       </div>
       <div className="main-container">
         <header className="post-preview-header">
@@ -34,7 +35,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         </div>
         <footer className="flex">
           <PostPreviewActionBtns post={post} />
-          
         </footer>
       </div>
     </article>

@@ -160,6 +160,8 @@ export const PostEdit: React.FC<PostEditProps> = ({
             className={"btns-container" + (isPickerShown ? " border-show" : "")}
           >
             <PostEditActionBtns
+              post={post}
+              setPost={setPost}
               imgUrls={imgUrls}
               setImgUrls={setImgUrls}
               gifUrl={gifUrl}

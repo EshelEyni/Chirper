@@ -1,7 +1,7 @@
 .post-edit-action-btns {
   display: flex;
   gap: rem(5px);
-
+ 
   .post-edit-action-btn {
     height: rem(36px);
     width: rem(36px);
@@ -60,7 +60,15 @@
       transform: translate(-50%, -50%) scale(0);
       transition: opacity 0.1s, transform 0.1s;
     }
+  }
 
-    
+  .emoji-picker-container {
+    .emoji-picker-modal-container {
+      position: absolute;
+      bottom: -425px;
+      left: 50%;
+      transform: translateX(-65%);
+      z-index: 200;
+    }
   }
 }

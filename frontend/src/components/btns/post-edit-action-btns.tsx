@@ -9,9 +9,13 @@ import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState, useRef } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
 import { GifUrl } from "../../../../shared/interfaces/gif.interface";
-import { Poll } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Poll,Emoji } from "../../../../shared/interfaces/post.interface";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 interface PostEditActionBtnsProps {
+  post: NewPost;
+  setPost: React.Dispatch<React.SetStateAction<NewPost>>;
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
   gifUrl: GifUrl | null;
@@ -22,6 +26,8 @@ interface PostEditActionBtnsProps {
 }
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
+  post,
+  setPost,
   imgUrls,
   setImgUrls,
   gifUrl,
@@ -33,6 +39,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
   const [isGifPickerShown, setIsGifPickerShown] = useState(false);
+  const [isEmojiPickerShown, setIsEmojiPickerShown] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -83,6 +90,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "emoji",
       icon: <BsEmojiSmile />,
       isDisabled: false,
+      onClickFn: () => {
+        if (!isPickerShown) return;
+        setIsEmojiPickerShown(true);
+      },
     },
     {
       name: "schedule",
@@ -140,6 +151,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     }
   };
 
+  const onEmojiPicked = (emoji: Emoji) => {
+    const nativeEmoji = emoji.native;
+    const newPostText = post.text + nativeEmoji;
+    setPost({ ...post, text: newPostText });
+  };
+
   return (
     <React.Fragment>
       <div className="post-edit-action-btns">
@@ -173,6 +190,32 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                   ref={fileRef}
                 />
               </button>
+            );
+          } else if (btn.name === "emoji") {
+            return (
+              <div className="emoji-button-container" key={idx}>
+                <button
+                  className={
+                    "post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")
+                  }
+                  onClick={btn.onClickFn}
+                >
+                  <div className="post-edit-action-icon-container">
+                    {btn.icon}
+                  </div>
+                </button>
+                {isEmojiPickerShown && (
+                  <div className="emoji-picker-container">
+                    <div
+                      className="main-screen"
+                      onClick={() => setIsEmojiPickerShown(false)}
+                    ></div>
+                    <div className="emoji-picker-modal-container">
+                      <Picker data={data} onEmojiSelect={onEmojiPicked} />
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           } else {
             return (

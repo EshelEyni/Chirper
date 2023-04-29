@@ -36,3 +36,12 @@ export interface Poll {
   };
   createdAt: number;
 }
+
+export interface Emoji {
+  id: string;
+  keywords: string[];
+  name: string;
+  native: string;
+  shortCodes: string;
+  unified: string;
+}

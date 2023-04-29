@@ -14,9 +14,11 @@
   }
 
   .gif-list-main-container {
-    column-count: 3;
-    column-gap: rem(4px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: rem(5px);
   }
+
   .gif-list-item {
     position: relative;
     cursor: pointer;

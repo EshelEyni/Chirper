@@ -13,7 +13,6 @@ export function getPosts(): ThunkAction<
   return async (dispatch) => {
     try {
       const posts = await postService.query();
-      console.log("PostActions: posts", posts);
       dispatch({ type: "SET_POSTS", posts });
     } catch (err) {
       console.log("PostActions: err in getPosts", err);

@@ -21,6 +21,7 @@
 @import "components/user-preview";
 @import "components/text-indicator";
 @import "components/user-msg";
+@import "components/custom-select";
 
 // Post Components
 @import "components/post-edit";
@@ -36,6 +37,11 @@
 @import "components/gif-category-list";
 @import "components/gif-list";
 @import "components/gif";
+
+// Poll Components
+@import "components/poll-edit";
+@import "components/poll-choice-input";
+@import "components/poll-length-input";
 
 // Modals
 @import "components/side-bar-options-modal";

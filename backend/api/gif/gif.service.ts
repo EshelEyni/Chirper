@@ -4,7 +4,6 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 import fetch from "cross-fetch";
 import { getCollection } from "../../services/db.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
-import ansiColors from "ansi-colors";
 
 (global as any).fetch = fetch;
 

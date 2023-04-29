@@ -64,7 +64,7 @@ async function add(post: NewPost): Promise<Post> {
     imgUrls: post.imgUrls,
     videoUrl: post.videoUrl,
     gifUrl: post.gifUrl,
-    poll_id: post.poll_id,
+    poll: post.poll,
     schedule: post.schedule,
     location: post.location,
     audience: post.audience,

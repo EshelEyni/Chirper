@@ -1,0 +1,19 @@
+.poll-edit {
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+
+  .btn-remove-poll {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(15px);
+    padding: rem(16px);
+    width: 100%;
+    border-radius: 0 0 15px 15px;
+    color: var(--color-danger);
+
+    &:hover {
+      background-color: var(--color-danger-light);
+    }
+  }
+}

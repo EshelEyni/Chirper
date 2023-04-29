@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 interface GifListProps {
   gifs: Gif[];
+  setGifs: (gifs: Gif[]) => void;
   setGifUrl: (url: GifUrl | null) => void;
   setIsgifPickerShown: (isShown: boolean) => void;
 }
 
 export const GifList: React.FC<GifListProps> = ({
   gifs,
+  setGifs,
   setGifUrl,
   setIsgifPickerShown,
 }) => {
@@ -19,7 +20,6 @@ export const GifList: React.FC<GifListProps> = ({
 
   const handleGifClick = (gif: Gif) => {
     setGifUrl({ url: gif.gif, staticUrl: gif.img });
-    console.log(gif);
     setIsgifPickerShown(false);
   };
 
@@ -60,11 +60,11 @@ export const GifList: React.FC<GifListProps> = ({
                 key={idx}
                 onClick={() => handleGifClick(gif)}
               >
-                {isPlaying ? (
-                  <img src={gif.gif} alt="gif" />
-                ) : (
-                  <img src={gif.img} alt="img" />
-                )}
+                <img
+                  src={isPlaying ? gif.gif : gif.img}
+                  alt="gif"
+                  loading="lazy"
+                />
               </div>
             );
           })}

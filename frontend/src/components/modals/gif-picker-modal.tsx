@@ -61,6 +61,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
             setGifUrl={setGifUrl}
             setIsgifPickerShown={setIsgifPickerShown}
             gifs={gifs}
+            setGifs={setGifs}
           />
         ) : (
           <ContentLoader />

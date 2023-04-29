@@ -1,10 +1,6 @@
 import { ReactElement, useState, useRef } from "react";
-import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { AudiencePickerModal } from "../modals/audience-picker-modal";
-import { RepliersPickerModal } from "../modals/repliers-picker-modal";
-import { IoChevronDownOutline } from "react-icons/io5";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { BtnCreatePost } from "../btns/btn-create-post";
 import { PostEditActionBtns } from "../btns/post-edit-action-btns";
@@ -20,7 +16,7 @@ import { BtnClose } from "../btns/btn-close";
 import { UserImg } from "../user/user-img";
 import { BtnToggleAudience } from "../btns/btn-toggle-audience";
 import { BtnToggleRepliers } from "../btns/btn-toggle-repliers";
-import { PollEdit } from "../other/poll-edit";
+import { PollEdit } from "../poll/poll-edit";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -99,7 +95,7 @@ export const PostEdit: React.FC<PostEditProps> = ({
 
     if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
     if (gifUrl) newPost.gifUrl = gifUrl;
-    if (poll) newPost.poll = poll;
+    if (poll) newPost.poll = { ...poll, createdAt: Date.now() };
 
     await dispatch(addPost(newPost));
     setPost({
@@ -152,7 +148,7 @@ export const PostEdit: React.FC<PostEditProps> = ({
 
           {gifUrl && <Gif gifUrl={gifUrl} setGifUrl={setGifUrl} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
-          
+
           {isPickerShown && (
             <BtnToggleRepliers
               postSettings={postSettings}

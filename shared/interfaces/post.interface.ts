@@ -5,7 +5,7 @@ export interface NewPost {
   imgUrls?: string[];
   videoUrl?: string;
   gifUrl?: GifUrl;
-  poll_id?: string;
+  poll?: Poll;
   schedule?: string;
   location?: string;
   audience: string;
@@ -25,4 +25,14 @@ export interface Post extends NewPost {
   rechirps: number;
   likes: number;
   views: number;
+}
+
+export interface Poll {
+  choices: string[];
+  length: {
+    days: number;
+    hours: number;
+    minutes: number;
+  };
+  createdAt: number;
 }

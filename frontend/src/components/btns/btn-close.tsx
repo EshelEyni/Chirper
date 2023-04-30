@@ -1,4 +1,4 @@
-import { IoClose } from "react-icons/io5";
+import { GrClose } from "react-icons/gr";
 
 interface BtnCloseProps {
   onClickBtn: () => void;
@@ -6,9 +6,9 @@ interface BtnCloseProps {
 
 export const BtnClose: React.FC<BtnCloseProps> = ({ onClickBtn }) => {
   return (
-    <div className="btn-container">
+    <div className="btn-close-container">
       <button className="btn-close" onClick={onClickBtn}>
-        <IoClose />
+        <GrClose />
       </button>
     </div>
   );

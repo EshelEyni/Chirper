@@ -7,17 +7,18 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
 import { GifSearchBar } from "../gif/gif-search-bar";
 import { ContentLoader } from "../loaders/content-loader";
+import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifPickerProps {
   gifUrl: GifUrl | null;
   setGifUrl: (url: GifUrl | null) => void;
-  setIsgifPickerShown: (isShown: boolean) => void;
+  onToggleElementVisibility: (element: UIElement) => void;
 }
 
 export const GifPickerModal: React.FC<GifPickerProps> = ({
   gifUrl,
   setGifUrl,
-  setIsgifPickerShown,
+  onToggleElementVisibility,
 }) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -26,7 +27,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
   const handleHeaderBtnClick = () => {
     if (!gifs.length) {
-      setIsgifPickerShown(false);
+      onToggleElementVisibility("gifPicker")
     } else {
       setGifs([]);
       setSearchTerm("");
@@ -38,7 +39,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
     <Fragment>
       <div
         className="main-screen dark"
-        onClick={() => setIsgifPickerShown(false)}
+        onClick={() => onToggleElementVisibility("gifPicker")}
       ></div>
       <div className="gif-picker">
         <header className="gif-picker-header">
@@ -59,9 +60,8 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
         {gifs.length > 0 ? (
           <GifList
             setGifUrl={setGifUrl}
-            setIsgifPickerShown={setIsgifPickerShown}
+            onToggleElementVisibility={onToggleElementVisibility}
             gifs={gifs}
-            setGifs={setGifs}
           />
         ) : (
           <ContentLoader />

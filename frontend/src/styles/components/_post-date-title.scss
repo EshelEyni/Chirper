@@ -1,0 +1,15 @@
+.post-schedule-date-title-container {
+  display: flex;
+  align-items: center;
+  gap: rem(10px);
+
+  .post-schedule-date-icon {
+    height: rem(22px);
+    width: rem(22px);
+  }
+
+  .post-schedule-date-title{
+    font-size: rem(13px);
+    color: var(--color-text-gray);
+  }
+}

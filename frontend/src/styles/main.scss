@@ -23,6 +23,10 @@
 @import "components/user-msg";
 @import "components/custom-select";
 
+// Buttons
+@import "components/btn-create-post";
+@import "components/btn-close";
+
 // Post Components
 @import "components/post-edit";
 @import "components/post-preview";
@@ -30,6 +34,8 @@
 @import "components/post-edit-action-btns";
 @import "components/post-edit-img";
 @import "components/poll-edit";
+@import "components/post-schedule-modal";
+@import "components/post-date-title";
 
 // Gif Components
 @import "components/gif-picker-modal";

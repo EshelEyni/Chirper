@@ -1,0 +1,97 @@
+.post-scheduler-modal {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background-color: white;
+  border-radius: 15px;
+  height: rem(425px);
+  width: rem(600px);
+
+  .post-scheduler-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 rem(16px);
+    height: rem(50px);
+    width: 100%;
+
+    .close-btn-title-container {
+      display: flex;
+      align-items: center;
+      gap: rem(25px);
+
+      .btn-close-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: rem(20px);
+        height: rem(20px);
+
+        .btn-close {
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+    }
+
+    .btn-confirm-schedule {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: rem(100px);
+      height: rem(30px);
+      border-radius: 35px;
+      background-color: var(--color-text);
+      color: white;
+      font-size: rem(14px);
+      font-weight: 700;
+      cursor: pointer;
+    }
+  }
+
+  .post-schedule-modal-main-container {
+    padding: 0 rem(16px);
+    display: flex;
+    flex-direction: column;
+    gap: rem(15px);
+
+    .date-inputs,
+    .time-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: rem(8px);
+      width: 100%;
+
+      .date-inputs-title,
+      .time-inputs-title {
+        color: var(--color-text);
+      }
+
+      .date-inputs-container {
+        display: flex;
+        justify-content: space-between;
+
+        > * {
+          width: 22.5%;
+        }
+        > :first-child {
+          width: 50%;
+        }
+      }
+
+      .time-inputs-container {
+        display: flex;
+        justify-content: space-between;
+
+        > * {
+          width: 32%;
+        }
+      }
+    }
+  }
+}

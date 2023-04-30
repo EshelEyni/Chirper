@@ -1,26 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
+import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifListProps {
   gifs: Gif[];
-  setGifs: (gifs: Gif[]) => void;
   setGifUrl: (url: GifUrl | null) => void;
-  setIsgifPickerShown: (isShown: boolean) => void;
+  onToggleElementVisibility: (element: UIElement) => void;
 }
 
 export const GifList: React.FC<GifListProps> = ({
   gifs,
-  setGifs,
   setGifUrl,
-  setIsgifPickerShown,
+  onToggleElementVisibility,
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
     setGifUrl({ url: gif.gif, staticUrl: gif.img });
-    setIsgifPickerShown(false);
+    onToggleElementVisibility("gifPicker");
   };
 
   const handleChange = () => {

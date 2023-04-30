@@ -57,6 +57,7 @@ export const PostEdit: React.FC<PostEditProps> = ({
   const [gifUrl, setGifUrl] = useState<GifUrl | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
+  const [schedule, setSchedule] = useState<Date | null>(null);
   const [postSettings, setPostSettings] = useState<{
     audience: audienceSettings;
     repliersType: repliersSetting;
@@ -85,6 +86,7 @@ export const PostEdit: React.FC<PostEditProps> = ({
       text: post.text,
       audience: post.audience,
       repliersType: post.repliersType,
+      isPublic: true,
       user: {
         _id: loggedinUser._id,
         username: loggedinUser.username,
@@ -96,7 +98,10 @@ export const PostEdit: React.FC<PostEditProps> = ({
     if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
     if (gifUrl) newPost.gifUrl = gifUrl;
     if (poll) newPost.poll = { ...poll, createdAt: Date.now() };
-
+    if (schedule) {
+      post.isPublic = false;
+      newPost.schedule = schedule;
+    }
     await dispatch(addPost(newPost));
     setPost({
       text: "",
@@ -169,6 +174,8 @@ export const PostEdit: React.FC<PostEditProps> = ({
               isPickerShown={isPickerShown}
               poll={poll}
               setPoll={setPoll}
+              schedule={schedule}
+              setSchedule={setSchedule}
             />
             <div className="secondary-action-container">
               {post.text.length > 0 && (

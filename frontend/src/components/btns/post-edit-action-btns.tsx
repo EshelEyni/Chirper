@@ -9,9 +9,14 @@ import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState, useRef } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
 import { GifUrl } from "../../../../shared/interfaces/gif.interface";
-import { NewPost, Poll,Emoji } from "../../../../shared/interfaces/post.interface";
+import {
+  NewPost,
+  Poll,
+  Emoji,
+} from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { PostSchedulerModal } from "../modals/post-scheduler-modal";
 
 interface PostEditActionBtnsProps {
   post: NewPost;
@@ -23,7 +28,17 @@ interface PostEditActionBtnsProps {
   isPickerShown: boolean;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
+  schedule: Date | null;
+  setSchedule: React.Dispatch<React.SetStateAction<Date | null>>;
 }
+
+export type UIElement =
+  | "gifPicker"
+  | "emojiPicker"
+  | "scheduleModal"
+  | "locationModal";
+
+type ElementVisibility = Record<UIElement, boolean>;
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   post,
@@ -35,11 +50,21 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   isPickerShown,
   poll,
   setPoll,
+  schedule,
+  setSchedule,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const [isGifPickerShown, setIsGifPickerShown] = useState(false);
-  const [isEmojiPickerShown, setIsEmojiPickerShown] = useState(false);
+
+  const [elementVisibility, setElementVisibility] = useState<ElementVisibility>(
+    {
+      gifPicker: false,
+      emojiPicker: false,
+      scheduleModal: true,
+      locationModal: false,
+    }
+  );
+
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -66,7 +91,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll,
       onClickFn: () => {
         if (!isPickerShown) return;
-        setIsGifPickerShown(true);
+        onToggleElementVisibility("gifPicker");
       },
     },
     {
@@ -92,13 +117,17 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       isDisabled: false,
       onClickFn: () => {
         if (!isPickerShown) return;
-        setIsEmojiPickerShown(true);
+        onToggleElementVisibility("emojiPicker");
       },
     },
     {
       name: "schedule",
       icon: <CiCalendarDate />,
       isDisabled: false,
+      onClickFn: () => {
+        if (!isPickerShown) return;
+        onToggleElementVisibility("scheduleModal");
+      },
     },
     {
       name: "location",
@@ -157,6 +186,13 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     setPost({ ...post, text: newPostText });
   };
 
+  const onToggleElementVisibility = (elementName: UIElement) => {
+    setElementVisibility({
+      ...elementVisibility,
+      [elementName]: !elementVisibility[elementName],
+    });
+  };
+
   return (
     <React.Fragment>
       <div className="post-edit-action-btns">
@@ -204,11 +240,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                     {btn.icon}
                   </div>
                 </button>
-                {isEmojiPickerShown && (
+                {elementVisibility.emojiPicker && (
                   <div className="emoji-picker-container">
                     <div
                       className="main-screen"
-                      onClick={() => setIsEmojiPickerShown(false)}
+                      onClick={() => onToggleElementVisibility("emojiPicker")}
                     ></div>
                     <div className="emoji-picker-modal-container">
                       <Picker data={data} onEmojiSelect={onEmojiPicked} />
@@ -234,11 +270,19 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
           }
         })}
       </div>
-      {isGifPickerShown && (
+      {elementVisibility.gifPicker && (
         <GifPickerModal
           gifUrl={gifUrl}
           setGifUrl={setGifUrl}
-          setIsgifPickerShown={setIsGifPickerShown}
+          onToggleElementVisibility={onToggleElementVisibility}
+        />
+      )}
+
+      {elementVisibility.scheduleModal && (
+        <PostSchedulerModal
+          schedule={schedule}
+          setSchedule={setSchedule}
+          onToggleElementVisibility={onToggleElementVisibility}
         />
       )}
     </React.Fragment>

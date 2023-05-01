@@ -1,0 +1,17 @@
+.user-img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: rem(50px);
+  height: rem(50px);
+  cursor: pointer;
+
+  img {
+    border-radius: 50%;
+    transition: filter 0.3s ease-in-out;
+  }
+
+  img:hover {
+    filter: brightness(85%);
+  }
+}

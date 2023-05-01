@@ -28,8 +28,6 @@ interface PostEditActionBtnsProps {
   isPickerShown: boolean;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
-  schedule: Date | null;
-  setSchedule: React.Dispatch<React.SetStateAction<Date | null>>;
 }
 
 export type UIElement =
@@ -50,8 +48,6 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   isPickerShown,
   poll,
   setPoll,
-  schedule,
-  setSchedule,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
@@ -97,7 +93,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll,
+      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll || !!post.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         setPoll({
@@ -123,7 +119,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: false,
+      isDisabled: !!poll,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("scheduleModal");
@@ -280,8 +276,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
 
       {elementVisibility.scheduleModal && (
         <PostSchedulerModal
-          schedule={schedule}
-          setSchedule={setSchedule}
+          post={post}
+          setPost={setPost}
           onToggleElementVisibility={onToggleElementVisibility}
         />
       )}

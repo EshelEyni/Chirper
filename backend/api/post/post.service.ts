@@ -61,6 +61,7 @@ async function add(post: NewPost): Promise<Post> {
     rechirps: 0,
     likes: 0,
     views: 0,
+    isPublic: post.isPublic,
     imgUrls: post.imgUrls,
     videoUrl: post.videoUrl,
     gifUrl: post.gifUrl,

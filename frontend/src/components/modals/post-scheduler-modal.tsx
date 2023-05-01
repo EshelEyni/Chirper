@@ -1,13 +1,22 @@
 import { BtnClose } from "../btns/btn-close";
 import { UIElement } from "../btns/post-edit-action-btns";
-import { Dispatch, FC, Fragment, SetStateAction, useEffect } from "react";
+import {
+  Dispatch,
+  FC,
+  Fragment,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { PostDateTitle } from "../other/post-date-title";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
 import { CustomSelect } from "../other/custom-select";
+import { useNavigate } from "react-router-dom";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
 
 interface PostSchedulerModalProps {
-  schedule: Date | null;
-  setSchedule: Dispatch<SetStateAction<Date | null>>;
+  post: NewPost;
+  setPost: Dispatch<SetStateAction<NewPost>>;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
@@ -21,19 +30,48 @@ type SetterFunctions = {
 };
 
 export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
-  schedule,
-  setSchedule,
+  post,
+  setPost,
   onToggleElementVisibility,
 }) => {
-  useEffect(() => {
-    if (!schedule) {
-      setSchedule(new Date());
-    }
-  }, [schedule]);
+  const [schedule, setSchedule] = useState<Date>(
+    post.schedule || (new Date() as Date)
+  );
+  const [currentYearMonth, setCurrentYearMonth] = useState({
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+  });
+
+  const navigate = useNavigate();
 
   const handleValueChange = (inputType: string, value: string | number) => {
     setSchedule((prevSchedule) => {
-      if (!prevSchedule) return null;
+      if (inputType === "month") {
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        value = monthNames.indexOf(value as string) + 1;
+      }
+
+      if (inputType === "year" || inputType === "month") {
+        console.log("inputType", inputType);
+        
+        setCurrentYearMonth((prev) => ({
+          ...prev,
+          [inputType]: value,
+        }));
+      }
 
       const setterFunctions = {
         month: (date: Date) => new Date(date.setMonth(value as number)),
@@ -70,7 +108,9 @@ export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
       {
         label: "Month",
         type: "month",
-        value: new Date().getMonth() + 1,
+        value: new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+          new Date(0, new Date().getMonth())
+        ),
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
@@ -89,7 +129,7 @@ export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
         isDropdownOpen: false,
         selectValues: [
           ...Array(
-            getDaysInMonth(new Date().getFullYear(), new Date().getMonth() + 1)
+            getDaysInMonth(schedule.getFullYear(), schedule.getMonth() + 1)
           ).keys(),
         ].map((day) => day + 1),
       },
@@ -135,14 +175,50 @@ export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
     handleValueChange
   );
 
+  useEffect(() => {
+    setInputs((prevInputs) => {
+      const newInputs = [...prevInputs];
+      newInputs[1].selectValues = [
+        ...Array(
+          getDaysInMonth(currentYearMonth.year, currentYearMonth.month)
+        ).keys(),
+      ].map((day) => day + 1);
+      return newInputs;
+    });
+  }, [currentYearMonth]);
+  
+
   const onCloseModal = () => {
     onToggleElementVisibility("scheduleModal");
-    setSchedule(null);
   };
 
   const onConfirmSchedule = () => {
+    onToggleElementVisibility("scheduleModal");
+    setPost({ ...post, schedule });
     console.log(schedule);
-    // onToggleElementVisibility("scheduleModal");
+  };
+
+  const onClearSchedule = () => {
+    onToggleElementVisibility("scheduleModal");
+    const { schedule, ...postWithOutSchedule } = post;
+    setPost(postWithOutSchedule);
+  };
+
+  const getTimeZone = (): string => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZoneName = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      timeZoneName: "long",
+      hour: "numeric",
+    })
+      .formatToParts()
+      .find((part) => part.type === "timeZoneName")?.value;
+
+    return timeZoneName ? timeZoneName : "Time Zone Not Found";
+  };
+
+  const onGoToUnsentPostsPage = () => {
+    navigate("/unsent-posts");
   };
 
   return (
@@ -150,16 +226,25 @@ export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
       <div className="main-screen dark-light" onClick={onCloseModal}></div>
       <section className="post-scheduler-modal">
         <header className="post-scheduler-modal-header">
-          <div className="close-btn-title-container">
+          <div className="post-scheduler-modal-header-close-btn-title-container">
             <div className="btn-close-container">
               <BtnClose onClickBtn={onCloseModal} />
             </div>
             <h3 className="post-scheduler-modal-title">Schedule</h3>
           </div>
-
-          <button className="btn-confirm-schedule" onClick={onConfirmSchedule}>
-            Confirm
-          </button>
+          <div className="post-scheduler-modal-header-btns-container">
+            {post.schedule && (
+              <button className="btn-clear-schedule" onClick={onClearSchedule}>
+                <span>Clear</span>
+              </button>
+            )}
+            <button
+              className="btn-confirm-schedule"
+              onClick={onConfirmSchedule}
+            >
+              {post.schedule ? "Confirm" : "Update"}
+            </button>
+          </div>
         </header>
         <main className="post-schedule-modal-main-container">
           <PostDateTitle date={schedule ? schedule : new Date()} />
@@ -194,7 +279,21 @@ export const PostSchedulerModal: FC<PostSchedulerModalProps> = ({
               ))}
             </div>
           </div>
+          <div className="time-zone">
+            <h3 className="time-zone-title">Time Zone</h3>
+            <div className="time-zone-container">
+              <p className="time-zone-value">{getTimeZone()}</p>
+            </div>
+          </div>
         </main>
+        <footer className="post-schedule-modal-footer">
+          <button
+            className="btn-toggle-schedule-chirps-modal"
+            onClick={onGoToUnsentPostsPage}
+          >
+            Schedule Chirps
+          </button>
+        </footer>
       </section>
     </Fragment>
   );

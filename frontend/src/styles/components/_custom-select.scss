@@ -7,7 +7,7 @@
 
   &.focused {
     border: 2px solid var(--color-primary);
-
+    z-index: 2000;
     .custom-select-label {
       color: var(--color-primary);
     }
@@ -17,12 +17,11 @@
     }
   }
 
-  &.disabled{
+  &.disabled {
     border: 1px solid var(--color-border);
-    background-color: rgb(247,249,249);
+    background-color: rgb(247, 249, 249);
     cursor: default;
     opacity: 0.5;
-    
 
     .custom-select-label {
       color: var(--color-text-gray);
@@ -65,8 +64,9 @@
     background-color: var(--color-background);
     border-radius: 5px;
     position: absolute;
-    top: 100%;
+    top: 105%;
     left: 0;
+    z-index: 2000;
 
     width: 100%;
     overflow-y: scroll;

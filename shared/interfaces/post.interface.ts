@@ -6,10 +6,11 @@ export interface NewPost {
   videoUrl?: string;
   gifUrl?: GifUrl;
   poll?: Poll;
-  schedule?: string;
+  schedule?: Date;
   location?: string;
   audience: string;
   repliersType: string;
+  isPublic: boolean;
   user: {
     _id: string;
     username: string;

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setIsSideBarShown } from "../store/actions/system.actions";
-import { AppDispatch } from "../store/types";
+import { setIsSideBarShown } from "../../store/actions/system.actions";
+import { AppDispatch } from "../../store/types";
 
 export const AnalyticsPage = () => {
   const dispatch: AppDispatch = useDispatch();

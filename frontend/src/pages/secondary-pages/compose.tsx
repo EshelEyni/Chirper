@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PostEdit } from "../components/post/post-edit";
+import { PostEdit } from "../../components/post/post-edit";
 
 export const ComposePage = () => {
   const navigate = useNavigate();

@@ -5,18 +5,19 @@ import "./styles/main.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import { UserMsg } from "./components/other/user-msg";
-import { PostScheduler } from "./pages/post-scheduler";
+import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
+import { PostLocation } from "./pages/secondary-pages/post-location";
 
 function RootComponent() {
   const { isSideBarShown, userMsg } = useSelector((state: RootState) => state.systemModule);
   const location = useLocation();
 
-  const isPostScheduleRoute = location.pathname === "/post-schedule";
   return (
     <div className="app">
       <div className="app-content">
         {isSideBarShown && <SideBar />}
-        {isPostScheduleRoute && <PostScheduler />}
+        {location.pathname === "/post-schedule" && <PostSchedule />}
+        {location.pathname === "/post-location" && <PostLocation />}
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={<route.component />}>

@@ -1,14 +1,14 @@
-import { BtnClose } from "../components/btns/btn-close";
+import { BtnClose } from "../../components/btns/btn-close";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { PostDateTitle } from "../components/other/post-date-title";
-import { useCustomSelect } from "../hooks/useCustomSelect";
-import { CustomSelect } from "../components/other/custom-select";
+import { PostDateTitle } from "../../components/other/post-date-title";
+import { useCustomSelect } from "../../hooks/useCustomSelect";
+import { CustomSelect } from "../../components/other/custom-select";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { setNewPost } from "../store/actions/post.actions";
-import { AppDispatch } from "../store/types";
-import { utilService } from "../services/util.service/utils.service";
+import { RootState } from "../../store/store";
+import { setNewPost } from "../../store/actions/post.actions";
+import { AppDispatch } from "../../store/types";
+import { utilService } from "../../services/util.service/utils.service";
 
 type SetterFunctions = {
   month: (date: Date) => Date;
@@ -19,7 +19,7 @@ type SetterFunctions = {
   amPm: (date: Date) => Date;
 };
 
-export const PostScheduler = () => {
+export const PostSchedule = () => {
   const { newPost } = useSelector((state: RootState) => state.postModule);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -252,15 +252,15 @@ export const PostScheduler = () => {
   return (
     <Fragment>
       <div className="main-screen dark-light" onClick={onGoBack}></div>
-      <section className="post-scheduler">
-        <header className="post-scheduler-header">
-          <div className="post-scheduler-header-close-btn-title-container">
+      <section className="post-schedule">
+        <header className="post-schedule-header">
+          <div className="post-schedule-header-close-btn-title-container">
             <div className="btn-close-container">
               <BtnClose onClickBtn={onGoBack} />
             </div>
-            <h3 className="post-scheduler-title">Schedule</h3>
+            <h3 className="post-schedule-title">Schedule</h3>
           </div>
-          <div className="post-scheduler-header-btns-container">
+          <div className="post-schedule-header-btns-container">
             {newPost.schedule && (
               <button className="btn-clear-schedule" onClick={onClearSchedule}>
                 <span>Clear</span>

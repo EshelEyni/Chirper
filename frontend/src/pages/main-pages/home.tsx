@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { PostEdit } from "../components/post/post-edit";
+import { PostEdit } from "../../components/post/post-edit";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { getPosts } from "../store/actions/post.actions";
-import { PostList } from "../components/post/post-category-list";
-import { AppDispatch } from "../store/types";
-import { setIsPageLoading } from "../store/actions/system.actions";
-import { PageLoader } from "../components/loaders/page-loader";
+import { RootState } from "../../store/store";
+import { getPosts } from "../../store/actions/post.actions";
+import { PostList } from "../../components/post/post-category-list";
+import { AppDispatch } from "../../store/types";
+import { setIsPageLoading } from "../../store/actions/system.actions";
+import { PageLoader } from "../../components/loaders/page-loader";
 
 export const HomePage = () => {
   const { isPageLoading } = useSelector(

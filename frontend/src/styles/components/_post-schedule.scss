@@ -1,4 +1,4 @@
-.post-scheduler {
+.post-schedule {
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -11,7 +11,7 @@
   height: rem(425px);
   width: rem(600px);
 
-  .post-scheduler-header {
+  .post-schedule-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,7 +19,7 @@
     height: rem(50px);
     width: 100%;
 
-    .post-scheduler-header-close-btn-title-container {
+    .post-schedule-header-close-btn-title-container {
       display: flex;
       align-items: center;
       gap: rem(25px);
@@ -39,7 +39,7 @@
       }
     }
 
-    .post-scheduler-header-btns-container {
+    .post-schedule-header-btns-container {
       display: flex;
       align-items: center;
       gap: rem(20px);

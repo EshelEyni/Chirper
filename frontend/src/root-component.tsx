@@ -1,33 +1,32 @@
 import { SideBar } from "./components/side-bar/side-bar";
-import { Routes, Route } from "react-router-dom";
-import routes from "./routes";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { routes, nestedRoutes } from "./routes";
 import "./styles/main.scss";
-import { ComposePage } from "./pages/compose";
-import { DisplayPage } from "./pages/display";
-import { ChirperCirclePage } from "./pages/chirper-circle";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import { UserMsg } from "./components/other/user-msg";
+import { PostScheduler } from "./pages/post-scheduler";
 
 function RootComponent() {
-  const { isSideBarShown, userMsg } = useSelector(
-    (state: RootState) => state.systemModule
-  );
+  const { isSideBarShown, userMsg } = useSelector((state: RootState) => state.systemModule);
+  const location = useLocation();
 
+  const isPostScheduleRoute = location.pathname === "/post-schedule";
   return (
     <div className="app">
       <div className="app-content">
         {isSideBarShown && <SideBar />}
+        {isPostScheduleRoute && <PostScheduler />}
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={<route.component />}>
-              <Route path={"compose"} element={<ComposePage />} />
-              <Route path={"display"} element={<DisplayPage />} />
-              <Route path={"chirper-circle"} element={<ChirperCirclePage />} />
+              {nestedRoutes.map((nestedRoute, index) => (
+                <Route key={index} path={nestedRoute.path} element={<nestedRoute.component />} />
+              ))}
             </Route>
           ))}
         </Routes>
-        {userMsg && <UserMsg/>}
+        {userMsg && <UserMsg />}
       </div>
     </div>
   );

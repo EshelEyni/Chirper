@@ -1,5 +1,8 @@
 import { AnalyticsPage } from "./pages/analytics";
 import { BookmarksPage } from "./pages/bookmarks";
+import { ChirperCirclePage } from "./pages/chirper-circle";
+import { ComposePage } from "./pages/compose";
+import { DisplayPage } from "./pages/display";
 import { ExplorePage } from "./pages/explore";
 import { HomePage } from "./pages/home";
 import { MessagesPage } from "./pages/messages";
@@ -11,7 +14,7 @@ interface Route {
   component: () => JSX.Element;
 }
 
-const routes: Route[] = [
+export const routes: Route[] = [
   {
     path: "",
     component: HomePage,
@@ -40,6 +43,23 @@ const routes: Route[] = [
     path: "analytics",
     component: AnalyticsPage,
   },
+  {
+    path: "post-schedule",
+    component: HomePage,
+  },
 ];
 
-export default routes;
+export const nestedRoutes: Route[] = [
+  {
+    path: "compose",
+    component: ComposePage,
+  },
+  {
+    path: "display",
+    component: DisplayPage,
+  },
+  {
+    path: "chirper-circle",
+    component: ChirperCirclePage,
+  },
+];

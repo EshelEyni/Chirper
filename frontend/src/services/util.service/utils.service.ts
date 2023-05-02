@@ -35,8 +35,7 @@ function formatCount(count: number): string {
 
 function makeKey(length = 5): string {
   let txt = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < length; i++) {
     txt += possible.charAt(Math.floor(Math.random() * possible.length));
   }
@@ -51,9 +50,27 @@ function debounce(func: Function, delay: number) {
   };
 }
 
+function getTimeZone(): string {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZoneName = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "long",
+    hour: "numeric",
+  })
+    .formatToParts()
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  return timeZoneName ? timeZoneName : "Time Zone Not Found";
+}
+
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate();
+}
 export const utilService = {
   formatTime,
   formatCount,
   makeKey,
   debounce,
+  getTimeZone,
+  getDaysInMonth,
 };

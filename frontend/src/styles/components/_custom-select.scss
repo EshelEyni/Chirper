@@ -8,6 +8,7 @@
   &.focused {
     border: 2px solid var(--color-primary);
     z-index: 2000;
+    
     .custom-select-label {
       color: var(--color-primary);
     }

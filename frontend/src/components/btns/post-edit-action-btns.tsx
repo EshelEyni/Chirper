@@ -3,7 +3,7 @@ import { RiFileGifLine } from "react-icons/ri";
 import { CiCalendarDate } from "react-icons/ci";
 import { BsEmojiSmile } from "react-icons/bs";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState, useRef } from "react";
@@ -16,11 +16,14 @@ import {
 } from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { PostSchedulerModal } from "../modals/post-scheduler-modal";
+import { PostScheduler } from "../../pages/post-scheduler";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../../store/store";
+import { setNewPost } from "../../store/actions/post.actions";
 
 interface PostEditActionBtnsProps {
-  post: NewPost;
-  setPost: React.Dispatch<React.SetStateAction<NewPost>>;
+  // post: NewPost;
+  // setPost: React.Dispatch<React.SetStateAction<NewPost>>;
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
   gifUrl: GifUrl | null;
@@ -39,8 +42,8 @@ export type UIElement =
 type ElementVisibility = Record<UIElement, boolean>;
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
-  post,
-  setPost,
+  // post,
+  // setPost,
   imgUrls,
   setImgUrls,
   gifUrl,
@@ -49,8 +52,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   poll,
   setPoll,
 }) => {
+  const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
+  const { newPost } = useSelector((state: RootState) => state.postModule);
 
   const [elementVisibility, setElementVisibility] = useState<ElementVisibility>(
     {
@@ -93,7 +98,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll || !!post.schedule,
+      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         setPoll({
@@ -122,7 +127,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       isDisabled: !!poll,
       onClickFn: () => {
         if (!isPickerShown) return;
-        onToggleElementVisibility("scheduleModal");
+        onOpenPostScedule();
       },
     },
     {
@@ -178,8 +183,9 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
 
   const onEmojiPicked = (emoji: Emoji) => {
     const nativeEmoji = emoji.native;
-    const newPostText = post.text + nativeEmoji;
-    setPost({ ...post, text: newPostText });
+    const newPostText = newPost.text + nativeEmoji;
+    // setPost({ ...post, text: newPostText });
+    dispatch(setNewPost({ ...newPost, text: newPostText }));
   };
 
   const onToggleElementVisibility = (elementName: UIElement) => {
@@ -187,6 +193,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       ...elementVisibility,
       [elementName]: !elementVisibility[elementName],
     });
+  };
+
+  const onOpenPostScedule = () => {
+    if (!isPickerShown) return;
+    navigate("/post-schedule");
   };
 
   return (
@@ -274,13 +285,9 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
         />
       )}
 
-      {elementVisibility.scheduleModal && (
-        <PostSchedulerModal
-          post={post}
-          setPost={setPost}
-          onToggleElementVisibility={onToggleElementVisibility}
-        />
-      )}
+      {/* {elementVisibility.scheduleModal && (
+        <PostScheduler post={post} setPost={setPost} />
+      )} */}
     </React.Fragment>
   );
 };

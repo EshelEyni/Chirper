@@ -8,7 +8,7 @@ import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost, Poll } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
-import { addPost } from "../../store/actions/post.actions";
+import { addPost, setNewPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img-container";
 import { GifUrl } from "../../../../shared/interfaces/gif.interface";
 import { Gif } from "../gif/gif";
@@ -39,22 +39,17 @@ export interface postSettings {
   repliersType: repliersSetting;
 }
 
-export const PostEdit: React.FC<PostEditProps> = ({
-  isHomePage = false,
-  onClickBtnClose,
-}) => {
+export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const dispatch: AppDispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-
-  const [post, setPost] = useState<NewPost>({
-    text: "",
-    audience: "everyone",
-    repliersType: "everyone",
-  } as NewPost);
-  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>(
-    []
-  );
+  const { newPost } = useSelector((state: RootState) => state.postModule);
+  // const [post, setPost] = useState<NewPost>({
+  //   text: "",
+  //   audience: "everyone",
+  //   repliersType: "everyone",
+  // } as NewPost);
+  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>([]);
   const [gifUrl, setGifUrl] = useState<GifUrl | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -76,36 +71,50 @@ export const PostEdit: React.FC<PostEditProps> = ({
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
-    setPost({ ...post, text });
+    // setPost({ ...post, text });
+    dispatch(setNewPost({ ...newPost, text }));
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
 
   const onAddPost = async () => {
     if (!loggedinUser) return;
-    const newPost: NewPost = {
-      text: post.text,
-      audience: post.audience,
-      repliersType: post.repliersType,
-      isPublic: true,
-      schedule: post.schedule,
-      user: {
-        _id: loggedinUser._id,
-        username: loggedinUser.username,
-        fullname: loggedinUser.fullname,
-        imgUrl: loggedinUser.imgUrl,
-      },
+    // const newPost: NewPost = {
+    //   text: post.text,
+    //   audience: post.audience,
+    //   repliersType: post.repliersType,
+    //   isPublic: true,
+    //   schedule: post.schedule,
+    //   user: {
+    //     _id: loggedinUser._id,
+    //     username: loggedinUser.username,
+    //     fullname: loggedinUser.fullname,
+    //     imgUrl: loggedinUser.imgUrl,
+    //   },
+    // };
+    newPost.user = {
+      _id: loggedinUser._id,
+      username: loggedinUser.username,
+      fullname: loggedinUser.fullname,
+      imgUrl: loggedinUser.imgUrl,
     };
 
     if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
     if (gifUrl) newPost.gifUrl = gifUrl;
     if (poll) newPost.poll = { ...poll, createdAt: Date.now() };
     await dispatch(addPost(newPost));
-    setPost({
-      text: "",
-      audience: "everyone",
-      repliersType: "everyone",
-    } as NewPost);
+    // setPost({
+    //   text: "",
+    //   audience: "everyone",
+    //   repliersType: "everyone",
+    // } as NewPost);
+    dispatch(
+      setNewPost({
+        text: "",
+        audience: "everyone",
+        repliersType: "everyone",
+      } as NewPost)
+    );
     setIsPickerShown(false);
   };
 
@@ -123,18 +132,11 @@ export const PostEdit: React.FC<PostEditProps> = ({
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
 
-        <main
-          className={
-            "main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")
-          }
-        >
+        <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
           {isPickerShown && (
-            <BtnToggleAudience
-              postSettings={postSettings}
-              setPostSettings={setPostSettings}
-            />
+            <BtnToggleAudience postSettings={postSettings} setPostSettings={setPostSettings} />
           )}
-          {post.schedule && <PostDateTitle date={post.schedule} />}
+          {newPost.schedule && <PostDateTitle date={newPost.schedule} isLink={true} />}
           <textarea
             className={
               "post-edit-text-area" +
@@ -142,30 +144,21 @@ export const PostEdit: React.FC<PostEditProps> = ({
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
             placeholder={poll ? "Ask a question..." : "What's happening?"}
-            value={post.text}
+            value={newPost.text}
             onChange={handleTextChange}
             ref={textAreaRef}
           />
-          {imgUrls.length > 0 && (
-            <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />
-          )}
+          {imgUrls.length > 0 && <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />}
 
           {gifUrl && <Gif gifUrl={gifUrl} setGifUrl={setGifUrl} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
           {isPickerShown && (
-            <BtnToggleRepliers
-              postSettings={postSettings}
-              setPostSettings={setPostSettings}
-            />
+            <BtnToggleRepliers postSettings={postSettings} setPostSettings={setPostSettings} />
           )}
 
-          <div
-            className={"btns-container" + (isPickerShown ? " border-show" : "")}
-          >
+          <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
             <PostEditActionBtns
-              post={post}
-              setPost={setPost}
               imgUrls={imgUrls}
               setImgUrls={setImgUrls}
               gifUrl={gifUrl}
@@ -175,9 +168,9 @@ export const PostEdit: React.FC<PostEditProps> = ({
               setPoll={setPoll}
             />
             <div className="secondary-action-container">
-              {post.text.length > 0 && (
+              {newPost.text.length > 0 && (
                 <div className="indicator-thread-btn-container">
-                  <TextIndicator textLength={post.text.length} />
+                  <TextIndicator textLength={newPost.text.length} />
                   <hr className="vertical" />
                   <button className="btn-add-thread">
                     <AiOutlinePlus className="btn-add-thread-icon" />
@@ -186,7 +179,7 @@ export const PostEdit: React.FC<PostEditProps> = ({
               )}
               <BtnCreatePost
                 isLinkToNestedPage={false}
-                isValid={0 < post.text.length && post.text.length <= 247}
+                isValid={0 < newPost.text.length && newPost.text.length <= 247}
                 onAddPost={onAddPost}
               />
             </div>

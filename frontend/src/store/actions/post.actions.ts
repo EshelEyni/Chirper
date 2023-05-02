@@ -59,7 +59,6 @@ export function addPost(
   };
 }
 
-
 export function updatePost(
   post: Post
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -69,6 +68,18 @@ export function updatePost(
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
       console.log("PostActions: err in updatePost", err);
+    }
+  };
+}
+
+export function setNewPost(
+  post: NewPost
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "SET_NEW_POST", post });
+    } catch (err) {
+      console.log("PostActions: err in setNewPost", err);
     }
   };
 }

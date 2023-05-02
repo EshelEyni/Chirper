@@ -8,10 +8,7 @@ interface PollLengthInputsProps {
   setPoll: Dispatch<SetStateAction<Poll | null>>;
 }
 
-export const PollLengthInputs: FC<PollLengthInputsProps> = ({
-  poll,
-  setPoll,
-}) => {
+export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) => {
   const handleValueChange = (inputType: string, value: number | string) => {
     setPoll((prevPoll) => {
       if (prevPoll) {
@@ -53,14 +50,7 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({
     });
   }, [poll.length.days]);
 
-  const {
-    inputs,
-    setInputs,
-    onFocused,
-    onBlurred,
-    onToggleDropdown,
-    onSelected,
-  } = useCustomSelect(
+  const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(
     [
       {
         label: "Days",

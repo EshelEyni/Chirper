@@ -46,7 +46,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     >
       <div className="custom-select">
         <div className="custom-select-data-text">
-          <span className="custom-select-label">{`${input.label}:`}</span>
+          <span className="custom-select-label">{`${input.label}`}</span>
           <span className="custom-select-value">{input.value}</span>
         </div>
         <IoChevronDownSharp className="custom-select-icon" />

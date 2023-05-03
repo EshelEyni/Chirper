@@ -9,52 +9,14 @@
 @import "basics/layout";
 @import "basics/base";
 
-// Pages
-@import "pages/home";
-@import "pages/compose";
-
-// Components
-@import "components/side-bar";
-@import "components/nav-list";
-@import "components/logo";
-@import "components/btn-create-post";
-@import "components/user-preview";
-@import "components/text-indicator";
-@import "components/user-msg";
-@import "components/user-img";
-@import "components/custom-select";
-
-// Buttons
-@import "components/btn-create-post";
-@import "components/btn-close";
-
-// Post Components
-@import "components/post-edit";
-@import "components/post-preview";
-@import "components/post-preview-action-btns";
-@import "components/post-edit-action-btns";
-@import "components/post-edit-img";
-@import "components/poll-edit";
-@import "components/post-schedule";
-@import "components/post-location";
-@import "components/post-date-title";
-
-// Gif Components
-@import "components/gif-picker-modal";
-@import "components/gif-search-bar";
-@import "components/gif-category-list";
-@import "components/gif-list";
-@import "components/gif";
-
-// Poll Components
-@import "components/poll-edit";
-@import "components/poll-choice-input";
-@import "components/poll-length-input";
-
-// Modals
-@import "components/side-bar-options-modal";
-@import "components/picker-modal";
-
-// Loaders
-@import "components/page-loader";
-@import "components/content-loader";
+@import "pages/index";
+@import "components/user/index";
+@import "components/side-bar/index";
+@import "components/post/index";
+@import "components/poll/index";
+@import "components/other/index";
+@import "components/modal/index";
+@import "components/location/index";
+@import "components/loader/index";
+@import "components/gif/index";
+@import "components/btn/index";

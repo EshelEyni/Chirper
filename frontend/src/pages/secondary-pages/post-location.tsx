@@ -2,17 +2,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
 import { useNavigate } from "react-router-dom";
-import { useState, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { BtnClose } from "../../components/btns/btn-close";
 import { setNewPost } from "../../store/actions/post.actions";
-import { LocationSearch } from "../../components/other/location-search-bar";
+import { storageService } from "../../services/storage.service";
+import { Location } from "../../../../shared/interfaces/location.interface";
+import { LocationSearchBar } from "../../components/location/location-search-bar";
+import { LocationList } from "../../components/location/location-list";
+import { ContentLoader } from "../../components/loaders/content-loader";
 
 export const PostLocation = () => {
   const { newPost } = useSelector((state: RootState) => state.postModule);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [location, setLocation] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [locations, setLocations] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
 
   const onGoBack = () => {
     navigate("");
@@ -20,13 +29,21 @@ export const PostLocation = () => {
 
   const onConfirmLocation = () => {
     navigate("");
-    dispatch(setNewPost({ ...newPost, location }));
+    if (!selectedLocation) return;
+    dispatch(setNewPost({ ...newPost, location: selectedLocation }));
   };
 
   const onClearLocation = () => {
     navigate("");
     const { location, ...postWithOutLocation } = newPost;
     dispatch(setNewPost(postWithOutLocation));
+  };
+
+  const fetchLocations = async () => {
+    // const locations = await locationService.getUserDefaultLocations();
+    const locations = storageService.get("locations");
+    setLocations(locations);
+    setSelectedLocation(locations[0]);
   };
 
   return (
@@ -43,7 +60,7 @@ export const PostLocation = () => {
           <div className="post-location-header-btns-container">
             {newPost.location && (
               <button className="btn-clear-location" onClick={onClearLocation}>
-                <span>Clear</span>
+                <span>Remove</span>
               </button>
             )}
             <button className={"btn-confirm-location"} onClick={onConfirmLocation}>
@@ -51,8 +68,18 @@ export const PostLocation = () => {
             </button>
           </div>
         </header>
-        <main className="post-location-main-container"></main>
-        <LocationSearch/>
+        <LocationSearchBar setLocations={setLocations} fetchLocations={fetchLocations} />
+        <main className="post-location-main-container">
+          {locations.length === 0 ? (
+            <ContentLoader />
+          ) : (
+            <LocationList
+              locations={locations}
+              selectedLocation={selectedLocation}
+              setSelectedLocation={setSelectedLocation}
+            />
+          )}
+        </main>
       </section>
     </Fragment>
   );

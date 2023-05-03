@@ -10,6 +10,7 @@ const demoUser: User = {
     "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
   isAdmin: false,
   isVerified: true,
+  isApprovedLocation: true,
   createdAt: 1620000000000,
 };
 

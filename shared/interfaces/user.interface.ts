@@ -6,6 +6,7 @@ export interface User {
   imgUrl: string;
   isAdmin: boolean;
   isVerified: boolean;
+  isApprovedLocation: boolean;
   createdAt: number;
 }
 

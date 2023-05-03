@@ -1,4 +1,4 @@
-import { Post } from "../../types/post.interface";
+import { Post } from "../../../../shared/interfaces/post.interface";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";

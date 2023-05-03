@@ -92,3 +92,10 @@ input {
   height: 100%;
   width: 0;
 }
+
+.check-icon {
+  width: rem(20px);
+  height: rem(20px);
+  color: var(--color-primary);
+  fill: var(--color-primary);
+}

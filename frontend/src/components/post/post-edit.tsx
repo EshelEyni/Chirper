@@ -10,7 +10,7 @@ import { NewPost, Poll } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import { addPost, setNewPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img-container";
-import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif as GifType } from "../../../../shared/interfaces/gif.interface";
 import { Gif } from "../gif/gif";
 import { BtnClose } from "../btns/btn-close";
 import { UserImg } from "../user/user-img";
@@ -18,6 +18,8 @@ import { BtnToggleAudience } from "../btns/btn-toggle-audience";
 import { BtnToggleRepliers } from "../btns/btn-toggle-repliers";
 import { PollEdit } from "../poll/poll-edit";
 import { PostDateTitle } from "../other/post-date-title";
+import { IoLocationSharp } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -41,6 +43,7 @@ export interface postSettings {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPost } = useSelector((state: RootState) => state.postModule);
@@ -50,7 +53,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   //   repliersType: "everyone",
   // } as NewPost);
   const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>([]);
-  const [gifUrl, setGifUrl] = useState<GifUrl | null>(null);
+  const [gifUrl, setGifUrl] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
 
@@ -125,6 +128,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     }
   };
 
+  const onGoToLocationPage = () => {
+    if (!isPickerShown) return;
+      navigate("post-location")
+  };
+
+
   return (
     <section className="post-edit" onClick={openPicker}>
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
@@ -136,7 +145,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {isPickerShown && (
             <BtnToggleAudience postSettings={postSettings} setPostSettings={setPostSettings} />
           )}
-          {newPost.schedule && <PostDateTitle date={newPost.schedule} isLink={true} />}
+          {newPost.schedule && <PostDateTitle date={newPost.schedule} isLink={isPickerShown} />}
           <textarea
             className={
               "post-edit-text-area" +
@@ -153,10 +162,16 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {gifUrl && <Gif gifUrl={gifUrl} setGifUrl={setGifUrl} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
-          {isPickerShown && (
-            <BtnToggleRepliers postSettings={postSettings} setPostSettings={setPostSettings} />
-          )}
-
+          <div className="btn-replires-location-container">
+            {isPickerShown && (
+              <BtnToggleRepliers postSettings={postSettings} setPostSettings={setPostSettings} />
+            )}
+            {newPost.location && (
+              <div className="post-edit-location-title" onClick={onGoToLocationPage}>
+                <IoLocationSharp /> {newPost.location.name}
+              </div>
+            )}
+          </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
             <PostEditActionBtns
               imgUrls={imgUrls}

@@ -1,24 +1,20 @@
 import { useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
-import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
 import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifListProps {
   gifs: Gif[];
-  setGifUrl: (url: GifUrl | null) => void;
+  setGifUrl: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifList: React.FC<GifListProps> = ({
-  gifs,
-  setGifUrl,
-  onToggleElementVisibility,
-}) => {
+export const GifList: React.FC<GifListProps> = ({ gifs, setGifUrl, onToggleElementVisibility }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
-    setGifUrl({ url: gif.gif, staticUrl: gif.img });
+    setGifUrl({ url: gif.url, staticUrl: gif.staticUrl });
     onToggleElementVisibility("gifPicker");
   };
 
@@ -54,16 +50,8 @@ export const GifList: React.FC<GifListProps> = ({
         {gifs.length > 0 &&
           gifs.map((gif, idx) => {
             return (
-              <div
-                className="gif-list-item"
-                key={idx}
-                onClick={() => handleGifClick(gif)}
-              >
-                <img
-                  src={isPlaying ? gif.gif : gif.img}
-                  alt="gif"
-                  loading="lazy"
-                />
+              <div className="gif-list-item" key={idx} onClick={() => handleGifClick(gif)}>
+                <img src={isPlaying ? gif.url : gif.staticUrl} alt="gif" loading="lazy" />
               </div>
             );
           })}

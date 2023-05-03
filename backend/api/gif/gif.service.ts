@@ -57,9 +57,7 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
     ];
     const categorySet = new Set(categories);
     if (categorySet.has(searchTerm)) {
-      const gifCollection = await getCollection("gif");
-      const gifsFromDb = await gifCollection.find({ category: searchTerm }).toArray();
-      return gifsFromDb as unknown as Gif[];
+      return _getGifFromDb(searchTerm);
     }
 
     // gettting gifs from giphy
@@ -78,13 +76,11 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
 
     const Fetchedgifs = [...Fetchedgifs_1, ...Fetchedgifs_2];
 
-    let gifs = Fetchedgifs.map((gif, idx) => {
+    const gifs = Fetchedgifs.map((gif, idx) => {
       return {
         _id: gif.id.toString(),
-        category: searchTerm,
-        sortOrder: idx,
-        gif: gif.images.original.url,
-        img: gif.images.original_still.url,
+        url: gif.images.original.url,
+        staticUrl: gif.images.original_still.url,
       };
     });
 
@@ -107,9 +103,24 @@ async function getGifCategories(): Promise<GifCategory> {
 }
 
 async function getGifByCategory(category: string): Promise<Gif[]> {
+  return _getGifFromDb(category);
+}
+
+async function _getGifFromDb(category: string): Promise<Gif[]> {
   try {
     const gifCollection = await getCollection("gif");
-    let gifs = await gifCollection.find({ category }).toArray();
+    const gifs = await gifCollection
+      .find(
+        { category },
+        {
+          projection: {
+            url: 1,
+            staticUrl: 1,
+          },
+        }
+      )
+      .sort({ sortOrder: 1 })
+      .toArray();
     return gifs as unknown as Gif[];
   } catch (err) {
     logger.error(`cannot get gif`, err as Error);

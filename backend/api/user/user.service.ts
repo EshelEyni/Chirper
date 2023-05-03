@@ -88,6 +88,7 @@ async function add(user: User): Promise<User> {
       fullname: user.fullname,
       isAdmin: false,
       isVerified: false,
+      isApprovedLocation: false,
       imgUrl:
         "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
       createdAt: Date.now(),

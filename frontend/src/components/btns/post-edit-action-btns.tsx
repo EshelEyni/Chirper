@@ -2,25 +2,25 @@ import { FiImage, FiList } from "react-icons/fi";
 import { RiFileGifLine } from "react-icons/ri";
 import { CiCalendarDate } from "react-icons/ci";
 import { BsEmojiSmile } from "react-icons/bs";
-import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState, useRef } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
-import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { Poll, Emoji } from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store/store";
 import { setNewPost } from "../../store/actions/post.actions";
+import { IoLocationSharp } from "react-icons/io5";
 
 interface PostEditActionBtnsProps {
   imgUrls: { url: string; isLoading: boolean }[];
   setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
-  gifUrl: GifUrl | null;
-  setGifUrl: (url: GifUrl | null) => void;
+  gifUrl: Gif | null;
+  setGifUrl: (url: Gif | null) => void;
   isPickerShown: boolean;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
@@ -43,6 +43,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
   const { newPost } = useSelector((state: RootState) => state.postModule);
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const [elementVisibility, setElementVisibility] = useState<ElementVisibility>({
     gifPicker: false,
@@ -117,8 +118,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     },
     {
       name: "location",
-      icon: <HiOutlineLocationMarker />,
-      isDisabled: false,
+      icon: <IoLocationSharp />,
+      isDisabled: !loggedinUser?.isApprovedLocation,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostLocation();
@@ -189,6 +190,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   };
 
   const onOpenPostLocation = () => {
+    if (!loggedinUser?.isApprovedLocation) {
+      const msg = "Please set your location in your profile first.";
+      dispatch(setUserMsg(msg));
+      return;
+    }
     if (!isPickerShown) return;
     navigate("/post-location");
   };
@@ -206,13 +212,13 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                   if (fileRef.current && !btn.isDisabled && isPickerShown) fileRef.current.click();
                 }}
               >
-                <label
+                <div
                   className="post-edit-action-icon-container"
-                  style={{ pointerEvents: isPickerShown ? "all" : "none" }}
-                  htmlFor={btn.name}
+                  // style={{ pointerEvents: isPickerShown ? "all" : "none" }}
+                  // htmlFor={btn.name}
                 >
                   {btn.icon}
-                </label>
+                </div>
                 <input
                   type={btn.type}
                   multiple={isMultiple}

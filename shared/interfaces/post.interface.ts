@@ -1,13 +1,14 @@
-import { GifUrl } from "./gif.interface";
+import { Gif } from "./gif.interface";
+import { Location } from "./location.interface";
 
 export interface NewPost {
   text: string;
   imgUrls?: string[];
   videoUrl?: string;
-  gifUrl?: GifUrl;
+  gifUrl?: Gif;
   poll?: Poll;
   schedule?: Date;
-  location?: string;
+  location?: Location;
   audience: string;
   repliersType: string;
   isPublic: boolean;

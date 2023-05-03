@@ -5,6 +5,7 @@ let config: {
   dbURL: any;
   sessionKey: any;
   giphyApiKey: any;
+  googleApiKey: any;
   note?: string;
 };
 

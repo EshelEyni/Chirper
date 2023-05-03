@@ -8,7 +8,7 @@
   z-index: 500;
   background-color: white;
   border-radius: 15px;
-  height: rem(425px);
+  height: fit-content;
   width: rem(600px);
 
   .post-location-header {
@@ -85,11 +85,8 @@
   }
 
   .post-location-main-container {
-    padding: 0 rem(16px);
     display: flex;
     flex-direction: column;
-    gap: rem(15px);
-    border-bottom: 1px solid var(--color-secondary-border);
     flex: 1;
   }
 }

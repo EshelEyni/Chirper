@@ -1,0 +1,22 @@
+.location-list {
+  display: flex;
+  flex-direction: column;
+
+  .location-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem(10px) rem(20px);
+    height: rem(45px);
+    width: 100%;
+
+    .location-name {
+      font-size: rem(15px);
+      font-weight: 700;
+    }
+
+    &:hover {
+      background-color: var(--color-hover-light);
+    }
+  }
+}

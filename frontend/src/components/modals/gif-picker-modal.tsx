@@ -4,14 +4,14 @@ import { postService } from "../../services/post.service";
 import { GifCategoryList } from "../gif/gif-category-list";
 import { GifList } from "../gif/gif-list";
 import { IoArrowBackSharp } from "react-icons/io5";
-import { Gif, GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { GifSearchBar } from "../gif/gif-search-bar";
 import { ContentLoader } from "../loaders/content-loader";
 import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifPickerProps {
-  gifUrl: GifUrl | null;
-  setGifUrl: (url: GifUrl | null) => void;
+  gifUrl: Gif | null;
+  setGifUrl: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 

@@ -6,14 +6,7 @@ export interface GifCategory {
 }
 
 export interface Gif {
-  _id: string;
-  category?: string;
-  sortOrder: number;
-  gif: string;
-  img: string;
-}
-
-export interface GifUrl {
+  _id?: string;
   url: string;
   staticUrl: string;
 }

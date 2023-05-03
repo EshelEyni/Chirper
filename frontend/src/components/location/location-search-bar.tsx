@@ -1,43 +1,82 @@
 import React, { useState, useEffect, useRef } from "react";
 import { utilService } from "../../services/util.service/utils.service";
 import { locationService } from "../../services/location.service";
-import { storageService } from "../../services/storage.service";
 import { FC } from "react";
 import { Location } from "../../../../shared/interfaces/location.interface";
+import { SlMagnifier } from "react-icons/sl";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 interface locationSearchBarProps {
   setLocations: React.Dispatch<React.SetStateAction<Location[]>>;
   fetchLocations: () => Promise<void>;
+  isNoResults: boolean;
+  setisNoResults: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const LocationSearchBar: FC<locationSearchBarProps> = ({ setLocations, fetchLocations }) => {
+export const LocationSearchBar: FC<locationSearchBarProps> = ({
+  setLocations,
+  fetchLocations,
+  isNoResults,
+  setisNoResults,
+  isLoading,
+  setIsLoading,
+}) => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isSearchBarFocused, setIsSearchBarFocused] = useState<boolean>(false);
+  const SearchBarInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchLocations();
-
     return () => {
       setLocations([]);
     };
   }, []);
 
-  const handleInputChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if (isNoResults) setisNoResults(false);
     const { value } = ev.target;
-
+    setSearchTerm(value);
     if (!value) {
       fetchLocations();
       return;
     }
-
+    setIsLoading(true);
     const locations = await locationService.getLocationBySearchTerm(value);
-    setLocations(locations);
+    setIsLoading(false);
+    if (locations.length === 0) {
+      setisNoResults(true);
+    } else {
+      setLocations(locations);
+    }
+  };
+
+  const onClearSearch = () => {
+    setSearchTerm("");
+    fetchLocations();
+    SearchBarInputRef.current!.value = "";
   };
 
   return (
-    <div>
+    <div className={"location-search-bar" + (isSearchBarFocused ? " focused" : "")}>
+      <label className="magnifing-glass-icon-label" htmlFor="search-bar-input">
+        <SlMagnifier className="magnifing-glass-icon" />
+      </label>
       <input
+        id="search-bar-input"
+        className="location-search-bar-input"
         type="text"
-        onChange={utilService.debounce(handleInputChange, 2000)}
-        placeholder="Search for a location"
+        placeholder="Search locations"
+        onChange={utilService.debounce(handleChange, 1000)}
+        onFocus={() => setIsSearchBarFocused(true)}
+        onBlur={() => setIsSearchBarFocused(false)}
+        ref={SearchBarInputRef}
       />
+
+      {searchTerm && (
+        <AiFillCloseCircle className="close-icon" onMouseDown={() => onClearSearch()} />
+      )}
     </div>
   );
 };

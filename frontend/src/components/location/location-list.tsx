@@ -1,6 +1,11 @@
 import { FC, useState } from "react";
 import { Location } from "../../../../shared/interfaces/location.interface";
 import { AiOutlineCheck } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { AppDispatch } from "../../store/types";
+import { setNewPost } from "../../store/actions/post.actions";
 
 interface LocationListProps {
   locations: Location[];
@@ -13,8 +18,14 @@ export const LocationList: FC<LocationListProps> = ({
   selectedLocation,
   setSelectedLocation,
 }) => {
+  const { newPost } = useSelector((state: RootState) => state.postModule);
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+
   const onClickLocation = (location: Location) => {
     setSelectedLocation(location);
+    dispatch(setNewPost({ ...newPost, location }));
+    navigate("");
   };
   return (
     <ul className="location-list">

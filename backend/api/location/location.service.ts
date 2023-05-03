@@ -1,12 +1,12 @@
 import config from "../../config";
-import { location } from "../../../shared/interfaces/location.interface";
+import { Location } from "../../../shared/interfaces/location.interface";
 
 const googleMapsClient = require("@google/maps").createClient({
   key: config.googleApiKey,
   Promise: Promise,
 });
 
-async function getUserSurroundingLocations(lat: number, lng: number): Promise<location[]> {
+async function getUserSurroundingLocations(lat: number, lng: number): Promise<Location[]> {
   try {
     const currLoaction = await _getCurrUserLocation(lat, lng);
     const response = await googleMapsClient
@@ -40,7 +40,7 @@ async function getUserSurroundingLocations(lat: number, lng: number): Promise<lo
   }
 }
 
-async function _getCurrUserLocation(lat: number, lng: number): Promise<location> {
+async function _getCurrUserLocation(lat: number, lng: number): Promise<Location> {
   const response = await googleMapsClient
     .reverseGeocode({
       latlng: { lat, lng },
@@ -66,7 +66,7 @@ async function _getCurrUserLocation(lat: number, lng: number): Promise<location>
   return location;
 }
 
-async function getLocationBySearchTerm(searchTerm: string): Promise<location[]> {
+async function getLocationBySearchTerm(searchTerm: string): Promise<Location[]> {
   try {
     const response = await googleMapsClient
       .placesAutoComplete({

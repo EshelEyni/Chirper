@@ -18,6 +18,8 @@ export const PostLocation = () => {
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isNoResults, setisNoResults] = useState<boolean>(false);
 
   useEffect(() => {
     fetchLocations();
@@ -42,8 +44,20 @@ export const PostLocation = () => {
   const fetchLocations = async () => {
     // const locations = await locationService.getUserDefaultLocations();
     const locations = storageService.get("locations");
-    setLocations(locations);
-    setSelectedLocation(locations[0]);
+    if (newPost.location) {
+      const isLocationExist = locations.find((location: Location) => {
+        return location.placeId === newPost?.location?.placeId;
+      });
+      if (!isLocationExist) {
+        locations.unshift(newPost.location);
+      }
+      setLocations(locations);
+      setSelectedLocation(newPost.location);
+    } else {
+      setLocations(locations);
+      setSelectedLocation(locations[0]);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -68,16 +82,28 @@ export const PostLocation = () => {
             </button>
           </div>
         </header>
-        <LocationSearchBar setLocations={setLocations} fetchLocations={fetchLocations} />
+        <LocationSearchBar
+          setLocations={setLocations}
+          fetchLocations={fetchLocations}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          isNoResults={isNoResults}
+          setisNoResults={setisNoResults}
+        />
         <main className="post-location-main-container">
-          {locations.length === 0 ? (
-            <ContentLoader />
-          ) : (
+          {isLoading && <ContentLoader />}
+          {!isLoading && !isNoResults && (
             <LocationList
               locations={locations}
               selectedLocation={selectedLocation}
               setSelectedLocation={setSelectedLocation}
             />
+          )}
+
+          {isNoResults && (
+            <div className="no-result-msg">
+              <p>No places were found</p>
+            </div>
           )}
         </main>
       </section>

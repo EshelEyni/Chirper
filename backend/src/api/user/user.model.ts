@@ -11,4 +11,4 @@ const userSchema = new Schema({
   createdAt: { type: Number, required: true, default: Date.now },
 });
 
-export const UserModel = model("User", userSchema);
+module.exports = model("User", userSchema);

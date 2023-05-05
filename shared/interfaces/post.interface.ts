@@ -15,7 +15,8 @@ export interface NewPost {
   audience: string;
   repliersType: string;
   isPublic: boolean;
-  user: {
+  userId?: string;
+  user?: {
     _id: string;
     username: string;
     fullname: string;

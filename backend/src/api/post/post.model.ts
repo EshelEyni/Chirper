@@ -1,11 +1,8 @@
-import { PostDocument } from "../../../../shared/interfaces/post.interface";
-import { CustomQuery } from "../../../../shared/interfaces/system.interface";
-// import { logger } from "../../services/logger.service.js";
-
-import { Document } from "mongoose";
-const { logger } = require("../../services/logger.service");
+import { Post, PostDocument } from "../../../../shared/interfaces/post.interface";
+import { Document, Query, DocumentSetOptions } from "mongoose";
 
 const mongoose = require("mongoose");
+const { logger } = require("../../services/logger.service");
 
 const pollSchema = new mongoose.Schema({
   choices: [String],
@@ -76,41 +73,26 @@ const postSchema = new mongoose.Schema({
   location: locationSchema,
 });
 
-// function validateContent(post: Document) {
-//   return (
-//     post.get("text") ||
-//     post.get("gifUrl") ||
-//     (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
-//     post.get("poll")
-//   );
-// }
+function validateContent(post: Document) {
+  return (
+    post.get("text") ||
+    post.get("gifUrl") ||
+    (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
+    post.get("poll")
+  );
+}
 
-// postSchema.pre("save", function (next) {
-//   if (!validateContent(this)) {
-//     next(new Error("At least one of text, gifUrl, imgUrls, or poll is required"));
-//   } else {
-//     next();
-//   }
-// });
+postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
+  if (!validateContent(this)) {
+    next(new Error("At least one of text, gifUrl, imgUrls, or poll is required"));
+  } else {
+    next();
+  }
+});
 
-// async function addUserToPost(post: PostDocument): Promise<PostDocument> {
-//   const user = await UserModel.findById(post.userId);
-//   if (user) {
-//     post.set("user", user.toObject());
-//     post.set("userId", undefined);
-//   }
-//   return post;
-// }
-
-// postSchema.pre(/^find/, function (this: CustomQuery<PostDocument>, next) {
-//   this.find({ isPublic: true });
-//   this.start = Date.now();
-//   next();
-// });
-
-// postSchema.post(/^find/, async function (this: CustomQuery<PostDocument>, docs) {
-//   const msg = `Query took ${Date.now() - this.start} milliseconds!`;
-//   logger.info(msg);
-// });
+postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
+  this.find({ isPublic: true });
+  next();
+});
 
 module.exports = mongoose.model("Post", postSchema);

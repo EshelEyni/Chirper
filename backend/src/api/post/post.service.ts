@@ -1,14 +1,19 @@
-import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, PostDocument } from "../../../../shared/interfaces/post.interface";
 import { ObjectId } from "mongodb";
 import { QueryString } from "../../services/util.service.js";
 
 const { getCollection } = require("../../services/db.service");
 const { logger } = require("../../services/logger.service");
 const PostModel = require("./post.model");
+const UserModel = require("../user/user.model");
 const { APIFeatures } = require("../../services/util.service");
+const { getMiniUser } = require("../../services/util.service");
 
 // import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
 // import { asyncLocalStorage } from "../../services/als.service.js";
+interface PostWithUser extends PostDocument {
+  user: any;
+}
 
 const collectionName = "posts";
 
@@ -16,10 +21,20 @@ async function query(queryString: QueryString): Promise<Post[]> {
   try {
     const features = new APIFeatures(PostModel.find(), queryString).filter().sort().limitFields().paginate();
 
-    // const posts = await features.getQuery();
-    const posts = await PostModel.find();
-    console.log("posts", posts);
-    return posts as unknown as Post[];
+    let postDocs = await PostModel.find();
+    let posts = postDocs.map((postDoc: PostDocument) => postDoc.toObject());
+    
+    const postsWithUser: PostWithUser[] = [];
+
+    for (const post of posts) {
+      const user = await UserModel.findById(post.userId);
+      if (!user) throw new Error("user not found");
+      const miniUser = getMiniUser(user.toObject());
+      const postWithUser = { ...post, user: miniUser };
+      postsWithUser.push(postWithUser);
+    }
+
+    return postsWithUser as unknown as Post[];
   } catch (err) {
     logger.error("cannot find posts", err as Error);
     throw err;

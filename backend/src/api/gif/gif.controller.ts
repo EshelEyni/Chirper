@@ -1,8 +1,8 @@
-import { logger } from "../../services/logger.service.js";
-import { gifService } from "./gif.service.js";
+const { logger } = require("../../services/logger.service");
+const gifService = require("./gif.service");
 import { Request, Response } from "express";
 
-export async function getGifsBySearchTerm(req: Request, res: Response): Promise<void> {
+async function getGifsBySearchTerm(req: Request, res: Response): Promise<void> {
   try {
     const searchTerm = req.query.searchTerm as string;
     if (!searchTerm) {
@@ -33,7 +33,7 @@ export async function getGifsBySearchTerm(req: Request, res: Response): Promise<
   }
 }
 
-export async function getGifCategories(req: Request, res: Response): Promise<void> {
+async function getGifCategories(req: Request, res: Response): Promise<void> {
   try {
     const gifHeaders = await gifService.getGifCategories();
 
@@ -53,7 +53,7 @@ export async function getGifCategories(req: Request, res: Response): Promise<voi
   }
 }
 
-export async function getGifByCategory(req: Request, res: Response): Promise<void> {
+async function getGifByCategory(req: Request, res: Response): Promise<void> {
   try {
     const { category } = req.params;
 
@@ -83,3 +83,9 @@ export async function getGifByCategory(req: Request, res: Response): Promise<voi
     });
   }
 }
+
+module.exports = {
+  getGifsBySearchTerm,
+  getGifCategories,
+  getGifByCategory,
+};

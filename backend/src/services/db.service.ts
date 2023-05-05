@@ -1,13 +1,14 @@
-import { Collection, Db, MongoClient } from "mongodb";
-import { logger } from "./logger.service.js";
-import config from "../config/index.js";
+import { Collection, Db } from "mongodb";
+const { MongoClient } = require("mongodb");
+const { logger } = require("./logger.service");
+const config = require("../config");
 
 // Database Name
 const dbName = "chirper_db";
 
 let dbConn: Db | null = null;
 
-export async function getCollection(collectionName: string): Promise<Collection> {
+async function getCollection(collectionName: string): Promise<Collection> {
   try {
     const db = await connect();
     const collection = await db.collection(collectionName);
@@ -30,3 +31,7 @@ async function connect() {
     throw err;
   }
 }
+
+module.exports = {
+  getCollection,
+};

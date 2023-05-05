@@ -1,15 +1,10 @@
-import { Router } from "express";
-import { log } from "../../middlewares/logger.middleware.js";
-import {
-  getGifsBySearchTerm,
-  getGifCategories,
-  getGifByCategory,
-} from "./gif.controller.js";
-
-const router = Router();
+const express = require("express");
+const { log } = require("../../middlewares/logger.middleware");
+const { getGifsBySearchTerm, getGifCategories, getGifByCategory } = require("./gif.controller");
+const router = express.Router();
 
 router.get("/search", log, getGifsBySearchTerm);
 router.get("/categories", log, getGifCategories);
 router.get("/category/:category", log, getGifByCategory);
 
-export default router;
+module.exports = router;

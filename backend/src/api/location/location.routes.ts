@@ -1,17 +1,12 @@
-import { Router } from "express";
-import {
-  requireAuth,
-  requireAdmin,
-} from "../../middlewares/requireAuth.middleware.js";
-import { log } from "../../middlewares/logger.middleware.js";
-import {
-  getUserDefaultLocation,
-  getLocationBySearchTerm
-} from "./location.controller.js";
+// import { Router } from "express";
+const express = require("express");
+const { log } = require("../../middlewares/logger.middleware");
+const { getUserDefaultLocation, getLocationBySearchTerm } = require("./location.controller");
+// import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware.js";
 
-const router = Router();
+const router = express.Router();
 
 router.get("/", log, getUserDefaultLocation);
 router.get("/search", log, getLocationBySearchTerm);
 
-export default router;
+module.exports = router;

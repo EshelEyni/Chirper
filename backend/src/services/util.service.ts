@@ -9,7 +9,7 @@ export interface QueryString {
   fields?: string;
 }
 
-export class APIFeatures<T> {
+class APIFeatures<T> {
   private query: Query<T[], T>;
   private queryString: QueryString;
 
@@ -68,7 +68,12 @@ export class APIFeatures<T> {
   }
 }
 
-export function getMiniUser(user: User): MiniUser {
+function getMiniUser(user: User): MiniUser {
   const { _id, username, fullname, imgUrl } = user;
   return { _id, username, fullname, imgUrl };
 }
+
+module.exports = {
+  APIFeatures,
+  getMiniUser,
+};

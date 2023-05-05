@@ -1,6 +1,7 @@
-import config from "../../config/index.js";
+const config = require("../../config");
+const { createClient } = require("@google/maps");
+
 import { Location } from "../../../../shared/interfaces/location.interface";
-import { createClient } from "@google/maps";
 
 const googleMapsClient = createClient({
   key: config.googleApiKey,

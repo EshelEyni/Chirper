@@ -1,7 +1,10 @@
-import { logger } from "./services/logger.service.js";
-import app from "./app.js";
+// import { logger } from "./services/logger.service.js";
+const { logger } = require("./services/logger.service");
+
+const app = require("./app");
+const config = require("./config");
+
 import mongoose from "mongoose";
-import config from "./config/index.js";
 
 const DB = config.dbURL;
 
@@ -13,7 +16,6 @@ mongoose
   .catch((error) => {
     logger.error("Failed to connect to MongoDB:", error);
   });
-
 
 const port = process.env.PORT || 3030;
 

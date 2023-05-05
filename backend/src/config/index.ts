@@ -1,6 +1,5 @@
-import devConfig from "./dev.js";
-import prodConfig from "./prod.js";
-
+const devConfig = require("./dev");
+const prodConfig = require("./prod");
 let config: {
   dbURL: any;
   sessionKey: any;
@@ -18,4 +17,4 @@ if (process.env.NODE_ENV === "production") {
   config = devConfig;
 }
 
-export default config;
+module.exports = config;

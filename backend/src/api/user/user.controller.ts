@@ -1,10 +1,10 @@
-import { userService } from "./user.service.js";
-import { logger } from "../../services/logger.service.js";
+const { userService } = require("./user.service");
+const { logger } = require("../../services/logger.service");
 // import { socketService } from '../../services/socket.service.js'
 import { authService } from "../auth/auth.service.js";
 import { Request, Response } from "express";
 
-export async function getUser(req: Request, res: Response) {
+async function getUser(req: Request, res: Response) {
   try {
     const user = await userService.getById(req.params.id);
     // TODO: remove password from user
@@ -17,7 +17,7 @@ export async function getUser(req: Request, res: Response) {
   }
 }
 
-export async function getUsers(req: Request, res: Response) {
+async function getUsers(req: Request, res: Response) {
   try {
     const users = await userService.query();
     res.send(users);
@@ -27,13 +27,13 @@ export async function getUsers(req: Request, res: Response) {
   }
 }
 
-export async function addUser(req: Request, res: Response) {
+async function addUser(req: Request, res: Response) {
   const currUser = req.body;
   const user = await userService.add(currUser);
   res.send(user);
 }
 
-export async function deleteUser(req: Request, res: Response) {
+async function deleteUser(req: Request, res: Response) {
   try {
     await userService.remove(req.params.id);
     res.send({ msg: "Deleted successfully" });
@@ -43,7 +43,7 @@ export async function deleteUser(req: Request, res: Response) {
   }
 }
 
-export async function updateUser(req: Request, res: Response) {
+async function updateUser(req: Request, res: Response) {
   try {
     const userToUpdate = req.body;
     const updatedUser = await userService.update(userToUpdate);
@@ -53,3 +53,11 @@ export async function updateUser(req: Request, res: Response) {
     res.status(500).send({ err: "Failed to update user" });
   }
 }
+
+module.exports = {
+  getUser,
+  getUsers,
+  deleteUser,
+  updateUser,
+  addUser,
+};

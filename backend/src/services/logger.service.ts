@@ -1,7 +1,7 @@
-import fs from "fs";
-import { asyncLocalStorage } from "./als.service.js";
+const fs = require("fs");
+const { asyncLocalStorage } = require("./als.service");
 import { User } from "../../../shared/interfaces/user.interface";
-import ansiColors from "ansi-colors";
+const ansiColors = require("ansi-colors");
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) {
@@ -41,7 +41,7 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
       break;
   }
   console.log(line);
-  fs.appendFile("./logs/backend.log", line, (err) => {
+  fs.appendFile("./logs/backend.log", line, (err: any) => {
     if (err) console.log(ansiColors.red("FATAL: cannot write to log file"));
   });
 }
@@ -63,9 +63,11 @@ function error(...args: Array<string | Error>) {
   doLog("ERROR", ...args);
 }
 
-export const logger = {
-  debug,
-  info,
-  warn,
-  error,
+module.exports = {
+  logger: {
+    debug,
+    info,
+    warn,
+    error,
+  },
 };

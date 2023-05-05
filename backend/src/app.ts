@@ -1,15 +1,10 @@
-import path from "path";
-import { fileURLToPath } from 'url';
-
-import setupAsyncLocalStorage from "./middlewares/setupAls.middleware.js";
-import express from "express";
-import cookieParser from "cookie-parser";
-import cors from "cors";
+const express = require("express");
+const path = require("path");
+const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Express App Config
 app.use(cookieParser());
@@ -24,12 +19,7 @@ if (process.env.NODE_ENV === "production") {
   // Configuring CORS
   const corsOptions = {
     // Make sure origin contains the url your frontend is running on
-    origin: [
-      "http://127.0.0.1:8080",
-      "http://localhost:8080",
-      "http://127.0.0.1:5173",
-      "http://localhost:5173",
-    ],
+    origin: ["http://127.0.0.1:8080", "http://localhost:8080", "http://127.0.0.1:5173", "http://localhost:5173"],
     credentials: true,
   };
   app.use(cors(corsOptions));
@@ -38,10 +28,11 @@ if (process.env.NODE_ENV === "production") {
 // Express Routing:
 app.all("*", setupAsyncLocalStorage);
 
-import postRoutes from "./api/post/post.routes.js";
-import userRoutes from "./api/user/user.routes.js";
-import gifRoutes from "./api/gif/gif.routes.js";
-import locationRoutes from "./api/location/location.routes.js";
+const postRoutes = require("./api/post/post.routes");
+const userRoutes = require("./api/user/user.routes");
+const gifRoutes = require("./api/gif/gif.routes");
+const locationRoutes = require("./api/location/location.routes");
+
 // import authRoutes from "./api/auth/auth.routes";
 // import { setupSocketAPI } from "./services/socket.service";
 
@@ -56,4 +47,4 @@ app.get("/**", (req: any, res: { sendFile: (arg0: any) => void }) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-export default app
+module.exports = app;

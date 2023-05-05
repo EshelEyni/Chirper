@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { PostDocument } from "../../../../shared/interfaces/post.interface";
 import { CustomQuery } from "../../../../shared/interfaces/system.interface";
-import { logger } from "../../services/logger.service.js";
+// import { logger } from "../../services/logger.service.js";
+const { logger } = require("../../services/logger.service");
 import { UserModel } from "../user/user.model.js";
 
 const pollSchema = new mongoose.Schema({
@@ -110,4 +111,4 @@ postSchema.pre("save", function (next) {
 //   logger.info(msg);
 // });
 
-export const PostModel = mongoose.model("Post", postSchema);
+module.exports = mongoose.model("Post", postSchema);

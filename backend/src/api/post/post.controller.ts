@@ -1,12 +1,12 @@
 // import { authService } from "../auth/auth.service.js";
-import { logger } from "../../services/logger.service.js";
-import { postService } from "./post.service.js";
+const { logger } = require("../../services/logger.service");
+// import { postService } from "./post.service.js";
+const { postService } = require("./post.service");
+
 import { Request, Response } from "express";
-// import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-// import socketService from '../../services/socket.service.js'
 import { QueryString } from "../../services/util.service.js";
 
-export async function getPosts(req: Request, res: Response): Promise<void> {
+async function getPosts(req: Request, res: Response): Promise<void> {
   try {
     logger.debug("Getting Posts");
     const queryString = req.query;
@@ -37,7 +37,7 @@ export async function getPosts(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function getPostById(req: Request, res: Response): Promise<void> {
+async function getPostById(req: Request, res: Response): Promise<void> {
   try {
     const { postId } = req.params;
     if (!postId) {
@@ -72,7 +72,7 @@ export async function getPostById(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function addPost(req: Request, res: Response): Promise<void> {
+async function addPost(req: Request, res: Response): Promise<void> {
   try {
     const currPost = req.body;
 
@@ -101,7 +101,7 @@ export async function addPost(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function updatePost(req: Request, res: Response): Promise<void> {
+async function updatePost(req: Request, res: Response): Promise<void> {
   try {
     const postToUpdate = req.body;
     if (!postToUpdate) {
@@ -130,7 +130,7 @@ export async function updatePost(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function removePost(req: Request, res: Response): Promise<void> {
+async function removePost(req: Request, res: Response): Promise<void> {
   const postId = req.params.postId;
   try {
     await postService.remove(postId);
@@ -146,3 +146,11 @@ export async function removePost(req: Request, res: Response): Promise<void> {
     });
   }
 }
+
+module.exports = {
+  getPosts,
+  getPostById,
+  addPost,
+  updatePost,
+  removePost,
+};

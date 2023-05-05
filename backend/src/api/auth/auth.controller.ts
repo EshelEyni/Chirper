@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { authService } from "./auth.service";
-import { logger } from "../../services/logger.service";
 import { User } from "../../../../shared/interfaces/user.interface";
 
-export async function login(req: Request, res: Response) {
+const { logger } = require("../../services/logger.service");
+const authService = require("./auth.service");
+
+async function login(req: Request, res: Response) {
   const { username, password } = req.body;
   try {
     const user = await authService.login(username, password);
@@ -28,7 +29,7 @@ export async function login(req: Request, res: Response) {
   }
 }
 
-export async function signup(req: Request, res: Response) {
+async function signup(req: Request, res: Response) {
   try {
     const { username, password, fullname } = req.body as unknown as User;
     if (!username || !password || !fullname) {
@@ -42,7 +43,7 @@ export async function signup(req: Request, res: Response) {
       });
       return;
     }
-    
+
     const account = await authService.signup(username, password, fullname);
     logger.debug(`auth.route - new account created: ` + JSON.stringify(account));
     const user = await authService.login(username, password);
@@ -63,7 +64,7 @@ export async function signup(req: Request, res: Response) {
   }
 }
 
-export async function logout(req: Request, res: Response) {
+async function logout(req: Request, res: Response) {
   try {
     res.clearCookie("loginToken");
     res.send({
@@ -79,3 +80,9 @@ export async function logout(req: Request, res: Response) {
     });
   }
 }
+
+module.exports = {
+  login,
+  signup,
+  logout,
+};

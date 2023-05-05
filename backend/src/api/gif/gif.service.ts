@@ -1,10 +1,11 @@
-import { logger } from "../../services/logger.service.js";
-import config from "../../config/index.js";
-import fetch from "cross-fetch";
-import { getCollection } from "../../services/db.service.js";
+const logger = require("../../services/logger.service");
+
+const config = require("../../config");
+const fetch = require("cross-fetch");
+const { getCollection } = require("../../services/db.service");
 import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 
-import pkg from "@giphy/js-fetch-api";
+const pkg = require("@giphy/js-fetch-api");
 const { GiphyFetch } = pkg;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,7 +132,7 @@ async function _getGifFromDb(category: string): Promise<Gif[]> {
   }
 }
 
-export const gifService = {
+module.exports = {
   getGifsBySearchTerm,
   getGifCategories,
   getGifByCategory,

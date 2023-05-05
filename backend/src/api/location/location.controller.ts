@@ -1,8 +1,8 @@
-import { logger } from "../../services/logger.service.js";
-import { locationService } from "./location.service.js";
+const { logger } = require("../../services/logger.service");
+import { locationService } from "./location.service";
 import { Request, Response } from "express";
 
-export async function getUserDefaultLocation(req: Request, res: Response): Promise<void> {
+async function getUserDefaultLocation(req: Request, res: Response): Promise<void> {
   try {
     const { lat, lng } = req.query;
     if (!lat || !lng) {
@@ -33,7 +33,7 @@ export async function getUserDefaultLocation(req: Request, res: Response): Promi
   }
 }
 
-export async function getLocationBySearchTerm(req: Request, res: Response) {
+async function getLocationBySearchTerm(req: Request, res: Response) {
   try {
     const searchTerm = req.query.searchTerm as string;
     if (!searchTerm) {
@@ -60,3 +60,8 @@ export async function getLocationBySearchTerm(req: Request, res: Response) {
     });
   }
 }
+
+module.exports = {
+  getUserDefaultLocation,
+  getLocationBySearchTerm,
+};

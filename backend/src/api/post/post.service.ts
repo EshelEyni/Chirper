@@ -1,11 +1,14 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 // import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
 // import { asyncLocalStorage } from "../../services/als.service.js";
-import { getCollection } from "../../services/db.service.js";
-import { logger } from "../../services/logger.service.js";
+
+const { getCollection } = require("../../services/db.service");
+const { logger } = require("../../services/logger.service");
 import { ObjectId } from "mongodb";
-import { PostModel } from "./post.model.js";
-import { APIFeatures, QueryString } from "../../services/util.service.js";
+// import { PostModel } from "./post.model.js";
+const { PostModel } = require("./post.model");
+import { QueryString } from "../../services/util.service.js";
+const { APIFeatures } = require("../../services/util.service");
 
 const collectionName = "posts";
 
@@ -105,10 +108,10 @@ async function remove(postId: string): Promise<string> {
   }
 }
 
-export const postService = {
+module.exports = {
   query,
   getById,
-  remove,
   add,
   update,
+  remove,
 };

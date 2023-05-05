@@ -1,16 +1,7 @@
 import { User } from "../../../../shared/interfaces/user.interface";
-import { getCollection } from "../../services/db.service.js";
-import { logger } from "../../services/logger.service.js";
-import { ObjectId } from "mongodb";
-
-export const userService = {
-  query,
-  getById,
-  getByUsername,
-  remove,
-  update,
-  add,
-};
+const { getCollection } = require("../../services/db.service");
+const { logger } = require("../../services/logger.service");
+const { ObjectId } = require("mongodb");
 
 const collectionName = "users";
 
@@ -18,7 +9,7 @@ async function query() {
   try {
     const collection = await getCollection(collectionName);
     var users = await collection.find().toArray();
-    users = users.map((user) => {
+    users = users.map((user: { password: any; createdAt: any; _id: any; }) => {
       delete user.password;
       user.createdAt = new ObjectId(user._id).getTimestamp();
       return user;
@@ -91,8 +82,7 @@ async function add(user: User): Promise<User> {
       isAdmin: false,
       isVerified: false,
       isApprovedLocation: false,
-      imgUrl:
-        "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
+      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
       createdAt: Date.now(),
     };
     const collection = await getCollection(collectionName);
@@ -103,3 +93,12 @@ async function add(user: User): Promise<User> {
     throw err;
   }
 }
+
+module.exports = {
+  query,
+  getById,
+  getByUsername,
+  remove,
+  update,
+  add,
+};

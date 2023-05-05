@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "target": "ESNext",
-    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "target": "esnext",
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,

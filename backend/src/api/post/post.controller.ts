@@ -1,6 +1,4 @@
-// import { authService } from "../auth/auth.service.js";
 const { logger } = require("../../services/logger.service");
-// import { postService } from "./post.service.js";
 const postService = require("./post.service");
 
 import { Request, Response } from "express";
@@ -39,8 +37,9 @@ async function getPosts(req: Request, res: Response): Promise<void> {
 
 async function getPostById(req: Request, res: Response): Promise<void> {
   try {
-    const { postId } = req.params;
-    if (!postId) {
+    const { id } = req.params;
+
+    if (!id) {
       res.status(400).send({
         status: "fail",
         data: {
@@ -49,7 +48,7 @@ async function getPostById(req: Request, res: Response): Promise<void> {
       });
       return;
     }
-    const post = await postService.getById(postId);
+    const post = await postService.getById(id);
     if (post) {
       res.status(200).send({
         status: "success",
@@ -59,7 +58,7 @@ async function getPostById(req: Request, res: Response): Promise<void> {
       res.status(404).send({
         status: "fail",
         data: {
-          postId: `Post with id ${postId} not found`,
+          postId: `Post with id ${id} not found`,
         },
       });
     }
@@ -103,6 +102,7 @@ async function addPost(req: Request, res: Response): Promise<void> {
 
 async function updatePost(req: Request, res: Response): Promise<void> {
   try {
+    const { id } = req.params;
     const postToUpdate = req.body;
     if (!postToUpdate) {
       res.status(400).send({
@@ -114,7 +114,7 @@ async function updatePost(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const updatedPost = await postService.update(postToUpdate);
+    const updatedPost = await postService.update(id, postToUpdate);
     // socketService.broadcast({ type: 'post-updated', post: updatedPost, userId: loggedInUser._id })
     res.status(200).send({
       status: "success",
@@ -131,12 +131,12 @@ async function updatePost(req: Request, res: Response): Promise<void> {
 }
 
 async function removePost(req: Request, res: Response): Promise<void> {
-  const postId = req.params.postId;
+  const { id } = req.params;
   try {
-    await postService.remove(postId);
+    await postService.remove(id);
     res.status(204).send({
       status: "success",
-      data: postId,
+      data: id,
     });
   } catch (err) {
     logger.error("Failed to remove post", err as Error);

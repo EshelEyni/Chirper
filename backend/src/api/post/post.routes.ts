@@ -6,10 +6,10 @@ module.exports = () => {
   // import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware.js";
 
   router.get("/", log, getPosts);
-  router.get("/:PostId", log, getPostById);
+  router.get("/:id", log, getPostById);
   router.post("/", log, addPost);
-  router.put("/:PostId", log, updatePost);
-  router.delete("/:PostId", log, removePost);
+  router.patch("/:id", log, updatePost);
+  router.delete("/:id", log, removePost);
 
   return router;
 };

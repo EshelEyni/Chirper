@@ -21,9 +21,9 @@ async function query(queryString: QueryString): Promise<Post[]> {
   try {
     const features = new APIFeatures(PostModel.find(), queryString).filter().sort().limitFields().paginate();
 
-    let postDocs = await PostModel.find();
+    let postDocs = await features.query;
     let posts = postDocs.map((postDoc: PostDocument) => postDoc.toObject());
-    
+
     const postsWithUser: PostWithUser[] = [];
 
     for (const post of posts) {
@@ -43,11 +43,14 @@ async function query(queryString: QueryString): Promise<Post[]> {
 
 async function getById(postId: string): Promise<Post | null> {
   try {
-    const collection = await getCollection(collectionName);
-    const post = await collection.findOne({ _id: new ObjectId(postId) });
-    if (!post) return null;
-    // post.createdAt = new ObjectId(post._id).getTimestamp();
-    return post as unknown as Post;
+    const postDoc = await PostModel.findById(postId);
+    if (!postDoc) return null;
+    const post = postDoc.toObject();
+    const userDoc = await UserModel.findById(post.userId);
+    if (!userDoc) throw new Error("user not found");
+    const miniUser = getMiniUser(userDoc.toObject());
+    const postWithUser = { ...post, user: miniUser };
+    return postWithUser as unknown as Post;
   } catch (err) {
     logger.error(`while finding post ${postId}`, err as Error);
     throw err;
@@ -61,42 +64,6 @@ async function add(post: NewPost): Promise<Post> {
   // if (!loggedinUser) throw new Error("user not logged in");
   // if (loggedinUser._id !== post.user._id) throw new Error("cannot add post for another user");
 
-  // const postData = {
-  //   text: post.text,
-  //   createdAt: Date.now(),
-  //   commentSum: 0,
-  //   rechirps: 0,
-  //   likes: 0,
-  //   views: 0,
-  //   isPublic: post.isPublic,
-  //   imgUrls: post.imgUrls,
-  //   videoUrl: post.videoUrl,
-  //   gifUrl: post.gifUrl,
-  //   poll: post.poll,
-  //   schedule: post.schedule,
-  //   location: post.location,
-  //   audience: post.audience,
-  //   repliersType: post.repliersType,
-  //   userId: post.user._id,
-  // };
-
-  // try {
-  //   const collection = await getCollection(collectionName);
-  //   const { insertedId } = await collection.insertOne(postData);
-  //   const { userId, ...postDataWithoutUserId } = postData;
-  //   const savedPost = {
-  //     _id: insertedId.toString(),
-  //     ...postDataWithoutUserId,
-  //     user: post.user,
-  //   };
-  //   return savedPost;
-  // } catch (err) {
-  //   logger.error("cannot insert post", err as Error);
-  //   throw err;
-  // }
-
-  // return {} as Post;
-
   try {
     const newPost = new PostModel(post);
     const savedPost = await newPost.save();
@@ -107,25 +74,22 @@ async function add(post: NewPost): Promise<Post> {
   }
 }
 
-async function update(post: Post): Promise<Post> {
+async function update(id: string, post: Post): Promise<Post> {
   try {
-    const id = new ObjectId(post._id);
-    const { _id, ...postWithoutId } = post;
-    const collection = await getCollection(collectionName);
-    await collection.updateOne({ _id: id }, { $set: { ...postWithoutId } });
-
-    return { _id: id.toString(), ...postWithoutId };
+    const postDoc = await PostModel.findByIdAndUpdate(id, post, { new: true, runValidators: true });
+    if (!postDoc) throw new Error("post not found");
+    return postDoc.toObject() as unknown as Post;
   } catch (err) {
     logger.error(`cannot update post ${post._id}`, err as Error);
     throw err;
   }
 }
 
-async function remove(postId: string): Promise<string> {
+async function remove(postId: string): Promise<void> {
   try {
-    const collection = await getCollection(collectionName);
-    await collection.deleteOne({ _id: new ObjectId(postId) });
-    return postId;
+    const postDoc = await PostModel.findByIdAndRemove(postId);
+    if (!postDoc) throw new Error("post not found");
+   
   } catch (err) {
     logger.error(`cannot remove post ${postId}`, err as Error);
     throw err;

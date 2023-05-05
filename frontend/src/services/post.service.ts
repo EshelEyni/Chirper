@@ -42,7 +42,8 @@ async function remove(postId: string) {
 
 async function add(post: NewPost): Promise<Post> {
   try {
-    const addedPost = await httpService.post("post", post);
+    const res = (await httpService.post("post", post)) as unknown as JsendResponse;
+    const addedPost = res.data;
     return addedPost;
   } catch (err) {
     console.log("postService: Cannot add post");

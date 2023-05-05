@@ -2,12 +2,11 @@ import { User } from "../../../../shared/interfaces/user.interface";
 import { userService } from "../../services/user.service";
 
 const demoUser: User = {
-  _id: "64424cf7fb00fb179e797a3f",
+  _id: "64544a08a0516f8d63e0ed9b",
   username: "demo",
   password: "123",
   fullname: "Demo User",
-  imgUrl:
-    "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
+  imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1674947349/iygilawrooz36soschcq.png",
   isAdmin: false,
   isVerified: true,
   isApprovedLocation: true,
@@ -20,10 +19,7 @@ const initialState: {
   loggedinUser: userService.getLoggedinUser() || demoUser,
 };
 
-export function authReducer(
-  state = initialState,
-  action: { type: string; user: User }
-) {
+export function authReducer(state = initialState, action: { type: string; user: User }) {
   switch (action.type) {
     case "SET_LOGGEDIN_USER":
       return { loggedinUser: action.user };

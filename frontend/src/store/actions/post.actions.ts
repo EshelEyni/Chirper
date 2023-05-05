@@ -52,6 +52,7 @@ export function addPost(
   return async (dispatch) => {
     try {
       const addedPost = await postService.add(post);
+      console.log("addedPost", addedPost);
       dispatch({ type: "ADD_POST", post: addedPost });
     } catch (err) {
       console.log("PostActions: err in addPost", err);

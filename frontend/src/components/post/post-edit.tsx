@@ -46,12 +46,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const navigate = useNavigate();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPost } = useSelector((state: RootState) => state.postModule);
-  // const [post, setPost] = useState<NewPost>({
-  //   text: "",
-  //   audience: "everyone",
-  //   repliersType: "everyone",
-  // } as NewPost);
+  const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
   const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>([]);
   const [gifUrl, setGifUrl] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
@@ -82,35 +77,14 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const onAddPost = async () => {
     if (!loggedinUser) return;
-    // const newPost: NewPost = {
-    //   text: post.text,
-    //   audience: post.audience,
-    //   repliersType: post.repliersType,
-    //   isPublic: true,
-    //   schedule: post.schedule,
-    //   user: {
-    //     _id: loggedinUser._id,
-    //     username: loggedinUser.username,
-    //     fullname: loggedinUser.fullname,
-    //     imgUrl: loggedinUser.imgUrl,
-    //   },
-    // };
-    // newPost.user = {
-    //   _id: loggedinUser._id,
-    //   username: loggedinUser.username,
-    //   fullname: loggedinUser.fullname,
-    //   imgUrl: loggedinUser.imgUrl,
-    // };
+    newPost.userId = loggedinUser._id;
 
     if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
     if (gifUrl) newPost.gifUrl = gifUrl;
     if (poll) newPost.poll = { ...poll, createdAt: Date.now() };
+
     await dispatch(addPost(newPost));
-    // setPost({
-    //   text: "",
-    //   audience: "everyone",
-    //   repliersType: "everyone",
-    // } as NewPost);
+
     dispatch(
       setNewPost({
         text: "",
@@ -130,9 +104,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const onGoToLocationPage = () => {
     if (!isPickerShown) return;
-      navigate("post-location")
+    navigate("post-location");
   };
-
 
   return (
     <section className="post-edit" onClick={openPicker}>

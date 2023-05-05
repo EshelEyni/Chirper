@@ -25,8 +25,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(cors(corsOptions));
 }
 
-// Express Routing:
-app.all("*", setupAsyncLocalStorage);
+// app.all("*", setupAsyncLocalStorage);
 
 const userRoutes = require("./api/user/user.routes");
 const postRoutes = require("./api/post/post.routes");
@@ -36,10 +35,10 @@ const locationRoutes = require("./api/location/location.routes");
 // import authRoutes from "./api/auth/auth.routes";
 // import { setupSocketAPI } from "./services/socket.service";
 
-app.use("/api/post", postRoutes);
+app.use("/api/post", postRoutes());
 app.use("/api/user", userRoutes());
-app.use("/api/gif", gifRoutes);
-app.use("/api/location", locationRoutes);
+app.use("/api/gif", gifRoutes());
+app.use("/api/location", locationRoutes());
 // app.use("/api/auth", authRoutes);
 // setupSocketAPI(http);
 

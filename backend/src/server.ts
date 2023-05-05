@@ -9,7 +9,9 @@ import mongoose from "mongoose";
 const DB = config.dbURL;
 
 mongoose
-  .connect(DB)
+  .connect(DB,{
+    dbName: "chirper_db",
+  })
   .then(() => {
     logger.info("Connected to MongoDB.");
   })

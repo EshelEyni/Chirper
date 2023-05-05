@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
 import { PostDocument } from "../../../../shared/interfaces/post.interface";
 import { CustomQuery } from "../../../../shared/interfaces/system.interface";
 // import { logger } from "../../services/logger.service.js";
+
+import { Document } from "mongoose";
 const { logger } = require("../../services/logger.service");
-import { UserModel } from "../user/user.model.js";
+
+const mongoose = require("mongoose");
 
 const pollSchema = new mongoose.Schema({
   choices: [String],
@@ -74,22 +76,22 @@ const postSchema = new mongoose.Schema({
   location: locationSchema,
 });
 
-function validateContent(post: mongoose.Document) {
-  return (
-    post.get("text") ||
-    post.get("gifUrl") ||
-    (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
-    post.get("poll")
-  );
-}
+// function validateContent(post: Document) {
+//   return (
+//     post.get("text") ||
+//     post.get("gifUrl") ||
+//     (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
+//     post.get("poll")
+//   );
+// }
 
-postSchema.pre("save", function (next) {
-  if (!validateContent(this)) {
-    next(new Error("At least one of text, gifUrl, imgUrls, or poll is required"));
-  } else {
-    next();
-  }
-});
+// postSchema.pre("save", function (next) {
+//   if (!validateContent(this)) {
+//     next(new Error("At least one of text, gifUrl, imgUrls, or poll is required"));
+//   } else {
+//     next();
+//   }
+// });
 
 // async function addUserToPost(post: PostDocument): Promise<PostDocument> {
 //   const user = await UserModel.findById(post.userId);

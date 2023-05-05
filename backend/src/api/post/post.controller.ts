@@ -1,7 +1,7 @@
 // import { authService } from "../auth/auth.service.js";
 const { logger } = require("../../services/logger.service");
 // import { postService } from "./post.service.js";
-const { postService } = require("./post.service");
+const postService = require("./post.service");
 
 import { Request, Response } from "express";
 import { QueryString } from "../../services/util.service.js";

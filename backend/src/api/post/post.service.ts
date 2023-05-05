@@ -1,14 +1,14 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-// import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
-// import { asyncLocalStorage } from "../../services/als.service.js";
+import { ObjectId } from "mongodb";
+import { QueryString } from "../../services/util.service.js";
 
 const { getCollection } = require("../../services/db.service");
 const { logger } = require("../../services/logger.service");
-import { ObjectId } from "mongodb";
-// import { PostModel } from "./post.model.js";
-const { PostModel } = require("./post.model");
-import { QueryString } from "../../services/util.service.js";
+const PostModel = require("./post.model");
 const { APIFeatures } = require("../../services/util.service");
+
+// import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
+// import { asyncLocalStorage } from "../../services/als.service.js";
 
 const collectionName = "posts";
 
@@ -18,7 +18,7 @@ async function query(queryString: QueryString): Promise<Post[]> {
 
     // const posts = await features.getQuery();
     const posts = await PostModel.find();
-    console.log(posts);
+    console.log("posts", posts);
     return posts as unknown as Post[];
   } catch (err) {
     logger.error("cannot find posts", err as Error);
@@ -80,7 +80,16 @@ async function add(post: NewPost): Promise<Post> {
   //   throw err;
   // }
 
-  return {} as Post;
+  // return {} as Post;
+
+  try {
+    const newPost = new PostModel(post);
+    const savedPost = await newPost.save();
+    return savedPost as unknown as Post;
+  } catch (err) {
+    logger.error("cannot insert post", err as Error);
+    throw err;
+  }
 }
 
 async function update(post: Post): Promise<Post> {

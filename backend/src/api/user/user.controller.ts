@@ -1,8 +1,18 @@
-const { userService } = require("./user.service");
+const userService = require("./user.service");
 const { logger } = require("../../services/logger.service");
 // import { socketService } from '../../services/socket.service.js'
-import { authService } from "../auth/auth.service.js";
+// const authService = require("../auth/auth.service");
 import { Request, Response } from "express";
+
+async function getUsers(req: Request, res: Response) {
+  try {
+    const users = await userService.query();
+    res.send(users);
+  } catch (err) {
+    logger.error("Failed to get users", err as Error);
+    res.status(500).send({ err: "Failed to get users" });
+  }
+}
 
 async function getUser(req: Request, res: Response) {
   try {
@@ -14,16 +24,6 @@ async function getUser(req: Request, res: Response) {
   } catch (err) {
     logger.error("Failed to get user", err as Error);
     res.status(500).send({ err: "Failed to get user" });
-  }
-}
-
-async function getUsers(req: Request, res: Response) {
-  try {
-    const users = await userService.query();
-    res.send(users);
-  } catch (err) {
-    logger.error("Failed to get users", err as Error);
-    res.status(500).send({ err: "Failed to get users" });
   }
 }
 

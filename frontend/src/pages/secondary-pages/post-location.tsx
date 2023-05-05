@@ -10,6 +10,7 @@ import { Location } from "../../../../shared/interfaces/location.interface";
 import { LocationSearchBar } from "../../components/location/location-search-bar";
 import { LocationList } from "../../components/location/location-list";
 import { ContentLoader } from "../../components/loaders/content-loader";
+import { locationService } from "../../services/location.service";
 
 export const PostLocation = () => {
   const { newPost } = useSelector((state: RootState) => state.postModule);
@@ -43,6 +44,7 @@ export const PostLocation = () => {
 
   const fetchLocations = async () => {
     // const locations = await locationService.getUserDefaultLocations();
+    // if(!locations) return;
     const locations = storageService.get("locations");
     if (newPost.location) {
       const isLocationExist = locations.find((location: Location) => {

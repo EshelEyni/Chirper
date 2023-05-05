@@ -5,7 +5,7 @@ import {
 } from "../../middlewares/requireAuth.middleware";
 import { log } from "../../middlewares/logger.middleware";
 import {
-  getPost,
+  getPosts,
   getPostById,
   addPost,
   updatePost,
@@ -17,7 +17,7 @@ const router = Router();
 // middleware that is specific to this router
 // router.use(requireAuth)
 
-router.get("/", log, getPost);
+router.get("/", log, getPosts);
 router.get("/:PostId", log, getPostById);
 router.post("/", log, addPost);
 router.put("/:PostId", log, updatePost);

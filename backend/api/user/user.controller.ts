@@ -7,6 +7,9 @@ import { Request, Response } from "express";
 export async function getUser(req: Request, res: Response) {
   try {
     const user = await userService.getById(req.params.id);
+    // TODO: remove password from user
+    // TODO: refactor to jsend format
+
     res.send(user);
   } catch (err) {
     logger.error("Failed to get user", err as Error);

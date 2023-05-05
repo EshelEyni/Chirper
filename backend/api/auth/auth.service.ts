@@ -38,6 +38,8 @@ async function signup(
   const hash = await bcrypt.hash(password, saltRounds);
   // return userService.add({ username, password: hash, fullname });
   const user = await userService.add({ username } as User);
+  delete user.password;
+  return user;
 }
 
 function getLoginToken(user: User) {

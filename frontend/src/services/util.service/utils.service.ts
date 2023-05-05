@@ -1,3 +1,5 @@
+import { JsendResponse } from "../../../../shared/interfaces/system.interface";
+
 function formatTime(timestamp: number): string {
   const now = Date.now();
   const difference = now - timestamp;
@@ -66,6 +68,20 @@ function getTimeZone(): string {
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
+
+function handleServerResponse<T>(response: JsendResponse): T {
+  if (response.status === "success") {
+    return response.data;
+  } else if (response.status === "fail") {
+    const errorMessages = Object.entries(response.data)
+      .map(([field, message]) => `${field}: ${message}`)
+      .join(", ");
+    throw new Error(errorMessages);
+  } else {
+    throw new Error("Unexpected response status");
+  }
+}
+
 export const utilService = {
   formatTime,
   formatCount,
@@ -73,4 +89,5 @@ export const utilService = {
   debounce,
   getTimeZone,
   getDaysInMonth,
+  handleServerResponse,
 };

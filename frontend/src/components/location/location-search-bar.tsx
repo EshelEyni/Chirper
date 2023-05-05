@@ -35,20 +35,24 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
   }, []);
 
   const handleChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
-    if (isNoResults) setisNoResults(false);
-    const { value } = ev.target;
-    setSearchTerm(value);
-    if (!value) {
-      fetchLocations();
-      return;
-    }
-    setIsLoading(true);
-    const locations = await locationService.getLocationBySearchTerm(value);
-    setIsLoading(false);
-    if (locations.length === 0) {
-      setisNoResults(true);
-    } else {
-      setLocations(locations);
+    try {
+      if (isNoResults) setisNoResults(false);
+      const { value } = ev.target;
+      setSearchTerm(value);
+      if (!value) {
+        fetchLocations();
+        return;
+      }
+      setIsLoading(true);
+      const locations = await locationService.getLocationsBySearchTerm(value);
+      setIsLoading(false);
+      if (locations.length === 0) {
+        setisNoResults(true);
+      } else {
+        setLocations(locations);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 

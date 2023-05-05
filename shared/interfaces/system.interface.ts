@@ -1,5 +1,12 @@
+import { User } from "./user.interface";
 export interface JsendResponse {
   status: string;
-  data: any;
-  message: string;
+  requested_at?: string;
+  result?: number;
+  data?: any;
+  message?: string;
+}
+
+export interface IAsyncLocalStorageStore {
+  loggedinUser?: User;
 }

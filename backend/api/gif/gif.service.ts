@@ -91,11 +91,11 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   }
 }
 
-async function getGifCategories(): Promise<GifCategory> {
+async function getGifCategories(): Promise<GifCategory[]> {
   try {
-    const gifCollection = await getCollection("gif-category");
+    const gifCollection = await getCollection("gif_categories");
     const gifCategories = await gifCollection.find({}).sort({ sortOrder: 1 }).toArray();
-    return gifCategories as unknown as GifCategory;
+    return gifCategories as unknown as GifCategory[];
   } catch (err) {
     logger.error(`cannot get gif headers`, err as Error);
     throw err;
@@ -108,7 +108,7 @@ async function getGifByCategory(category: string): Promise<Gif[]> {
 
 async function _getGifFromDb(category: string): Promise<Gif[]> {
   try {
-    const gifCollection = await getCollection("gif");
+    const gifCollection = await getCollection("gifs");
     const gifs = await gifCollection
       .find(
         { category },

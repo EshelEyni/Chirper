@@ -95,12 +95,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     //     imgUrl: loggedinUser.imgUrl,
     //   },
     // };
-    newPost.user = {
-      _id: loggedinUser._id,
-      username: loggedinUser.username,
-      fullname: loggedinUser.fullname,
-      imgUrl: loggedinUser.imgUrl,
-    };
+    // newPost.user = {
+    //   _id: loggedinUser._id,
+    //   username: loggedinUser.username,
+    //   fullname: loggedinUser.fullname,
+    //   imgUrl: loggedinUser.imgUrl,
+    // };
 
     if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
     if (gifUrl) newPost.gifUrl = gifUrl;

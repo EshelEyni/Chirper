@@ -1,5 +1,7 @@
 import { httpService } from "./http.service";
 import { NewPost, Post } from "../../../shared/interfaces/post.interface";
+import { JsendResponse } from "../../../shared/interfaces/system.interface";
+import { utilService } from "./util.service/utils.service";
 
 export const postService = {
   query,
@@ -9,20 +11,20 @@ export const postService = {
   update,
 };
 
-async function query(): Promise<Post[] | void> {
+async function query(): Promise<Post[]> {
   try {
-    const posts = await httpService.get("post");
-    return posts;
+    const response = (await httpService.get("post")) as unknown as JsendResponse;
+    return utilService.handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");
     throw err;
   }
 }
 
-async function getById(postId: string) {
+async function getById(postId: string): Promise<Post> {
   try {
-    const post = await httpService.get(`post/${postId}`);
-    return post;
+    const response = (await httpService.get(`post/${postId}`)) as unknown as JsendResponse;
+    return utilService.handleServerResponse<Post>(response);
   } catch (err) {
     console.log("postService: Cannot get post");
     throw err;
@@ -31,7 +33,7 @@ async function getById(postId: string) {
 
 async function remove(postId: string) {
   try {
-    await httpService.delete(`post/${postId}`);
+    const response = await httpService.delete(`post/${postId}`);
   } catch (err) {
     console.log("postService: Cannot remove post");
     throw err;

@@ -1,33 +1,43 @@
+import { Location } from "../../../shared/interfaces/location.interface";
+import { JsendResponse } from "../../../shared/interfaces/system.interface";
 import { httpService } from "./http.service";
+import { utilService } from "./util.service/utils.service";
+import queryString from "query-string";
 
 export const locationService = {
   getUserDefaultLocations,
-  getLocationBySearchTerm,
+  getLocationsBySearchTerm,
 };
 
-async function getLocationBySearchTerm(searchTerm: string) {
+const ERROR_MESSAGES = {
+  locationError: "locationService: Cannot get location",
+  geolocationUnsupported: "Geolocation is not supported by this browser.",
+};
+
+async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]> {
   try {
-    const location = await httpService.get(`location/search?searchTerm=${searchTerm}`);
-    return location;
+    const response = (await httpService.get(
+      `location/search?searchTerm=${searchTerm}`
+    )) as unknown as JsendResponse;
+
+    return utilService.handleServerResponse<Location[]>(response);
   } catch (err) {
-    console.log("locationService: Cannot get location");
     throw err;
   }
 }
 
-async function getUserDefaultLocations() {
+async function getUserDefaultLocations(): Promise<Location[] | null> {
   try {
     const currLocation = await _getCurrentLocation();
     if (currLocation) {
-      const locations = await httpService.get(
-        `location?lat=${currLocation.lat}&lng=${currLocation.lng}`
-      );
-      return locations;
+      const query = queryString.stringify(currLocation);
+      const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse;
+      return utilService.handleServerResponse<Location[]>(response);
     } else {
       return null;
     }
   } catch (err) {
-    console.log("locationService: Cannot get location");
+    console.log(ERROR_MESSAGES.locationError);
     throw err;
   }
 }
@@ -41,7 +51,7 @@ function _getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
           const lng = position.coords.longitude;
           resolve({ lat, lng });
         },
-        (error) => {
+        (error: GeolocationPositionError) => {
           console.error("Error getting location:", error);
           resolve(null);
         },
@@ -52,7 +62,7 @@ function _getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
         }
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
+      console.error(ERROR_MESSAGES.geolocationUnsupported);
       resolve(null);
     }
   });

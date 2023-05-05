@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncLocalStorage } from "../services/als.service.js";
 import { authService } from "../api/auth/auth.service.js";
-import { User } from "../../shared/interfaces/user.interface"
+import { User } from "../../../shared/interfaces/user.interface"
 
 async function setupAsyncLocalStorage(
   req: Request,

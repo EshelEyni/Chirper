@@ -1,5 +1,8 @@
+import { Document } from "mongoose";
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
+
+export type PostDocument = Post & Document;
 
 export interface NewPost {
   text: string;

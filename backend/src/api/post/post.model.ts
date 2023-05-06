@@ -1,6 +1,9 @@
 import { Post, PostDocument } from "../../../../shared/interfaces/post.interface";
-import { Document, Query, DocumentSetOptions } from "mongoose";
+import { Document, Query } from "mongoose";
+import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import { log } from "console";
 
+const { gifSchema } = require("../gif/gif.model");
 const mongoose = require("mongoose");
 const { logger } = require("../../services/logger.service");
 
@@ -14,11 +17,6 @@ const pollSchema = new mongoose.Schema({
   createdAt: Number,
 });
 
-const gifSchema = new mongoose.Schema({
-  url: String,
-  staticUrl: String,
-});
-
 const locationSchema = new mongoose.Schema({
   placeId: String,
   name: String,
@@ -26,52 +24,69 @@ const locationSchema = new mongoose.Schema({
   lng: Number,
 });
 
-const postSchema = new mongoose.Schema({
-  createdAt: {
-    type: Number,
-    required: true,
+const postSchema = new mongoose.Schema(
+  {
+    commentSum: {
+      type: Number,
+      default: 0,
+    },
+    rechirps: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
+    audience: {
+      type: String,
+      required: true,
+    },
+    repliersType: {
+      type: String,
+      required: true,
+    },
+    isPublic: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    text: String,
+    imgUrls: [String],
+    videoUrl: String,
+    gifUrl: gifSchema,
+    poll: pollSchema,
+    schedule: Date,
+    location: locationSchema,
   },
-  commentSum: {
-    type: Number,
-    default: 0,
-  },
-  rechirps: {
-    type: Number,
-    default: 0,
-  },
-  likes: {
-    type: Number,
-    default: 0,
-  },
-  views: {
-    type: Number,
-    default: 0,
-  },
-  audience: {
-    type: String,
-    required: true,
-  },
-  repliersType: {
-    type: String,
-    required: true,
-  },
-  isPublic: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
-  userId: {
-    type: String,
-    required: true,
-  },
-  text: String,
-  imgUrls: [String],
-  videoUrl: String,
-  gifUrl: gifSchema,
-  poll: pollSchema,
-  schedule: Date,
-  location: locationSchema,
-});
+  {
+    toObject: {
+      virtuals: true,
+      transform: (doc: Document, ret: Record<string, unknown>) => {
+        delete ret.userId;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toJSON: {
+      virtuals: true,
+      transform: (doc: Document, ret: Record<string, unknown>) => {
+        delete ret.userId;
+        delete ret._id;
+        return ret;
+      },
+    },
+    timestamps: true,
+  }
+);
 
 function validateContent(post: Document) {
   return (
@@ -90,9 +105,30 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   }
 });
 
+postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
+  this.set("schedule", new Date());
+  next();
+});
+
+postSchema.post("save", function (this: Document) {
+  logger.success("Post saved ", this.get("id"));
+});
+
+
+postSchema.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "_id",
+  justOne: true,
+});
+
 postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
   this.find({ isPublic: true });
   next();
 });
 
-module.exports = mongoose.model("Post", postSchema);
+const PostModel = mongoose.model("Post", postSchema);
+
+module.exports = {
+  PostModel,
+};

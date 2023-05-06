@@ -28,10 +28,13 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
   line = `${getTime()} - ${level} - ${line} ${str}\n`;
   switch (level) {
     case "DEBUG":
-      line = ansiColors.bgBlue(line);
+      line = ansiColors.bgMagenta(line);
       break;
     case "INFO":
       line = ansiColors.bgGreen(line);
+      break;
+    case "SUCCESS":
+      line = ansiColors.bgBlue(line);
       break;
     case "WARN":
       line = ansiColors.bgYellow(line);
@@ -55,6 +58,10 @@ function info(...args: any[]) {
   doLog("INFO", ...args);
 }
 
+function success(...args: any[]) {
+  doLog("SUCCESS", ...args);
+}
+
 function warn(...args: any[]) {
   doLog("WARN", ...args);
 }
@@ -67,6 +74,7 @@ module.exports = {
   logger: {
     debug,
     info,
+    success,
     warn,
     error,
   },

@@ -15,22 +15,23 @@ export interface NewPost {
   audience: string;
   repliersType: string;
   isPublic: boolean;
-  userId?: string;
-  user?: {
+  userId: string;
+}
+
+export interface Post extends NewPost {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  commentSum: number;
+  rechirps: number;
+  likes: number;
+  views: number;
+  user: {
     _id: string;
     username: string;
     fullname: string;
     imgUrl: string;
   };
-}
-
-export interface Post extends NewPost {
-  _id: string;
-  createdAt: number;
-  commentSum: number;
-  rechirps: number;
-  likes: number;
-  views: number;
 }
 
 export interface Poll {

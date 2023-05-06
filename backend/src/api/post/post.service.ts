@@ -1,18 +1,24 @@
-import { NewPost, Post, PostDocument } from "../../../../shared/interfaces/post.interface";
+import {
+  NewPost,
+  Post,
+  PostDocument,
+} from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 
 const { logger } = require("../../services/logger.service");
 const { PostModel } = require("./post.model");
-const UserModel = require("../user/user.model");
 const { APIFeatures } = require("../../services/util.service");
-const { getMiniUser } = require("../../services/util.service");
 
 // import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
 // import { asyncLocalStorage } from "../../services/als.service.js";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   try {
-    const features = new APIFeatures(PostModel.find(), queryString).filter().sort().limitFields().paginate();
+    const features = new APIFeatures(PostModel.find(), queryString)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
     const posts = await features.query
       .populate({
@@ -67,7 +73,10 @@ async function add(post: NewPost): Promise<Post> {
 
 async function update(id: string, post: Post): Promise<Post> {
   try {
-    const updatedPost = await PostModel.findByIdAndUpdate(id, post, { new: true, runValidators: true });
+    const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
+      new: true,
+      runValidators: true,
+    });
 
     return updatedPost as unknown as Post;
   } catch (err) {

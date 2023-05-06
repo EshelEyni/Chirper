@@ -1,20 +1,19 @@
 import { User } from "../../../../shared/interfaces/user.interface";
-const { getCollection } = require("../../services/db.service");
 const { logger } = require("../../services/logger.service");
-const { ObjectId } = require("mongodb");
+const { UserModel } = require("./user.model");
+const { APIFeatures } = require("../../services/util.service");
 
-const collectionName = "users";
-
-async function query() {
+async function query(): Promise<User[]> {
   try {
-    const collection = await getCollection(collectionName);
-    var users = await collection.find().toArray();
-    users = users.map((user: { password: any; createdAt: any; _id: any; }) => {
-      delete user.password;
-      user.createdAt = new ObjectId(user._id).getTimestamp();
-      return user;
-    });
-    return users;
+    const features = new APIFeatures(UserModel.find(), {})
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const users = await features.query.exec();
+
+    return users as unknown as User[];
   } catch (err) {
     logger.error("cannot find users", err as Error);
     throw err;
@@ -23,14 +22,7 @@ async function query() {
 
 async function getById(userId: string): Promise<User> {
   try {
-    const collection = await getCollection(collectionName);
-    const user = await collection.findOne({ _id: new ObjectId(userId) });
-
-    if (!user) {
-      throw new Error(`User not found: ${userId}`);
-    }
-
-    delete user.password;
+    const user = await UserModel.findById(userId).exec();
     return user as unknown as User;
   } catch (err) {
     logger.error(`while finding user ${userId}`, err as Error);
@@ -38,58 +30,46 @@ async function getById(userId: string): Promise<User> {
   }
 }
 
-async function getByUsername(username: string) {
+async function getByUsername(username: string): Promise<User> {
   try {
-    const collection = await getCollection(collectionName);
-    const user = await collection.findOne({ username });
-    return user;
+    const features = new APIFeatures(UserModel.find(), { username }).filter();
+    const user = await features.query.exec();
+    return user as unknown as User;
   } catch (err) {
     logger.error(`while finding user ${username}`, err as Error);
     throw err;
   }
 }
 
-async function remove(userId: string) {
-  try {
-    const collection = await getCollection(collectionName);
-    await collection.deleteOne({ _id: new ObjectId(userId) });
-  } catch (err) {
-    logger.error(`cannot remove user ${userId}`, err as Error);
-    throw err;
-  }
-}
-
-async function update(user: User): Promise<User> {
-  try {
-    const id = new ObjectId(user._id);
-    const { _id, ...userWithoutId } = user;
-    const collection = await getCollection(collectionName);
-    await collection.updateOne({ _id: id }, { $set: { ...userWithoutId } });
-    return { _id: id.toString(), ...userWithoutId };
-  } catch (err) {
-    logger.error(`cannot update user ${user._id}`, err as Error);
-    throw err;
-  }
-}
-
 async function add(user: User): Promise<User> {
   try {
-    // peek only updatable fields!
-    const userToAdd = {
-      username: user.username,
-      password: user.password,
-      fullname: user.fullname,
-      isAdmin: false,
-      isVerified: false,
-      isApprovedLocation: false,
-      imgUrl: "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
-      createdAt: Date.now(),
-    };
-    const collection = await getCollection(collectionName);
-    const { insertedId } = await collection.insertOne(userToAdd);
-    return { _id: insertedId.toString(), ...userToAdd };
+    const savedUser = await UserModel(user).save();
+    return savedUser as unknown as User;
   } catch (err) {
     logger.error("cannot insert user", err as Error);
+    throw err;
+  }
+}
+
+async function update(id: string, user: User): Promise<User> {
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(id, user, {
+      new: true,
+      runValidators: true,
+    }).exec();
+    return updatedUser as unknown as User;
+  } catch (err) {
+    logger.error(`cannot update user ${user.id}`, err as Error);
+    throw err;
+  }
+}
+
+async function remove(userId: string) {
+  try {
+    await UserModel.findByIdAndRemove(userId).exec();
+    logger.warn("user removed", userId);
+  } catch (err) {
+    logger.error(`cannot remove user ${userId}`, err as Error);
     throw err;
   }
 }

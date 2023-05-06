@@ -13,16 +13,13 @@ export const BtnToggleAudience: React.FC<BtnToggleAudienceProps> = ({
   setPostSettings,
 }) => {
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
-  const toggleModal = (type: string) => {
+  const toggleModal = () => {
     setIsAudienceOpen(!isAudienceOpen);
   };
 
   return (
-    <div className="post-edit-header">
-      <button
-        className="btn-toggle-audience"
-        onClick={() => toggleModal("audience")}
-      >
+    <div className="btn-toggle-audience-cotnainer">
+      <button className="btn-toggle-audience" onClick={() => toggleModal()}>
         <span>{postSettings.audience.title}</span>
         <IoChevronDownOutline />
       </button>

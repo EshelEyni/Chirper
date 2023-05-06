@@ -3,13 +3,9 @@ import { AnyAction } from "redux";
 import { postService } from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { UserMsg } from "../../../../shared/interfaces/system.interface";
 
-export function getPosts(): ThunkAction<
-  Promise<void>,
-  RootState,
-  undefined,
-  AnyAction
-> {
+export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async (dispatch) => {
     try {
       const posts = await postService.query();
@@ -52,9 +48,34 @@ export function addPost(
   return async (dispatch) => {
     try {
       const addedPost = await postService.add(post);
-      console.log("addedPost", addedPost);
-      dispatch({ type: "ADD_POST", post: addedPost });
+      const isPublished = !post.schedule;
+      if (isPublished) {
+        dispatch({ type: "ADD_POST", post: addedPost });
+      } else {
+        const dateStr = new Intl.DateTimeFormat("en-US", {
+          dateStyle: "full",
+          timeStyle: "short",
+          timeZone: "UTC",
+        }).format(post.schedule);
+
+        const msg: UserMsg = {
+          type: "info",
+          text: `Your Chirp will be sent on ${dateStr}`,
+        };
+        dispatch({ type: "SET_USER_MSG", userMsg: msg });
+        setTimeout(() => {
+          dispatch({ type: "SET_USER_MSG", userMsg: null });
+        }, 2000);
+      }
     } catch (err) {
+      const msg: UserMsg = {
+        type: "error",
+        text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      };
+      dispatch({ type: "SET_USER_MSG", userMsg: msg });
+      setTimeout(() => {
+        dispatch({ type: "SET_USER_MSG", userMsg: null });
+      }, 2000);
       console.log("PostActions: err in addPost", err);
     }
   };

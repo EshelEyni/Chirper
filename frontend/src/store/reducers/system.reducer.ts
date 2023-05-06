@@ -1,22 +1,24 @@
+import { UserMsg } from "../../../../shared/interfaces/system.interface";
+
 interface SystemState {
   isPageLoading: boolean;
   isSideBarShown: boolean;
-  userMsg: string;
+  userMsg: UserMsg | null;
 }
 
 const initialState: SystemState = {
   isPageLoading: true,
   isSideBarShown: true,
-  userMsg: "",
+  userMsg: null,
 };
 
 export function systemReducer(
   state = initialState,
   action: {
     type: string;
-    isPageLoading?: boolean;
-    isSideBarShown?: boolean;
-    userMsg?: string;
+    isPageLoading: boolean;
+    isSideBarShown: boolean;
+    userMsg: UserMsg;
   }
 ) {
   switch (action.type) {

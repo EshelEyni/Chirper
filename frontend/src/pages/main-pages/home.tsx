@@ -4,15 +4,13 @@ import { PostEdit } from "../../components/post/post-edit";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { getPosts } from "../../store/actions/post.actions";
-import { PostList } from "../../components/post/post-category-list";
+import { PostList } from "../../components/post/post-list";
 import { AppDispatch } from "../../store/types";
 import { setIsPageLoading } from "../../store/actions/system.actions";
 import { PageLoader } from "../../components/loaders/page-loader";
 
 export const HomePage = () => {
-  const { isPageLoading } = useSelector(
-    (state: RootState) => state.systemModule
-  );
+  const { isPageLoading } = useSelector((state: RootState) => state.systemModule);
   const { posts } = useSelector((state: RootState) => state.postModule);
   const dispatch: AppDispatch = useDispatch();
 

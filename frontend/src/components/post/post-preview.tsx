@@ -32,6 +32,19 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         </header>
         <div className="post-preview-body">
           <p>{post.text}</p>
+          {post.imgUrls && post.imgUrls.length > 0 && <img src={post.imgUrls[0].url} alt="" />}
+          {post.gifUrl && <img src={post.gifUrl.url} alt="" />}
+          {post.poll && (
+            <div className="poll-container">
+              <ul>
+                {post.poll.options.map((option, idx) => (
+                  <li key={idx}>
+                    <span>{option}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <footer className="flex">
           <PostPreviewActionBtns post={post} />

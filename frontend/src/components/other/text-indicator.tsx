@@ -28,11 +28,9 @@ export const TextIndicator: React.FC<TextIndicatorProps> = ({ textLength }) => {
   }, [textLength]);
 
   return (
-    <div className="progress-bar" style={progressBarStyle}>
+    <div className="text-indicator" style={progressBarStyle}>
       {textLength > 227 && (
-        <span className={textLength >= 247 ? "text-danger" : ""}>
-          {247 - textLength}
-        </span>
+        <span className={textLength >= 247 ? "text-danger" : ""}>{247 - textLength}</span>
       )}
     </div>
   );

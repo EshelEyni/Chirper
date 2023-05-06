@@ -6,7 +6,10 @@ export type PostDocument = Post & Document;
 
 export interface NewPost {
   text: string;
-  imgUrls?: string[];
+  imgUrls?: {
+    url: string;
+    sortOrder: number;
+  }[];
   videoUrl?: string;
   gifUrl?: Gif;
   poll?: Poll;
@@ -35,7 +38,7 @@ export interface Post extends NewPost {
 }
 
 export interface Poll {
-  choices: string[];
+  options: string[];
   length: {
     days: number;
     hours: number;

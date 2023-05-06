@@ -21,10 +21,10 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   }
 }
 
-async function getGifCategroies(): Promise<Gif[]> {
+async function getGifCategroies(): Promise<GifCategory[]> {
   try {
     const response = (await httpService.get(`gif/categories`)) as unknown as JsendResponse;
-    return utilService.handleServerResponse<Gif[]>(response);
+    return utilService.handleServerResponse<GifCategory[]>(response);
   } catch (err) {
     console.log("gifService: Cannot get gifs");
     throw err;

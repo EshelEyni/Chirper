@@ -1,16 +1,10 @@
-import { ChangeEvent } from "react";
-
-export const uploadImg = async (
-  ev: ChangeEvent<HTMLInputElement>
-): Promise<string | undefined> => {
+export const uploadImgToCloudinary = async (file: File): Promise<string> => {
   const CLOUD_NAME = "dng9sfzqt";
   const UPLOAD_PRESET = "hoav12li";
   const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
   const FORM_DATA = new FormData();
 
-  const img = ev.target.files![0];
-  if (!img) return;
-  FORM_DATA.append("file", img);
+  FORM_DATA.append("file", file);
   FORM_DATA.append("upload_preset", UPLOAD_PRESET);
 
   try {
@@ -19,8 +13,9 @@ export const uploadImg = async (
       body: FORM_DATA,
     });
     const { url } = await res.json();
-    return url;
+    return url as string;
   } catch (err) {
     console.error("ERROR!", err);
+    return "";
   }
 };

@@ -11,3 +11,8 @@ export interface JsendResponse {
 export interface IAsyncLocalStorageStore {
   loggedinUser?: User;
 }
+
+export interface UserMsg {
+  type: "info" | "success" | "error" | "warning" | "";
+  text: string;
+}

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef } from "react";
+import { ReactElement, useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { FaGlobeAmericas } from "react-icons/fa";
@@ -20,6 +20,7 @@ import { PollEdit } from "../poll/poll-edit";
 import { PostDateTitle } from "../other/post-date-title";
 import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { uploadImgToCloudinary } from "../../services/upload.service";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -45,9 +46,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
-  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean }[]>([]);
+
+  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
   const [gifUrl, setGifUrl] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -67,32 +70,61 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     },
   });
 
+  const [isBtnCreatePostDisabled, setIsBtnCreatePostDisabled] = useState<boolean>(true);
+  const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
+
+  useEffect(() => {
+    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgUrls.length > 0 || gifUrl) {
+      setIsBtnCreatePostDisabled(false);
+    } else {
+      setIsBtnCreatePostDisabled(true);
+    }
+  }, [newPost, imgUrls, gifUrl]);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
-    // setPost({ ...post, text });
     dispatch(setNewPost({ ...newPost, text }));
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
 
   const onAddPost = async () => {
-    if (!loggedinUser) return;
-    newPost.userId = loggedinUser._id;
+    try {
+      setPostSaveInProgress(true);
+      if (!loggedinUser) return;
+      newPost.userId = loggedinUser.id;
 
-    if (imgUrls.length > 0) newPost.imgUrls = imgUrls.map((img) => img.url);
-    if (gifUrl) newPost.gifUrl = gifUrl;
-    if (poll) newPost.poll = { ...poll, createdAt: Date.now() };
+      if (imgUrls.length > 0) {
+        const prms = imgUrls.map(async (img, idx) => {
+          const currImgUrl = await uploadImgToCloudinary(img.file);
+          return { url: currImgUrl, sortOrder: idx };
+        });
+        const savedImgUrl = await Promise.all(prms);
+        newPost.imgUrls = savedImgUrl.filter((img) => img.url);
+      }
 
-    await dispatch(addPost(newPost));
+      if (gifUrl) newPost.gifUrl = gifUrl;
+      if (poll) newPost.poll = { ...poll };
+      await dispatch(addPost(newPost));
 
-    dispatch(
-      setNewPost({
-        text: "",
-        audience: "everyone",
-        repliersType: "everyone",
-      } as NewPost)
-    );
-    setIsPickerShown(false);
+      dispatch(
+        setNewPost({
+          text: "",
+          audience: "everyone",
+          repliersType: "everyone",
+        } as NewPost)
+      );
+
+      setIsPickerShown(false);
+      setImgUrls([]);
+      setGifUrl(null);
+      setPoll(null);
+      setPostSaveInProgress(false);
+      setIsBtnCreatePostDisabled(true);
+    } catch (err) {
+      setPostSaveInProgress(false);
+      console.log(err);
+    }
   };
 
   const openPicker = () => {
@@ -108,8 +140,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   };
 
   return (
-    <section className="post-edit" onClick={openPicker}>
+    <section
+      className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
+      onClick={openPicker}
+    >
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
+      {postSaveInProgress && <span className="progress-bar"></span>}
 
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
@@ -167,7 +203,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               )}
               <BtnCreatePost
                 isLinkToNestedPage={false}
-                isValid={0 < newPost.text.length && newPost.text.length <= 247}
+                isDisabled={isBtnCreatePostDisabled}
                 onAddPost={onAddPost}
               />
             </div>

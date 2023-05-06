@@ -43,9 +43,8 @@ export const PostLocation = () => {
   };
 
   const fetchLocations = async () => {
-    // const locations = await locationService.getUserDefaultLocations();
-    // if(!locations) return;
-    const locations = storageService.get("locations");
+    const locations = await locationService.getUserDefaultLocations();
+    if (!locations) return;
     if (newPost.location) {
       const isLocationExist = locations.find((location: Location) => {
         return location.placeId === newPost?.location?.placeId;

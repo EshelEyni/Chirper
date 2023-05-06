@@ -41,7 +41,7 @@ export const PostSchedule = () => {
             );
 
       case "day":
-        return newPost.schedule ? newPost.schedule.getDate() : new Date().getDate();
+        return newPost.schedule ? newPost.schedule.getDate() : new Date().getDate() + 5;
 
       case "year":
         return newPost.schedule ? newPost.schedule.getFullYear() : new Date().getFullYear();
@@ -241,6 +241,7 @@ export const PostSchedule = () => {
 
   const onClearSchedule = () => {
     navigate("");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { schedule, ...postWithOutSchedule } = newPost;
     dispatch(setNewPost(postWithOutSchedule));
   };

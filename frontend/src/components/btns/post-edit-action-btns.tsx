@@ -17,8 +17,8 @@ import { setNewPost } from "../../store/actions/post.actions";
 import { IoLocationSharp } from "react-icons/io5";
 
 interface PostEditActionBtnsProps {
-  imgUrls: { url: string; isLoading: boolean }[];
-  setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
+  imgUrls: { url: string; isLoading: boolean; file: File }[];
+  setImgUrls: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
   gifUrl: Gif | null;
   setGifUrl: (url: Gif | null) => void;
   isPickerShown: boolean;
@@ -88,7 +88,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       onClickFn: () => {
         if (!isPickerShown) return;
         setPoll({
-          choices: ["", ""],
+          options: ["", ""],
           length: {
             days: 1,
             hours: 0,
@@ -144,11 +144,16 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     const { files } = ev.target;
     if (!files) return;
 
-    let newImgUrls = [...imgUrls];
+    const newImgUrls = [...imgUrls];
 
     const msg = "Please choose either 1 GIF or up to 4 photos.";
     if (files.length > 4 || files.length + imgUrls.length > 4) {
-      dispatch(setUserMsg(msg));
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: msg,
+        })
+      );
       return;
     }
 
@@ -158,11 +163,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
 
         if (file) {
           const currIdx = newImgUrls.length;
-          newImgUrls.push({ url: "", isLoading: true });
+          newImgUrls.push({ url: "", isLoading: true, file });
           setImgUrls([...newImgUrls]);
 
           const dataUrl = await readAsDataURL(file);
-          newImgUrls[currIdx] = { url: dataUrl, isLoading: false };
+          newImgUrls[currIdx] = { url: dataUrl, isLoading: false, file };
           setImgUrls([...newImgUrls]);
         }
       } catch (error) {
@@ -192,7 +197,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   const onOpenPostLocation = () => {
     if (!loggedinUser?.isApprovedLocation) {
       const msg = "Please set your location in your profile first.";
-      dispatch(setUserMsg(msg));
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: msg,
+        })
+      );
       return;
     }
     if (!isPickerShown) return;

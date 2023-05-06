@@ -33,7 +33,7 @@ export function postReducer(
     case "REMOVE_POST":
       return {
         ...state,
-        posts: state.posts.filter((post) => post._id !== action.postId),
+        posts: state.posts.filter((post) => post.id !== action.postId),
       };
     case "ADD_POST":
       return { ...state, posts: [action.post, ...state.posts] };

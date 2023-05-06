@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ContentLoader } from "../loaders/content-loader";
-import { GifList } from "./gif-list";
 import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 import { gifService } from "../../services/gif.service";
 
@@ -39,14 +38,11 @@ export const GifCategoryList: React.FC<GifCategoryListProps> = ({
         gifCategories.map((gifCategory, idx) => {
           return (
             <div
-              className={
-                "gif-category-preview" +
-                (idx === gifCategories.length - 1 ? " last" : "")
-              }
-              key={gifCategory._id}
+              className={"gif-category-preview" + (idx === gifCategories.length - 1 ? " last" : "")}
+              key={gifCategory.id}
               onClick={() => handleCategoryClick(gifCategory.name)}
             >
-              <img src={gifCategory.img} alt="gif-category" />
+              <img src={gifCategory.imgUrl} alt="gif-category" />
               <h5 className="gif-category-preview-title">{gifCategory.name}</h5>
             </div>
           );

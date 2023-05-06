@@ -2,7 +2,7 @@ import { User } from "../../../../shared/interfaces/user.interface";
 import { userService } from "../../services/user.service";
 
 const demoUser: User = {
-  _id: "64544a08a0516f8d63e0ed9b",
+  id: "64544a08a0516f8d63e0ed9b",
   username: "demo",
   password: "123",
   fullname: "Demo User",

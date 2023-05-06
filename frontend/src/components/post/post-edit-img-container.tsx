@@ -3,14 +3,11 @@ import { AiOutlineClose } from "react-icons/ai";
 import { ContentLoader } from "../loaders/content-loader";
 
 interface PostEditImgProps {
-  imgUrls: { url: string; isLoading: boolean }[];
-  setImgUrls: (urls: { url: string; isLoading: boolean }[]) => void;
+  imgUrls: { url: string; isLoading: boolean; file: File }[];
+  setImgUrls: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
 }
 
-export const PostEditImg: React.FC<PostEditImgProps> = ({
-  imgUrls,
-  setImgUrls,
-}) => {
+export const PostEditImg: React.FC<PostEditImgProps> = ({ imgUrls, setImgUrls }) => {
   const onRemoveImg = (idx: number) => {
     const newImgUrls = [...imgUrls];
     newImgUrls.splice(idx, 1);
@@ -20,16 +17,11 @@ export const PostEditImg: React.FC<PostEditImgProps> = ({
   return (
     <div
       className={
-        "post-edit-imgs-container" +
-        (imgUrls.length > 2 ? " grid" : "") +
-        ` cols-${imgUrls.length}`
+        "post-edit-imgs-container" + (imgUrls.length > 2 ? " grid" : "") + ` cols-${imgUrls.length}`
       }
     >
       {imgUrls.map((imgUrl, idx) => (
-        <div
-          className={"post-edit-img-container" + ` img-${idx + 1}`}
-          key={utilService.makeKey()}
-        >
+        <div className={"post-edit-img-container" + ` img-${idx + 1}`} key={utilService.makeKey()}>
           <button className="btn-remove-content" onClick={() => onRemoveImg(idx)}>
             <AiOutlineClose className="remove-content-icon" />
           </button>

@@ -7,15 +7,24 @@ const { gifSchema } = require("../gif/gif.model");
 const mongoose = require("mongoose");
 const { logger } = require("../../services/logger.service");
 
-const pollSchema = new mongoose.Schema({
-  choices: [String],
-  length: {
-    days: Number,
-    hours: Number,
-    minutes: Number,
-  },
-  createdAt: Number,
+const imgUrlsSchema = new mongoose.Schema({
+  url: String,
+  sortOrder: Number,
 });
+
+const pollSchema = new mongoose.Schema(
+  {
+    options: [String],
+    length: {
+      days: Number,
+      hours: Number,
+      minutes: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const locationSchema = new mongoose.Schema({
   placeId: String,
@@ -52,15 +61,13 @@ const postSchema = new mongoose.Schema(
     },
     isPublic: {
       type: Boolean,
-      required: true,
-      default: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     text: String,
-    imgUrls: [String],
+    imgUrls: [imgUrlsSchema],
     videoUrl: String,
     gifUrl: gifSchema,
     poll: pollSchema,
@@ -106,14 +113,17 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
 });
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
-  this.set("schedule", new Date());
+  if (this.get("schedule") !== null) {
+    this.set("isPublic", false);
+  } else {
+    this.set("isPublic", true);
+  }
   next();
 });
 
 postSchema.post("save", function (this: Document) {
   logger.success("Post saved ", this.get("id"));
 });
-
 
 postSchema.virtual("user", {
   ref: "User",
@@ -122,10 +132,13 @@ postSchema.virtual("user", {
   justOne: true,
 });
 
-postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
-  this.find({ isPublic: true });
-  next();
-});
+// postSchema.pre(
+//   /^find/,
+//   function (this: Query<Document, Post>, next: (err?: Error) => void) {
+//     this.find({ isPublic: true });
+//     next();
+//   }
+// );
 
 const PostModel = mongoose.model("Post", postSchema);
 

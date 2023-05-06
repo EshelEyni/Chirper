@@ -1,13 +1,13 @@
 import { AiOutlineClose } from "react-icons/ai";
-import { GifUrl } from "../../../../shared/interfaces/gif.interface";
+import { Gif as GitType } from "../../../../shared/interfaces/gif.interface";
 import { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ContentLoader } from "../loaders/content-loader";
 import { Fragment } from "react";
 
 interface GifProps {
-  gifUrl: GifUrl;
-  setGifUrl: (url: GifUrl | null) => void;
+  gifUrl: GitType;
+  setGifUrl: (url: GitType | null) => void;
 }
 
 export const Gif: React.FC<GifProps> = ({ gifUrl, setGifUrl }) => {
@@ -24,11 +24,8 @@ export const Gif: React.FC<GifProps> = ({ gifUrl, setGifUrl }) => {
 
   return (
     <Fragment>
-      <ContentLoader />
-      <div
-        className="gif"
-        style={{ visibility: isLoading ? "hidden" : "visible" }}
-      >
+      {isLoading && <ContentLoader />}
+      <div className="gif" style={{ visibility: isLoading ? "hidden" : "visible" }}>
         <button className="btn-remove-content" onClick={() => setGifUrl(null)}>
           <AiOutlineClose className="remove-content-icon" />
         </button>

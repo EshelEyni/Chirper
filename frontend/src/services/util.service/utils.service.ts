@@ -1,6 +1,8 @@
 import { JsendResponse } from "../../../../shared/interfaces/system.interface";
+type AnyFunction = (...args: any[]) => any;
 
-function formatTime(timestamp: number): string {
+function formatTime(currDate: Date): string {
+  const timestamp = new Date(currDate).getTime();
   const now = Date.now();
   const difference = now - timestamp;
   const seconds = Math.floor(difference / 1000);
@@ -44,11 +46,11 @@ function makeKey(length = 5): string {
   return txt;
 }
 
-function debounce(func: Function, delay: number) {
-  let inDebounce: any;
+function debounce(func: AnyFunction, delay: number) {
+  let timeoutId: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: any[]) {
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func.apply(this, args), delay);
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
   };
 }
 

@@ -90,7 +90,7 @@
     padding: rem(8px);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: rgb(63,64,60);
+    background-color: rgb(63, 64, 60);
     color: white;
     margin: rem(8px);
     &:hover {
@@ -104,6 +104,42 @@
       transform: translate(-50%, 50%);
       width: rem(18px);
       height: rem(18px);
+    }
+  }
+}
+
+@mixin progress-bar($height: 5px, $loaderLength: 10s) {
+  .progress-bar {
+    width: 100%;
+    height: $height;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .progress-bar::after {
+    content: "";
+    box-sizing: border-box;
+    width: 0;
+    height: $height;
+    background: var(--color-primary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    animation: animFw $loaderLength linear infinite;
+  }
+
+  @keyframes animFw {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
     }
   }
 }

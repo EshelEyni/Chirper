@@ -1,10 +1,6 @@
-import {
-  Dispatch,
-  SetStateAction,
-  FC
-} from "react";
+import { Dispatch, SetStateAction, FC } from "react";
 import { Poll } from "../../../../shared/interfaces/post.interface";
-import { PollChoicesInput } from "./poll-choices-input";
+import { PollOptionsInput } from "./poll-options-input";
 import { PollLengthInputs } from "./poll-length-inputs";
 
 interface PollEditProps {
@@ -19,7 +15,7 @@ export const PollEdit: FC<PollEditProps> = ({ poll, setPoll }) => {
 
   return (
     <div className="poll-edit">
-      <PollChoicesInput poll={poll} setPoll={setPoll} />
+      <PollOptionsInput poll={poll} setPoll={setPoll} />
       <PollLengthInputs poll={poll} setPoll={setPoll} />
       <button className="btn-remove-poll" onClick={onRemovePoll}>
         Remove poll

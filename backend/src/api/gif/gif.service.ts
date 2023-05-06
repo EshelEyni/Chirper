@@ -1,9 +1,10 @@
-const logger = require("../../services/logger.service");
+import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 
+const { logger } = require("../../services/logger.service");
 const config = require("../../config");
 const fetch = require("cross-fetch");
-const { getCollection } = require("../../services/db.service");
-import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
+const { GifModel, GifCategoryModel } = require("./gif.model");
+const { APIFeatures } = require("../../services/util.service");
 
 const pkg = require("@giphy/js-fetch-api");
 const { GiphyFetch } = pkg;
@@ -97,9 +98,11 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
 
 async function getGifCategories(): Promise<GifCategory[]> {
   try {
-    const gifCollection = await getCollection("gif_categories");
-    const gifCategories = await gifCollection.find({}).sort({ sortOrder: 1 }).toArray();
-    return gifCategories as unknown as GifCategory[];
+    const features = new APIFeatures(GifCategoryModel.find(), {
+      sort: "sortOrder",
+    }).sort();
+    const gifHeaders = await features.query;
+    return gifHeaders as unknown as GifCategory[];
   } catch (err) {
     logger.error(`cannot get gif headers`, err as Error);
     throw err;
@@ -112,19 +115,16 @@ async function getGifByCategory(category: string): Promise<Gif[]> {
 
 async function _getGifFromDb(category: string): Promise<Gif[]> {
   try {
-    const gifCollection = await getCollection("gifs");
-    const gifs = await gifCollection
-      .find(
-        { category },
-        {
-          projection: {
-            url: 1,
-            staticUrl: 1,
-          },
-        }
-      )
-      .sort({ sortOrder: 1 })
-      .toArray();
+    const features = new APIFeatures(GifModel.find(), {
+      category,
+      sort: "sortOrder",
+      fields: "url,staticUrl",
+    })
+      .filter()
+      .sort()
+      .limitFields();
+    const gifs = await features.query;
+
     return gifs as unknown as Gif[];
   } catch (err) {
     logger.error(`cannot get gif`, err as Error);

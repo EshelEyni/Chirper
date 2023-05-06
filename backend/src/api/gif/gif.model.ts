@@ -5,9 +5,18 @@ const gifSchema = new mongoose.Schema({
   staticUrl: String,
 });
 
+const gifCategorySchema = new mongoose.Schema({
+  name: String,
+  sortOrder: Number,
+  imgUrl: String,
+});
+
 const GifModel = mongoose.model("Gif", gifSchema);
+const GifCategoryModel = mongoose.model("GifCategory", gifCategorySchema, "gif_categories");
 
 module.exports = {
   gifSchema,
   GifModel,
+  gifCategorySchema,
+  GifCategoryModel,
 };

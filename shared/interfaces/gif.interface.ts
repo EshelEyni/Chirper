@@ -1,7 +1,7 @@
 export interface GifCategory {
   _id: string;
   name: string;
-  img: string;
+  imgUrl: string;
   sortOrder: number;
 }
 

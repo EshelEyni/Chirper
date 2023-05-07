@@ -6,6 +6,7 @@ import { UserPreview } from "../user/user-preview";
 import { NavList } from "./nav-list";
 import { useState } from "react";
 import { SideBarOptionsModal } from "../modals/side-bar-options-modal";
+import { userService } from "../../services/user.service";
 
 export const SideBar = () => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
@@ -20,14 +21,14 @@ export const SideBar = () => {
       <div className="main-container">
         <Logo />
         <NavList />
-        <BtnCreatePost isLinkToNestedPage={true} isValid={true} />
+        <BtnCreatePost isLinkToNestedPage={true} isDisabled={false} />
       </div>
       {loggedinUser && (
         <div className="user-preview-container" onClick={toggleModal}>
           <UserPreview user={loggedinUser} isEllipsisShown={true} />
           {isModalOpen && (
             <SideBarOptionsModal
-              loggedinUser={loggedinUser}
+              loggedinUser={userService.getMiniUser(loggedinUser)}
               toggleModal={toggleModal}
             />
           )}

@@ -1,4 +1,4 @@
-import { MiniUser } from "../../types/user.interface";
+import { MiniUser } from "../../../../shared/interfaces/user.interface";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 
 interface UserPreviewProps {
@@ -6,14 +6,11 @@ interface UserPreviewProps {
   isEllipsisShown?: boolean;
 }
 
-export const UserPreview: React.FC<UserPreviewProps> = ({
-  user,
-  isEllipsisShown,
-}) => {
+export const UserPreview: React.FC<UserPreviewProps> = ({ user, isEllipsisShown }) => {
   if (!user) return <div></div>;
   return (
     <div className="user-preview">
-      <div className="main-container">
+      <div className="user-preview-main-container">
         <img src={user.imgUrl} alt="user-img" className="user-preview-img" />
         <div className="user-preview-info">
           <h3>{user.fullname}</h3>

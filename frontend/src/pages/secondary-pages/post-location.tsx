@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, Fragment } from "react";
 import { BtnClose } from "../../components/btns/btn-close";
 import { setNewPost } from "../../store/actions/post.actions";
-import { storageService } from "../../services/storage.service";
 import { Location } from "../../../../shared/interfaces/location.interface";
 import { LocationSearchBar } from "../../components/location/location-search-bar";
 import { LocationList } from "../../components/location/location-list";
@@ -18,7 +17,7 @@ export const PostLocation = () => {
   const navigate = useNavigate();
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [locations, setLocations] = useState<any[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isNoResults, setisNoResults] = useState<boolean>(false);
 
@@ -38,6 +37,7 @@ export const PostLocation = () => {
 
   const onClearLocation = () => {
     navigate("");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { location, ...postWithOutLocation } = newPost;
     dispatch(setNewPost(postWithOutLocation));
   };

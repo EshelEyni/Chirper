@@ -1,9 +1,16 @@
 .btn-close-container {
+  margin: rem(5px) 0;
+
+  .btn-close {
     background-color: transparent;
     border: none;
     position: relative;
+    padding: rem(5px);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  .btn-close {
     > svg {
       width: rem(16px);
       height: rem(16px);

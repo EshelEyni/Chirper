@@ -1,7 +1,7 @@
 .post-edit-action-btns {
   display: flex;
   gap: rem(5px);
- 
+
   .post-edit-action-btn {
     height: rem(36px);
     width: rem(36px);
@@ -42,8 +42,8 @@
       &:hover {
         &::before {
           background-color: var(--color-primary);
-         
           transform: translate(-50%, -50%) scale(1);
+          opacity: 0.2;
         }
       }
     }

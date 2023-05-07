@@ -11,7 +11,7 @@ export interface User {
 }
 
 export interface MiniUser {
-  _id: string;
+  id: string;
   username: string;
   fullname: string;
   imgUrl: string;

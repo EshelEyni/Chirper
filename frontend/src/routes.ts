@@ -8,6 +8,7 @@ import { HomePage } from "./pages/main-pages/home";
 import { MessagesPage } from "./pages/main-pages/messages";
 import { NotificationsPage } from "./pages/main-pages/notifications";
 import { ProfileDetails } from "./pages/main-pages/profile-details";
+import { ListsPage } from "./pages/main-pages/lists-page";
 
 interface Route {
   path: string;
@@ -30,6 +31,10 @@ export const routes: Route[] = [
   {
     path: "messages",
     component: MessagesPage,
+  },
+  {
+    path: "lists",
+    component: ListsPage,
   },
   {
     path: "notifications",

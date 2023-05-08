@@ -17,8 +17,8 @@ import { setNewPost } from "../../store/actions/post.actions";
 import { IoLocationSharp } from "react-icons/io5";
 
 interface PostEditActionBtnsProps {
-  imgUrls: { url: string; isLoading: boolean; file: File }[];
-  setImgUrls: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
+  imgs: { url: string; isLoading: boolean; file: File }[];
+  setImgs: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
   gifUrl: Gif | null;
   setGifUrl: (url: Gif | null) => void;
   isPickerShown: boolean;
@@ -31,8 +31,8 @@ export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locatio
 type ElementVisibility = Record<UIElement, boolean>;
 
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
-  imgUrls,
-  setImgUrls,
+  imgs,
+  setImgs,
   gifUrl,
   setGifUrl,
   isPickerShown,
@@ -55,9 +55,9 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (imgUrls.length < 3) setIsMultiple(true);
+    if (imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [imgUrls]);
+  }, [imgs]);
 
   const btns: {
     name: string;
@@ -70,12 +70,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
-      isDisabled: imgUrls.length === 4 || !!gifUrl || !!poll,
+      isDisabled: imgs.length === 4 || !!gifUrl || !!poll,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll,
+      isDisabled: imgs.length > 0 || !!gifUrl || !!poll,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -84,7 +84,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgUrls.length > 0 || !!gifUrl || !!poll || !!newPost.schedule,
+      isDisabled: imgs.length > 0 || !!gifUrl || !!poll || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         setPoll({
@@ -144,10 +144,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     const { files } = ev.target;
     if (!files) return;
 
-    const newImgUrls = [...imgUrls];
+    const newImgs = [...imgs];
 
     const msg = "Please choose either 1 GIF or up to 4 photos.";
-    if (files.length > 4 || files.length + imgUrls.length > 4) {
+    if (files.length > 4 || files.length + imgs.length > 4) {
       dispatch(
         setUserMsg({
           type: "info",
@@ -162,13 +162,13 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
         const file = files[i];
 
         if (file) {
-          const currIdx = newImgUrls.length;
-          newImgUrls.push({ url: "", isLoading: true, file });
-          setImgUrls([...newImgUrls]);
+          const currIdx = newImgs.length;
+          newImgs.push({ url: "", isLoading: true, file });
+          setImgs([...newImgs]);
 
           const dataUrl = await readAsDataURL(file);
-          newImgUrls[currIdx] = { url: dataUrl, isLoading: false, file };
-          setImgUrls([...newImgUrls]);
+          newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
+          setImgs([...newImgs]);
         }
       } catch (error) {
         console.error("Error reading file:", error);
@@ -232,7 +232,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                 <input
                   type={btn.type}
                   multiple={isMultiple}
-                  disabled={imgUrls.length === 4 || !isPickerShown}
+                  disabled={imgs.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadImgs}
                   style={{ display: "none" }}

@@ -9,7 +9,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost, Poll } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import { addPost, setNewPost } from "../../store/actions/post.actions";
-import { PostEditImg } from "./post-edit-img-container";
+import { PostEditImg } from "./post-edit-img";
 import { Gif as GifType } from "../../../../shared/interfaces/gif.interface";
 import { Gif } from "../gif/gif";
 import { BtnClose } from "../btns/btn-close";
@@ -50,7 +50,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
 
-  const [imgUrls, setImgUrls] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
+  const [imgs, setImgs] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
   const [gifUrl, setGifUrl] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -74,12 +74,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
 
   useEffect(() => {
-    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgUrls.length > 0 || gifUrl) {
+    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgs.length > 0 || gifUrl) {
       setIsBtnCreatePostDisabled(false);
     } else {
       setIsBtnCreatePostDisabled(true);
     }
-  }, [newPost, imgUrls, gifUrl]);
+  }, [newPost, imgs, gifUrl]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
@@ -94,13 +94,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       if (!loggedinUser) return;
       newPost.userId = loggedinUser.id;
 
-      if (imgUrls.length > 0) {
-        const prms = imgUrls.map(async (img, idx) => {
+      if (imgs.length > 0) {
+        const prms = imgs.map(async (img, idx) => {
           const currImgUrl = await uploadImgToCloudinary(img.file);
           return { url: currImgUrl, sortOrder: idx };
         });
         const savedImgUrl = await Promise.all(prms);
-        newPost.imgUrls = savedImgUrl.filter((img) => img.url);
+        newPost.imgs = savedImgUrl.filter(img => img.url);
       }
 
       if (gifUrl) newPost.gifUrl = gifUrl;
@@ -116,7 +116,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       );
 
       setIsPickerShown(false);
-      setImgUrls([]);
+      setImgs([]);
       setGifUrl(null);
       setPoll(null);
       setPostSaveInProgress(false);
@@ -166,7 +166,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             onChange={handleTextChange}
             ref={textAreaRef}
           />
-          {imgUrls.length > 0 && <PostEditImg imgUrls={imgUrls} setImgUrls={setImgUrls} />}
+          {imgs.length > 0 && <PostEditImg imgs={imgs} setImgs={setImgs} />}
 
           {gifUrl && <Gif gifUrl={gifUrl} setGifUrl={setGifUrl} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
@@ -183,8 +183,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
             <PostEditActionBtns
-              imgUrls={imgUrls}
-              setImgUrls={setImgUrls}
+              imgs={imgs}
+              setImgs={setImgs}
               gifUrl={gifUrl}
               setGifUrl={setGifUrl}
               isPickerShown={isPickerShown}

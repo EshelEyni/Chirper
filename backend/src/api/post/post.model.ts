@@ -67,7 +67,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     text: String,
-    imgUrls: [imgUrlsSchema],
+    imgs: [imgUrlsSchema],
     videoUrl: String,
     gifUrl: gifSchema,
     poll: pollSchema,

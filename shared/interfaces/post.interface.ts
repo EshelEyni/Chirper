@@ -6,7 +6,7 @@ export type PostDocument = Post & Document;
 
 export interface NewPost {
   text: string;
-  imgUrls?: {
+  imgs?: {
     url: string;
     sortOrder: number;
   }[];

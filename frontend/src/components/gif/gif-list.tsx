@@ -6,15 +6,15 @@ import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifListProps {
   gifs: Gif[];
-  setGifUrl: (url: Gif | null) => void;
+  setGif: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifList: React.FC<GifListProps> = ({ gifs, setGifUrl, onToggleElementVisibility }) => {
+export const GifList: React.FC<GifListProps> = ({ gifs, setGif, onToggleElementVisibility }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
-    setGifUrl({ url: gif.url, staticUrl: gif.staticUrl });
+    setGif({ url: gif.url, staticUrl: gif.staticUrl, description: gif.description });
     onToggleElementVisibility("gifPicker");
   };
 
@@ -51,7 +51,11 @@ export const GifList: React.FC<GifListProps> = ({ gifs, setGifUrl, onToggleEleme
           gifs.map((gif, idx) => {
             return (
               <div className="gif-list-item" key={idx} onClick={() => handleGifClick(gif)}>
-                <img src={isPlaying ? gif.url : gif.staticUrl} alt="gif" loading="lazy" />
+                <img
+                  src={isPlaying ? gif.url : gif.staticUrl}
+                  alt={gif.description}
+                  loading="lazy"
+                />
               </div>
             );
           })}

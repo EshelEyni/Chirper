@@ -7,7 +7,7 @@ import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
 import React, { useEffect, useState, useRef } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
-import { Gif } from "../../../../shared/interfaces/gif.interface";
+import { Gif as GifType } from "../../../../shared/interfaces/gif.interface";
 import { Poll, Emoji } from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -19,8 +19,8 @@ import { IoLocationSharp } from "react-icons/io5";
 interface PostEditActionBtnsProps {
   imgs: { url: string; isLoading: boolean; file: File }[];
   setImgs: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
-  gifUrl: Gif | null;
-  setGifUrl: (url: Gif | null) => void;
+  gif: GifType | null;
+  setGif: (url: GifType | null) => void;
   isPickerShown: boolean;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
@@ -33,8 +33,8 @@ type ElementVisibility = Record<UIElement, boolean>;
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   imgs,
   setImgs,
-  gifUrl,
-  setGifUrl,
+  gif,
+  setGif,
   isPickerShown,
   poll,
   setPoll,
@@ -70,12 +70,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
-      isDisabled: imgs.length === 4 || !!gifUrl || !!poll,
+      isDisabled: imgs.length === 4 || !!gif || !!poll,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: imgs.length > 0 || !!gifUrl || !!poll,
+      isDisabled: imgs.length > 0 || !!gif || !!poll,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -84,7 +84,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgs.length > 0 || !!gifUrl || !!poll || !!newPost.schedule,
+      isDisabled: imgs.length > 0 || !!gif || !!poll || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         setPoll({
@@ -277,8 +277,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       </div>
       {elementVisibility.gifPicker && (
         <GifPickerModal
-          gifUrl={gifUrl}
-          setGifUrl={setGifUrl}
+          gif={gif}
+          setGif={setGif}
           onToggleElementVisibility={onToggleElementVisibility}
         />
       )}

@@ -79,13 +79,16 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
       sort: "relevant",
     });
 
+    console.log(Fetchedgifs_1[0]);
+
     const Fetchedgifs = [...Fetchedgifs_1, ...Fetchedgifs_2];
 
-    const gifs = Fetchedgifs.map((gif) => {
+    const gifs = Fetchedgifs.map(gif => {
       return {
         _id: gif.id.toString(),
         url: gif.images.original.url,
         staticUrl: gif.images.original_still.url,
+        description: gif.title,
       };
     });
 

@@ -1,7 +1,4 @@
-import { Post, PostDocument } from "../../../../shared/interfaces/post.interface";
-import { Document, Query } from "mongoose";
-import { MiniUser } from "../../../../shared/interfaces/user.interface";
-import { log } from "console";
+import { Document } from "mongoose";
 
 const { gifSchema } = require("../gif/gif.model");
 const mongoose = require("mongoose");
@@ -69,7 +66,7 @@ const postSchema = new mongoose.Schema(
     text: String,
     imgs: [imgUrlsSchema],
     videoUrl: String,
-    gifUrl: gifSchema,
+    gif: gifSchema,
     poll: pollSchema,
     schedule: Date,
     location: locationSchema,
@@ -98,7 +95,7 @@ const postSchema = new mongoose.Schema(
 function validateContent(post: Document) {
   return (
     post.get("text") ||
-    post.get("gifUrl") ||
+    post.get("gif") ||
     (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
     post.get("poll")
   );
@@ -106,7 +103,7 @@ function validateContent(post: Document) {
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
-    next(new Error("At least one of text, gifUrl, imgUrls, or poll is required"));
+    next(new Error("At least one of text, gif, imgUrls, or poll is required"));
   } else {
     next();
   }

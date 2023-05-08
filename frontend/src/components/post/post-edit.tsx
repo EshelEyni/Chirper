@@ -11,7 +11,7 @@ import { AppDispatch } from "../../store/types";
 import { addPost, setNewPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { Gif as GifType } from "../../../../shared/interfaces/gif.interface";
-import { Gif } from "../gif/gif";
+import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
 import { UserImg } from "../user/user-img";
 import { BtnToggleAudience } from "../btns/btn-toggle-audience";
@@ -51,7 +51,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
 
   const [imgs, setImgs] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
-  const [gifUrl, setGifUrl] = useState<GifType | null>(null);
+  const [gif, setGif] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
 
@@ -74,12 +74,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
 
   useEffect(() => {
-    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgs.length > 0 || gifUrl) {
+    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgs.length > 0 || gif) {
       setIsBtnCreatePostDisabled(false);
     } else {
       setIsBtnCreatePostDisabled(true);
     }
-  }, [newPost, imgs, gifUrl]);
+  }, [newPost, imgs, gif]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
@@ -103,7 +103,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         newPost.imgs = savedImgUrl.filter(img => img.url);
       }
 
-      if (gifUrl) newPost.gifUrl = gifUrl;
+      if (gif) newPost.gif = gif;
       if (poll) newPost.poll = { ...poll };
       await dispatch(addPost(newPost));
 
@@ -117,7 +117,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
       setIsPickerShown(false);
       setImgs([]);
-      setGifUrl(null);
+      setGif(null);
       setPoll(null);
       setPostSaveInProgress(false);
       setIsBtnCreatePostDisabled(true);
@@ -168,7 +168,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           />
           {imgs.length > 0 && <PostEditImg imgs={imgs} setImgs={setImgs} />}
 
-          {gifUrl && <Gif gifUrl={gifUrl} setGifUrl={setGifUrl} />}
+          {gif && <GifEdit gif={gif} setGif={setGif} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
           <div className="btn-replires-location-container">
@@ -185,8 +185,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             <PostEditActionBtns
               imgs={imgs}
               setImgs={setImgs}
-              gifUrl={gifUrl}
-              setGifUrl={setGifUrl}
+              gif={gif}
+              setGif={setGif}
               isPickerShown={isPickerShown}
               poll={poll}
               setPoll={setPoll}

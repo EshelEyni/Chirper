@@ -63,6 +63,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
         className="gif-search-bar-input"
         type="text"
         placeholder="Search for GIFs"
+        autoComplete="off"
         onChange={utilService.debounce(handleChange, 1000)}
         onFocus={() => setIsSearchBarFocused(true)}
         onBlur={() => setIsSearchBarFocused(false)}

@@ -4,6 +4,7 @@ const gifSchema = new mongoose.Schema(
   {
     url: String,
     staticUrl: String,
+    description: String,
     sortOrder: Number,
   },
   {

@@ -4,6 +4,7 @@ import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
+import { GifDisplay } from "../gif/gif-display";
 
 interface PostPreviewProps {
   post: Post;
@@ -34,7 +35,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         <div className="post-preview-body">
           <p>{post.text}</p>
           {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
-          {post.gifUrl && <img src={post.gifUrl.url} alt="" />}
+          {post.gif && <GifDisplay gif={post.gif} />}
           {post.poll && (
             <div className="poll-container">
               <ul>

@@ -3,13 +3,13 @@ import { ContentLoader } from "../loaders/content-loader";
 import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 import { gifService } from "../../services/gif.service";
 
-interface GifCategoryListProps {
+interface GifEditProps {
   currCategory: string;
   setCurrCategory: (category: string) => void;
   setGifs: (gifs: Gif[]) => void;
 }
 
-export const GifCategoryList: React.FC<GifCategoryListProps> = ({
+export const GifCategoryList: React.FC<GifEditProps> = ({
   currCategory,
   setCurrCategory,
   setGifs,

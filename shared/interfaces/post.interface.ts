@@ -11,7 +11,7 @@ export interface NewPost {
     sortOrder: number;
   }[];
   videoUrl?: string;
-  gifUrl?: Gif;
+  gif?: Gif;
   poll?: Poll;
   schedule?: Date;
   location?: Location;

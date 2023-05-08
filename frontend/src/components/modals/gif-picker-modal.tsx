@@ -10,14 +10,14 @@ import { ContentLoader } from "../loaders/content-loader";
 import { UIElement } from "../btns/post-edit-action-btns";
 
 interface GifPickerProps {
-  gifUrl: Gif | null;
-  setGifUrl: (url: Gif | null) => void;
+  gif: Gif | null;
+  setGif: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
 export const GifPickerModal: React.FC<GifPickerProps> = ({
-  gifUrl,
-  setGifUrl,
+  gif,
+  setGif,
   onToggleElementVisibility,
 }) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
@@ -27,7 +27,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
   const handleHeaderBtnClick = () => {
     if (!gifs.length) {
-      onToggleElementVisibility("gifPicker")
+      onToggleElementVisibility("gifPicker");
     } else {
       setGifs([]);
       setSearchTerm("");
@@ -43,10 +43,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
       ></div>
       <div className="gif-picker">
         <header className="gif-picker-header">
-          <button
-            className="gif-picker-header-btn"
-            onClick={handleHeaderBtnClick}
-          >
+          <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>
             {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
           </button>
           <GifSearchBar
@@ -59,7 +56,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
         {gifs.length > 0 ? (
           <GifList
-            setGifUrl={setGifUrl}
+            setGif={setGif}
             onToggleElementVisibility={onToggleElementVisibility}
             gifs={gifs}
           />

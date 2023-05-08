@@ -6,11 +6,11 @@ import { ContentLoader } from "../loaders/content-loader";
 import { Fragment } from "react";
 
 interface GifProps {
-  gifUrl: GitType;
-  setGifUrl: (url: GitType | null) => void;
+  gif: GitType;
+  setGif: (url: GitType | null) => void;
 }
 
-export const Gif: React.FC<GifProps> = ({ gifUrl, setGifUrl }) => {
+export const GifEdit: React.FC<GifProps> = ({ gif, setGif }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -26,11 +26,11 @@ export const Gif: React.FC<GifProps> = ({ gifUrl, setGifUrl }) => {
     <Fragment>
       {isLoading && <ContentLoader />}
       <div className="gif" style={{ visibility: isLoading ? "hidden" : "visible" }}>
-        <button className="btn-remove-content" onClick={() => setGifUrl(null)}>
+        <button className="btn-remove-content" onClick={() => setGif(null)}>
           <AiOutlineClose className="remove-content-icon" />
         </button>
         <img
-          src={isPlaying ? gifUrl.url : gifUrl.staticUrl}
+          src={isPlaying ? gif.url : gif.staticUrl}
           alt="gif"
           onClick={onTogglePlay}
           onLoad={onImageLoad}

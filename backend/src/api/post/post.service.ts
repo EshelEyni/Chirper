@@ -1,11 +1,6 @@
-import {
-  NewPost,
-  Post,
-  PostDocument,
-} from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 
-const { logger } = require("../../services/logger.service");
 const { PostModel } = require("./post.model");
 const { APIFeatures } = require("../../services/util.service");
 
@@ -13,39 +8,29 @@ const { APIFeatures } = require("../../services/util.service");
 // import { asyncLocalStorage } from "../../services/als.service.js";
 
 async function query(queryString: QueryString): Promise<Post[]> {
-  try {
-    const features = new APIFeatures(PostModel.find(), queryString)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+  const features = new APIFeatures(PostModel.find(), queryString)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
 
-    const posts = await features.query
-      .populate({
-        path: "user",
-        select: "_id username fullname imgUrl",
-      })
-      .exec();
-    return posts as unknown as Post[];
-  } catch (err) {
-    logger.error("cannot find posts", err as Error);
-    throw err;
-  }
+  const posts = await features.query
+    .populate({
+      path: "user",
+      select: "_id username fullname imgUrl",
+    })
+    .exec();
+  return posts as unknown as Post[];
 }
 
 async function getById(postId: string): Promise<Post | null> {
-  try {
-    const post = await PostModel.findById(postId)
-      .populate({
-        path: "user",
-        select: "_id username fullname imgUrl",
-      })
-      .exec();
-    return post as unknown as Post;
-  } catch (err) {
-    logger.error(`while finding post ${postId}`, err as Error);
-    throw err;
-  }
+  const post = await PostModel.findById(postId)
+    .populate({
+      path: "user",
+      select: "_id username fullname imgUrl",
+    })
+    .exec();
+  return post as unknown as Post;
 }
 
 async function add(post: NewPost): Promise<Post> {
@@ -55,44 +40,29 @@ async function add(post: NewPost): Promise<Post> {
   // if (!loggedinUser) throw new Error("user not logged in");
   // if (loggedinUser._id !== post.user._id) throw new Error("cannot add post for another user");
 
-  try {
-    const savedPost = await PostModel(post).save();
-    const populatedPost = await PostModel.findById(savedPost._id)
-      .populate({
-        path: "user",
-        select: "_id username fullname imgUrl",
-      })
-      .exec();
+  const savedPost = await PostModel(post).save();
+  const populatedPost = await PostModel.findById(savedPost._id)
+    .populate({
+      path: "user",
+      select: "_id username fullname imgUrl",
+    })
+    .exec();
 
-    return populatedPost as unknown as Post;
-  } catch (err) {
-    logger.error("cannot insert post", err as Error);
-    throw err;
-  }
+  return populatedPost as unknown as Post;
 }
 
 async function update(id: string, post: Post): Promise<Post> {
-  try {
-    const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
-      new: true,
-      runValidators: true,
-    });
+  const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
+    new: true,
+    runValidators: true,
+  });
 
-    return updatedPost as unknown as Post;
-  } catch (err) {
-    logger.error(`cannot update post ${post.id}`, err as Error);
-    throw err;
-  }
+  return updatedPost as unknown as Post;
 }
 
-async function remove(postId: string): Promise<void> {
-  try {
-    await PostModel.findByIdAndRemove(postId);
-    logger.warn("Post removed ", postId);
-  } catch (err) {
-    logger.error(`cannot remove post ${postId}`, err as Error);
-    throw err;
-  }
+async function remove(postId: string): Promise<Post> {
+  const removedPost = await PostModel.findByIdAndRemove(postId);
+  return removedPost as unknown as Post;
 }
 
 module.exports = {

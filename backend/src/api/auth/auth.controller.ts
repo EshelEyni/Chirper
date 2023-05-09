@@ -4,6 +4,8 @@ import { User } from "../../../../shared/interfaces/user.interface";
 const { logger } = require("../../services/logger.service");
 const authService = require("./auth.service");
 
+// TODO: refactor to use asyncErrorCatcher
+
 async function login(req: Request, res: Response) {
   const { username, password } = req.body;
   try {

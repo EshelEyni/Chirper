@@ -5,7 +5,7 @@ module.exports = () => {
     getUserById,
     getUserByUsername,
     getUsers,
-    deleteUser,
+    removeUser,
     updateUser,
     addUser,
   } = require("./user.controller");
@@ -17,7 +17,7 @@ module.exports = () => {
   router.get("/username/:username", getUserByUsername);
 
   router.patch("/:id", updateUser);
-  router.delete("/:id", deleteUser);
+  router.delete("/:id", removeUser);
 
   router.post("/", addUser);
 

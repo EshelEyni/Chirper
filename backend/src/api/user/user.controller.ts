@@ -1,79 +1,96 @@
+import { Request, Response } from "express";
+import { User } from "../../../../shared/interfaces/user.interface";
 const userService = require("./user.service");
 const { logger } = require("../../services/logger.service");
 // import { socketService } from '../../services/socket.service.js'
 // const authService = require("../auth/auth.service");
-import { Request, Response } from "express";
+const { asyncErrorCatcher, AppError } = require("../../services/error.service");
 
-async function getUsers(req: Request, res: Response): Promise<void> {
-  try {
-    const users = await userService.query();
-    res.send(users);
-  } catch (err) {
-    logger.error("Failed to get users", err as Error);
-    res.status(500).send({ err: "Failed to get users" });
-  }
-}
+const getUsers = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const users = (await userService.query()) as unknown as User[];
 
-async function getUserById(req: Request, res: Response): Promise<void> {
-  try {
-    const user = await userService.getById(req.params.id);
-    // TODO: remove password from user
-    // TODO: refactor to jsend format
+  const statusCode = users.length > 0 ? 200 : 404;
+  const data = users.length > 0 ? users : "No users found";
+  res.status(statusCode).send({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    results: users.length,
+    data,
+  });
+});
 
-    res.send(user);
-  } catch (err) {
-    logger.error("Failed to get user", err as Error);
-    res.status(500).send({ err: "Failed to get user" });
-  }
-}
+const getUserById = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  if (!id) throw new AppError("No user id provided", 400);
+  const user = (await userService.getById(id)) as unknown as User;
+  
+  const statusCode = user ? 200 : 404;
+  const data = user ? user : { userId: `User with id ${id} not found` };
+  res.status(statusCode).send({
+    status: "success",
+    data,
+  });
+});
 
-async function getUserByUsername(req: Request, res: Response): Promise<void> {
-  try {
-    const user = await userService.getByUsername(req.params.username);
-    res.send(user);
-  } catch (err) {
-    logger.error("Failed to get user", err as Error);
-    res.status(500).send({ err: "Failed to get user" });
-  }
-}
+const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { username } = req.params;
+  if (!username) throw new AppError("No user username provided", 400);
+  const user = await userService.getByUsername(username);
+  
+  const statusCode = user ? 200 : 404;
+  const data = user ? user : { userId: `User with username ${username} not found` };
+  
+  res.status(statusCode).send({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    data,
+  });
+});
 
-async function addUser(req: Request, res: Response): Promise<void> {
-  try {
-    const currUser = req.body;
-    const user = await userService.add(currUser);
-    res.send(user);
-  } catch (err) {
-    logger.error("Failed to add user", err as Error);
-    res.status(500).send({ err: "Failed to add user" });
-  }
-}
-async function updateUser(req: Request, res: Response): Promise<void> {
-  try {
-    const { id } = req.params;
-    const userToUpdate = req.body;
-    const updatedUser = await userService.update(id, userToUpdate);
-    res.send(updatedUser);
-  } catch (err) {
-    logger.error("Failed to update user", err as Error);
-    res.status(500).send({ err: "Failed to update user" });
-  }
-}
+const addUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const currUser = req.body;
+  const isCurrUserEmpty = Object.keys(currUser).length === 0;
+  if (isCurrUserEmpty) throw new AppError("No user provided", 400);
+  const user = await userService.add(currUser);
 
-async function deleteUser(req: Request, res: Response): Promise<void> {
-  try {
-    await userService.remove(req.params.id);
-    res.send({ msg: "Deleted successfully" });
-  } catch (err) {
-    logger.error("Failed to delete user", err as Error);
-    res.status(500).send({ err: "Failed to delete user" });
-  }
-}
+  res.status(201).send({
+    status: "success",
+    data: user,
+  });
+});
+
+const updateUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  if (!id) throw new AppError("No user id provided", 400);
+  const userToUpdate = req.body;
+  const isUserToUpdateEmpty = Object.keys(userToUpdate).length === 0;
+  if (isUserToUpdateEmpty) throw new AppError("No user provided", 400);
+  const updatedUser = await userService.update(id, userToUpdate);
+  if (!updatedUser) throw new AppError("User not found", 404);
+
+  res.status(200).send({
+    status: "success",
+    data: updatedUser,
+  });
+});
+
+const removeUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  if (!id) throw new AppError("No user id provided", 400);
+  const removedUser = await userService.remove(id);
+  if (!removedUser) throw new AppError("User not found", 404);
+  logger.warn(`User ${removedUser.username} was deleted`);
+  res.status(204).send({
+    status: "success",
+    data: null,
+  });
+});
 
 module.exports = {
   getUsers,
   getUserById,
   getUserByUsername,
-  deleteUser,
+  removeUser,
   updateUser,
   addUser,
 };

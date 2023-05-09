@@ -23,7 +23,7 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
 
   let line = strs.join(" | ");
   const store = asyncLocalStorage.getStore();
-  const userId = (store as Record<string, User | undefined>)?.loggedinUser?._id;
+  const userId = (store as Record<string, User | undefined>)?.loggedinUser?.id;
   const str = userId ? `(userId: ${userId})` : "";
   line = `${getTime()} - ${level} - ${line} ${str}\n`;
   switch (level) {

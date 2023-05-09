@@ -4,6 +4,7 @@ const path = require("path");
 const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const { AppError, errorHandler } = require("./services/error.service");
 const app = express();
 
 // Express App Config
@@ -48,10 +49,9 @@ app.get("/**", (req: Request, res: Response) => {
 });
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json({
-    status: "fail",
-    message: `Can't find ${req.originalUrl} on this server!`,
-  });
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
+
+app.use(errorHandler);
 
 module.exports = app;

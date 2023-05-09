@@ -1,151 +1,78 @@
-const { logger } = require("../../services/logger.service");
-const postService = require("./post.service");
-
 import { Request, Response } from "express";
 import { QueryString } from "../../services/util.service.js";
+import { Post } from "../../../../shared/interfaces/post.interface.js";
 
-async function getPosts(req: Request, res: Response): Promise<void> {
-  try {
-    logger.debug("Getting Posts");
-    const queryString = req.query;
-    const posts = await postService.query(queryString as QueryString);
+const { logger } = require("../../services/logger.service");
+const postService = require("./post.service");
+const { asyncErrorCatcher, AppError } = require("../../services/error.service");
 
-    if (posts.length > 0) {
-      res.status(200).send({
-        status: "success",
-        requestedAt: new Date().toISOString(),
-        results: posts.length,
-        data: posts,
-      });
-    } else {
-      res.status(404).send({
-        status: "success",
-        requestedAt: new Date().toISOString(),
-        results: posts.length,
-        data: "No posts found",
-      });
-    }
-  } catch (err) {
-    logger.error("Failed to get posts", err as Error);
+const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  logger.debug("Getting Posts");
+  const queryString = req.query;
+  const posts = (await postService.query(queryString as QueryString)) as unknown as Post[];
 
-    res.status(500).send({
-      status: "error",
-      message: "Failed to get posts",
-    });
-  }
-}
+  const statusCode = posts.length > 0 ? 200 : 404;
+  const data = posts.length > 0 ? posts : "No posts found";
 
-async function getPostById(req: Request, res: Response): Promise<void> {
-  try {
-    const { id } = req.params;
+  res.status(statusCode).send({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    results: posts.length,
+    data,
+  });
+});
 
-    if (!id) {
-      res.status(400).send({
-        status: "fail",
-        data: {
-          postId: "No post id provided",
-        },
-      });
-      return;
-    }
-    const post = await postService.getById(id);
-    if (post) {
-      res.status(200).send({
-        status: "success",
-        data: post,
-      });
-    } else {
-      res.status(404).send({
-        status: "fail",
-        data: {
-          postId: `Post with id ${id} not found`,
-        },
-      });
-    }
-  } catch (err) {
-    logger.error("Failed to get post", err as Error);
-    res.status(500).send({
-      status: "error",
-      message: "Failed to get post",
-    });
-  }
-}
-
-async function addPost(req: Request, res: Response): Promise<void> {
-  try {
-    const currPost = req.body;
-
-    if (!currPost) {
-      res.status(400).send({
-        status: "fail",
-        data: {
-          post: "No post provided",
-        },
-      });
-      return;
-    }
-    const post = await postService.add(currPost);
-
-    res.status(201).send({
-      status: "success",
-      data: post,
-    });
-  } catch (err) {
-    logger.error("Failed to add post", err as Error);
-    const message = err.message;
-    res.status(500).send({
-      status: "error",
-      message,
-    });
-  }
-}
-
-async function updatePost(req: Request, res: Response): Promise<void> {
-  try {
-    const { id } = req.params;
-    const postToUpdate = req.body;
-    if (!postToUpdate) {
-      res.status(400).send({
-        status: "fail",
-        data: {
-          post: "No post provided",
-        },
-      });
-      return;
-    }
-
-    const updatedPost = await postService.update(id, postToUpdate);
-    // socketService.broadcast({ type: 'post-updated', post: updatedPost, userId: loggedInUser._id })
-    res.status(200).send({
-      status: "success",
-      data: updatedPost,
-    });
-  } catch (err) {
-    logger.error("Failed to update post", err as Error);
-
-    res.status(500).send({
-      status: "error",
-      message: "Failed to update post",
-    });
-  }
-}
-
-async function removePost(req: Request, res: Response): Promise<void> {
+const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  try {
-    await postService.remove(id);
-    res.status(204).send({
-      status: "success",
-      data: id,
-    });
-  } catch (err) {
-    logger.error("Failed to remove post", err as Error);
-    res.status(500).send({
-      status: "error",
-      message: "Failed to remove post",
-    });
-  }
-}
+  if (!id) throw new AppError("No post id provided", 400);
+
+  const post = await postService.getById(id);
+  const statusCode = post ? 200 : 404;
+  const data = post ? post : { postId: `Post with id ${id} not found` };
+  res.status(statusCode).send({
+    status: "success",
+    data,
+  });
+});
+
+const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const currPost = req.body;
+  const isCurrPostEmpty = Object.keys(currPost).length === 0;
+  if (isCurrPostEmpty) throw new AppError("No post provided", 400);
+  const post = await postService.add(currPost);
+
+  res.status(201).send({
+    status: "success",
+    data: post,
+  });
+});
+
+const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  if (!id) throw new AppError("No post id provided", 400);
+  const postToUpdate = req.body;
+  const isPostToUpdateEmpty = Object.keys(postToUpdate).length === 0;
+  if (isPostToUpdateEmpty) throw new AppError("No post provided", 400);
+
+  const updatedPost = await postService.update(id, postToUpdate);
+  if (!updatedPost) throw new AppError(`Post with id ${id} not found`, 404);
+  res.status(200).send({
+    status: "success",
+    data: updatedPost,
+  });
+});
+
+const removePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  if (!id) throw new AppError("No post id provided", 400);
+  const removedPost = await postService.remove(id);
+  if (!removedPost) throw new AppError(`Post with id ${id} not found`, 404);
+  logger.warn(`Post with id ${id} removed`);
+  res.status(204).send({
+    status: "success",
+    data: id,
+  });
+});
 
 module.exports = {
   getPosts,

@@ -37,7 +37,7 @@ async function signup(username: any, password: string | Buffer, fullname: string
 }
 
 function getLoginToken(user: User) {
-  return cryptr.encrypt(JSON.stringify(user._id));
+  return cryptr.encrypt(JSON.stringify(user.id));
 }
 
 async function validateToken(loginToken: string): Promise<User | null> {

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm src/server.ts",
     "dev": "nodemon",
+    "prod": "set NODE_ENV=production&& nodemon",
     "debug": "ndb --experimental-specifier-resolution=node --loader ts-node/esm src/server.ts",
     "test": "jest --config=jest.config.mjs"
   },

@@ -13,14 +13,12 @@ const getUserDefaultLocations = asyncErrorCatcher(
       throw new AppError(msg, 400);
     }
     const locations = await locationService.getUserSurroundingLocations(Number(lat), Number(lng));
-    const statusCode = locations.length > 0 ? 200 : 404;
-    const data = locations.length > 0 ? locations : "No locations found";
 
-    res.status(statusCode).send({
+    res.status(200).send({
       status: "success",
       requestAt: new Date().toISOString(),
       results: locations.length,
-      data,
+      data: locations,
     });
   }
 );
@@ -28,16 +26,13 @@ const getUserDefaultLocations = asyncErrorCatcher(
 const getLocationsBySearchTerm = asyncErrorCatcher(async (req: Request, res: Response) => {
   const searchTerm = req.query.searchTerm as string;
   if (!searchTerm) throw new AppError("No search term provided", 400);
-
   const locations = await locationService.getLocationBySearchTerm(searchTerm);
-  const statusCode = locations.length > 0 ? 200 : 404;
-  const data = locations.length > 0 ? locations : "No locations found";
 
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestAt: new Date().toISOString(),
     results: locations.length,
-    data,
+    data: locations,
   });
 });
 

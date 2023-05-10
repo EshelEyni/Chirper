@@ -52,14 +52,12 @@ const categorySet = new Set(categories);
 
 const getGifCategories = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const gifHeaders = await gifService.getGifCategories();
-  const statusCode = gifHeaders.length > 0 ? 200 : 404;
-  const data = gifHeaders.length > 0 ? gifHeaders : "No gif categories found";
 
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: gifHeaders.length,
-    data,
+    data: gifHeaders,
   });
 });
 
@@ -69,14 +67,12 @@ const getGifByCategory = asyncErrorCatcher(async (req: Request, res: Response): 
   if (!categorySet.has(category)) throw new AppError("Invalid category provided", 400);
 
   const gifs = await gifService.getGifByCategory(category);
-  const statusCode = gifs.length > 0 ? 200 : 404;
-  const data = gifs.length > 0 ? gifs : { category: `No gifs found for ${category}` };
 
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: gifs.length,
-    data,
+    data: gifs,
   });
 });
 
@@ -92,14 +88,11 @@ const getGifsBySearchTerm = asyncErrorCatcher(
       gifs = await gifService.getGifsBySearchTerm(searchTerm);
     }
 
-    const statusCode = gifs.length > 0 ? 200 : 404;
-    const data = gifs.length > 0 ? gifs : { searchTerm: `No gifs found for ${searchTerm}` };
-
-    res.status(statusCode).send({
+    res.status(200).send({
       status: "success",
       requestedAt: new Date().toISOString(),
       results: gifs.length,
-      data,
+      data: gifs,
     });
   }
 );

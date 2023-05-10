@@ -63,7 +63,10 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
-    text: String,
+    text: {
+      type: String,
+      trim: true,
+    },
     imgs: [imgUrlsSchema],
     videoUrl: String,
     gif: gifSchema,
@@ -103,7 +106,9 @@ function validateContent(post: Document) {
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
-    next(new Error("At least one of text, gif, imgUrls, or poll is required"));
+    const err = new Error("At least one of text, gif, imgUrls, or poll is required");
+    err.name = "ValidationError";
+    next(err);
   } else {
     next();
   }

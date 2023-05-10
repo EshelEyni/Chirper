@@ -9,13 +9,11 @@ const { asyncErrorCatcher, AppError } = require("../../services/error.service");
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const users = (await userService.query()) as unknown as User[];
 
-  const statusCode = users.length > 0 ? 200 : 404;
-  const data = users.length > 0 ? users : "No users found";
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: users.length,
-    data,
+    data: users,
   });
 });
 
@@ -23,12 +21,11 @@ const getUserById = asyncErrorCatcher(async (req: Request, res: Response): Promi
   const { id } = req.params;
   if (!id) throw new AppError("No user id provided", 400);
   const user = (await userService.getById(id)) as unknown as User;
-  
-  const statusCode = user ? 200 : 404;
-  const data = user ? user : { userId: `User with id ${id} not found` };
-  res.status(statusCode).send({
+  if (!user) throw new AppError(`User with id ${id} not found`, 404);
+
+  res.status(200).send({
     status: "success",
-    data,
+    data: user,
   });
 });
 
@@ -36,14 +33,12 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
   const { username } = req.params;
   if (!username) throw new AppError("No user username provided", 400);
   const user = await userService.getByUsername(username);
+  if (!user) throw new AppError(`User with username ${username} not found`, 404);
   
-  const statusCode = user ? 200 : 404;
-  const data = user ? user : { userId: `User with username ${username} not found` };
-  
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
-    data,
+    data: user,
   });
 });
 

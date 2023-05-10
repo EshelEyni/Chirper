@@ -11,27 +11,23 @@ const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<
   const queryString = req.query;
   const posts = (await postService.query(queryString as QueryString)) as unknown as Post[];
 
-  const statusCode = posts.length > 0 ? 200 : 404;
-  const data = posts.length > 0 ? posts : "No posts found";
-
-  res.status(statusCode).send({
+  res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: posts.length,
-    data,
+    data: posts,
   });
 });
 
 const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   if (!id) throw new AppError("No post id provided", 400);
-
   const post = await postService.getById(id);
-  const statusCode = post ? 200 : 404;
-  const data = post ? post : { postId: `Post with id ${id} not found` };
-  res.status(statusCode).send({
+  if (!post) throw new AppError(`Post with id ${id} not found`, 404);
+
+  res.status(200).send({
     status: "success",
-    data,
+    data: post,
   });
 });
 

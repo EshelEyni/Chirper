@@ -44,8 +44,6 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
 
 const addUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const currUser = req.body;
-  const isCurrUserEmpty = Object.keys(currUser).length === 0;
-  if (isCurrUserEmpty) throw new AppError("No user provided", 400);
   const user = await userService.add(currUser);
 
   res.status(201).send({

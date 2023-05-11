@@ -1,7 +1,6 @@
 import { locationService } from "./location.service";
 import { Request, Response } from "express";
 
-const { logger } = require("../../services/logger.service");
 const { asyncErrorCatcher, AppError } = require("../../services/error.service");
 
 const getUserDefaultLocations = asyncErrorCatcher(

@@ -1,12 +1,11 @@
 module.exports = () => {
   const express = require("express");
-  const { log } = require("../../middlewares/logger.middleware");
   const { getGifsBySearchTerm, getGifCategories, getGifByCategory } = require("./gif.controller");
   const router = express.Router();
 
-  router.get("/search", log, getGifsBySearchTerm);
-  router.get("/categories", log, getGifCategories);
-  router.get("/category/:category", log, getGifByCategory);
+  router.get("/search", getGifsBySearchTerm);
+  router.get("/categories", getGifCategories);
+  router.get("/category/:category", getGifByCategory);
 
   return router;
 };

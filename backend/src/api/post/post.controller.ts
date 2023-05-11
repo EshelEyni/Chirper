@@ -7,7 +7,6 @@ const postService = require("./post.service");
 const { asyncErrorCatcher, AppError } = require("../../services/error.service");
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  logger.debug("Getting Posts");
   const queryString = req.query;
   const posts = (await postService.query(queryString as QueryString)) as unknown as Post[];
 
@@ -32,9 +31,7 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 });
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const currPost = req.body;
-  const isCurrPostEmpty = Object.keys(currPost).length === 0;
-  if (isCurrPostEmpty) throw new AppError("No post provided", 400);
+  const currPost = req.body as unknown as Post;
   const post = await postService.add(currPost);
 
   res.status(201).send({

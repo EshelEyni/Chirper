@@ -1,4 +1,3 @@
-// import { logger } from "./services/logger.service.js";
 const { logger } = require("./services/logger.service");
 
 process.on("uncaughtException", (err: any) => {

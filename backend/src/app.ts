@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 const express = require("express");
+const { log } = require("./middlewares/logger.middleware");
 const path = require("path");
 const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
 const cookieParser = require("cookie-parser");
@@ -10,6 +11,11 @@ const app = express();
 // Express App Config
 app.use(cookieParser());
 app.use(express.json());
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  log(req, res, next);
+  next();
+});
 
 // cors
 if (process.env.NODE_ENV === "production") {
@@ -33,15 +39,14 @@ const userRoutes = require("./api/user/user.routes");
 const postRoutes = require("./api/post/post.routes");
 const gifRoutes = require("./api/gif/gif.routes");
 const locationRoutes = require("./api/location/location.routes");
-
-// import authRoutes from "./api/auth/auth.routes";
+const authRoutes = require("./api/auth/auth.routes");
 // import { setupSocketAPI } from "./services/socket.service";
 
 app.use("/api/post", postRoutes());
 app.use("/api/user", userRoutes());
 app.use("/api/gif", gifRoutes());
 app.use("/api/location", locationRoutes());
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes());
 // setupSocketAPI(http);
 
 app.get("/**", (req: Request, res: Response) => {

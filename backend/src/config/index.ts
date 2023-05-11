@@ -2,7 +2,8 @@ const devConfig = require("./dev");
 const prodConfig = require("./prod");
 let config: {
   dbURL: any;
-  sessionKey: any;
+  jwtSecretCode: any;
+  jwtExpirationTime: any;
   giphyApiKey: any;
   googleApiKey: any;
   note?: string;

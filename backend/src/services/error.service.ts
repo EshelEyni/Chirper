@@ -1,4 +1,5 @@
 import { Response, Request, NextFunction } from "express";
+import { User } from "../../../shared/interfaces/user.interface";
 const { logger } = require("./logger.service");
 
 class AppError extends Error {
@@ -87,8 +88,26 @@ const asyncErrorCatcher = (fn: Function) => {
   };
 };
 
+const handleMissingUserCredentialsError = (user: User): AppError => {
+  const missingCredentials = [];
+  if (!user.username) missingCredentials.push("username");
+  if (!user.password) missingCredentials.push("password");
+  if (!user.passwordConfirm) missingCredentials.push("passwordConfirm");
+  if (!user.fullname) missingCredentials.push("fullname");
+  if (!user.email) missingCredentials.push("email");
+
+  let msg: string;
+  if (missingCredentials.length === 1) {
+    msg = missingCredentials[0] + " is required!";
+  } else {
+    msg = missingCredentials.join(", ") + " are required!";
+  }
+  return new AppError(msg, 400);
+};
+
 module.exports = {
   AppError,
   errorHandler,
   asyncErrorCatcher,
+  handleMissingUserCredentialsError,
 };

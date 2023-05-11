@@ -2,7 +2,6 @@ import { Document } from "mongoose";
 
 const { gifSchema } = require("../gif/gif.model");
 const mongoose = require("mongoose");
-const { logger } = require("../../services/logger.service");
 
 const imgUrlsSchema = new mongoose.Schema({
   url: String,
@@ -121,10 +120,6 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
     this.set("isPublic", true);
   }
   next();
-});
-
-postSchema.post("save", function (this: Document) {
-  logger.success("Post saved ", this.get("id"));
 });
 
 postSchema.virtual("user", {

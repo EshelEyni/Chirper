@@ -1,11 +1,11 @@
 import { User } from "../../../../shared/interfaces/user.interface";
-const { UserModel } = require("./user.model");
-const { APIFeatures } = require("../../services/util.service");
+import { UserModel } from "./user.model";
+import { APIFeatures } from "../../services/util.service";
 
 async function query(): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), {}).filter().sort().limitFields().paginate();
 
-  const users = await features.query.exec();
+  const users = await features.getQuery().exec();
   return users as unknown as User[];
 }
 
@@ -16,13 +16,13 @@ async function getById(userId: string): Promise<User> {
 
 async function getByUsername(username: string): Promise<User> {
   const features = new APIFeatures(UserModel.find(), { username }).filter();
-  const users = await features.query.exec();
+  const users = await features.getQuery().exec();
   const user = users[0];
   return user as unknown as User;
 }
 
 async function add(user: User): Promise<User> {
-  const savedUser = await UserModel(user).save();
+  const savedUser = await new UserModel(user).save();
   return savedUser as unknown as User;
 }
 
@@ -39,11 +39,11 @@ async function remove(userId: string): Promise<User> {
   return userRemoved as unknown as User;
 }
 
-module.exports = {
+export default {
   query,
   getById,
   getByUsername,
-  remove,
-  update,
   add,
+  update,
+  remove,
 };

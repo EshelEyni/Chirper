@@ -1,16 +1,16 @@
-const { logger } = require("./services/logger.service");
-
 process.on("uncaughtException", (err: Error) => {
   logger.error("Uncaught exception:", err.name, err.message);
   process.exit(1);
 });
 
-const app = require("./app");
-const config = require("./config");
-
+import config from "./config";
 import mongoose from "mongoose";
+import app from "./app";
+import { logger } from "./services/logger.service";
+import { AppError } from "./services/error.service";
 
 const DB = config.dbURL;
+if (!DB) throw new AppError("DB URL is not defined.", 500);
 
 mongoose
   .connect(DB, {

@@ -1,5 +1,6 @@
-const config = require("../../config");
-const { createClient } = require("@google/maps");
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import config from "../../config";
+import { createClient } from "@google/maps";
 
 import { Location } from "../../../../shared/interfaces/location.interface";
 
@@ -18,8 +19,8 @@ async function getUserSurroundingLocations(lat: number, lng: number): Promise<Lo
     })
     .asPromise();
 
-  const results = response.json.results;
-  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\-]+$/;
+  const { results } = response.json;
+  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
   const locations = results
     .map((location: any) => {
       return {
@@ -46,10 +47,10 @@ async function _getCurrUserLocation(lat: number, lng: number): Promise<Location 
     })
     .asPromise();
 
-  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\-]+$/;
+  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
   const plusSignRegex = /\+/;
 
-  const results = response.json.results;
+  const { results } = response.json;
   const result = results.find((location: any) => {
     return (
       englishRegex.test(location.formatted_address) &&
@@ -102,7 +103,7 @@ async function getLocationBySearchTerm(searchTerm: string): Promise<Location[]> 
   return locations;
 }
 
-export const locationService = {
+export default {
   getUserSurroundingLocations,
   getLocationBySearchTerm,
 };

@@ -1,8 +1,8 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 
-const { PostModel } = require("./post.model");
-const { APIFeatures } = require("../../services/util.service");
+import { PostModel } from "./post.model";
+import { APIFeatures } from "../../services/util.service";
 
 // import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
 // import { asyncLocalStorage } from "../../services/als.service.js";
@@ -14,7 +14,8 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  const posts = await features.query
+  const posts = await features
+    .getQuery()
     .populate({
       path: "user",
       select: "_id username fullname imgUrl",
@@ -40,7 +41,7 @@ async function add(post: NewPost): Promise<Post> {
   // if (!loggedinUser) throw new Error("user not logged in");
   // if (loggedinUser._id !== post.user._id) throw new Error("cannot add post for another user");
 
-  const savedPost = await PostModel(post).save();
+  const savedPost = await new PostModel(post).save();
   const populatedPost = await PostModel.findById(savedPost._id)
     .populate({
       path: "user",
@@ -65,7 +66,7 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
-module.exports = {
+export default {
   query,
   getById,
   add,

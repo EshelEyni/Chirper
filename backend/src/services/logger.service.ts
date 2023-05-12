@@ -1,7 +1,9 @@
-const fs = require("fs");
-const { asyncLocalStorage } = require("./als.service");
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import fs from "fs";
+import { asyncLocalStorage } from "./als.service";
 import { User } from "../../../shared/interfaces/user.interface";
-const ansiColors = require("ansi-colors");
+import ansiColors from "ansi-colors";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) {
@@ -19,7 +21,9 @@ function isError(e: any): boolean {
 }
 
 function doLog(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
-  const strs = args.map((arg) => (typeof arg === "string" || isError(arg) ? arg : JSON.stringify(arg)));
+  const strs = args.map(arg =>
+    typeof arg === "string" || isError(arg) ? arg : JSON.stringify(arg)
+  );
 
   let line = strs.join(" | ");
   const store = asyncLocalStorage.getStore();
@@ -70,12 +74,10 @@ function error(...args: Array<string | Error>) {
   doLog("ERROR", ...args);
 }
 
-module.exports = {
-  logger: {
-    debug,
-    info,
-    success,
-    warn,
-    error,
-  },
+export const logger = {
+  debug,
+  info,
+  success,
+  warn,
+  error,
 };

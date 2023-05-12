@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 
-const { gifSchema } = require("../gif/gif.model");
-const mongoose = require("mongoose");
+import { gifSchema } from "../gif/gif.model";
+import mongoose from "mongoose";
 
 const imgUrlsSchema = new mongoose.Schema({
   url: String,
@@ -113,7 +113,7 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   }
 });
 
-postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
+postSchema.pre("save", function (this: Document, next: () => void) {
   if (this.get("schedule") !== null) {
     this.set("isPublic", false);
   } else {
@@ -139,6 +139,4 @@ postSchema.virtual("user", {
 
 const PostModel = mongoose.model("Post", postSchema);
 
-module.exports = {
-  PostModel,
-};
+export { PostModel };

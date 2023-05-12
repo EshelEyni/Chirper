@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const requestLogger = require("./middlewares/logger.middleware");
-const { AppError, errorHandler } = require("./services/error.service");
-// const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { requestLogger } from "./middlewares/logger.middleware";
+import { AppError, errorHandler } from "./services/error.service";
+// import { setupAsyncLocalStorage } from "./middlewares/setupAls.middleware";
+
 const app = express();
 
 app.use(cookieParser());
@@ -33,18 +34,18 @@ if (process.env.NODE_ENV === "production") {
 
 // app.all("*", setupAsyncLocalStorage);
 
-const userRoutes = require("./api/user/user.routes");
-const postRoutes = require("./api/post/post.routes");
-const gifRoutes = require("./api/gif/gif.routes");
-const locationRoutes = require("./api/location/location.routes");
-const authRoutes = require("./api/auth/auth.routes");
+import userRoutes from "./api/user/user.routes";
+import postRoutes from "./api/post/post.routes";
+import gifRoutes from "./api/gif/gif.routes";
+import locationRoutes from "./api/location/location.routes";
+import authRoutes from "./api/auth/auth.routes";
 // import { setupSocketAPI } from "./services/socket.service";
 
-app.use("/api/post", postRoutes());
-app.use("/api/user", userRoutes());
-app.use("/api/gif", gifRoutes());
-app.use("/api/location", locationRoutes());
-app.use("/api/auth", authRoutes());
+app.use("/api/user", userRoutes);
+app.use("/api/post", postRoutes);
+app.use("/api/gif", gifRoutes);
+app.use("/api/location", locationRoutes);
+app.use("/api/auth", authRoutes);
 // setupSocketAPI(http);
 
 app.get("/**", (req: Request, res: Response) => {
@@ -57,4 +58,4 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

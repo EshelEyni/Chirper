@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 interface IUser extends Document {
   username: string;
@@ -7,12 +8,19 @@ interface IUser extends Document {
   passwordConfirm: string;
   email: string;
   passwordChangedAt?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   fullname: string;
   imgUrl: string;
   isAdmin: boolean;
   isVerified: boolean;
   isApprovedLocation: boolean;
   createdAt: number;
+  // eslint-disable-next-line no-unused-vars
+  checkPassword: (candidatePassword: string, userPassword: string) => Promise<boolean>;
+  // eslint-disable-next-line no-unused-vars
+  changedPasswordAfter: (JWTTimestamp: number) => boolean;
+  createPasswordResetToken: () => string;
 }
 
 const userSchema = new Schema(
@@ -50,6 +58,8 @@ const userSchema = new Schema(
       },
     },
     passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
     fullname: { type: String, required: [true, "Please provide you full name"] },
     imgUrl: {
       type: String,
@@ -116,9 +126,15 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
   return false;
 };
 
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return resetToken;
+};
+
 const UserModel = model<IUser>("User", userSchema);
 
-module.exports = {
-  userSchema,
-  UserModel,
-};
+export { userSchema, UserModel };

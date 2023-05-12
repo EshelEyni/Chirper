@@ -1,11 +1,9 @@
-module.exports = () => {
-  const express = require("express");
-  const { getGifsBySearchTerm, getGifCategories, getGifByCategory } = require("./gif.controller");
-  const router = express.Router();
+import express from "express";
+import { getGifsBySearchTerm, getGifCategories, getGifByCategory } from "./gif.controller";
+const router = express.Router();
 
-  router.get("/search", getGifsBySearchTerm);
-  router.get("/categories", getGifCategories);
-  router.get("/category/:category", getGifByCategory);
+router.get("/search", getGifsBySearchTerm);
+router.get("/categories", getGifCategories);
+router.get("/category/:category", getGifByCategory);
 
-  return router;
-};
+export default router;

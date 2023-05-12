@@ -1,12 +1,10 @@
-module.exports = () => {
-  const express = require("express");
-  const { getUserDefaultLocations, getLocationsBySearchTerm } = require("./location.controller");
-  // import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware.js";
+import express from "express";
+import { getUserDefaultLocations, getLocationsBySearchTerm } from "./location.controller";
+// import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware.js";
 
-  const router = express.Router();
+const router = express.Router();
 
-  router.get("/", getUserDefaultLocations);
-  router.get("/search", getLocationsBySearchTerm);
+router.get("/", getUserDefaultLocations);
+router.get("/search", getLocationsBySearchTerm);
 
-  return router;
-};
+export default router;

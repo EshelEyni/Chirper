@@ -1,14 +1,13 @@
-module.exports = () => {
-  const express = require("express");
-  const router = express.Router();
-  const { getPosts, getPostById, addPost, updatePost, removePost } = require("./post.controller");
-  const { requireAuth } = require("../../middlewares/requireAuth.middleware");
+import express from "express";
+import { getPosts, getPostById, addPost, updatePost, removePost } from "./post.controller";
+import { requireAuth } from "../../middlewares/requireAuth.middleware";
 
-  router.get("/", getPosts);
-  router.get("/:id", getPostById);
-  router.post("/", requireAuth, addPost);
-  router.patch("/:id", requireAuth, updatePost);
-  router.delete("/:id", requireAuth, removePost);
+const router = express.Router();
 
-  return router;
-};
+router.get("/", getPosts);
+router.get("/:id", getPostById);
+router.post("/", requireAuth, addPost);
+router.patch("/:id", requireAuth, updatePost);
+router.delete("/:id", requireAuth, removePost);
+
+export default router;

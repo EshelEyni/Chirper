@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { QueryString } from "../../services/util.service.js";
 import { Post } from "../../../../shared/interfaces/post.interface.js";
 
-const { logger } = require("../../services/logger.service");
-const postService = require("./post.service");
-const { asyncErrorCatcher, AppError } = require("../../services/error.service");
+import { logger } from "../../services/logger.service";
+import postService from "./post.service";
+import { asyncErrorCatcher, AppError } from "../../services/error.service";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -67,10 +67,4 @@ const removePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-module.exports = {
-  getPosts,
-  getPostById,
-  addPost,
-  updatePost,
-  removePost,
-};
+export { getPosts, getPostById, addPost, updatePost, removePost };

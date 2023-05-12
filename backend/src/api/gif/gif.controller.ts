@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-const gifService = require("./gif.service");
-const { asyncErrorCatcher, AppError } = require("../../services/error.service");
+import gifService from "./gif.service";
+import { asyncErrorCatcher, AppError } from "../../services/error.service";
 
 const categories = [
   "Agree",
@@ -96,8 +96,4 @@ const getGifsBySearchTerm = asyncErrorCatcher(
   }
 );
 
-module.exports = {
-  getGifsBySearchTerm,
-  getGifCategories,
-  getGifByCategory,
-};
+export { getGifsBySearchTerm, getGifCategories, getGifByCategory };

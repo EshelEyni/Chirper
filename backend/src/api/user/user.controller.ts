@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { User } from "../../../../shared/interfaces/user.interface";
-const userService = require("./user.service");
-const { logger } = require("../../services/logger.service");
-// import { socketService } from '../../services/socket.service.js'
-// const authService = require("../auth/auth.service");
-const { asyncErrorCatcher, AppError } = require("../../services/error.service");
+import userService from "./user.service";
+import { logger } from "../../services/logger.service";
+import { asyncErrorCatcher, AppError } from "../../services/error.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const users = (await userService.query()) as unknown as User[];
@@ -34,7 +32,7 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
   if (!username) throw new AppError("No user username provided", 400);
   const user = await userService.getByUsername(username);
   if (!user) throw new AppError(`User with username ${username} not found`, 404);
-  
+
   res.status(200).send({
     status: "success",
     requestedAt: new Date().toISOString(),
@@ -79,11 +77,4 @@ const removeUser = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-module.exports = {
-  getUsers,
-  getUserById,
-  getUserByUsername,
-  removeUser,
-  updateUser,
-  addUser,
-};
+export { getUsers, getUserById, getUserByUsername, addUser, updateUser, removeUser };

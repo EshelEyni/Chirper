@@ -1,7 +1,7 @@
-import { locationService } from "./location.service";
+import locationService from "./location.service";
 import { Request, Response } from "express";
 
-const { asyncErrorCatcher, AppError } = require("../../services/error.service");
+import { asyncErrorCatcher, AppError } from "../../services/error.service";
 
 const getUserDefaultLocations = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
@@ -35,7 +35,4 @@ const getLocationsBySearchTerm = asyncErrorCatcher(async (req: Request, res: Res
   });
 });
 
-module.exports = {
-  getUserDefaultLocations,
-  getLocationsBySearchTerm,
-};
+export { getUserDefaultLocations, getLocationsBySearchTerm };

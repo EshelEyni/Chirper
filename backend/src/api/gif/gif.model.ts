@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const gifSchema = new mongoose.Schema(
   {
@@ -52,15 +52,6 @@ const gifCategorySchema = new mongoose.Schema(
 );
 
 const GifModel = mongoose.model("Gif", gifSchema);
-const GifCategoryModel = mongoose.model(
-  "GifCategory",
-  gifCategorySchema,
-  "gif_categories"
-);
+const GifCategoryModel = mongoose.model("GifCategory", gifCategorySchema, "gif_categories");
 
-module.exports = {
-  gifSchema,
-  GifModel,
-  gifCategorySchema,
-  GifCategoryModel,
-};
+export { gifSchema, GifModel, gifCategorySchema, GifCategoryModel };

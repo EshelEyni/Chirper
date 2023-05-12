@@ -1,5 +1,6 @@
 import { Query } from "mongoose";
-import { MiniUser, User } from "../../../shared/interfaces/user.interface";
+import nodemailer from "nodemailer";
+import config from "../config/index";
 
 export interface QueryString {
   [key: string]: string | undefined;
@@ -67,6 +68,25 @@ class APIFeatures<T> {
   }
 }
 
-module.exports = {
-  APIFeatures,
+const sendEmail = async (options: { email: string; subject: string; message: string }) => {
+  const transporter = nodemailer.createTransport({
+    host: config.emailHost,
+    port: config.emailPort,
+    auth: {
+      user: config.emailUsername,
+      pass: config.emailPassword,
+    },
+  });
+
+  const mailOptions = {
+    from: "Chirper <Chirper.com>",
+    to: options.email,
+    subject: options.subject,
+    text: options.message,
+    // html:
+  };
+
+  await transporter.sendMail(mailOptions);
 };
+
+export { APIFeatures, sendEmail };

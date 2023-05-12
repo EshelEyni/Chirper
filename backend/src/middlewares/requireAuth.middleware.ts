@@ -13,8 +13,12 @@ export const requireAuth = asyncErrorCatcher(
     if (!token) {
       return next(new AppError("You are not logged in! Please log in to get access.", 401));
     }
+    const verifiedToken = await authService.verifyToken(token);
+    if (!verifiedToken) {
+      return next(new AppError("Invalid Token.", 401));
+    }
+    const { id, timeStamp } = verifiedToken;
 
-    const { id, timeStamp } = await authService.verifyToken(token);
     const currentUser = await UserModel.findById(id);
     if (!currentUser) {
       return next(new AppError("The user belonging to this token does not exist.", 401));
@@ -24,6 +28,8 @@ export const requireAuth = asyncErrorCatcher(
     if (changedPasswordAfter) {
       return next(new AppError("User recently changed password! Please log in again.", 401));
     }
+
+    req.loggedinUserId = id;
     next();
   }
 );

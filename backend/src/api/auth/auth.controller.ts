@@ -42,6 +42,24 @@ const logout = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
+const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const { currentPassword, newPassword, newPasswordConfirm } = req.body;
+  const { loggedinUserId } = req;
+  if (!loggedinUserId) throw new AppError("User not logged in", 401);
+  const { user, newToken } = await authService.updatePassword(
+    loggedinUserId,
+    currentPassword,
+    newPassword,
+    newPasswordConfirm
+  );
+
+  res.status(200).json({
+    status: "success",
+    token: newToken,
+    data: user,
+  });
+});
+
 const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email) throw new AppError("Email is required", 400);
@@ -65,4 +83,4 @@ const resetPassword = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
-export { login, signup, logout, sendPasswordResetEmail, resetPassword };
+export { login, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };

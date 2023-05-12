@@ -1,6 +1,6 @@
 import { User } from "../../../../shared/interfaces/user.interface";
 import { UserModel } from "./user.model";
-import { APIFeatures } from "../../services/util.service";
+import { APIFeatures, filterObj } from "../../services/util.service";
 
 async function query(): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), {}).filter().sort().limitFields().paginate();
@@ -27,7 +27,10 @@ async function add(user: User): Promise<User> {
 }
 
 async function update(id: string, user: User): Promise<User> {
-  const updatedUser = await UserModel.findByIdAndUpdate(id, user, {
+  const allowedFields = ["username", "email", "fullname", "imgUrl", "email", "isApprovedLocation"];
+  const filteredUser = filterObj(user, ...allowedFields);
+
+  const updatedUser = await UserModel.findByIdAndUpdate(id, filteredUser, {
     new: true,
     runValidators: true,
   }).exec();

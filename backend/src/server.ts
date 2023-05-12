@@ -1,3 +1,5 @@
+import { logger } from "./services/logger.service";
+
 process.on("uncaughtException", (err: Error) => {
   logger.error("Uncaught exception:", err.name, err.message);
   process.exit(1);
@@ -6,7 +8,6 @@ process.on("uncaughtException", (err: Error) => {
 import config from "./config";
 import mongoose from "mongoose";
 import app from "./app";
-import { logger } from "./services/logger.service";
 import { AppError } from "./services/error.service";
 
 const DB = config.dbURL;
@@ -30,7 +31,7 @@ const server = app.listen(port, () => {
 });
 
 process.on("unhandledRejection", (err: Error) => {
-  logger.error("Unhandled rejection:", err.name, err.message);
+  logger.error("Unhandled rejection:", err);
   server.close(() => {
     process.exit(1);
   });

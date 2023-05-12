@@ -1,11 +1,7 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
-
 import { PostModel } from "./post.model";
 import { APIFeatures } from "../../services/util.service";
-
-// import { IAsyncLocalStorageStore } from "../../../../shared/interfaces/system.interface";
-// import { asyncLocalStorage } from "../../services/als.service.js";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)

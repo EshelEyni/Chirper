@@ -10,6 +10,18 @@ export interface QueryString {
   fields?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyObject = { [key: string]: any };
+
+const filterObj = (obj: AnyObject, ...allowedFields: string[]): AnyObject => {
+  return Object.keys(obj).reduce((newObj: AnyObject, key: string) => {
+    if (allowedFields.includes(key)) {
+      newObj[key] = obj[key];
+    }
+    return newObj;
+  }, {} as AnyObject);
+};
+
 class APIFeatures<T> {
   private query: Query<T[], T>;
   private queryString: QueryString;
@@ -89,4 +101,4 @@ const sendEmail = async (options: { email: string; subject: string; message: str
   await transporter.sendMail(mailOptions);
 };
 
-export { APIFeatures, sendEmail };
+export { APIFeatures, sendEmail, filterObj };

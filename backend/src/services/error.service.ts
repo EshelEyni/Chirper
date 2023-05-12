@@ -89,7 +89,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
     sendErrorProd(error, res);
   }
 
-  logger.error(err.message, err as Error);
+  logger.error(err.message);
 };
 
 const asyncErrorCatcher = (fn: AsyncExpressMiddleware) => {

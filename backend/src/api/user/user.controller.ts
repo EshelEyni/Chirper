@@ -55,7 +55,7 @@ const updateUser = asyncErrorCatcher(async (req: Request, res: Response): Promis
   if (!id) throw new AppError("No user id provided", 400);
   const userToUpdate = req.body;
   const isUserToUpdateEmpty = Object.keys(userToUpdate).length === 0;
-  if (isUserToUpdateEmpty) throw new AppError("No user provided", 400);
+  if (isUserToUpdateEmpty) throw new AppError("No properites were provided", 400);
   const updatedUser = await userService.update(id, userToUpdate);
   if (!updatedUser) throw new AppError("User not found", 404);
 
@@ -77,4 +77,27 @@ const removeUser = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-export { getUsers, getUserById, getUserByUsername, addUser, updateUser, removeUser };
+const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const userToUpdate = req.body;
+  const isUserToUpdateEmpty = Object.keys(userToUpdate).length === 0;
+  if (isUserToUpdateEmpty) throw new AppError("No properites were provided", 400);
+  const { loggedinUserId } = req;
+  if (!loggedinUserId) throw new AppError("User not logged in", 401);
+  const updatedUser = await userService.update(loggedinUserId, userToUpdate);
+  if (!updatedUser) throw new AppError("User not found", 404);
+
+  res.status(200).send({
+    status: "success",
+    data: updatedUser,
+  });
+});
+
+export {
+  getUsers,
+  getUserById,
+  getUserByUsername,
+  addUser,
+  updateUser,
+  removeUser,
+  updateLoggedInUser,
+};

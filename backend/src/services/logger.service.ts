@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
 import { asyncLocalStorage } from "./als.service";
-import { User } from "../../../shared/interfaces/user.interface";
 import ansiColors from "ansi-colors";
 
 const logsDir = "./logs";
@@ -27,7 +26,7 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
 
   let line = strs.join(" | ");
   const store = asyncLocalStorage.getStore();
-  const userId = (store as Record<string, User | undefined>)?.loggedinUser?.id;
+  const userId = (store as Record<string, string | undefined>)?.loggedinUserId;
   const str = userId ? `(userId: ${userId})` : "";
   line = `${getTime()} - ${level} - ${line} ${str}\n`;
   switch (level) {

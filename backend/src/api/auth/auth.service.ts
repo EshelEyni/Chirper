@@ -32,23 +32,27 @@ function signToken(id: string) {
   if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
   if (!config.jwtExpirationTime) throw new AppError("jwtExpirationTime not found in config", 500);
 
-  return jwt.sign({ id }, config.jwtSecretCode, {
+  const token = jwt.sign({ id }, config.jwtSecretCode, {
     expiresIn: config.jwtExpirationTime,
   });
+
+  if (!token) throw new AppError("Token not created", 500);
+  return token;
 }
 
-async function verifyToken(token: string): Promise<{ id: string; timeStamp: number }> {
-  if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
-
+async function verifyToken(token: string): Promise<{ id: string; timeStamp: number } | null> {
   try {
+    if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
+
     const decoded = jwt.verify(token, config.jwtSecretCode) as {
       id: string;
       iat: number;
     };
+
     const { id, iat } = decoded;
     return { id, timeStamp: iat };
   } catch (err) {
-    throw new AppError("Token verification failed", 401);
+    return null;
   }
 }
 
@@ -107,4 +111,37 @@ async function resetPassword(
   };
 }
 
-export default { login, signup, signToken, verifyToken, sendPasswordResetEmail, resetPassword };
+async function updatePassword(
+  loggedinUserId: string,
+  currentPassword: string,
+  newPassword: string,
+  newPasswordConfirm: string
+) {
+  const user = await UserModel.findById(loggedinUserId).select("+password");
+  if (!user) throw new AppError("User not found", 404);
+
+  if (!(await user.checkPassword(currentPassword, user.password))) {
+    throw new AppError("Incorrect current password", 400);
+  }
+
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
+  await user.save();
+
+  const newToken = signToken(user.id);
+
+  return {
+    user: user as unknown as User,
+    newToken,
+  };
+}
+
+export default {
+  login,
+  signup,
+  signToken,
+  verifyToken,
+  sendPasswordResetEmail,
+  resetPassword,
+  updatePassword,
+};

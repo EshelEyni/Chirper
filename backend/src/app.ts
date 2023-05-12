@@ -5,16 +5,18 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { requestLogger } from "./middlewares/logger.middleware";
 import { AppError, errorHandler } from "./services/error.service";
-// import { setupAsyncLocalStorage } from "./middlewares/setupAls.middleware";
+import setupAsyncLocalStorage from "./middlewares/setupAls.middleware";
+import userRoutes from "./api/user/user.routes";
+import postRoutes from "./api/post/post.routes";
+import gifRoutes from "./api/gif/gif.routes";
+import locationRoutes from "./api/location/location.routes";
+import authRoutes from "./api/auth/auth.routes";
+// import { setupSocketAPI } from "./services/socket.service";
 
 const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  requestLogger(req, res, next);
-});
 
 // cors
 if (process.env.NODE_ENV === "production") {
@@ -32,14 +34,10 @@ if (process.env.NODE_ENV === "production") {
   app.use(cors(corsOptions));
 }
 
-// app.all("*", setupAsyncLocalStorage);
-
-import userRoutes from "./api/user/user.routes";
-import postRoutes from "./api/post/post.routes";
-import gifRoutes from "./api/gif/gif.routes";
-import locationRoutes from "./api/location/location.routes";
-import authRoutes from "./api/auth/auth.routes";
-// import { setupSocketAPI } from "./services/socket.service";
+app.all("*", setupAsyncLocalStorage);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  requestLogger(req, res, next);
+});
 
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);

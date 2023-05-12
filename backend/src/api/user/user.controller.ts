@@ -92,6 +92,19 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
   });
 });
 
+const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  if (!loggedinUserId) throw new AppError("User not logged in", 401);
+  const removedUser = await userService.removeAccount(loggedinUserId);
+  if (!removedUser) throw new AppError("User not found", 404);
+  logger.warn(`User ${removedUser.username} was deactivated`);
+
+  res.status(204).send({
+    status: "success",
+    data: null,
+  });
+});
+
 export {
   getUsers,
   getUserById,
@@ -100,4 +113,5 @@ export {
   updateUser,
   removeUser,
   updateLoggedInUser,
+  removeLoggedInUser,
 };

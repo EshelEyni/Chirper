@@ -42,6 +42,11 @@ async function remove(userId: string): Promise<User> {
   return userRemoved as unknown as User;
 }
 
+async function removeAccount(userId: string): Promise<User> {
+  const userRemoved = await UserModel.findByIdAndUpdate(userId, { active: false }).exec();
+  return userRemoved as unknown as User;
+}
+
 export default {
   query,
   getById,
@@ -49,4 +54,5 @@ export default {
   add,
   update,
   remove,
+  removeAccount,
 };

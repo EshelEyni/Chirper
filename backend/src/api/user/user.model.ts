@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { User } from "../../../../shared/interfaces/user.interface";
 
 interface IUser extends Document {
   username: string;
@@ -16,6 +17,7 @@ interface IUser extends Document {
   isVerified: boolean;
   isApprovedLocation: boolean;
   createdAt: number;
+  active: boolean;
   // eslint-disable-next-line no-unused-vars
   checkPassword: (candidatePassword: string, userPassword: string) => Promise<boolean>;
   // eslint-disable-next-line no-unused-vars
@@ -81,6 +83,7 @@ const userSchema = new Schema(
     isVerified: { type: Boolean, default: false },
     isApprovedLocation: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
+    active: { type: Boolean, default: true },
   },
   {
     toObject: {
@@ -88,6 +91,7 @@ const userSchema = new Schema(
       transform: (doc: Document, ret: Record<string, unknown>) => {
         delete ret.password;
         delete ret._id;
+        delete ret.active;
         return ret;
       },
     },
@@ -96,12 +100,18 @@ const userSchema = new Schema(
       transform: (doc: Document, ret: Record<string, unknown>) => {
         delete ret.password;
         delete ret._id;
+        delete ret.active;
         return ret;
       },
     },
     timestamps: true,
   }
 );
+
+userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

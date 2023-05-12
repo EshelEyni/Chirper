@@ -8,8 +8,9 @@ import {
   updateUser,
   addUser,
   updateLoggedInUser,
+  removeLoggedInUser,
 } from "./user.controller";
-import { requireAuth } from "../../middlewares/requireAuth.middleware";
+import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware";
 
 const router = express.Router();
 
@@ -18,9 +19,10 @@ router.get("/:id", getUserById);
 router.get("/username/:username", getUserByUsername);
 
 router.patch("/loggedinUser", requireAuth, updateLoggedInUser);
+router.delete("/loggedinUser", requireAuth, removeLoggedInUser);
 
-router.patch("/:id", requireAuth, updateUser);
-router.delete("/:id", requireAuth, removeUser);
+router.patch("/:id", requireAuth, requireAdmin, updateUser);
+router.delete("/:id", requireAuth, requireAdmin, removeUser);
 
 router.post("/", addUser);
 

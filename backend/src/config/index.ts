@@ -1,11 +1,11 @@
 const devConfig = require("./dev");
 const prodConfig = require("./prod");
 let config: {
-  dbURL: any;
-  jwtSecretCode: any;
-  jwtExpirationTime: any;
-  giphyApiKey: any;
-  googleApiKey: any;
+  dbURL: string;
+  jwtSecretCode: string;
+  jwtExpirationTime: string;
+  giphyApiKey: string;
+  googleApiKey: string;
   note?: string;
 };
 

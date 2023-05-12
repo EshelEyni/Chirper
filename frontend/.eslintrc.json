@@ -23,7 +23,7 @@
     "node": true
   },
   "rules": {
-    "prettier/prettier": ["error", { "endOfLine": "auto", "arrowParens": "off" }],
+    "prettier/prettier": ["error", { "endOfLine": "auto", "arrowParens": "avoid" }],
     "linebreak-style": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off"

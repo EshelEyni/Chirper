@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response, Request, NextFunction } from "express";
 import { User } from "../../../shared/interfaces/user.interface";
 const { logger } = require("./logger.service");
+
+type AsyncExpressMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
 class AppError extends Error {
   statusCode: number;
@@ -20,7 +23,7 @@ class AppError extends Error {
   }
 }
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
+const errorHandler = (err: any, req: Request, res: Response): void => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
@@ -38,7 +41,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
   }
 
   function handleValidationErrorDB(err: any): AppError {
-    const message = err.message;
+    const { message } = err;
     return new AppError(message, 400);
   }
 
@@ -89,7 +92,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
   logger.error(err.message, err as Error);
 };
 
-const asyncErrorCatcher = (fn: Function) => {
+const asyncErrorCatcher = (fn: AsyncExpressMiddleware) => {
   return (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next).catch((err: Error) => next(err));
   };

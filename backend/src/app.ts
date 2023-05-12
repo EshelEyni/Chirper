@@ -8,7 +8,6 @@ const { AppError, errorHandler } = require("./services/error.service");
 // const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
 const app = express();
 
-// Express App Config
 app.use(cookieParser());
 app.use(express.json());
 

@@ -2,6 +2,8 @@ export interface User {
   id: string;
   username: string;
   password?: string;
+  passwordConfirm?: string;
+  email: string;
   fullname: string;
   imgUrl: string;
   isAdmin: boolean;

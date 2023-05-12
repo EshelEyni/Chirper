@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 const { AppError, asyncErrorCatcher } = require("../services/error.service");
 const authService = require("../api/auth/auth.service");
-const User = require("../api/user/user.model");
+const { UserModel } = require("../api/user/user.model");
 
 const requireAuth = asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
   let token;
@@ -14,7 +14,7 @@ const requireAuth = asyncErrorCatcher(async (req: Request, res: Response, next: 
   }
 
   const { id, timeStamp } = await authService.verifyToken(token);
-  const currentUser = await User.findById(id);
+  const currentUser = await UserModel.findById(id);
   if (!currentUser) {
     return next(new AppError("The user belonging to this token does not exist.", 401));
   }
@@ -26,18 +26,18 @@ const requireAuth = asyncErrorCatcher(async (req: Request, res: Response, next: 
   next();
 });
 
-const requireAdmin = asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-  // if (!req?.cookies?.loginToken)
-  //   return res.status(401).send("Not Authenticated");
-  // const loggedinUser = await authService.validateToken(req.cookies.loginToken);
-  // if (!loggedinUser.isAdmin) {
-  //   // logger.warn(loggedinUser.fullname + "attempted to perform admin action");
-  //   res.status(403).end("Not Authorized");
-  //   return;
-  // }
-  // next();
-});
+// const requireAdmin = asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
+//   if (!req?.cookies?.loginToken)
+//     return res.status(401).send("Not Authenticated");
+//   const loggedinUser = await authService.validateToken(req.cookies.loginToken);
+//   if (!loggedinUser.isAdmin) {
+//     // logger.warn(loggedinUser.fullname + "attempted to perform admin action");
+//     res.status(403).end("Not Authorized");
+//     return;
+//   }
+//   next();
+// });
 
-// module.exports = requireAuth
-
-export { requireAuth, requireAdmin };
+module.exports = {
+  requireAuth,
+};

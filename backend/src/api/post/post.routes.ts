@@ -2,7 +2,7 @@ module.exports = () => {
   const express = require("express");
   const router = express.Router();
   const { getPosts, getPostById, addPost, updatePost, removePost } = require("./post.controller");
-  const { requireAuth } = require("../../middlewares/requireAuth.middleware.js");
+  const { requireAuth } = require("../../middlewares/requireAuth.middleware");
 
   router.get("/", getPosts);
   router.get("/:id", getPostById);

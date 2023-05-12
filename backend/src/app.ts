@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 const express = require("express");
-const { log } = require("./middlewares/logger.middleware");
 const path = require("path");
-const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const requestLogger = require("./middlewares/logger.middleware");
 const { AppError, errorHandler } = require("./services/error.service");
+// const setupAsyncLocalStorage = require("./middlewares/setupAls.middleware");
 const app = express();
 
 // Express App Config
@@ -13,8 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  log(req, res, next);
-  next();
+  requestLogger(req, res, next);
 });
 
 // cors

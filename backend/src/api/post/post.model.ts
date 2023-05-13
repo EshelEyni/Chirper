@@ -35,15 +35,15 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    rechirps: {
+    rechirpSum: {
       type: Number,
       default: 0,
     },
-    likes: {
+    likeSum: {
       type: Number,
       default: 0,
     },
-    views: {
+    viewSum: {
       type: Number,
       default: 0,
     },

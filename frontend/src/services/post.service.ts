@@ -34,6 +34,7 @@ async function getById(postId: string): Promise<Post> {
 async function remove(postId: string) {
   try {
     const response = await httpService.delete(`post/${postId}`);
+    console.log(response);
   } catch (err) {
     console.log("postService: Cannot remove post");
     throw err;
@@ -53,7 +54,7 @@ async function add(post: NewPost): Promise<Post> {
 
 async function update(post: Post) {
   try {
-    const updatedPost = await httpService.put(`post/${post._id}`, post);
+    const updatedPost = await httpService.put(`post/${post.id}`, post);
     return updatedPost;
   } catch (err) {
     console.log("postService: Cannot update post");

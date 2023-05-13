@@ -4,6 +4,7 @@ import { authRequestLimiter } from "./services/rate-limiter.service";
 import helmet from "helmet";
 import ExpressMongoSanitize from "express-mongo-sanitize";
 import requestSanitizer from "./middlewares/html-sanitizer.middleware";
+import hpp from "hpp";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -29,6 +30,11 @@ app.use(
 
 app.use(ExpressMongoSanitize());
 app.use(requestSanitizer);
+app.use(
+  hpp({
+    whitelist: [], // add whitelisted query params here
+  })
+);
 
 // cors
 if (process.env.NODE_ENV === "production") {

@@ -7,7 +7,7 @@ function getLoggedinUser(): User | null {
 
 function getMiniUser(user: User): MiniUser {
   const miniUser = {
-    _id: user._id,
+    id: user.id,
     username: user.username,
     fullname: user.fullname,
     imgUrl: user.imgUrl,

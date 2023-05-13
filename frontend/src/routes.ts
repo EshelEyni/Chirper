@@ -9,13 +9,15 @@ import { MessagesPage } from "./pages/main-pages/messages";
 import { NotificationsPage } from "./pages/main-pages/notifications";
 import { ProfileDetails } from "./pages/main-pages/profile-details";
 import { ListsPage } from "./pages/main-pages/lists-page";
+import { LoginPage } from "./pages/main-pages/login";
+import { SignupPage } from "./pages/main-pages/signup";
 
 interface Route {
   path: string;
   component: () => JSX.Element;
 }
 
-export const routes: Route[] = [
+const routes: Route[] = [
   {
     path: "",
     component: HomePage,
@@ -56,9 +58,17 @@ export const routes: Route[] = [
     path: "post-location",
     component: HomePage,
   },
+  {
+    path: "login",
+    component: LoginPage,
+  },
+  {
+    path: "signup",
+    component: SignupPage,
+  },
 ];
 
-export const nestedRoutes: Route[] = [
+const nestedRoutes: Route[] = [
   {
     path: "compose",
     component: ComposePage,
@@ -72,3 +82,5 @@ export const nestedRoutes: Route[] = [
     component: ChirperCirclePage,
   },
 ];
+
+export { routes, nestedRoutes };

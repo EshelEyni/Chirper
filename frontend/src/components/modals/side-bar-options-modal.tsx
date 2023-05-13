@@ -1,11 +1,12 @@
-import { RiUserHeartFill } from "react-icons/ri";
 import { GoGraph, GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
-import { authService } from "../../services/auth.service";
 import { MiniUser } from "../../../../shared/interfaces/user.interface";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/types";
+import { logout } from "../../store/actions/auth.actions";
 
 interface SideBarOptionsModalProps {
   loggedinUser: MiniUser;
@@ -17,6 +18,7 @@ export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
   toggleModal,
 }) => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
   const navigateTo = (path: string) => {
     toggleModal();
@@ -27,9 +29,10 @@ export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
     navigate(path);
   };
 
-  const handleLogout = () => {
-    authService.logout();
+  const onLogout = async () => {
+    await dispatch(logout());
     toggleModal();
+    navigate("/explore");
   };
 
   return (
@@ -46,7 +49,9 @@ export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
         <IoIosBrush className="icon" />
         <p>Display</p>
       </div>
-      <button className="side-bar-options-modal-item">Logout @{loggedinUser.username}</button>
+      <button className="side-bar-options-modal-item" onClick={onLogout}>
+        Logout @{loggedinUser.username}
+      </button>
 
       <GoTriangleDown className="side-bar-options-modal-arrow" />
     </section>

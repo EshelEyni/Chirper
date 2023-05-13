@@ -6,7 +6,7 @@ import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const posts = await postService.query();
       dispatch({ type: "SET_POSTS", posts });
@@ -19,7 +19,7 @@ export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, Any
 export function getPost(
   postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const post = await postService.getById(postId);
       dispatch({ type: "SET_POST", post });
@@ -32,7 +32,7 @@ export function getPost(
 export function removePost(
   postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       await postService.remove(postId);
       dispatch({ type: "REMOVE_POST", postId });
@@ -45,7 +45,7 @@ export function removePost(
 export function addPost(
   post: NewPost
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const addedPost = await postService.add(post);
       const isPublished = !post.schedule;
@@ -84,7 +84,7 @@ export function addPost(
 export function updatePost(
   post: Post
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const updatedPost = await postService.update(post);
       dispatch({ type: "UPDATE_POST", updatedPost });
@@ -97,7 +97,7 @@ export function updatePost(
 export function setNewPost(
   post: NewPost
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       dispatch({ type: "SET_NEW_POST", post });
     } catch (err) {

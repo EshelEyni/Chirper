@@ -4,12 +4,14 @@ import { routes, nestedRoutes } from "./routes";
 import "./styles/main.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
-import { UserMsg } from "./components/other/user-msg";
+import { UserMsg } from "./components/msg/user-msg";
 import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
 import { PostLocation } from "./pages/secondary-pages/post-location";
+import { LoginSignupMsg } from "./components/msg/login-signup-msg";
 
 function RootComponent() {
   const { isSideBarShown, userMsg } = useSelector((state: RootState) => state.systemModule);
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const location = useLocation();
 
   return (
@@ -27,6 +29,7 @@ function RootComponent() {
             </Route>
           ))}
         </Routes>
+        {!loggedinUser && <LoginSignupMsg />}
         {userMsg && <UserMsg />}
       </div>
     </div>

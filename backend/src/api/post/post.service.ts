@@ -36,9 +36,9 @@ async function add(post: NewPost): Promise<Post> {
 
   // if (!loggedinUser) throw new Error("user not logged in");
   // if (loggedinUser._id !== post.user._id) throw new Error("cannot add post for another user");
-
+  console.log(post);
   const savedPost = await new PostModel(post).save();
-  const populatedPost = await PostModel.findById(savedPost._id)
+  const populatedPost = await PostModel.findById(savedPost.id)
     .populate({
       path: "user",
       select: "_id username fullname imgUrl",

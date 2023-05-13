@@ -31,6 +31,17 @@ export function login(
   };
 }
 
+export function autoLogin(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const user = await authService.autoLogin();
+      dispatch({ type: "SET_LOGGEDIN_USER", user });
+    } catch (err) {
+      console.log("AuthActions: err in autoLogin", err);
+    }
+  };
+}
+
 export function logout(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {

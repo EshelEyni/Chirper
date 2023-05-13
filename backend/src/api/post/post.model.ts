@@ -98,14 +98,14 @@ function validateContent(post: Document) {
   return (
     post.get("text") ||
     post.get("gif") ||
-    (post.get("imgUrls") && post.get("imgUrls").length > 0) ||
+    (post.get("imgs") && post.get("imgs").length > 0) ||
     post.get("poll")
   );
 }
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
-    const err = new Error("At least one of text, gif, imgUrls, or poll is required");
+    const err = new Error("At least one of text, gif, imgs, or poll is required");
     err.name = "ValidationError";
     next(err);
   } else {

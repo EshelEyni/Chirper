@@ -1,6 +1,7 @@
 import express from "express";
 import {
   login,
+  autoLogin,
   signup,
   logout,
   sendPasswordResetEmail,
@@ -12,6 +13,7 @@ import { requireAuth } from "../../middlewares/requireAuth.middleware";
 const router = express.Router();
 
 router.post("/login", login);
+router.post("/auto-login", autoLogin);
 router.post("/signup", signup);
 router.post("/logout", logout);
 router.patch("/updatePassword", requireAuth, updatePassword);

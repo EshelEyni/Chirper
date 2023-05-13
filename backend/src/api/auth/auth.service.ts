@@ -38,6 +38,19 @@ async function login(username: string, password: string): Promise<{ user: User; 
   };
 }
 
+async function autoLogin(loginToken: string): Promise<{ user: User; newToken: string }> {
+  const verifiedToken = await tokenService.verifyToken(loginToken);
+  if (!verifiedToken) throw new AppError("Invalid token", 400);
+  const { id } = verifiedToken;
+  const user = await UserModel.findById(id);
+  if (!user) throw new AppError("User not found", 404);
+  const newToken = tokenService.signToken(user.id);
+  return {
+    user: user as unknown as User,
+    newToken,
+  };
+}
+
 async function signup(user: User): Promise<{ savedUser: User; token: string }> {
   const savedUser = await UserModel.create(user);
   const token = tokenService.signToken(savedUser.id);
@@ -129,6 +142,7 @@ async function resetPassword(
 
 export default {
   login,
+  autoLogin,
   signup,
   sendPasswordResetEmail,
   resetPassword,

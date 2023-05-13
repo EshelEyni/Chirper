@@ -15,6 +15,14 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   _sendUserTokenSuccessResponse(res, token, user, 200);
 });
 
+const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const { loginToken } = req.cookies;
+  if (!loginToken) throw new AppError("User not logged in", 401);
+  const { user, newToken } = await authService.autoLogin(loginToken);
+
+  _sendUserTokenSuccessResponse(res, newToken, user, 200);
+});
+
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {
   const user = req.body as unknown as User;
   const { savedUser, token } = await authService.signup(user);
@@ -84,4 +92,4 @@ const _sendUserTokenSuccessResponse = (
   });
 };
 
-export { login, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };
+export { login, autoLogin, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };

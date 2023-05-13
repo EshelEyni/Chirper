@@ -5,6 +5,7 @@ import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
 import { GifDisplay } from "../gif/gif-display";
+import { userService } from "../../services/user.service";
 
 interface PostPreviewProps {
   post: Post;
@@ -14,7 +15,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   return (
     <article className="post-preview">
       <div className="user-img-container">
-        <UserImg imgUrl={post.user.imgUrl} />
+        <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
       </div>
       <div className="post-preview-main-container">
         <header className="post-preview-header">

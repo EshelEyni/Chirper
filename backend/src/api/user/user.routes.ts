@@ -1,5 +1,4 @@
 import express from "express";
-// import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware.js";
 import {
   getUserById,
   getUserByUsername,
@@ -11,19 +10,24 @@ import {
   removeLoggedInUser,
 } from "./user.controller";
 import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware";
+import {
+  deleteRequestLimiter,
+  getRequestLimiter,
+  patchRequestLimiter,
+  postRequestLimiter,
+} from "../../services/rate-limiter.service";
 
 const router = express.Router();
 
-router.get("/", getUsers);
-router.get("/:id", getUserById);
-router.get("/username/:username", getUserByUsername);
+router.get("/", getRequestLimiter, getUsers);
+router.get("/:id", getRequestLimiter, getUserById);
+router.get("/username/:username", getRequestLimiter, getUserByUsername);
 
-router.patch("/loggedinUser", requireAuth, updateLoggedInUser);
-router.delete("/loggedinUser", requireAuth, removeLoggedInUser);
+router.patch("/loggedinUser", patchRequestLimiter, requireAuth, updateLoggedInUser);
+router.delete("/loggedinUser", deleteRequestLimiter, requireAuth, removeLoggedInUser);
 
-router.patch("/:id", requireAuth, requireAdmin, updateUser);
-router.delete("/:id", requireAuth, requireAdmin, removeUser);
-
-router.post("/", addUser);
+router.patch("/:id", patchRequestLimiter, requireAuth, requireAdmin, updateUser);
+router.delete("/:id", deleteRequestLimiter, requireAuth, requireAdmin, removeUser);
+router.post("/", postRequestLimiter, requireAuth, requireAdmin, addUser);
 
 export default router;

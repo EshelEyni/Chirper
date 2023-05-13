@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import express from "express";
+import { authRequestLimiter } from "./services/rate-limiter.service";
+import helmet from "helmet";
+import ExpressMongoSanitize from "express-mongo-sanitize";
+import requestSanitizer from "./middlewares/html-sanitizer.middleware";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -15,8 +19,16 @@ import authRoutes from "./api/auth/auth.routes";
 
 const app = express();
 
+app.use(helmet());
 app.use(cookieParser());
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "10kb",
+  })
+);
+
+app.use(ExpressMongoSanitize());
+app.use(requestSanitizer);
 
 // cors
 if (process.env.NODE_ENV === "production") {
@@ -43,7 +55,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/gif", gifRoutes);
 app.use("/api/location", locationRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRequestLimiter, authRoutes);
 // setupSocketAPI(http);
 
 app.get("/**", (req: Request, res: Response) => {

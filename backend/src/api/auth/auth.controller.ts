@@ -11,25 +11,15 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   }
 
   const { user, token } = await authService.login(username, password);
-  // res.cookie("loginToken", loginToken);
 
-  res.status(200).json({
-    status: "success",
-    token,
-    data: user,
-  });
+  _sendUserTokenSuccessResponse(res, token, user, 200);
 });
 
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {
   const user = req.body as unknown as User;
   const { savedUser, token } = await authService.signup(user);
-  // res.cookie("loginToken", loginToken);
 
-  res.status(201).json({
-    status: "success",
-    token,
-    data: savedUser,
-  });
+  _sendUserTokenSuccessResponse(res, token, savedUser, 201);
 });
 
 const logout = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -53,11 +43,7 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
     newPasswordConfirm
   );
 
-  res.status(200).json({
-    status: "success",
-    token: newToken,
-    data: user,
-  });
+  _sendUserTokenSuccessResponse(res, newToken, user, 200);
 });
 
 const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -76,11 +62,26 @@ const resetPassword = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { password, passwordConfirm } = req.body;
   const { user, newToken } = await authService.resetPassword(token, password, passwordConfirm);
 
-  res.status(200).json({
+  _sendUserTokenSuccessResponse(res, newToken, user, 200);
+});
+
+const _sendUserTokenSuccessResponse = (
+  res: Response,
+  token: string,
+  user: User,
+  status: number
+) => {
+  res.cookie("loginToken", token, {
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  res.status(status).json({
     status: "success",
-    token: newToken,
+    token,
     data: user,
   });
-});
+};
 
 export { login, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };

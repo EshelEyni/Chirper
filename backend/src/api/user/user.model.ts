@@ -23,6 +23,8 @@ interface IUser extends Document {
   // eslint-disable-next-line no-unused-vars
   changedPasswordAfter: (JWTTimestamp: number) => boolean;
   createPasswordResetToken: () => string;
+  loginAttempts: number;
+  lockedUntil: number;
 }
 
 const userSchema = new Schema(
@@ -84,6 +86,8 @@ const userSchema = new Schema(
     isApprovedLocation: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
     active: { type: Boolean, default: true },
+    loginAttempts: { type: Number, default: 0 },
+    lockedUntil: { type: Number, default: 0 },
   },
   {
     toObject: {
@@ -92,6 +96,8 @@ const userSchema = new Schema(
         delete ret.password;
         delete ret._id;
         delete ret.active;
+        delete ret.loginAttempts;
+        delete ret.lockedUntil;
         return ret;
       },
     },
@@ -101,6 +107,8 @@ const userSchema = new Schema(
         delete ret.password;
         delete ret._id;
         delete ret.active;
+        delete ret.loginAttempts;
+        delete ret.lockedUntil;
         return ret;
       },
     },

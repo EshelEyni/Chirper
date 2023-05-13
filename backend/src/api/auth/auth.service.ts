@@ -1,18 +1,37 @@
 import { User } from "../../../../shared/interfaces/user.interface";
 import { UserModel } from "../user/user.model";
-import jwt from "jsonwebtoken";
-import config from "../../config";
 import { AppError } from "../../services/error.service";
 import { sendEmail } from "../../services/util.service";
 import crypto from "crypto";
+import tokenService from "../../services/token.service";
 
 async function login(username: string, password: string): Promise<{ user: User; token: string }> {
   const user = await UserModel.findOne({ username }).select("+password");
   if (!user || !(await user.checkPassword(password, user.password))) {
+    if (user) {
+      if (user.loginAttempts >= 10 && user.lockedUntil < Date.now()) {
+        user.lockedUntil = Date.now() + 60 * 60 * 1000;
+        await user.save({ validateBeforeSave: false });
+        throw new AppError("Too many failed login attempts. Try again in 1 hour", 400);
+      }
+
+      if (user.lockedUntil && user.lockedUntil > Date.now()) {
+        const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
+        throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
+      }
+
+      user.loginAttempts++;
+      await user.save({ validateBeforeSave: false });
+    }
     throw new AppError("Incorrect username or password", 400);
   }
-  const token = signToken(user.id);
+  const token = tokenService.signToken(user.id);
 
+  if (user.loginAttempts > 0) {
+    user.loginAttempts = 0;
+    user.lockedUntil = 0;
+    await user.save({ validateBeforeSave: false });
+  }
   return {
     user: user as unknown as User,
     token,
@@ -21,39 +40,36 @@ async function login(username: string, password: string): Promise<{ user: User; 
 
 async function signup(user: User): Promise<{ savedUser: User; token: string }> {
   const savedUser = await UserModel.create(user);
-  const token = signToken(savedUser.id);
+  const token = tokenService.signToken(savedUser.id);
   return {
     savedUser: savedUser as unknown as User,
     token,
   };
 }
 
-function signToken(id: string) {
-  if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
-  if (!config.jwtExpirationTime) throw new AppError("jwtExpirationTime not found in config", 500);
+async function updatePassword(
+  loggedinUserId: string,
+  currentPassword: string,
+  newPassword: string,
+  newPasswordConfirm: string
+) {
+  const user = await UserModel.findById(loggedinUserId).select("+password");
+  if (!user) throw new AppError("User not found", 404);
 
-  const token = jwt.sign({ id }, config.jwtSecretCode, {
-    expiresIn: config.jwtExpirationTime,
-  });
-
-  if (!token) throw new AppError("Token not created", 500);
-  return token;
-}
-
-async function verifyToken(token: string): Promise<{ id: string; timeStamp: number } | null> {
-  try {
-    if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
-
-    const decoded = jwt.verify(token, config.jwtSecretCode) as {
-      id: string;
-      iat: number;
-    };
-
-    const { id, iat } = decoded;
-    return { id, timeStamp: iat };
-  } catch (err) {
-    return null;
+  if (!(await user.checkPassword(currentPassword, user.password))) {
+    throw new AppError("Incorrect current password", 400);
   }
+
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
+  await user.save();
+
+  const newToken = tokenService.signToken(user.id);
+
+  return {
+    user: user as unknown as User,
+    newToken,
+  };
 }
 
 async function sendPasswordResetEmail(email: string, resetURL: string) {
@@ -103,32 +119,7 @@ async function resetPassword(
 
   await user.save();
 
-  const newToken = signToken(user.id);
-
-  return {
-    user: user as unknown as User,
-    newToken,
-  };
-}
-
-async function updatePassword(
-  loggedinUserId: string,
-  currentPassword: string,
-  newPassword: string,
-  newPasswordConfirm: string
-) {
-  const user = await UserModel.findById(loggedinUserId).select("+password");
-  if (!user) throw new AppError("User not found", 404);
-
-  if (!(await user.checkPassword(currentPassword, user.password))) {
-    throw new AppError("Incorrect current password", 400);
-  }
-
-  user.password = newPassword;
-  user.passwordConfirm = newPasswordConfirm;
-  await user.save();
-
-  const newToken = signToken(user.id);
+  const newToken = tokenService.signToken(user.id);
 
   return {
     user: user as unknown as User,
@@ -139,8 +130,6 @@ async function updatePassword(
 export default {
   login,
   signup,
-  signToken,
-  verifyToken,
   sendPasswordResetEmail,
   resetPassword,
   updatePassword,

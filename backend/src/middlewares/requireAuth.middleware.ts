@@ -1,18 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError, asyncErrorCatcher } from "../services/error.service";
-import authService from "../api/auth/auth.service";
 import { UserModel } from "../api/user/user.model";
+import tokenService from "../services/token.service";
 
 const requireAuth = asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-  let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-
+  const token = tokenService.getTokenFromRequest(req);
   if (!token) {
     return next(new AppError("You are not logged in! Please log in to get access.", 401));
   }
-  const verifiedToken = await authService.verifyToken(token);
+  const verifiedToken = await tokenService.verifyToken(token);
   if (!verifiedToken) {
     return next(new AppError("Invalid Token.", 401));
   }

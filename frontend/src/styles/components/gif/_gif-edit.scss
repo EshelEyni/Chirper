@@ -1,6 +1,6 @@
-.gif {
+.gif-edit {
   position: relative;
-cursor: pointer;
+  cursor: pointer;
   img {
     border-radius: 25px;
   }
@@ -40,7 +40,7 @@ cursor: pointer;
     color: white;
     background-color: white;
     border-radius: 50%;
-    
+
     .btn-play-icon-container {
       position: relative;
       display: flex;
@@ -51,7 +51,7 @@ cursor: pointer;
       width: rem(27px);
       height: rem(27px);
 
-      .play-icon{
+      .play-icon {
         position: absolute;
         top: 50%;
         left: 52.5%;

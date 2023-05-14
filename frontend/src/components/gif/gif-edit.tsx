@@ -25,7 +25,7 @@ export const GifEdit: React.FC<GifProps> = ({ gif, setGif }) => {
   return (
     <Fragment>
       {isLoading && <ContentLoader />}
-      <div className="gif" style={{ visibility: isLoading ? "hidden" : "visible" }}>
+      <div className="gif-edit" style={{ visibility: isLoading ? "hidden" : "visible" }}>
         <button className="btn-remove-content" onClick={() => setGif(null)}>
           <AiOutlineClose className="remove-content-icon" />
         </button>

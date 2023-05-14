@@ -1,0 +1,44 @@
+.gif-display {
+  position: relative;
+  cursor: pointer;
+  img {
+    border-radius: 25px;
+  }
+
+  .gif-display-content-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: rem(3px);
+    margin: rem(15px);
+
+    > *:not(.description-container),
+    .btn-open-description {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: rem(20px);
+      padding: rem(2px) rem(4px);
+      background-color: rgb(47, 24, 14);
+      color: white;
+      font-size: rem(12px);
+      font-weight: 600;
+    }
+
+    .btn-toggle-play {
+      padding: 0;
+      width: rem(20px);
+      font-size: rem(10px);
+      border-radius: 5px 0 0 5px;
+    }
+
+    .description-container {
+      position: relative;
+      .btn-open-description {
+        border-radius: 0 5px 5px 0;
+      }
+    }
+  }
+}

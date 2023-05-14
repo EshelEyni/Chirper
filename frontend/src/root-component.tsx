@@ -17,12 +17,7 @@ function RootComponent() {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const location = useLocation();
 
-  let count = 0;
-  if (!loggedinUser && count === 0) {
-    console.log("auto login");
-    count++;
-    dispatch(autoLogin());
-  }
+  if (!loggedinUser) dispatch(autoLogin());
 
   return (
     <div className="app">

@@ -37,13 +37,20 @@ export interface Post extends NewPost {
   };
 }
 
+export type pollOption = {
+  text: string;
+  voteSum: number;
+  isLoggedinUserVoted: boolean;
+};
+
 export interface Poll {
-  options: string[];
+  options: pollOption[];
   length: {
     days: number;
     hours: number;
     minutes: number;
   };
+  isVotingOff: boolean;
   createdAt: number;
 }
 

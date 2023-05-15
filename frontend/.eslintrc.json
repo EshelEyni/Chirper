@@ -24,6 +24,7 @@
   },
   "rules": {
     "prettier/prettier": ["error", { "endOfLine": "auto", "arrowParens": "avoid" }],
+    "no-console": "warn",
     "linebreak-style": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off"

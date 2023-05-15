@@ -16,9 +16,12 @@
       .post-preview-header-main {
         display: flex;
         align-items: center;
+        gap: rem(5px);
 
         .user-info {
           display: flex;
+          align-items: center;
+          gap: rem(5px);
           font-size: rem(14px);
           font-weight: 700;
           margin-right: rem(5px);

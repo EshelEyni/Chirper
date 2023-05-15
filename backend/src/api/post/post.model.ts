@@ -1,26 +1,12 @@
-import { Document } from "mongoose";
-
+import mongoose, { Document, Query } from "mongoose";
 import { gifSchema } from "../gif/gif.model";
-import mongoose from "mongoose";
+import { pollSchema } from "./poll.model";
+import { Post } from "../../../../shared/interfaces/post.interface";
 
 const imgUrlsSchema = new mongoose.Schema({
   url: String,
   sortOrder: Number,
 });
-
-const pollSchema = new mongoose.Schema(
-  {
-    options: [String],
-    length: {
-      days: Number,
-      hours: Number,
-      minutes: Number,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
 
 const locationSchema = new mongoose.Schema({
   placeId: String,
@@ -114,10 +100,10 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
 });
 
 postSchema.pre("save", function (this: Document, next: () => void) {
-  if (this.get("schedule") !== null) {
-    this.set("isPublic", false);
-  } else {
+  if (this.get("schedule") === undefined) {
     this.set("isPublic", true);
+  } else {
+    this.set("isPublic", false);
   }
   next();
 });
@@ -129,13 +115,10 @@ postSchema.virtual("user", {
   justOne: true,
 });
 
-// postSchema.pre(
-//   /^find/,
-//   function (this: Query<Document, Post>, next: (err?: Error) => void) {
-//     this.find({ isPublic: true });
-//     next();
-//   }
-// );
+postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
+  this.find({ isPublic: true });
+  next();
+});
 
 const PostModel = mongoose.model("Post", postSchema);
 

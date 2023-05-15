@@ -123,7 +123,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setIsBtnCreatePostDisabled(true);
     } catch (err) {
       setPostSaveInProgress(false);
-      console.log(err);
     }
   };
 

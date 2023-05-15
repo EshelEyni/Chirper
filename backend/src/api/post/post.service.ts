@@ -1,6 +1,7 @@
-import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, pollOption } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
+import { PollResultModel } from "./poll.model";
 import { APIFeatures } from "../../services/util.service";
 
 async function query(queryString: QueryString): Promise<Post[]> {
@@ -36,7 +37,6 @@ async function add(post: NewPost): Promise<Post> {
 
   // if (!loggedinUser) throw new Error("user not logged in");
   // if (loggedinUser._id !== post.user._id) throw new Error("cannot add post for another user");
-  console.log(post);
   const savedPost = await new PostModel(post).save();
   const populatedPost = await PostModel.findById(savedPost.id)
     .populate({
@@ -62,10 +62,35 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
+async function savePollVote(
+  postId: string,
+  optionIdx: number,
+  userId: string
+): Promise<pollOption> {
+  const post = await PostModel.findById(postId);
+  if (!post) throw new Error("post not found");
+  const { poll } = post;
+  if (!poll) throw new Error("post has no poll");
+  const option = poll.options[optionIdx];
+  if (!option) throw new Error("option not found");
+  option.voteSum++;
+  option.isLoggedinUserVoted = true;
+  await post.save();
+  const vote = {
+    postId,
+    optionIdx,
+    userId,
+  };
+  await PollResultModel.create(vote);
+  const { text, voteSum, isLoggedinUserVoted } = option;
+  return { text, voteSum, isLoggedinUserVoted };
+}
+
 export default {
   query,
   getById,
   add,
   update,
   remove,
+  savePollVote,
 };

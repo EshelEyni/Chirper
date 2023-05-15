@@ -87,15 +87,20 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       isDisabled: imgs.length > 0 || !!gif || !!poll || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
-        setPoll({
-          options: ["", ""],
+        const defaultPoll: Poll = {
+          options: [
+            { text: "", voteSum: 0, isLoggedUserVoted: false },
+            { text: "", voteSum: 0, isLoggedUserVoted: false },
+          ],
           length: {
             days: 1,
             hours: 0,
             minutes: 0,
           },
+          isVotingOff: false,
           createdAt: Date.now(),
-        });
+        };
+        setPoll(defaultPoll);
       },
     },
     {

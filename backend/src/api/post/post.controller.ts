@@ -67,4 +67,19 @@ const removePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-export { getPosts, getPostById, addPost, updatePost, removePost };
+const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { postId, optionIdx } = req.body;
+  const { loggedinUserId } = req;
+
+  if (!postId) throw new AppError("No post id provided", 400);
+  if (!(typeof optionIdx === "number")) throw new AppError("No option index provided", 400);
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  const pollOption = await postService.savePollVote(postId, optionIdx, loggedinUserId);
+
+  res.status(200).send({
+    status: "success",
+    data: pollOption,
+  });
+});
+
+export { getPosts, getPostById, addPost, updatePost, removePost, savePollVote };

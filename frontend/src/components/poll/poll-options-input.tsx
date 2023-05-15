@@ -29,7 +29,15 @@ export const PollOptionsInput: React.FC<PollOptionsInputProps> = ({ poll, setPol
 
   const onAddChoice = () => {
     if (poll.options.length < 5) {
-      setPoll({ ...poll, options: [...poll.options, ""] });
+      const defaultOption = {
+        text: "",
+        voteSum: 0,
+        isLoggedinUserVoted: false,
+      };
+      setPoll({
+        ...poll,
+        options: [...poll.options, defaultOption],
+      });
     }
   };
 
@@ -46,7 +54,7 @@ export const PollOptionsInput: React.FC<PollOptionsInputProps> = ({ poll, setPol
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
     const options = [...poll.options];
-    options[idx] = e.target.value;
+    options[idx].text = e.target.value;
     setPoll({ ...poll, options });
   };
 
@@ -63,7 +71,7 @@ export const PollOptionsInput: React.FC<PollOptionsInputProps> = ({ poll, setPol
             <input
               className={`poll-option-input ${idx}`}
               type="text"
-              onChange={(e) => {
+              onChange={e => {
                 handleChange(e, idx);
               }}
               onFocus={() => {
@@ -79,7 +87,7 @@ export const PollOptionsInput: React.FC<PollOptionsInputProps> = ({ poll, setPol
               {`Choice ${idx + 1}`}
             </span>
             {focused[`option${idx + 1}`] && (
-              <span className="option-text-indicator">{option.length + "/" + 25}</span>
+              <span className="option-text-indicator">{option.text.length + "/" + 25}</span>
             )}
           </div>
           {idx === poll.options.length - 1 && idx != 3 && (

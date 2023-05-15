@@ -9,6 +9,7 @@ export const postService = {
   remove,
   add,
   update,
+  savePollVote,
 };
 
 async function query(): Promise<Post[]> {
@@ -59,5 +60,14 @@ async function update(post: Post) {
   } catch (err) {
     console.log("postService: Cannot update post");
     throw err;
+  }
+}
+
+async function savePollVote(postId: string, optionIdx: number) {
+  console.log("postService: savePollVote", postId, optionIdx);
+  try {
+    return await httpService.post("post/poll/vote", { postId, optionIdx });
+  } catch (err) {
+    console.log("postService: Cannot save poll vote", err);
   }
 }

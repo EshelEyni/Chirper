@@ -6,12 +6,16 @@ import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
 import { GifDisplay } from "../gif/gif-display";
 import { userService } from "../../services/user.service";
+import { PollDisplay } from "../poll/poll-display";
+import { useState } from "react";
 
 interface PostPreviewProps {
   post: Post;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
+  const [poll, setPoll] = useState(post.poll || null);
+
   return (
     <article className="post-preview">
       <div className="user-img-container">
@@ -24,7 +28,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
               <h3>{post.user.fullname}</h3>
               <span>@{post.user.username}</span>
             </div>
-            <span>·</span>
+            <span className="post-preview-header-dot">·</span>
             <div className="post-time">
               <span>{utilService.formatTime(post.createdAt)}</span>
             </div>
@@ -37,17 +41,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           <p>{post.text}</p>
           {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
           {post.gif && <GifDisplay gif={post.gif} />}
-          {post.poll && (
-            <div className="poll-container">
-              <ul>
-                {post.poll.options.map((option, idx) => (
-                  <li key={idx}>
-                    <span>{option}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {poll && <PollDisplay postId={post.id} poll={poll} setPoll={setPoll} />}
         </div>
         <footer className="flex">
           <PostPreviewActionBtns post={post} />

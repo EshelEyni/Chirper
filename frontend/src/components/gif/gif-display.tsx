@@ -15,7 +15,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);
-  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [isModalAbove, setIsModalAbove] = useState(false);
   const btnToggleDescriptionRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -35,8 +35,10 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
 
   const updateModalPosition = () => {
     if (btnToggleDescriptionRef.current) {
-      const { top, left } = btnToggleDescriptionRef.current.getBoundingClientRect();
-      setModalPosition({ top, left });
+      const { top } = btnToggleDescriptionRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const isModalPositionUp = windowHeight - top < 350;
+      setIsModalAbove(isModalPositionUp);
     }
   };
 
@@ -58,7 +60,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
           </button>
           {isDescriptionShown && (
             <GifDescriptionModal
-              modalPosition={modalPosition}
+              isModalAbove={isModalAbove}
               description={description}
               onToggleDescription={onToggleDescription}
             />

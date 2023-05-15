@@ -3,21 +3,27 @@ import { FC, Fragment } from "react";
 type GifDescriptionModalProps = {
   description: string;
   onToggleDescription: (e: React.MouseEvent) => void;
-  modalPosition: { top: number; left: number };
+  isModalAbove: boolean;
 };
 
 export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
   description,
   onToggleDescription,
-  modalPosition,
+  isModalAbove,
 }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <Fragment>
       <div className="main-screen" onClick={onToggleDescription}></div>
       <section
         className="gif-description-modal"
-        style={{ top: modalPosition.top, left: modalPosition.left }}
+        style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
+        onClick={handleClick}
       >
+        <div className={"tippy" + (isModalAbove ? " down" : " up")}></div>
         <div className="gif-description-title-text-container">
           <h1>Image description</h1>
           <p>{description}</p>

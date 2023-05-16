@@ -3,6 +3,7 @@
 import fs from "fs";
 import { asyncLocalStorage } from "./als.service";
 import ansiColors from "ansi-colors";
+import { alStoreType } from "../middlewares/setupAls.middleware";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) {
@@ -25,8 +26,8 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
   );
 
   let line = strs.join(" | ");
-  const store = asyncLocalStorage.getStore();
-  const userId = (store as Record<string, string | undefined>)?.loggedinUserId;
+  const store = asyncLocalStorage.getStore() as alStoreType;
+  const userId = store?.loggedinUserId;
   const str = userId ? `(userId: ${userId})` : "";
   line = `${getTime()} - ${level} - ${line} ${str}\n`;
   switch (level) {

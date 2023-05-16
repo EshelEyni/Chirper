@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { QueryString } from "../../services/util.service.js";
-import { Post } from "../../../../shared/interfaces/post.interface.js";
+import { NewPost, Post } from "../../../../shared/interfaces/post.interface.js";
 
 import { logger } from "../../services/logger.service";
 import postService from "./post.service";
@@ -31,7 +31,9 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 });
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const currPost = req.body as unknown as Post;
+  const { loggedinUserId } = req;
+  const currPost = req.body as unknown as NewPost;
+  if (loggedinUserId) currPost.userId = loggedinUserId;
   const post = await postService.add(currPost);
 
   res.status(201).send({
@@ -74,7 +76,7 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
   if (!postId) throw new AppError("No post id provided", 400);
   if (!(typeof optionIdx === "number")) throw new AppError("No option index provided", 400);
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
-  const pollOption = await postService.savePollVote(postId, optionIdx, loggedinUserId);
+  const pollOption = await postService.setPollVote(postId, optionIdx, loggedinUserId);
 
   res.status(200).send({
     status: "success",

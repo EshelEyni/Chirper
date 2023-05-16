@@ -1,23 +1,28 @@
 import mongoose from "mongoose";
 
+const pollOptionSchema = new mongoose.Schema(
+  {
+    text: {
+      type: String,
+      required: true,
+    },
+
+    voteSum: {
+      type: Number,
+      default: 0,
+    },
+    isLoggedinUserVoted: {
+      type: Boolean,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
 const pollSchema = new mongoose.Schema(
   {
-    options: [
-      {
-        text: {
-          type: String,
-          required: true,
-        },
-        isLoggedinUserVoted: {
-          type: Boolean,
-          default: false,
-        },
-        voteSum: {
-          type: Number,
-          default: 0,
-        },
-      },
-    ],
+    options: [pollOptionSchema],
     length: {
       days: Number,
       hours: Number,
@@ -45,9 +50,18 @@ const pollSchema = new mongoose.Schema(
 
 const pollResultSchema = new mongoose.Schema(
   {
-    postId: String,
-    optionIdx: Number,
-    userId: String,
+    postId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    optionIdx: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
   },
   {
     timestamps: true,

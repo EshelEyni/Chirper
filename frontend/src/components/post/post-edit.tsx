@@ -92,7 +92,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     try {
       setPostSaveInProgress(true);
       if (!loggedinUser) return;
-      newPost.userId = loggedinUser.id;
 
       if (imgs.length > 0) {
         const prms = imgs.map(async (img, idx) => {

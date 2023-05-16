@@ -64,7 +64,6 @@ async function update(post: Post) {
 }
 
 async function savePollVote(postId: string, optionIdx: number) {
-  console.log("postService: savePollVote", postId, optionIdx);
   try {
     return await httpService.post("post/poll/vote", { postId, optionIdx });
   } catch (err) {

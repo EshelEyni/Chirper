@@ -3,6 +3,50 @@ import { gifSchema } from "../gif/gif.model";
 import { pollSchema } from "./poll.model";
 import { Post } from "../../../../shared/interfaces/post.interface";
 
+export interface IPost {
+  commentSum: number;
+  rechirpSum: number;
+  likeSum: number;
+  viewSum: number;
+  audience: string;
+  repliersType: string;
+  isPublic: boolean;
+  userId: mongoose.Schema.Types.ObjectId;
+  text: string;
+  imgs: { url: string; sortOrder: number }[];
+  videoUrl: string;
+  gif: {
+    url: string;
+    staticUrl: string;
+    description: string;
+    sortOrder: number;
+  };
+  poll: {
+    options: {
+      text: string;
+      voteSum: number;
+      isLoggedinUserVoted: boolean;
+    }[];
+    length: {
+      days: number;
+      hours: number;
+      minutes: number;
+    };
+  };
+  schedule: Date;
+  location: {
+    placeId: string;
+    name: string;
+    lat: number;
+    lng: number;
+  };
+
+  createdAt: Date;
+  updatedAt: Date;
+
+  _id: mongoose.Schema.Types.ObjectId;
+}
+
 const imgUrlsSchema = new mongoose.Schema({
   url: String,
   sortOrder: Number,

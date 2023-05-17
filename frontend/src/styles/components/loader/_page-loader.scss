@@ -13,8 +13,10 @@
 
   @include progress-bar;
 
-  img {
-    width: rem(75px);
-    height: rem(75px);
+  .logo-container {
+    .logo {
+      width: rem(100px);
+      height: rem(100px);
+    }
   }
 }

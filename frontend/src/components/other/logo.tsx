@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import LogoImg from '../../assets/img/logo.png';
+import { Link } from "react-router-dom";
+import { ReactComponent as LogoImg } from "../../assets/svg/logo.svg";
 
 export const Logo = () => {
-    return (
-        <Link className="logo-container" to='/'>
-            <img src={LogoImg} alt="logo" />
-        </Link>
-    );
+  return (
+    <Link className="logo-container" to="/">
+      <LogoImg className="logo" />
+    </Link>
+  );
 };

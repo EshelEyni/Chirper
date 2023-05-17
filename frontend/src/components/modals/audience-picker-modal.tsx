@@ -37,7 +37,7 @@ export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
       <section className="picker-modal">
         <h1 className="picker-modal-title">Choose audience</h1>
         <div className="picker-modal-options">
-          {audinceOptions.map((option) => (
+          {audinceOptions.map(option => (
             <div
               key={option.title}
               className="picker-modal-option"
@@ -53,9 +53,7 @@ export const AudiencePickerModal: React.FC<AudiencePickerModalProps> = ({
               }}
             >
               <div className="picker-modal-option-main-content">
-                <div className="picker-modal-option-icon-container">
-                  {option.icon}
-                </div>
+                <div className="picker-modal-option-icon-container">{option.icon}</div>
                 <div className="picker-modal-option-text">{option.title}</div>
               </div>
               {option.isSelected && <AiOutlineCheck className="check-icon" />}

@@ -1,3 +1,8 @@
-.logo-container{
-    display: flex;
+.logo-container {
+  display: flex;
+
+  .logo {
+    width: rem(30px);
+    height: rem(30px);
+  }
 }

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import express from "express";
-import { authRequestLimiter } from "./services/rate-limiter.service";
 import helmet from "helmet";
 import ExpressMongoSanitize from "express-mongo-sanitize";
 import requestSanitizer from "./middlewares/html-sanitizer.middleware";
@@ -61,7 +60,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/gif", gifRoutes);
 app.use("/api/location", locationRoutes);
-app.use("/api/auth", authRequestLimiter, authRoutes);
+app.use("/api/auth", authRoutes);
 // setupSocketAPI(http);
 
 app.get("/**", (req: Request, res: Response) => {

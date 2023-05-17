@@ -1,4 +1,4 @@
-import { NewPost, Post, pollOption } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, PollOption } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { IPost, PostModel } from "./post.model";
 import { PollResultModel } from "./poll.model";
@@ -58,7 +58,7 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
-async function setPollVote(postId: string, optionIdx: number, userId: string): Promise<pollOption> {
+async function setPollVote(postId: string, optionIdx: number, userId: string): Promise<PollOption> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -67,6 +67,8 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
     if (!post) throw new AppError("post not found", 404);
     const { poll } = post;
     if (!poll) throw new AppError("post has no poll", 400);
+    const postTime = post.schedule ? post.schedule.getTime() : post.createdAt.getTime();
+    _checkPollExperation(postTime, poll.length);
 
     const option = poll.options[optionIdx];
     if (!option) throw new AppError("option not found", 404);
@@ -78,7 +80,8 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
       optionIdx,
       userId,
     };
-
+    const userVote = await PollResultModel.findOne(vote).session(session);
+    if (userVote) throw new AppError("user already voted", 400);
     await PollResultModel.create([vote], { session });
 
     await session.commitTransaction();
@@ -91,6 +94,13 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
   } finally {
     session.endSession();
   }
+}
+
+function _populateUser(): mongoose.PopulateOptions {
+  return {
+    path: "user",
+    select: "_id username fullname imgUrl",
+  };
 }
 
 async function _populateUserPollVotes(...posts: IPost[]) {
@@ -115,11 +125,17 @@ async function _populateUserPollVotes(...posts: IPost[]) {
   }
 }
 
-function _populateUser(): mongoose.PopulateOptions {
-  return {
-    path: "user",
-    select: "_id username fullname imgUrl",
-  };
+function _checkPollExperation(
+  postTime: number,
+  pollLength: { days: number; hours: number; minutes: number }
+) {
+  const { days, hours, minutes } = pollLength;
+  const currTime = Date.now();
+  const pollEndTime =
+    postTime + days * 24 * 60 * 60 * 1000 + hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+
+  if (postTime > currTime) throw new AppError("poll not started yet", 400);
+  if (pollEndTime < currTime) throw new AppError("poll ended", 400);
 }
 
 export default {

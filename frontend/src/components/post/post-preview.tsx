@@ -8,12 +8,17 @@ import { GifDisplay } from "../gif/gif-display";
 import { userService } from "../../services/user.service";
 import { PollDisplay } from "../poll/poll-display";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface PostPreviewProps {
   post: Post;
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const isLoggedinUserPost = loggedinUser?.id === post.user.id;
+  const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
   return (
@@ -41,7 +46,15 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           <p>{post.text}</p>
           {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
           {post.gif && <GifDisplay gif={post.gif} />}
-          {poll && <PollDisplay postId={post.id} poll={poll} setPoll={setPoll} />}
+          {poll && (
+            <PollDisplay
+              isLoggedinUserPost={isLoggedinUserPost}
+              postId={post.id}
+              postStartDate={postStartDate}
+              poll={poll}
+              setPoll={setPoll}
+            />
+          )}
         </div>
         <footer className="flex">
           <PostPreviewActionBtns post={post} />

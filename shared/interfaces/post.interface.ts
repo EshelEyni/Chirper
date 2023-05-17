@@ -30,21 +30,21 @@ export interface Post extends NewPost {
   likes: number;
   views: number;
   user: {
-    _id: string;
+    id: string;
     username: string;
     fullname: string;
     imgUrl: string;
   };
 }
 
-export type pollOption = {
+export type PollOption = {
   text: string;
   voteSum: number;
   isLoggedinUserVoted: boolean;
 };
 
 export interface Poll {
-  options: pollOption[];
+  options: PollOption[];
   length: {
     days: number;
     hours: number;

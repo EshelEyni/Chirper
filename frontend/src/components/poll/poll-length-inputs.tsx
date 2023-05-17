@@ -1,4 +1,4 @@
-import { MouseEvent, Dispatch, SetStateAction, FC, useEffect } from "react";
+import { Dispatch, SetStateAction, FC, useEffect } from "react";
 import { Poll } from "../../../../shared/interfaces/post.interface";
 import { CustomSelect } from "../other/custom-select";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
@@ -10,7 +10,7 @@ interface PollLengthInputsProps {
 
 export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) => {
   const handleValueChange = (inputType: string, value: number | string) => {
-    setPoll((prevPoll) => {
+    setPoll(prevPoll => {
       if (prevPoll) {
         if (inputType === "days" && value === 7) {
           return {
@@ -36,8 +36,8 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) =
   };
 
   useEffect(() => {
-    setInputs((prevInputs) => {
-      return prevInputs.map((input) => {
+    setInputs(prevInputs => {
+      return prevInputs.map(input => {
         if (input.type === "hours" || input.type === "minutes") {
           return {
             ...input,
@@ -87,7 +87,7 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) =
     <section className="poll-length">
       <h3 className="poll-length-title">Poll length</h3>
       <div className="poll-length-inputs-container">
-        {inputs.map((input) => (
+        {inputs.map(input => (
           <CustomSelect
             input={input}
             key={input.type}

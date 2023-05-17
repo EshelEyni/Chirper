@@ -89,8 +89,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
         if (!isPickerShown) return;
         const defaultPoll: Poll = {
           options: [
-            { text: "", voteSum: 0, isLoggedUserVoted: false },
-            { text: "", voteSum: 0, isLoggedUserVoted: false },
+            { text: "", voteSum: 0, isLoggedinUserVoted: false },
+            { text: "", voteSum: 0, isLoggedinUserVoted: false },
           ],
           length: {
             days: 1,

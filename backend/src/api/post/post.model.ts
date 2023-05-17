@@ -87,6 +87,7 @@ const postSchema = new mongoose.Schema(
     },
     isPublic: {
       type: Boolean,
+      required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

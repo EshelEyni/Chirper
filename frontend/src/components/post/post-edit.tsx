@@ -111,6 +111,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           text: "",
           audience: "everyone",
           repliersType: "everyone",
+          isPublic: true,
         } as NewPost)
       );
 

@@ -20,13 +20,35 @@ const pollOptionSchema = new mongoose.Schema(
   }
 );
 
+const pollLengthSchema = new mongoose.Schema(
+  {
+    days: {
+      type: Number,
+      default: 1,
+      required: true,
+    },
+    hours: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    minutes: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+  },
+  {
+    _id: false,
+    required: true,
+  }
+);
 const pollSchema = new mongoose.Schema(
   {
     options: [pollOptionSchema],
     length: {
-      days: Number,
-      hours: Number,
-      minutes: Number,
+      type: pollLengthSchema,
+      required: true,
     },
   },
   {

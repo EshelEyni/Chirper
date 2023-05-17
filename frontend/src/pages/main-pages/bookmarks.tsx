@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export const BookmarksPage = () => {
     
     useEffect(() => {
-        document.title = "Bookmarks • Chirper";
+        document.title = "Bookmarks / Chirper";
       }, []);
 
     return (

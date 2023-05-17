@@ -19,9 +19,14 @@
   }
 
   .main-container {
+    height: 100vh;
+    overflow-x: scroll;
+
+    @include scrollbar-hidden;
+
     .post-edit-container {
       border-bottom: 1px solid var(--color-secondary-border);
-      .post-edit{
+      .post-edit {
         width: 100%;
       }
     }

@@ -7,7 +7,7 @@ export const ProfileDetails = () => {
     const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
     useEffect(() => {
-        document.title = `${loggedinUser?.fullname} (${loggedinUser?.username}) • Chirper`;
+        document.title = `${loggedinUser?.fullname} (${loggedinUser?.username}) / Chirper`;
     }, []);
 
     return (

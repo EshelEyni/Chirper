@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export const NotificationsPage = () => {
 
     useEffect(() => {
-        document.title = "Notifications • Chirper";
+        document.title = "Notifications / Chirper";
         }, []);
 
     return (

@@ -15,7 +15,7 @@ export const HomePage = () => {
   const dispatch: AppDispatch = useDispatch();
 
   useEffect(() => {
-    document.title = "Home • Chirper";
+    document.title = "Home / Chirper";
     if (!posts.length) dispatch(getPosts());
     else dispatch(setIsPageLoading(false));
     dispatch(setIsPageLoading(false));

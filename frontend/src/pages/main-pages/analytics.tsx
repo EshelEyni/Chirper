@@ -7,7 +7,7 @@ export const AnalyticsPage = () => {
   const dispatch: AppDispatch = useDispatch();
 
   useEffect(() => {
-    document.title = "Analytics • Chirper";
+    document.title = "Analytics / Chirper";
     dispatch(setIsSideBarShown(false));
   }, []);
 

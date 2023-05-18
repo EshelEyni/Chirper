@@ -85,4 +85,5 @@ dist
 
 # Config files with sensitive information
 backend/src/config/dev.ts
+frontend/src/config.ts
 backend/data

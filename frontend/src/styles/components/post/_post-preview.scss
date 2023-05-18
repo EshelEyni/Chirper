@@ -24,7 +24,27 @@
           gap: rem(5px);
           font-size: rem(14px);
           font-weight: 700;
-          margin-right: rem(5px);
+
+          .post-preview-blue-check-mark {
+            width: rem(20px);
+            height: rem(20px);
+          }
+
+          .logo-container {
+            width: rem(20px);
+            height: rem(20px);
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: rem(3px);
+            
+            svg {
+              stroke: white;
+            }
+          }
         }
 
         .post-time {
@@ -33,7 +53,7 @@
       }
     }
 
-    .post-preview-body{
+    .post-preview-body {
       margin-top: rem(5px);
       font-size: rem(14px);
       line-height: 1.5;

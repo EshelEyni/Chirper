@@ -20,7 +20,8 @@ import { PollEdit } from "../poll/poll-edit";
 import { PostDateTitle } from "../other/post-date-title";
 import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { uploadImgToCloudinary } from "../../services/upload.service";
+import { uploadFileToCloudinary } from "../../services/upload.service";
+import { PostEditVideo } from "./post-edit-video";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -51,6 +52,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
 
   const [imgs, setImgs] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
+  const [video, setVideo] = useState<{ url: string; isLoading: boolean; file: File } | null>(null);
   const [gif, setGif] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -95,7 +97,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
       if (imgs.length > 0) {
         const prms = imgs.map(async (img, idx) => {
-          const currImgUrl = await uploadImgToCloudinary(img.file);
+          const currImgUrl = await uploadFileToCloudinary(img.file, "image");
           return { url: currImgUrl, sortOrder: idx };
         });
         const savedImgUrl = await Promise.all(prms);
@@ -117,6 +119,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
       setIsPickerShown(false);
       setImgs([]);
+      setVideo(null);
       setGif(null);
       setPoll(null);
       setPostSaveInProgress(false);
@@ -166,7 +169,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             ref={textAreaRef}
           />
           {imgs.length > 0 && <PostEditImg imgs={imgs} setImgs={setImgs} />}
-
+          {video && <PostEditVideo video={video} setVideo={setVideo} />}
           {gif && <GifEdit gif={gif} setGif={setGif} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
@@ -184,6 +187,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             <PostEditActionBtns
               imgs={imgs}
               setImgs={setImgs}
+              video={video}
+              setVideo={setVideo}
               gif={gif}
               setGif={setGif}
               isPickerShown={isPickerShown}

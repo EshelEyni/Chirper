@@ -72,7 +72,7 @@ export const PostSchedule = () => {
   const daysInSelectedMonth = useMemo(() => {
     return [
       ...Array(utilService.getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys(),
-    ].map((day) => day + 1);
+    ].map(day => day + 1);
   }, [schedule]);
 
   const getErrorLocation = (newDate: Date): "time" | "date" => {
@@ -90,7 +90,7 @@ export const PostSchedule = () => {
   };
 
   const handleValueChange = (inputType: string, value: string | number) => {
-    setSchedule((prevSchedule) => {
+    setSchedule(prevSchedule => {
       let monthIdx: number;
       if (inputType === "month") {
         const monthNames = [
@@ -159,7 +159,7 @@ export const PostSchedule = () => {
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
-        selectValues: [...Array(12).keys()].map((month) =>
+        selectValues: [...Array(12).keys()].map(month =>
           new Intl.DateTimeFormat("en-US", { month: "long" }).format(new Date(0, month))
         ),
       },
@@ -179,7 +179,7 @@ export const PostSchedule = () => {
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
-        selectValues: [...Array(3).keys()].map((year) => year + new Date().getFullYear()),
+        selectValues: [...Array(3).keys()].map(year => year + new Date().getFullYear()),
       },
       {
         label: "Hour",
@@ -188,7 +188,7 @@ export const PostSchedule = () => {
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
-        selectValues: [...Array(12).keys()].map((hour) => hour + 1),
+        selectValues: [...Array(12).keys()].map(hour => hour + 1),
       },
       {
         label: "Minute",
@@ -213,8 +213,8 @@ export const PostSchedule = () => {
   );
 
   useEffect(() => {
-    setInputs((prevInputs) => {
-      return prevInputs.map((input) => {
+    setInputs(prevInputs => {
+      return prevInputs.map(input => {
         if (input.type === "day") {
           return {
             ...input,
@@ -222,7 +222,7 @@ export const PostSchedule = () => {
               ...Array(
                 utilService.getDaysInMonth(schedule.getFullYear(), schedule.getMonth())
               ).keys(),
-            ].map((day) => day + 1),
+            ].map(day => day + 1),
           };
         }
         return input;
@@ -286,7 +286,7 @@ export const PostSchedule = () => {
                 "date-inputs-container" + (isDateInvalid.location === "date" ? " error" : "")
               }
             >
-              {inputs.slice(0, 3).map((input) => (
+              {inputs.slice(0, 3).map(input => (
                 <CustomSelect
                   input={input}
                   key={input.type}
@@ -310,7 +310,7 @@ export const PostSchedule = () => {
                 "time-inputs-container" + (isDateInvalid.location === "time" ? " error" : "")
               }
             >
-              {inputs.slice(3, 6).map((input) => (
+              {inputs.slice(3, 6).map(input => (
                 <CustomSelect
                   input={input}
                   key={input.type}

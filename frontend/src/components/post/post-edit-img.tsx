@@ -16,9 +16,7 @@ export const PostEditImg: React.FC<PostEditImgProps> = ({ imgs, setImgs }) => {
 
   return (
     <section
-      className={
-        "post-edit-imgs" + (imgs.length > 2 ? " grid" : "") + ` cols-${imgs.length}`
-      }
+      className={"post-edit-imgs" + (imgs.length > 2 ? " grid" : "") + ` cols-${imgs.length}`}
     >
       {imgs.map((img, idx) => (
         <div className={"post-edit-img-container" + ` img-${idx + 1}`} key={utilService.makeKey()}>

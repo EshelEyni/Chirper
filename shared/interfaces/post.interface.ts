@@ -33,6 +33,8 @@ export interface Post extends NewPost {
     id: string;
     username: string;
     fullname: string;
+    isAdmin?: boolean;
+    isVerified?: boolean;
     imgUrl: string;
   };
 }

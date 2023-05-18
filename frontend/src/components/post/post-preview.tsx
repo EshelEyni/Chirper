@@ -10,6 +10,8 @@ import { PollDisplay } from "../poll/poll-display";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
+import { Logo } from "../other/logo";
 
 interface PostPreviewProps {
   post: Post;
@@ -32,6 +34,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             <div className="user-info">
               <h3>{post.user.fullname}</h3>
               <span>@{post.user.username}</span>
+              {post.user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
+              {post.user.isAdmin && <Logo />}
             </div>
             <span className="post-preview-header-dot">·</span>
             <div className="post-time">

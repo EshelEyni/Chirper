@@ -8,20 +8,21 @@ import { alStoreType } from "../../middlewares/setupAls.middleware";
 import mongoose from "mongoose";
 import { AppError } from "../../services/error.service";
 
-async function query(queryString: QueryString): Promise<IPost[]> {
+async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  const posts = (await features.getQuery().populate(_populateUser()).exec()) as unknown as IPost[];
+  let posts = (await features.getQuery().populate(_populateUser()).exec()) as unknown as Post[];
 
   if (posts.length > 0) {
-    await _populateUserPollVotes(...posts);
+    await _populateUserPollVotes(...(posts as unknown as IPost[]));
   }
+  posts = posts.filter(post => post.user !== null);
 
-  return posts as unknown as IPost[];
+  return posts as unknown as Post[];
 }
 
 async function getById(postId: string): Promise<IPost | null> {
@@ -34,12 +35,7 @@ async function getById(postId: string): Promise<IPost | null> {
 
 async function add(post: NewPost): Promise<Post> {
   const savedPost = await new PostModel(post).save();
-  const populatedPost = await PostModel.findById(savedPost.id)
-    .populate({
-      path: "user",
-      select: "_id username fullname imgUrl",
-    })
-    .exec();
+  const populatedPost = await PostModel.findById(savedPost.id).populate(_populateUser()).exec();
 
   return populatedPost as unknown as Post;
 }
@@ -99,7 +95,7 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
 function _populateUser(): mongoose.PopulateOptions {
   return {
     path: "user",
-    select: "_id username fullname imgUrl",
+    select: "_id username fullname imgUrl isVerified isAdmin",
   };
 }
 

@@ -19,6 +19,10 @@ import { IoLocationSharp } from "react-icons/io5";
 interface PostEditActionBtnsProps {
   imgs: { url: string; isLoading: boolean; file: File }[];
   setImgs: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
+  video: { url: string; isLoading: boolean; file: File } | null;
+  setVideo: React.Dispatch<
+    React.SetStateAction<{ url: string; isLoading: boolean; file: File } | null>
+  >;
   gif: GifType | null;
   setGif: (url: GifType | null) => void;
   isPickerShown: boolean;
@@ -33,6 +37,8 @@ type ElementVisibility = Record<UIElement, boolean>;
 export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   imgs,
   setImgs,
+  video,
+  setVideo,
   gif,
   setGif,
   isPickerShown,
@@ -132,6 +138,73 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     },
   ];
 
+  const onUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+    if (!files) return;
+    const fileTypes = [...files].map(file => file.type.slice(0, 5));
+    const isValidFileType = fileTypes.every(
+      fileType => fileType === "image" || fileType === "video"
+    );
+    if (!isValidFileType) {
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Only images and videos are allowed.",
+        })
+      );
+      return;
+    }
+    const isVideoType = fileTypes.some(fileType => fileType === "video");
+    const isMoreThanOneVideoFile = isVideoType && files.length > 1;
+
+    if (isMoreThanOneVideoFile) {
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Only one video is allowed.",
+        })
+      );
+      return;
+    }
+
+    const isImagesGreaterThan4 = [...files].length + imgs.length > 4;
+
+    if (isImagesGreaterThan4) {
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Please choose either 1 GIF or up to 4 photos.",
+        })
+      );
+      return;
+    }
+
+    if (isVideoType) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const videoFile = [...files].at(0)!;
+
+      const isVideoGreaterThan10MB = videoFile.size > 10000000;
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { isVerified } = loggedinUser!;
+      if (!isVerified && isVideoGreaterThan10MB) {
+        dispatch(
+          setUserMsg({
+            type: "info",
+            text: "Only verified users can upload videos larger than 10MB.",
+          })
+        );
+        return;
+      }
+
+      onUploadVideo(videoFile);
+    } else {
+      onUploadImgs([...files]);
+    }
+
+    e.target.value = "";
+  };
+
   const readAsDataURL = (file: File) =>
     new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -145,23 +218,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       reader.readAsDataURL(file);
     });
 
-  const onUploadImgs = async (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = ev.target;
-    if (!files) return;
-
+  const onUploadImgs = async (files: File[]) => {
     const newImgs = [...imgs];
-
-    const msg = "Please choose either 1 GIF or up to 4 photos.";
-    if (files.length > 4 || files.length + imgs.length > 4) {
-      dispatch(
-        setUserMsg({
-          type: "info",
-          text: msg,
-        })
-      );
-      return;
-    }
-
     for (let i = 0; i < files.length; i++) {
       try {
         const file = files[i];
@@ -178,6 +236,15 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       } catch (error) {
         console.error("Error reading file:", error);
       }
+    }
+  };
+
+  const onUploadVideo = async (file: File) => {
+    try {
+      const dataUrl = await readAsDataURL(file);
+      setVideo({ url: dataUrl, isLoading: false, file });
+    } catch (error) {
+      console.error("Error reading file:", error);
     }
   };
 
@@ -236,10 +303,11 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                 </div>
                 <input
                   type={btn.type}
+                  accept={"image/*,video/*"}
                   multiple={isMultiple}
                   disabled={imgs.length === 4 || !isPickerShown}
                   id={btn.name}
-                  onChange={onUploadImgs}
+                  onChange={onUploadFile}
                   style={{ display: "none" }}
                   ref={fileRef}
                 />
@@ -287,10 +355,6 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
           onToggleElementVisibility={onToggleElementVisibility}
         />
       )}
-
-      {/* {elementVisibility.scheduleModal && (
-        <PostScheduler post={post} setPost={setPost} />
-      )} */}
     </React.Fragment>
   );
 };

@@ -241,6 +241,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
 
   const onUploadVideo = async (file: File) => {
     try {
+      setVideo({ url: "", isLoading: true, file });
       const dataUrl = await readAsDataURL(file);
       setVideo({ url: dataUrl, isLoading: false, file });
     } catch (error) {

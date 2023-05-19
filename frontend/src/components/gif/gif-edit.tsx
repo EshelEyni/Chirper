@@ -1,9 +1,9 @@
-import { AiOutlineClose } from "react-icons/ai";
 import { Gif as GitType } from "../../../../shared/interfaces/gif.interface";
 import { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ContentLoader } from "../loaders/content-loader";
 import { Fragment } from "react";
+import { BtnRemoveContent } from "../btns/btn-remove-content";
 
 interface GifProps {
   gif: GitType;
@@ -26,9 +26,7 @@ export const GifEdit: React.FC<GifProps> = ({ gif, setGif }) => {
     <Fragment>
       {isLoading && <ContentLoader />}
       <div className="gif-edit" style={{ visibility: isLoading ? "hidden" : "visible" }}>
-        <button className="btn-remove-content" onClick={() => setGif(null)}>
-          <AiOutlineClose className="remove-content-icon" />
-        </button>
+        <BtnRemoveContent onRemoveContent={() => setGif(null)} />
         <img
           src={isPlaying ? gif.url : gif.staticUrl}
           alt="gif"

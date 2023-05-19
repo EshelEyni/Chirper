@@ -81,7 +81,6 @@
 
   .post-edit-img-container {
     position: relative;
-    @include remove-content-btn;
 
     .post-edit-img {
       border-radius: 15px;

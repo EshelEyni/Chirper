@@ -1,6 +1,6 @@
 import { utilService } from "../../services/util.service/utils.service";
-import { AiOutlineClose } from "react-icons/ai";
 import { ContentLoader } from "../loaders/content-loader";
+import { BtnRemoveContent } from "../btns/btn-remove-content";
 
 interface PostEditImgProps {
   imgs: { url: string; isLoading: boolean; file: File }[];
@@ -20,9 +20,7 @@ export const PostEditImg: React.FC<PostEditImgProps> = ({ imgs, setImgs }) => {
     >
       {imgs.map((img, idx) => (
         <div className={"post-edit-img-container" + ` img-${idx + 1}`} key={utilService.makeKey()}>
-          <button className="btn-remove-content" onClick={() => onRemoveImg(idx)}>
-            <AiOutlineClose className="remove-content-icon" />
-          </button>
+          <BtnRemoveContent onRemoveContent={() => onRemoveImg(idx)} />
           {img.isLoading ? (
             <ContentLoader />
           ) : (

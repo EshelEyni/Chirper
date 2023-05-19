@@ -12,16 +12,16 @@ export interface IPost {
   repliersType: string;
   isPublic: boolean;
   userId: mongoose.Schema.Types.ObjectId;
-  text: string;
-  imgs: { url: string; sortOrder: number }[];
-  videoUrl: string;
-  gif: {
+  text?: string;
+  imgs?: { url: string; sortOrder: number }[];
+  videoUrl?: string;
+  gif?: {
     url: string;
     staticUrl: string;
     description: string;
     sortOrder: number;
   };
-  poll: {
+  poll?: {
     options: {
       text: string;
       voteSum: number;
@@ -33,24 +33,28 @@ export interface IPost {
       minutes: number;
     };
   };
-  schedule: Date;
-  location: {
+  schedule?: Date;
+  location?: {
     placeId: string;
     name: string;
     lat: number;
     lng: number;
   };
-
   createdAt: Date;
   updatedAt: Date;
-
   _id: mongoose.Schema.Types.ObjectId;
 }
 
-const imgUrlsSchema = new mongoose.Schema({
-  url: String,
-  sortOrder: Number,
-});
+const imgsSchema = new mongoose.Schema(
+  {
+    url: String,
+    sortOrder: Number,
+  },
+  {
+    _id: false,
+    default: null,
+  }
+);
 
 const locationSchema = new mongoose.Schema({
   placeId: String,
@@ -97,7 +101,10 @@ const postSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    imgs: [imgUrlsSchema],
+    imgs: {
+      type: [imgsSchema],
+      default: undefined,
+    },
     videoUrl: String,
     gif: gifSchema,
     poll: pollSchema,
@@ -126,7 +133,13 @@ const postSchema = new mongoose.Schema(
 );
 
 function validateContent(post: Document) {
-  return post.get("text") || post.get("gif") || post.get("imgs").length > 0 || post.get("poll");
+  return (
+    post.get("text") ||
+    post.get("gif") ||
+    post.get("imgs").length > 0 ||
+    post.get("poll") ||
+    post.get("videoUrl")
+  );
 }
 
 function validatePoll(poll: Document) {

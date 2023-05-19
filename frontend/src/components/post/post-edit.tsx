@@ -76,7 +76,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
 
   useEffect(() => {
-    if ((newPost.text.length > 0 && newPost.text.length <= 247) || imgs.length > 0 || gif) {
+    if (
+      (newPost.text.length > 0 && newPost.text.length <= 247) ||
+      imgs.length > 0 ||
+      gif ||
+      video
+    ) {
       setIsBtnCreatePostDisabled(false);
     } else {
       setIsBtnCreatePostDisabled(true);
@@ -102,6 +107,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         });
         const savedImgUrl = await Promise.all(prms);
         newPost.imgs = savedImgUrl.filter(img => img.url);
+      }
+
+      if (video) {
+        const videoUrl = await uploadFileToCloudinary(video.file, "video");
+        newPost.videoUrl = videoUrl;
       }
 
       if (gif) newPost.gif = gif;

@@ -14,7 +14,7 @@ export const postService = {
 
 async function query(): Promise<Post[]> {
   try {
-    const response = (await httpService.get("post")) as unknown as JsendResponse;
+    const response = (await httpService.get("post?limit=10&page=1")) as unknown as JsendResponse;
     return utilService.handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");

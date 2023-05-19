@@ -76,12 +76,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
-      isDisabled: imgs.length === 4 || !!gif || !!poll,
+      isDisabled: imgs.length === 4 || !!gif || !!poll || !!video,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: imgs.length > 0 || !!gif || !!poll,
+      isDisabled: imgs.length > 0 || !!gif || !!poll || !!video,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -90,7 +90,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgs.length > 0 || !!gif || !!poll || !!newPost.schedule,
+      isDisabled: imgs.length > 0 || !!gif || !!poll || !!video || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         const defaultPoll: Poll = {

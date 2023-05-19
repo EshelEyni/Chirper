@@ -126,12 +126,21 @@ const postSchema = new mongoose.Schema(
 );
 
 function validateContent(post: Document) {
-  return (
-    post.get("text") ||
-    post.get("gif") ||
-    (post.get("imgs") && post.get("imgs").length > 0) ||
-    post.get("poll")
-  );
+  return post.get("text") || post.get("gif") || post.get("imgs").length > 0 || post.get("poll");
+}
+
+function validatePoll(poll: Document) {
+  return poll.get("options").length > 1 && poll.get("options").length <= 4;
+}
+
+function validateSchedule(post: Document) {
+  if (post.get("schedule") < new Date()) {
+    return "Schedule cannot be in the past";
+  } else if (post.get("poll")) {
+    return "Post with poll cannot be scheduled";
+  } else {
+    return "valid";
+  }
 }
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
@@ -139,6 +148,19 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
     const err = new Error("At least one of text, gif, imgs, or poll is required");
     err.name = "ValidationError";
     next(err);
+  } else if (this.get("poll") && !validatePoll(this.get("poll"))) {
+    const err = new Error("Poll must have at least 2 options and at most 4 options");
+    err.name = "ValidationError";
+    next(err);
+  } else if (this.get("schedule")) {
+    const scheduleValidation = validateSchedule(this);
+    if (scheduleValidation !== "valid") {
+      const err = new Error(scheduleValidation);
+      err.name = "ValidationError";
+      next(err);
+    } else {
+      next();
+    }
   } else {
     next();
   }

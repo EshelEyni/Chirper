@@ -63,8 +63,8 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
     if (!post) throw new AppError("post not found", 404);
     const { poll } = post;
     if (!poll) throw new AppError("post has no poll", 400);
-    const postTime = post.schedule ? post.schedule.getTime() : post.createdAt.getTime();
-    _checkPollExperation(postTime, poll.length);
+
+    _checkPollExperation(post.createdAt.getTime(), poll.length);
 
     const option = poll.options[optionIdx];
     if (!option) throw new AppError("option not found", 404);

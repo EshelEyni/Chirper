@@ -133,10 +133,11 @@ const postSchema = new mongoose.Schema(
 );
 
 function validateContent(post: Document) {
+  const imgs = post.get("imgs");
   return (
     post.get("text") ||
     post.get("gif") ||
-    post.get("imgs").length > 0 ||
+    (imgs && imgs.length > 0) ||
     post.get("poll") ||
     post.get("videoUrl")
   );

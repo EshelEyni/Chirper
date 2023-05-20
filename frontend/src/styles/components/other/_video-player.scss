@@ -1,0 +1,17 @@
+.react-player-container {
+  position: relative;
+  
+  .react-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 15px;
+  }
+
+  video {
+    border-radius: 15px;
+  }
+}

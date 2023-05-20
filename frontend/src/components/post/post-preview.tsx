@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { Logo } from "../other/logo";
+import { VideoPlayer } from "../video/video-player";
 
 interface PostPreviewProps {
   post: Post;
@@ -49,6 +50,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         <div className="post-preview-body">
           <p>{post.text}</p>
           {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
+          {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
           {post.gif && <GifDisplay gif={post.gif} />}
           {poll && (
             <PollDisplay

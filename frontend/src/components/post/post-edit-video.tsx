@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { BtnRemoveContent } from "../btns/btn-remove-content";
-import ReactPlayer from "react-player";
+import { VideoPlayer } from "../video/video-player";
+import { ContentLoader } from "../loaders/content-loader";
 
 type PostEditVideoProps = {
   video: { url: string; isLoading: boolean; file: File };
@@ -13,20 +14,10 @@ export const PostEditVideo: FC<PostEditVideoProps> = ({ video, setVideo }) => {
   };
 
   return (
-    <section className="post-video-edit">
-      <div className="post-video-container">
+    <section className="post-edit-video">
+      <div className="post-edit-video-player-container">
         <BtnRemoveContent onRemoveContent={onRemoveVideo} />
-        <div className="react-player-container">
-          <ReactPlayer
-            className="react-player"
-            url={video.url}
-            controls={true}
-            playing={false}
-            width="100%"
-            height="100%"
-            muted={true}
-          />
-        </div>
+        {video.isLoading ? <ContentLoader /> : <VideoPlayer videoUrl={video.url} />}
       </div>
 
       <p className="post-video-upload-msg">

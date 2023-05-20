@@ -1,4 +1,4 @@
-.post-video-edit {
+.post-edit-video {
   display: flex;
   flex-direction: column;
   gap: rem(10px);
@@ -9,21 +9,14 @@
     z-index: 250;
   }
 
-  .react-player-container {
-    position: relative;
-    padding-top: 100%;
-    max-height: rem(500px);
+  .post-edit-video-player-container {
+    min-width: rem(250px);
+    min-height: rem(250px);
     max-width: rem(500px);
+    max-height: rem(500px);
 
-    .react-player {
-      position: absolute;
-      top: 0;
-      left: 0;
-      border-radius: 15px;
-    }
-
-    video {
-      border-radius: 15px;
+    .react-player-container {
+      padding-top: 100%;
     }
   }
 

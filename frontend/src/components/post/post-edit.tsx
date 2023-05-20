@@ -86,7 +86,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     } else {
       setIsBtnCreatePostDisabled(true);
     }
-  }, [newPost, imgs, gif]);
+  }, [newPost, imgs, gif, video]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;

@@ -5,5 +5,10 @@
   width: 100%;
   height: rem(50px);
   display: flex;
-  background-color: red;
+  padding: rem(10px);
+  
+  .video-custom-controls-main-container {
+    width: 100%;
+    // display: none;
+  }
 }

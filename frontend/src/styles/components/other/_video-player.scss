@@ -1,6 +1,6 @@
 .react-player-container {
   position: relative;
-  
+
   .react-player {
     display: flex;
     justify-content: center;
@@ -14,4 +14,14 @@
   video {
     border-radius: 15px;
   }
+
+  // &:hover {
+  //   .video-custom-controls-main-container {
+  //     display: unset;
+  //   }
+
+  //   .count-down-timer-container {
+  //     display: none;
+  //   }
+  // }
 }

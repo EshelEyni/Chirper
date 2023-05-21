@@ -1,25 +1,27 @@
-import { FC } from "react";
+import { FC, RefObject } from "react";
 import { Slider } from "@mui/material";
+import ReactPlayer from "react-player";
 
 type VideoProgressBarProps = {
-  timer: number;
-  setTimer: (timer: number) => void;
-  videoPlayerRef: any;
+  progress: number;
+  setProgress: (progress: number) => void;
+  videoPlayerRef: RefObject<ReactPlayer>;
 };
 
 export const VideoProgressBar: FC<VideoProgressBarProps> = ({
-  timer,
-  setTimer,
+  progress,
+  setProgress,
   videoPlayerRef,
 }) => {
   const handleChange = (newValue: number) => {
+    if (!videoPlayerRef.current) return;
     videoPlayerRef.current.seekTo((newValue * videoPlayerRef.current.getDuration()) / 100);
-    setTimer(newValue as number);
+    setProgress(newValue as number);
   };
 
   return (
     <Slider
-      value={timer}
+      value={progress}
       step={1}
       min={0}
       max={100}

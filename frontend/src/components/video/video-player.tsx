@@ -8,8 +8,12 @@ type VideoPlayerProps = {
 };
 
 export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls = false }) => {
-  const [timer, setTimer] = useState(0);
-  const [dur, setDur] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isLooping, setIsLooping] = useState(true);
   const videoPlayerRef = useRef<ReactPlayer>(null);
 
   return (
@@ -19,17 +23,32 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
         ref={videoPlayerRef}
         url={videoUrl}
         controls={!isCustomControls}
-        onProgress={({ playedSeconds }) => {
-          setTimer((playedSeconds * 100) / dur);
+        onProgress={({ played, playedSeconds }) => {
+          setPlayedSeconds(playedSeconds);
+          setProgress(played * 100);
         }}
-        onDuration={duration => setDur(duration)}
-        playing={true}
+        onDuration={d => {
+          setIsLooping(d < 60);
+          setDuration(d);
+        }}
+        loop={isLooping}
+        playing={isPlaying}
         width="100%"
         height="100%"
-        muted={true}
+        muted={isMuted}
       />
       {isCustomControls && (
-        <VideoCustomControls timer={timer} setTimer={setTimer} videoPlayerRef={videoPlayerRef} />
+        <VideoCustomControls
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          progress={progress}
+          setProgress={setProgress}
+          playedSeconds={playedSeconds}
+          duration={duration}
+          videoPlayerRef={videoPlayerRef}
+        />
       )}
     </div>
   );

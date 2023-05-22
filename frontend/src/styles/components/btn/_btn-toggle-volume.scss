@@ -1,0 +1,18 @@
+.btn-toggle-volume-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: fit-content;
+
+  .video-volume-slider-container {
+    position: absolute;
+    top: rem(-120px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: rem(12px);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+  }
+}

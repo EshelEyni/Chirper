@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
-import { FaPlay } from "react-icons/fa";
-import { IoIosPause } from "react-icons/io";
 import { useInView } from "react-intersection-observer";
 import { GifDescriptionModal } from "./gif-description-details";
+import { BtnTogglePlay } from "../btns/btn-toggle-play";
+
 interface GifDisplayProps {
   gif: Gif;
 }
@@ -46,9 +46,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
     <article className="gif-display" onClick={onTogglePlay}>
       <img src={isPlaying ? url : staticUrl} ref={ref} alt="gif" />
       <div className="gif-display-content-container">
-        <button className="btn-toggle-play">
-          {isPlaying ? <IoIosPause size={14} className="pause-icon" /> : <FaPlay />}
-        </button>
+        <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />
         <span className="gif-title">GIF</span>
         <div className="description-container">
           <button

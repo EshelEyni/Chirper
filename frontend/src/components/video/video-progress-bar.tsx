@@ -30,6 +30,7 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({
         color: "white",
         width: "100%",
         transition: "all 0.2s ease-in-out",
+        height: 2,
         padding: 0,
         "& .MuiSlider-thumb": {
           backgroundColor: "white",
@@ -37,6 +38,9 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({
           height: 16,
           width: 16,
           display: "none",
+          "&:hover, &.Mui-focusVisible": {
+            boxShadow: "0px 0px 0px 10px rgba(255, 255, 255, 0.10)",
+          },
         },
         "& .MuiSlider-rail": {
           transition: "all 0.2s ease-in-out",

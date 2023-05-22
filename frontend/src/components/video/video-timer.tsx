@@ -23,14 +23,31 @@ export const VideoTimer: FC<VideoTimerProps> = ({ playedSeconds, duration, isCou
     return `${minutes}:${formmatNumber(seconds)}`;
   };
 
+  const setDefaultTimer = (playedSeconds: number, duration: number) => {
+    const hours = Math.floor(playedSeconds / 3600);
+    const minutes = Math.floor((playedSeconds - hours * 3600) / 60);
+    const seconds = Math.floor(playedSeconds - hours * 3600 - minutes * 60);
+
+    const formmatNumber = (number: number) => {
+      return number < 10 ? `0${number}` : number;
+    };
+
+    if (hours > 0) {
+      return `${formmatNumber(hours)}:${formmatNumber(minutes)}:${formmatNumber(seconds)}`;
+    }
+    return `${minutes}:${formmatNumber(seconds)}`;
+  };
+
   return (
     <section className="video-timer">
       {isCountDown ? (
-        <span>{setCountDownTimer(playedSeconds, duration)}</span>
+        <span className="count-down-timer">{setCountDownTimer(playedSeconds, duration)}</span>
       ) : (
-        <span>
-          {Math.floor(playedSeconds / 60)}:{Math.floor(playedSeconds % 60)}
-        </span>
+        <div className="default-timer">
+          <span>{setDefaultTimer(playedSeconds, duration)}</span>
+          <span>/</span>
+          <span>{setDefaultTimer(duration, duration)}</span>
+        </div>
       )}
     </section>
   );

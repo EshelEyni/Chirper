@@ -196,10 +196,10 @@ postSchema.virtual("user", {
   justOne: true,
 });
 
-postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
-  this.find({ isPublic: true });
-  next();
-});
+// postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
+//   this.find({ isPublic: true });
+//   next();
+// });
 
 const PostModel = mongoose.model("Post", postSchema);
 

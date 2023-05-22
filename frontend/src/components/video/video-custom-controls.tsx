@@ -2,19 +2,23 @@ import { FC, RefObject } from "react";
 import { VideoProgressBar } from "./video-progress-bar";
 import ReactPlayer from "react-player";
 import { VideoTimer } from "./video-timer";
-import { FaPlay } from "react-icons/fa";
-import { IoIosPause } from "react-icons/io";
-import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
+import { BtnTogglePlay } from "../btns/btn-toggle-play";
+import { BtnToggleVolume } from "../btns/btn-toggle-volume";
+import { BtnToggleVideoSetting } from "../btns/btn-toggle-video-setting";
 
 type VideoCustomControlsProps = {
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
   isMuted: boolean;
   setIsMuted: (isMuted: boolean) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
   progress: number;
   setProgress: (timer: number) => void;
   playedSeconds: number;
   duration: number;
+  playbackRate: number;
+  setPlaybackRate: (playbackRate: number) => void;
   videoPlayerRef: RefObject<ReactPlayer>;
 };
 
@@ -23,10 +27,14 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
   setIsPlaying,
   isMuted,
   setIsMuted,
+  volume,
+  setVolume,
   progress,
   setProgress,
   playedSeconds,
   duration,
+  playbackRate,
+  setPlaybackRate,
   videoPlayerRef,
 }) => {
   return (
@@ -38,15 +46,18 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
           videoPlayerRef={videoPlayerRef}
         />
         <div className="video-custom-controls-actions-container">
-          <button className="video-custom-controls-toggle-play-btn">
-            {isPlaying ? <IoIosPause /> : <FaPlay />}
-          </button>
+          <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={20} />
 
           <div className="video-custom-controls-actions-main-container">
             <VideoTimer playedSeconds={playedSeconds} duration={duration} />
-            <button className="video-custom-controls-toggle-volume-btn">
-              {isMuted ? <HiVolumeOff /> : <HiVolumeUp />}
-            </button>
+            <BtnToggleVolume
+              isMuted={isMuted}
+              setIsMuted={setIsMuted}
+              volume={volume}
+              setVolume={setVolume}
+              size={20}
+            />
+            <BtnToggleVideoSetting playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />
           </div>
         </div>
       </div>

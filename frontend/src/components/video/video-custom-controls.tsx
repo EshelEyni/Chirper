@@ -1,3 +1,4 @@
+import { findDOMNode } from "react-dom";
 import { FC, RefObject } from "react";
 import { VideoProgressBar } from "./video-progress-bar";
 import ReactPlayer from "react-player";
@@ -5,6 +6,7 @@ import { VideoTimer } from "./video-timer";
 import { BtnTogglePlay } from "../btns/btn-toggle-play";
 import { BtnToggleVolume } from "../btns/btn-toggle-volume";
 import { BtnToggleVideoSetting } from "../btns/btn-toggle-video-setting";
+import { CgArrowsExpandRight } from "react-icons/cg";
 
 type VideoCustomControlsProps = {
   isPlaying: boolean;
@@ -20,6 +22,7 @@ type VideoCustomControlsProps = {
   playbackRate: number;
   setPlaybackRate: (playbackRate: number) => void;
   videoPlayerRef: RefObject<ReactPlayer>;
+  playerWrapperRef: RefObject<HTMLDivElement>;
 };
 
 export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
@@ -36,7 +39,24 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
   playbackRate,
   setPlaybackRate,
   videoPlayerRef,
+  playerWrapperRef,
 }) => {
+  const onToggleFullScreen = () => {
+    if (playerWrapperRef.current) {
+      const player = playerWrapperRef.current as HTMLElement;
+
+      if (player.requestFullscreen) {
+        player.requestFullscreen();
+      } else if ((player as any).mozRequestFullScreen) {
+        (player as any).mozRequestFullScreen();
+      } else if ((player as any).webkitRequestFullscreen) {
+        (player as any).webkitRequestFullscreen();
+      } else if ((player as any).msRequestFullscreen) {
+        (player as any).msRequestFullscreen();
+      }
+    }
+  };
+
   return (
     <section className="video-cutom-controls">
       <div className="video-custom-controls-main-container">
@@ -58,6 +78,9 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
               size={20}
             />
             <BtnToggleVideoSetting playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />
+            <button onClick={onToggleFullScreen}>
+              <CgArrowsExpandRight />
+            </button>
           </div>
         </div>
       </div>

@@ -23,12 +23,12 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({
   };
   return (
     <div className="btn-toggle-volume-container">
-      <VideoVolumeSlider
+      {/* <VideoVolumeSlider
         isMuted={isMuted}
         setIsMuted={setIsMuted}
         volume={volume}
         setVolume={setVolume}
-      />
+      /> */}
       <button className="btn-toggle-volume" onClick={e => onToggleMute(e)}>
         {isMuted ? <HiVolumeOff size={size} /> : <HiVolumeUp size={size} />}
       </button>

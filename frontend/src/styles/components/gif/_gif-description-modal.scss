@@ -14,30 +14,6 @@
   padding: rem(32px);
   border-radius: 25px;
 
-  .tippy {
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 200;
-    &.up {
-      border-left: rem(10px) solid transparent;
-      border-right: rem(10px) solid transparent;
-      border-bottom: rem(10px) solid white;
-
-      top: rem(-10px);
-    }
-
-    &.down {
-      border-left: rem(10px) solid transparent;
-      border-right: rem(10px) solid transparent;
-      border-top: rem(10px) solid white;
-
-      bottom: rem(-10px);
-    }
-  }
-
   .gif-description-title-text-container {
     width: 100%;
 

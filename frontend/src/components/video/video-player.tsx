@@ -10,6 +10,7 @@ type VideoPlayerProps = {
 
 export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls = false }) => {
   const videoPlayerRef = useRef<ReactPlayer>(null);
+  const playerWrapperRef = useRef<HTMLDivElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -26,6 +27,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
       onClick={() => {
         if (isCustomControls) setIsPlaying(!isPlaying);
       }}
+      ref={playerWrapperRef}
     >
       <ReactPlayer
         className="react-player"
@@ -64,6 +66,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
           playbackRate={playbackRate}
           setPlaybackRate={setPlaybackRate}
           videoPlayerRef={videoPlayerRef}
+          playerWrapperRef={playerWrapperRef}
         />
       )}
     </div>

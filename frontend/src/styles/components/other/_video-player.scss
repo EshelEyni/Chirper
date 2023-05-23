@@ -1,5 +1,6 @@
 .react-player-container {
   position: relative;
+  transition: all 0.2s ease-in-out;
 
   .react-player {
     display: flex;
@@ -15,13 +16,13 @@
     border-radius: 15px;
   }
 
-  // &:hover {
-  //   .video-custom-controls-main-container {
-  //     display: unset;
-  //   }
+  &:hover {
+    .video-custom-controls-main-container {
+      opacity: 1;
+    }
 
-  //   .count-down-timer-container {
-  //     display: none;
-  //   }
-  // }
+    .count-down-timer-container {
+      opacity: 0;
+    }
+  }
 }

@@ -1,12 +1,11 @@
-import { findDOMNode } from "react-dom";
-import { FC, RefObject } from "react";
+import { FC, RefObject, useState } from "react";
 import { VideoProgressBar } from "./video-progress-bar";
 import ReactPlayer from "react-player";
 import { VideoTimer } from "./video-timer";
 import { BtnTogglePlay } from "../btns/btn-toggle-play";
 import { BtnToggleVolume } from "../btns/btn-toggle-volume";
 import { BtnToggleVideoSetting } from "../btns/btn-toggle-video-setting";
-import { CgArrowsExpandRight } from "react-icons/cg";
+import { BtnToggleVideoFullScreen } from "../btns/btn-toggle-video-full-screen";
 
 type VideoCustomControlsProps = {
   isPlaying: boolean;
@@ -41,29 +40,16 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
   videoPlayerRef,
   playerWrapperRef,
 }) => {
-  const onToggleFullScreen = () => {
-    if (playerWrapperRef.current) {
-      const player = playerWrapperRef.current as HTMLElement;
-
-      if (player.requestFullscreen) {
-        player.requestFullscreen();
-      } else if ((player as any).mozRequestFullScreen) {
-        (player as any).mozRequestFullScreen();
-      } else if ((player as any).webkitRequestFullscreen) {
-        (player as any).webkitRequestFullscreen();
-      } else if ((player as any).msRequestFullscreen) {
-        (player as any).msRequestFullscreen();
-      }
-    }
-  };
-
+  const [isVolumeHover, setIsVolumeHover] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   return (
-    <section className="video-cutom-controls">
+    <section className={"video-cutom-controls" + (isFullScreen ? " full-screen" : "")}>
       <div className="video-custom-controls-main-container">
         <VideoProgressBar
           progress={progress}
           setProgress={setProgress}
           videoPlayerRef={videoPlayerRef}
+          isVolumeHover={isVolumeHover}
         />
         <div className="video-custom-controls-actions-container">
           <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={20} />
@@ -76,17 +62,22 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
               volume={volume}
               setVolume={setVolume}
               size={20}
+              isVolumeHover={isVolumeHover}
+              setIsVolumeHover={setIsVolumeHover}
             />
             <BtnToggleVideoSetting playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />
-            <button onClick={onToggleFullScreen}>
-              <CgArrowsExpandRight />
-            </button>
+
+            <BtnToggleVideoFullScreen
+              isFullScreen={isFullScreen}
+              setIsFullScreen={setIsFullScreen}
+              playerWrapperRef={playerWrapperRef}
+            />
           </div>
         </div>
       </div>
-      {/* <div className="count-down-timer-container">
+      <div className="count-down-timer-container">
         <VideoTimer playedSeconds={playedSeconds} duration={duration} isCountDown={true} />
-      </div> */}
+      </div>
     </section>
   );
 };

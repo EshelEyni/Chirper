@@ -6,12 +6,14 @@ type VideoProgressBarProps = {
   progress: number;
   setProgress: (progress: number) => void;
   videoPlayerRef: RefObject<ReactPlayer>;
+  isVolumeHover?: boolean;
 };
 
 export const VideoProgressBar: FC<VideoProgressBarProps> = ({
   progress,
   setProgress,
   videoPlayerRef,
+  isVolumeHover,
 }) => {
   const handleChange = (newValue: number) => {
     if (!videoPlayerRef.current) return;
@@ -29,6 +31,7 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({
       sx={{
         color: "white",
         width: "100%",
+        opacity: isVolumeHover ? 0 : 1,
         transition: "all 0.2s ease-in-out",
         height: 2,
         padding: 0,

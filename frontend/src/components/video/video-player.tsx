@@ -2,6 +2,7 @@ import { FC, useState, useRef } from "react";
 import ReactPlayer from "react-player";
 import { VideoCustomControls } from "./video-custom-controls";
 import { storageService } from "../../services/storage.service";
+import { set } from "mongoose";
 
 type VideoPlayerProps = {
   videoUrl: string;
@@ -14,21 +15,25 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(storageService.get("volume") || 0);
+  const [volume, setVolume] = useState(0);
   const [progress, setProgress] = useState(0);
   const [playedSeconds, setPlayedSeconds] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
 
+  const onHandlePlayerClick = () => {
+    if (isCustomControls) {
+      if (isMuted) {
+        setIsMuted(!isMuted);
+        setVolume(Number(storageService.get("volume")) || 0.5);
+        return;
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
   return (
-    <div
-      className="react-player-container"
-      onClick={() => {
-        if (isCustomControls) setIsPlaying(!isPlaying);
-      }}
-      ref={playerWrapperRef}
-    >
+    <div className="react-player-container" onClick={onHandlePlayerClick} ref={playerWrapperRef}>
       <ReactPlayer
         className="react-player"
         ref={videoPlayerRef}

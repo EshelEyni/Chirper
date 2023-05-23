@@ -21,7 +21,7 @@
 
   .main-container {
     height: calc(100vh - rem(60px));
-    overflow-x: auto;
+    // overflow-x: auto;
 
     @include scrollbar-hidden;
 

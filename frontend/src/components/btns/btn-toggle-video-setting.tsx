@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
-import { AiTwotoneSetting } from "react-icons/ai";
 import { PlaybackRatePickerModal } from "../modals/playback-rate-picker-modal";
 import { useModalPosition } from "../../hooks/useModalPosition";
+import { IoSettingsOutline } from "react-icons/io5";
 
 type BtnToggleVideoSettingProps = {
   playbackRate: number;
@@ -24,17 +24,18 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
   };
 
   return (
-    <div className="video-setting-container">
+    <div className="btn-toggle-video-setting-container">
       {isPlaybackRatePickerModal && (
         <PlaybackRatePickerModal
           playbackRate={playbackRate}
+          setPlaybackRate={setPlaybackRate}
           onToggleModal={setIsPlaybackRaterPickerModal}
           isModalAbove={isModalAbove}
         />
       )}
 
       <button onClick={onTogglePlaybackRatePickerModal} ref={btnRef}>
-        <AiTwotoneSetting size={20} />
+        <IoSettingsOutline size={20} color="white" />
       </button>
     </div>
   );

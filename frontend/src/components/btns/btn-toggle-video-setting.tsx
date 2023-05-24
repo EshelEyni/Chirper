@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { PlaybackRatePickerModal } from "../modals/playback-rate-picker-modal";
 import { useModalPosition } from "../../hooks/useModalPosition";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -6,35 +6,44 @@ import { IoSettingsOutline } from "react-icons/io5";
 type BtnToggleVideoSettingProps = {
   playbackRate: number;
   setPlaybackRate: (playbackRate: number) => void;
+  isPlaybackRatePickerModalShown: boolean;
+  setIsPlaybackRaterPickerModalShown: (isPlaybackRatePickerModalShown: boolean) => void;
+  isFullScreen: boolean;
 };
 
 export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
   playbackRate,
   setPlaybackRate,
+  isPlaybackRatePickerModalShown,
+  setIsPlaybackRaterPickerModalShown,
+  isFullScreen,
 }) => {
-  const modalHeight = 305;
+  const modalHeight = 200;
   const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
-
-  const [isPlaybackRatePickerModal, setIsPlaybackRaterPickerModal] = useState(false);
 
   const onTogglePlaybackRatePickerModal = (e: React.MouseEvent) => {
     e.stopPropagation();
     updateModalPosition();
-    setIsPlaybackRaterPickerModal(!isPlaybackRatePickerModal);
+    setIsPlaybackRaterPickerModalShown(!isPlaybackRatePickerModalShown);
   };
 
   return (
-    <div className="btn-toggle-video-setting-container">
-      {isPlaybackRatePickerModal && (
+    <div className="btn-toggle-video-setting-container" onClick={e => e.stopPropagation()}>
+      {isPlaybackRatePickerModalShown && (
         <PlaybackRatePickerModal
           playbackRate={playbackRate}
           setPlaybackRate={setPlaybackRate}
-          onToggleModal={setIsPlaybackRaterPickerModal}
+          onToggleModal={setIsPlaybackRaterPickerModalShown}
           isModalAbove={isModalAbove}
+          isFullScreen={isFullScreen}
         />
       )}
 
-      <button onClick={onTogglePlaybackRatePickerModal} ref={btnRef}>
+      <button
+        className="btn-toggle-video-setting"
+        onClick={onTogglePlaybackRatePickerModal}
+        ref={btnRef}
+      >
         <IoSettingsOutline size={20} color="white" />
       </button>
     </div>

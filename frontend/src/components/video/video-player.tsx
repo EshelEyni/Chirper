@@ -1,8 +1,8 @@
-import { FC, useState, useRef } from "react";
+import { FC, useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
 import { VideoCustomControls } from "./video-custom-controls";
 import { storageService } from "../../services/storage.service";
-import { set } from "mongoose";
+import { useInView } from "react-intersection-observer";
 
 type VideoPlayerProps = {
   videoUrl: string;
@@ -21,6 +21,13 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
   const [duration, setDuration] = useState(0);
   const [isLooping, setIsLooping] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+
+  useEffect(() => {
+    setIsPlaying(inView);
+  }, [inView]);
 
   const onHandlePlayerClick = () => {
     if (isCustomControls) {
@@ -33,47 +40,49 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
     }
   };
   return (
-    <div className="react-player-container" onClick={onHandlePlayerClick} ref={playerWrapperRef}>
-      <ReactPlayer
-        className="react-player"
-        ref={videoPlayerRef}
-        url={videoUrl}
-        controls={!isCustomControls}
-        onProgress={({ played, playedSeconds }) => {
-          setPlayedSeconds(playedSeconds);
-          setProgress(played * 100);
-        }}
-        onDuration={d => {
-          setIsLooping(d < 60);
-          setDuration(d);
-        }}
-        loop={isLooping}
-        playing={isPlaying}
-        volume={volume}
-        width="100%"
-        height="100%"
-        muted={isMuted}
-        progressInterval={100}
-        playbackRate={playbackRate}
-      />
-      {isCustomControls && (
-        <VideoCustomControls
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-          isMuted={isMuted}
-          setIsMuted={setIsMuted}
+    <div className="video-player-container" ref={ref}>
+      <div className="react-player-wrapper" onClick={onHandlePlayerClick} ref={playerWrapperRef}>
+        <ReactPlayer
+          className="react-player"
+          ref={videoPlayerRef}
+          url={videoUrl}
+          controls={!isCustomControls}
+          onProgress={({ played, playedSeconds }) => {
+            setPlayedSeconds(playedSeconds);
+            setProgress(played * 100);
+          }}
+          onDuration={d => {
+            setIsLooping(d < 60);
+            setDuration(d);
+          }}
+          loop={isLooping}
+          playing={isPlaying}
           volume={volume}
-          setVolume={setVolume}
-          progress={progress}
-          setProgress={setProgress}
-          playedSeconds={playedSeconds}
-          duration={duration}
+          width="100%"
+          height="100%"
+          muted={isMuted}
+          progressInterval={100}
           playbackRate={playbackRate}
-          setPlaybackRate={setPlaybackRate}
-          videoPlayerRef={videoPlayerRef}
-          playerWrapperRef={playerWrapperRef}
         />
-      )}
+        {isCustomControls && (
+          <VideoCustomControls
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            isMuted={isMuted}
+            setIsMuted={setIsMuted}
+            volume={volume}
+            setVolume={setVolume}
+            progress={progress}
+            setProgress={setProgress}
+            playedSeconds={playedSeconds}
+            duration={duration}
+            playbackRate={playbackRate}
+            setPlaybackRate={setPlaybackRate}
+            videoPlayerRef={videoPlayerRef}
+            playerWrapperRef={playerWrapperRef}
+          />
+        )}
+      </div>
     </div>
   );
 };

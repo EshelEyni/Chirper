@@ -1,3 +1,12 @@
 .btn-toggle-video-setting-container {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .btn-toggle-video-setting {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }

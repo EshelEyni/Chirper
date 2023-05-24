@@ -6,6 +6,7 @@ type PlaybackRatePickerModalProps = {
   setPlaybackRate: (playbackRate: number) => void;
   onToggleModal: (isModal: boolean) => void;
   isModalAbove: boolean;
+  isFullScreen: boolean;
 };
 
 export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
@@ -13,6 +14,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
   setPlaybackRate,
   onToggleModal,
   isModalAbove,
+  isFullScreen,
 }) => {
   const playbackRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
 
@@ -26,10 +28,17 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
     <Fragment>
       <div className="main-screen" onClick={() => onToggleModal(false)}></div>
       <div
-        className="playback-rate-picker-modal-container"
-        style={isModalAbove ? { bottom: "40px" } : { top: "40px" }}
+        className={
+          "playback-rate-picker-modal" +
+          (isModalAbove ? " modal-above" : "") +
+          (isFullScreen ? " full-screen" : "")
+        }
       >
-        <div className={"tippy" + (isModalAbove ? " down" : " up")}></div>
+        <div
+          className={
+            "tippy" + (isModalAbove ? " down" : " up") + (isFullScreen ? " full-screen" : "")
+          }
+        ></div>
         <div className="playback-rate-picker-modal-main-container">
           <h1>Playback speed</h1>
           <ul className="playback-rate-picker-modal-list">

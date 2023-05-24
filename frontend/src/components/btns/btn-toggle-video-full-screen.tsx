@@ -1,4 +1,4 @@
-import { FC, RefObject, useState } from "react";
+import { FC, RefObject, useEffect, useState } from "react";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
 
 type BtnToggleVideoFullScreenProps = {
@@ -12,6 +12,18 @@ export const BtnToggleVideoFullScreen: FC<BtnToggleVideoFullScreenProps> = ({
   isFullScreen,
   setIsFullScreen,
 }) => {
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", () => {
+      setIsFullScreen(!!document.fullscreenElement);
+    });
+
+    return () => {
+      document.removeEventListener("fullscreenchange", () => {
+        setIsFullScreen(!!document.fullscreenElement);
+      });
+    };
+  }, []);
+
   const onToggleFullScreen = (e: React.MouseEvent) => {
     e.stopPropagation();
     const player = playerWrapperRef.current as HTMLElement;
@@ -27,14 +39,12 @@ export const BtnToggleVideoFullScreen: FC<BtnToggleVideoFullScreenProps> = ({
   };
 
   return (
-    <div className="btn-toggle-video-full-screen-container">
-      <button onClick={e => onToggleFullScreen(e)} className="btn-toggle-video-full-screen">
-        {isFullScreen ? (
-          <BsArrowsAngleContract color="white" size={18} />
-        ) : (
-          <BsArrowsAngleExpand color="white" size={18} />
-        )}
-      </button>
-    </div>
+    <button onClick={e => onToggleFullScreen(e)} className="btn-toggle-video-full-screen">
+      {isFullScreen ? (
+        <BsArrowsAngleContract color="white" size={18} />
+      ) : (
+        <BsArrowsAngleExpand color="white" size={18} />
+      )}
+    </button>
   );
 };

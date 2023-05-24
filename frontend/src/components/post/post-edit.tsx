@@ -90,6 +90,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
+    console.log(text);
     dispatch(setNewPost({ ...newPost, text }));
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";

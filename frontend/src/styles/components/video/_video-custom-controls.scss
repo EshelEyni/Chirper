@@ -10,37 +10,50 @@
   border-radius: 0 0 15px 15px;
   transition: all 0.2s ease-in-out;
 
+  &.playback-rate-picker-modal-shown {
+    .video-custom-controls-main-container {
+      opacity: 1;
+    }
+
+    .count-down-timer-container {
+      opacity: 0;
+    }
+  }
+
   &.full-screen {
-    .btn-toggle-play,
-    .btn-toggle-volume,
-    .btn-toggle-video-setting,
-    .btn-toggle-full-screen {
-      position: relative;
-      padding: rem(5px);
-      border-radius: 50%;
-      border: none;
-      background: transparent;
-      cursor: pointer;
+    .video-custom-controls-main-container {
+      .video-custom-controls-actions-container {
+        .btn-toggle-play,
+        .btn-toggle-volume,
+        .btn-toggle-video-setting,
+        .btn-toggle-video-full-screen {
+          position: relative;
+          padding: rem(8px);
+          border-radius: 50%;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          &:hover {
+            &::before {
+              background-color: rgb(255, 255, 255, 0.2);
+              opacity: 1;
+              transform: translate(-50%, -50%) scale(1);
+            }
+          }
 
-      &:hover {
-        &::before {
-          background-color: rgb(255, 255, 255, 0.2);
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1);
+          &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: opacity 0.1s, transform 0.1s;
+          }
         }
-      }
-
-      &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0);
-        transition: opacity 0.1s, transform 0.1s;
       }
     }
   }
@@ -59,9 +72,13 @@
     align-items: center;
     justify-content: space-between;
 
-    .btn-toggle-play,
-    .btn-toggle-volume {
+    .btn-toggle-play {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       color: white;
+      cursor: pointer;
+      z-index: 100;
     }
 
     .video-custom-controls-actions-main-container {

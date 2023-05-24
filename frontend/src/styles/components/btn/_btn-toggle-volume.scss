@@ -20,4 +20,13 @@
       opacity: 1;
     }
   }
+
+  .btn-toggle-volume {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    z-index: 100;
+  }
 }

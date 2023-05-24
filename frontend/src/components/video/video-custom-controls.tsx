@@ -42,8 +42,16 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
 }) => {
   const [isVolumeHover, setIsVolumeHover] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isPlaybackRatePickerModalShown, setIsPlaybackRaterPickerModalShown] = useState(false);
+
   return (
-    <section className={"video-cutom-controls" + (isFullScreen ? " full-screen" : "")}>
+    <section
+      className={
+        "video-cutom-controls" +
+        (isFullScreen ? " full-screen" : "") +
+        (isPlaybackRatePickerModalShown ? " playback-rate-picker-modal-shown" : "")
+      }
+    >
       <div className="video-custom-controls-main-container">
         <VideoProgressBar
           progress={progress}
@@ -65,7 +73,13 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
               isVolumeHover={isVolumeHover}
               setIsVolumeHover={setIsVolumeHover}
             />
-            <BtnToggleVideoSetting playbackRate={playbackRate} setPlaybackRate={setPlaybackRate} />
+            <BtnToggleVideoSetting
+              isPlaybackRatePickerModalShown={isPlaybackRatePickerModalShown}
+              setIsPlaybackRaterPickerModalShown={setIsPlaybackRaterPickerModalShown}
+              playbackRate={playbackRate}
+              setPlaybackRate={setPlaybackRate}
+              isFullScreen={isFullScreen}
+            />
 
             <BtnToggleVideoFullScreen
               isFullScreen={isFullScreen}

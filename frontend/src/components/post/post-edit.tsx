@@ -22,6 +22,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
+import { utilService } from "../../services/util.service/utils.service";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -51,8 +52,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
 
+  const [text, setText] = useState<string>("");
   const [imgs, setImgs] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
-  const [video, setVideo] = useState<{ url: string; isLoading: boolean; file: File } | null>(null);
+  const [video, setVideo] = useState<{ url: string; isLoading: boolean; file: File | null } | null>(
+    null
+  );
   const [gif, setGif] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -74,24 +78,42 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const [isBtnCreatePostDisabled, setIsBtnCreatePostDisabled] = useState<boolean>(true);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
+  const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
 
   useEffect(() => {
-    if (
-      (newPost.text.length > 0 && newPost.text.length <= 247) ||
-      imgs.length > 0 ||
-      gif ||
-      video
-    ) {
+    if ((text.length > 0 && text.length <= 247) || imgs.length > 0 || gif || video) {
       setIsBtnCreatePostDisabled(false);
     } else {
       setIsBtnCreatePostDisabled(true);
     }
-  }, [newPost, imgs, gif, video]);
+  }, [text, imgs, gif, video]);
+
+  const detectURL = useRef(
+    utilService.debounce(async (text: string, isVideoRemoved: boolean) => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = text.match(urlRegex);
+      let youtubeURL = "";
+      if (urls) {
+        for (let i = urls.length - 1; i >= 0; i--) {
+          if (urls[i].includes("youtube.com/watch")) {
+            youtubeURL = urls[i];
+            break;
+          }
+        }
+      }
+
+      if (youtubeURL && !isVideoRemoved) {
+        setVideo({ url: youtubeURL, isLoading: false, file: null });
+      } else {
+        setVideo(null);
+      }
+    }, 500)
+  );
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    console.log(text);
-    dispatch(setNewPost({ ...newPost, text }));
+    const inputValue = e.target.value;
+    setText(inputValue);
+    detectURL.current(inputValue, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
@@ -100,6 +122,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     try {
       setPostSaveInProgress(true);
       if (!loggedinUser) return;
+
+      if (text) {
+        newPost.text = text;
+      }
 
       if (imgs.length > 0) {
         const prms = imgs.map(async (img, idx) => {
@@ -111,8 +137,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       }
 
       if (video) {
-        const videoUrl = await uploadFileToCloudinary(video.file, "video");
-        newPost.videoUrl = videoUrl;
+        if (video.file) {
+          const videoUrl = await uploadFileToCloudinary(video.file, "video");
+          newPost.videoUrl = videoUrl;
+        } else {
+          newPost.videoUrl = video.url;
+        }
       }
 
       if (gif) newPost.gif = gif;
@@ -129,6 +159,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       );
 
       setIsPickerShown(false);
+      setText("");
       setImgs([]);
       setVideo(null);
       setGif(null);
@@ -175,12 +206,18 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
             placeholder={poll ? "Ask a question..." : "What's happening?"}
-            value={newPost.text}
+            value={text}
             onChange={handleTextChange}
             ref={textAreaRef}
           />
           {imgs.length > 0 && <PostEditImg imgs={imgs} setImgs={setImgs} />}
-          {video && <PostEditVideo video={video} setVideo={setVideo} />}
+          {video && (
+            <PostEditVideo
+              video={video}
+              setVideo={setVideo}
+              setIsVideoRemoved={setIsVideoRemoved}
+            />
+          )}
           {gif && <GifEdit gif={gif} setGif={setGif} />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
@@ -207,9 +244,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               setPoll={setPoll}
             />
             <div className="secondary-action-container">
-              {newPost.text.length > 0 && (
+              {text.length > 0 && (
                 <div className="indicator-thread-btn-container">
-                  <TextIndicator textLength={newPost.text.length} />
+                  <TextIndicator textLength={text.length} />
                   <hr className="vertical" />
                   <button className="btn-add-thread">
                     <AiOutlinePlus className="btn-add-thread-icon" />

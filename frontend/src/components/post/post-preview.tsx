@@ -24,6 +24,39 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
+  const formmatText = (text: string): string => {
+    const urls = text.match(/(https?:\/\/[^\s]+)/g);
+    let formmatedText = text;
+    if (urls) {
+      urls.forEach(url => {
+        formmatedText = formmatedText.replace(url, `<a href="${url}" target="_blank">${url}</a>`);
+      });
+    }
+    // const hashtags = text.match(/#[^\s]+/g);
+    // if (hashtags) {
+    //   hashtags.forEach(hashtag => {
+    //     const sanitizedHashtag = sanitizeHtml(hashtag);
+    //     formmatedText = formmatedText.replace(
+    //       hashtag,
+    //       `<a href="/explore/tags/${sanitizedHashtag.slice(
+    //         1
+    //       )}" target="_blank">${sanitizedHashtag}</a>`
+    //     );
+    //   });
+    // }
+    // const mentions = text.match(/@[^\s]+/g);
+    // if (mentions) {
+    //   mentions.forEach(mention => {
+    //     const sanitizedMention = sanitizeHtml(mention);
+    //     formmatedText = formmatedText.replace(
+    //       mention,
+    //       `<a href="/${sanitizedMention.slice(1)}" target="_blank">${sanitizedMention}</a>`
+    //     );
+    //   });
+    // }
+    return formmatedText;
+  };
+
   return (
     <article className="post-preview">
       <div className="user-img-container">
@@ -48,7 +81,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           </div>
         </header>
         <div className="post-preview-body">
-          <p>{post.text}</p>
+          <p
+            className="post-preview-text"
+            dangerouslySetInnerHTML={{ __html: formmatText(post.text) }}
+          ></p>
           {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
           {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
           {post.gif && <GifDisplay gif={post.gif} />}

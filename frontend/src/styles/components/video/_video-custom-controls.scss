@@ -12,11 +12,11 @@
 
   &.playback-rate-picker-modal-shown {
     .video-custom-controls-main-container {
-      opacity: 1;
+      display: flex;
     }
 
     .count-down-timer-container {
-      opacity: 0;
+      display: none;
     }
   }
 
@@ -63,7 +63,7 @@
     display: flex;
     flex-direction: column;
     gap: rem(10px);
-    opacity: 0;
+    display: none;
     transition: all 0.2s ease-in-out;
   }
 

@@ -62,7 +62,7 @@ function getTimeZone(): string {
     hour: "numeric",
   })
     .formatToParts()
-    .find((part) => part.type === "timeZoneName")?.value;
+    .find(part => part.type === "timeZoneName")?.value;
 
   return timeZoneName ? timeZoneName : "Time Zone Not Found";
 }

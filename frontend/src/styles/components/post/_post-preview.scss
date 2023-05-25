@@ -57,15 +57,29 @@
       font-size: rem(14px);
       line-height: 1.5;
 
+      .post-preview-text {
+        word-break: break-all;
+
+        a {
+          color: var(--color-primary);
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
       .react-player-wrapper {
         position: relative;
+        min-height: rem(250px);
         height: fit-content;
         max-height: rem(500px);
         width: 100%;
         padding-top: 0;
         background-color: black;
         border-radius: 15px;
-
+        margin: rem(14px) 0;
+        
         .react-player {
           position: static;
 

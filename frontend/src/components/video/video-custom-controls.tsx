@@ -52,7 +52,7 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
         (isPlaybackRatePickerModalShown ? " playback-rate-picker-modal-shown" : "")
       }
     >
-      <div className="video-custom-controls-main-container">
+      <div className="video-custom-controls-main-container" onClick={e => e.stopPropagation()}>
         <VideoProgressBar
           progress={progress}
           setProgress={setProgress}

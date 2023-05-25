@@ -52,10 +52,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
 
   return (
     <div className={"gif-search-bar" + (isSearchBarFocused ? " focused" : "")}>
-      <label
-        className="magnifing-glass-icon-label"
-        htmlFor="gif-search-bar-input"
-      >
+      <label className="magnifing-glass-icon-label" htmlFor="gif-search-bar-input">
         <SlMagnifier className="magnifing-glass-icon" />
       </label>
       <input
@@ -71,10 +68,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
       />
 
       {searchTerm && (
-        <AiFillCloseCircle
-          className="close-icon"
-          onMouseDown={() => onClearSearch()}
-        />
+        <AiFillCloseCircle className="close-icon" onMouseDown={() => onClearSearch()} />
       )}
     </div>
   );

@@ -4,13 +4,15 @@ import { VideoPlayer } from "../video/video-player";
 import { ContentLoader } from "../loaders/content-loader";
 
 type PostEditVideoProps = {
-  video: { url: string; isLoading: boolean; file: File };
+  video: { url: string; isLoading: boolean; file: File | null };
   setVideo: (video: { url: string; isLoading: boolean; file: File } | null) => void;
+  setIsVideoRemoved: (isVideoRemoved: boolean) => void;
 };
 
-export const PostEditVideo: FC<PostEditVideoProps> = ({ video, setVideo }) => {
+export const PostEditVideo: FC<PostEditVideoProps> = ({ video, setVideo, setIsVideoRemoved }) => {
   const onRemoveVideo = () => {
     setVideo(null);
+    setIsVideoRemoved(true);
   };
 
   return (

@@ -19,9 +19,9 @@ import { IoLocationSharp } from "react-icons/io5";
 interface PostEditActionBtnsProps {
   imgs: { url: string; isLoading: boolean; file: File }[];
   setImgs: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
-  video: { url: string; isLoading: boolean; file: File } | null;
+  video: { url: string; isLoading: boolean; file: File | null } | null;
   setVideo: React.Dispatch<
-    React.SetStateAction<{ url: string; isLoading: boolean; file: File } | null>
+    React.SetStateAction<{ url: string; isLoading: boolean; file: File | null } | null>
   >;
   gif: GifType | null;
   setGif: (url: GifType | null) => void;

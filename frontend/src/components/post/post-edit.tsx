@@ -48,15 +48,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
   const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
   const [isComposeMounted, setIsComposeMounted] = useState<boolean>(false);
+  const [inputTextValue, setInputTextValue] = useState(currPost.text);
 
   useEffect(() => {
-    if (checkIfPostValid()) {
-      setIsPostValid(true);
-    } else {
-      setIsPostValid(false);
+    const isValid = checkIfPostValid(currPost);
+    if (isValid !== isPostValid) {
+      setIsPostValid(isValid);
     }
   }, [
-    currPost.text.length,
+    inputTextValue.length,
     currPost.imgs.length,
     currPost.gif,
     currPost.video,
@@ -65,20 +65,20 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     isComposeMounted,
   ]);
 
-  const checkIfPostValid = () => {
+  const checkIfPostValid = (currPost: NewPost): boolean => {
     if (isComposeMounted) return false;
     if (currPost.poll) {
       return (
         currPost.poll.options.every(option => option.text.length > 0) &&
-        currPost.text.length > 0 &&
-        currPost.text.length <= 247
+        inputTextValue.length > 0 &&
+        inputTextValue.length <= 247
       );
     } else {
       return (
-        (currPost.text.length > 0 && currPost.text.length <= 247) ||
+        (inputTextValue.length > 0 && inputTextValue.length <= 247) ||
         currPost.imgs.length > 0 ||
-        currPost.gif ||
-        currPost.video
+        !!currPost.gif ||
+        !!currPost.video
       );
     }
   };
@@ -97,7 +97,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         }
       }
 
-      if (youtubeURL && !isVideoRemoved) {
+      if (youtubeURL && youtubeURL !== currPost.video?.url && !isVideoRemoved) {
         dispatch(
           setNewPost(
             {
@@ -115,11 +115,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   );
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const inputValue = e.target.value;
-    dispatch(setNewPost({ ...currPost, text: inputValue }, newPostType));
-    detectURL.current(currPost, inputValue, isVideoRemoved);
+    const value = e.target.value;
+    setInputTextValue(value);
+    detectURL.current(currPost, value, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
+  };
+
+  const handleTextBlur = () => {
+    dispatch(setNewPost({ ...currPost, text: inputTextValue }, newPostType));
   };
 
   const onAddPost = async () => {
@@ -199,8 +203,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
             placeholder={currPost.poll ? "Ask a question..." : "What's happening?"}
-            value={!isComposeMounted ? currPost.text : ""}
+            value={!isComposeMounted ? inputTextValue : ""}
             onChange={handleTextChange}
+            onBlur={handleTextBlur}
             ref={textAreaRef}
           />
           {currPost.imgs.length > 0 && !isComposeMounted && <PostEditImg />}
@@ -221,9 +226,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
             <PostEditActions isPickerShown={isPickerShown} />
             <div className="secondary-action-container">
-              {isPostValid && !isComposeMounted && (
+              {inputTextValue.length > 0 && !isComposeMounted && (
                 <div className="indicator-thread-btn-container">
-                  <TextIndicator textLength={currPost.text.length} />
+                  <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
                   <button className="btn-add-thread" onClick={onAddPostToThread}>
                     <AiOutlinePlus className="btn-add-thread-icon" />

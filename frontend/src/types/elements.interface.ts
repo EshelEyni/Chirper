@@ -7,3 +7,5 @@ export interface NavLink {
   iconUnActive: ReactElement;
   isShown: boolean;
 }
+
+export type ReactIcon = ReactElement | null;

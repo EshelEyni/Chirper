@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { setNewPost } from "../../store/actions/post.actions";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
 interface GifListProps {
   gifs: Gif[];
@@ -16,11 +17,21 @@ interface GifListProps {
 
 export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
+
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
-    dispatch(setNewPost({ ...newPost, gif }));
+    dispatch(setNewPost({ ...currPost, gif }, newPostType));
     onToggleElementVisibility("gifPicker");
   };
 

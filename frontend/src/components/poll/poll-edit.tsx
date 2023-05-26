@@ -1,22 +1,34 @@
-import { Dispatch, SetStateAction, FC } from "react";
-import { Poll } from "../../../../shared/interfaces/post.interface";
+import { FC, useRef } from "react";
 import { PollOptionsInput } from "./poll-options-input";
 import { PollLengthInputs } from "./poll-length-inputs";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../store/types";
+import { setNewPost } from "../../store/actions/post.actions";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { RootState } from "../../store/store";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
-interface PollEditProps {
-  poll: Poll;
-  setPoll: Dispatch<SetStateAction<Poll | null>>;
-}
+export const PollEdit: FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
 
-export const PollEdit: FC<PollEditProps> = ({ poll, setPoll }) => {
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
   const onRemovePoll = () => {
-    setPoll(null);
+    dispatch(setNewPost({ ...currPost, poll: null }, newPostType));
   };
 
   return (
     <div className="poll-edit">
-      <PollOptionsInput poll={poll} setPoll={setPoll} />
-      <PollLengthInputs poll={poll} setPoll={setPoll} />
+      <PollOptionsInput />
+      <PollLengthInputs />
       <button className="btn-remove-poll" onClick={onRemovePoll}>
         Remove poll
       </button>

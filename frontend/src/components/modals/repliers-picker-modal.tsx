@@ -1,19 +1,31 @@
-import React from "react";
+import { FC, Fragment, useRef } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
-import { postSettings } from "../post/post-edit";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { AppDispatch } from "../../store/types";
+import { setNewPost } from "../../store/actions/post.actions";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
 interface RepliersPickerModalProps {
-  postSettings: postSettings;
-  setPostSettings: React.Dispatch<React.SetStateAction<postSettings>>;
   toggleModal: (type: string) => void;
 }
 
-export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
-  postSettings,
-  setPostSettings,
-  toggleModal,
-}) => {
+export const RepliersPickerModal: FC<RepliersPickerModalProps> = ({ toggleModal }) => {
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
+
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
+  const dispatch: AppDispatch = useDispatch();
+
   const iconClassName = "picker-modal-option-icon";
 
   const replierOptions = [
@@ -21,57 +33,48 @@ export const RepliersPickerModal: React.FC<RepliersPickerModalProps> = ({
       title: "Everyone",
       icon: <FaGlobeAmericas className={iconClassName} />,
       value: "everyone",
-      isSelected: postSettings.repliersType.value === "everyone",
+      isSelected: currPost.repliersType === "everyone",
     },
     {
       title: "Only people you follow",
       icon: <FaUserCheck className={iconClassName} />,
-      value: "chirper-circle",
-      isSelected: postSettings.repliersType.value === "chirper-circle",
+      value: "followed",
+      isSelected: currPost.repliersType === "followed",
     },
     {
       title: "Only people you mentioned",
       icon: <FaAt className={iconClassName} />,
       value: "mentioned",
-      isSelected: postSettings.repliersType.value === "mentioned",
+      isSelected: currPost.repliersType === "mentioned",
     },
   ];
 
+  const onClickOption = (value: string) => {
+    dispatch(setNewPost({ ...currPost, repliersType: value }, newPostType));
+    toggleModal("repliers");
+  };
+
   return (
-    <React.Fragment>
+    <Fragment>
       <div className="main-screen" onClick={() => toggleModal("repliers")} />
       <section className="picker-modal repliers">
         <h1 className="picker-modal-title">Choose who can reply</h1>
         <div className="picker-modal-options">
-          {replierOptions.map((option) => (
+          {replierOptions.map(option => (
             <div
               key={option.title}
               className="picker-modal-option"
-              onClick={() => {
-                setPostSettings({
-                  ...postSettings,
-                  repliersType: {
-                    title: option.title,
-                    icon: option.icon,
-                    value: option.value,
-                  },
-                });
-                toggleModal("repliers");
-              }}
+              onClick={() => onClickOption(option.value)}
             >
               <div className="picker-modal-option-main-content">
-                <div className="picker-modal-option-icon-container">
-                  {option.icon}
-                </div>
-                <div className="picker-modal-option-text repliers">
-                  {option.title}
-                </div>
+                <div className="picker-modal-option-icon-container">{option.icon}</div>
+                <div className="picker-modal-option-text repliers">{option.title}</div>
               </div>
               {option.isSelected && <AiOutlineCheck className="check-icon" />}
             </div>
           ))}
         </div>
       </section>
-    </React.Fragment>
+    </Fragment>
   );
 };

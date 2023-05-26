@@ -26,10 +26,15 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
 
   const formmatText = (text: string): string => {
     const urls = text.match(/(https?:\/\/[^\s]+)/g);
+    const urlsSet = new Set(urls);
     let formmatedText = text;
-    if (urls) {
-      urls.forEach(url => {
-        formmatedText = formmatedText.replace(url, `<a href="${url}" target="_blank">${url}</a>`);
+    if (urlsSet) {
+      urlsSet.forEach(url => {
+        const trimmedUrl = url.replace("https://www.", "");
+        formmatedText = formmatedText.replaceAll(
+          url,
+          `<a href="${url}" target="_blank">${trimmedUrl}</a>`
+        );
       });
     }
     // const hashtags = text.match(/#[^\s]+/g);
@@ -54,6 +59,12 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     //     );
     //   });
     // }
+
+    const lineBreaks = formmatedText.match(/\n/g);
+    if (lineBreaks) {
+      formmatedText = formmatedText.replaceAll("\n", "<br />");
+    }
+
     return formmatedText;
   };
 

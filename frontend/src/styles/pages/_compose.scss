@@ -1,4 +1,8 @@
 .compose {
+  .main-screen {
+    z-index: 2000;
+  }
+
   .post-edit {
     position: fixed;
     top: 5%;
@@ -9,7 +13,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     margin: rem(14px) 0;
-    z-index: 1000;
+    z-index: 2500;
 
     &.save-mode {
       opacity: 1;

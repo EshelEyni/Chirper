@@ -1,20 +1,25 @@
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../../store/types";
+import { setNewPostType } from "../../store/actions/post.actions";
 
 interface BtnCreatePostProps {
-  isLinkToNestedPage: boolean;
+  isSideBarBtn: boolean;
   isDisabled: boolean;
   onAddPost?: () => void;
 }
 
 export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
-  isLinkToNestedPage,
+  isSideBarBtn,
   isDisabled,
   onAddPost = null,
 }) => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
   const onClickBtn = () => {
-    if (isLinkToNestedPage) {
+    if (isSideBarBtn) {
+      dispatch(setNewPostType("side-bar-post"));
       navigate("/compose");
     } else {
       if (isDisabled) return;
@@ -24,7 +29,7 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
 
   return (
     <button
-      className={"btn-create-post" + (!isLinkToNestedPage && isDisabled ? " disabled" : "")}
+      className={"btn-create-post" + (!isSideBarBtn && isDisabled ? " disabled" : "")}
       onClick={onClickBtn}
     >
       Chirp

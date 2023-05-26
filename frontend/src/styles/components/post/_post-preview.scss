@@ -59,10 +59,25 @@
 
       .post-preview-text {
         word-break: break-all;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        br {
+          display: block;
+          content: '';
+          width: 100%;
+          margin-top: rem(8px);
+        }
 
         a {
+          display: inline-block;
           color: var(--color-primary);
-
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: rem(200px);
+          line-height: 1;
           &:hover {
             text-decoration: underline;
           }
@@ -79,7 +94,7 @@
         background-color: black;
         border-radius: 15px;
         margin: rem(14px) 0;
-        
+
         .react-player {
           position: static;
 

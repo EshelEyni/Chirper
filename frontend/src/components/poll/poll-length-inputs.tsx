@@ -1,38 +1,54 @@
-import { Dispatch, SetStateAction, FC, useEffect } from "react";
-import { Poll } from "../../../../shared/interfaces/post.interface";
+import { FC, useEffect, useRef } from "react";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { CustomSelect } from "../other/custom-select";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
+import { AppDispatch } from "../../store/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { setNewPost } from "../../store/actions/post.actions";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
-interface PollLengthInputsProps {
-  poll: Poll;
-  setPoll: Dispatch<SetStateAction<Poll | null>>;
-}
+export const PollLengthInputs: FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
 
-export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) => {
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
   const handleValueChange = (inputType: string, value: number | string) => {
-    setPoll(prevPoll => {
-      if (prevPoll) {
-        if (inputType === "days" && value === 7) {
-          return {
-            ...prevPoll,
-            length: {
-              ...prevPoll.length,
-              days: value,
-              hours: 0,
-              minutes: 0,
-            },
-          };
-        }
+    const setPollLength = (inputType: string, value: number | string) => {
+      if (inputType === "days" && value === 7) {
         return {
-          ...prevPoll,
-          length: {
-            ...prevPoll.length,
-            [inputType]: value,
-          },
+          days: value,
+          hours: 0,
+          minutes: 0,
+        };
+      } else {
+        return {
+          ...currPost.poll!.length,
+          [inputType]: value,
         };
       }
-      return null;
-    });
+    };
+
+    dispatch(
+      setNewPost(
+        {
+          ...currPost,
+          poll: {
+            ...currPost.poll!,
+            length: setPollLength(inputType, value),
+          },
+        },
+        newPostType
+      )
+    );
   };
 
   useEffect(() => {
@@ -41,21 +57,21 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) =
         if (input.type === "hours" || input.type === "minutes") {
           return {
             ...input,
-            isDisabled: poll.length.days === 7,
-            value: poll.length.days === 7 ? 0 : input.value,
+            isDisabled: currPost.poll!.length.days === 7,
+            value: currPost.poll!.length.days === 7 ? 0 : input.value,
           };
         }
         return input;
       });
     });
-  }, [poll.length.days]);
+  }, [currPost.poll!.length.days]);
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(
     [
       {
         label: "Days",
         type: "days",
-        value: poll.length.days,
+        value: currPost.poll!.length.days,
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
@@ -64,8 +80,8 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) =
       {
         label: "Hours",
         type: "hours",
-        value: poll.length.hours,
-        isDisabled: poll.length.days === 7,
+        value: currPost.poll!.length.hours,
+        isDisabled: currPost.poll!.length.days === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(24).keys()],
@@ -73,8 +89,8 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ poll, setPoll }) =
       {
         label: "Minutes",
         type: "minutes",
-        value: poll.length.minutes,
-        isDisabled: poll.length.days === 7,
+        value: currPost.poll!.length.minutes,
+        isDisabled: currPost.poll!.length.days === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(60).keys()],

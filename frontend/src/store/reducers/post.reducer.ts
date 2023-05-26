@@ -1,20 +1,31 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 
+export type NewPostType = "post" | "side-bar-post";
+
+const defaultNewPost: NewPost = {
+  text: "",
+  audience: "everyone",
+  repliersType: "everyone",
+  isPublic: true,
+  imgs: [],
+  video: null,
+  videoUrl: "",
+  gif: null,
+  poll: null,
+};
+
 const initialState: {
   posts: Post[];
   post: Post | null;
   newPost: NewPost;
+  sideBarNewPost: NewPost;
+  newPostType: NewPostType;
 } = {
   posts: [],
   post: null,
-  newPost: {
-    text: "",
-    audience: "everyone",
-    repliersType: "everyone",
-    isPublic: true,
-    imgs: [],
-    video: null,
-  } as unknown as NewPost,
+  newPost: defaultNewPost,
+  sideBarNewPost: defaultNewPost,
+  newPostType: "post",
 };
 
 export function postReducer(
@@ -25,6 +36,8 @@ export function postReducer(
     post: Post;
     postId: string;
     updatedPost: Post;
+    newPost: NewPost;
+    newPostType: NewPostType;
   }
 ) {
   switch (action.type) {
@@ -42,17 +55,21 @@ export function postReducer(
     case "UPDATE_POST":
       return { ...state, post: action.updatedPost };
     case "SET_NEW_POST":
-      return { ...state, newPost: action.post };
+      return { ...state, newPost: action.newPost };
     case "CLEAR_NEW_POST":
       return {
         ...state,
-        newPost: {
-          text: "",
-          audience: "everyone",
-          repliersType: "everyone",
-          isPublic: true,
-        } as NewPost,
+        newPost: defaultNewPost,
       };
+    case "SET_SIDEBAR_NEW_POST":
+      return { ...state, sideBarNewPost: action.newPost };
+    case "CLEAR_SIDEBAR_NEW_POST":
+      return {
+        ...state,
+        sideBarNewPost: defaultNewPost,
+      };
+    case "SET_NEW_POST_TYPE":
+      return { ...state, newPostType: action.newPostType };
     default:
       return state;
   }

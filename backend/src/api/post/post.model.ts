@@ -201,6 +201,18 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   next();
 });
 
+postSchema.pre("save", function (this: Document, next: () => void) {
+  // Trimming last occurence of videoUrl
+  const videoUrl = this.get("videoUrl");
+
+  if (videoUrl) {
+    const postText = this.get("text");
+    const idx = postText.lastIndexOf(videoUrl);
+    const trimmedText = postText.slice(0, idx) + postText.slice(idx + videoUrl.length);
+    this.set("text", trimmedText);
+  }
+  next();
+});
 postSchema.virtual("user", {
   ref: "User",
   localField: "userId",

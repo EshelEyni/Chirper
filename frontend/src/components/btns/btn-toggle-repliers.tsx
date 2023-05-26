@@ -1,38 +1,42 @@
-import { useState } from "react";
+import { FC, useRef, useState } from "react";
 import { RepliersPickerModal } from "../modals/repliers-picker-modal";
-import { postSettings } from "../post/post-edit";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { FaGlobeAmericas } from "react-icons/fa";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
-interface BtnToggleRepliersProps {
-    postSettings: postSettings;
-    setPostSettings: React.Dispatch<React.SetStateAction<postSettings>>;
-}
-export const BtnToggleRepliers: React.FC<BtnToggleRepliersProps> = ({
-    postSettings,
-    setPostSettings,
-}) => {
+export const BtnToggleRepliers: FC = () => {
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
 
-    const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
-    const toggleModal = (type: string) => {
-        setIsRepliersOpen(!isRepliersOpen);
-    };
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
 
-    return (
-        <div className="btn-toggle-repliers-container">
-        <button
-          className="btn-toggle-repliers"
-          onClick={() => toggleModal("repliers")}
-        >
-          {postSettings.repliersType.icon}
-          <span>{postSettings.repliersType.title}</span>
-          can reply
-        </button>
-        {isRepliersOpen && (
-          <RepliersPickerModal
-            postSettings={postSettings}
-            setPostSettings={setPostSettings}
-            toggleModal={toggleModal}
-          />
-        )}
-      </div>
-    );
+  const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
+  const toggleModal = () => {
+    setIsRepliersOpen(!isRepliersOpen);
+  };
+
+  const setTitle = (value: string) => {
+    if (value === "everyone") return "Everyone";
+    if (value === "followed") return "Only people you follow";
+    if (value === "mentioned") return "Only people you mentioned";
+  };
+
+  return (
+    <div className="btn-toggle-repliers-container">
+      <button className="btn-toggle-repliers" onClick={() => toggleModal()}>
+        <FaGlobeAmericas />
+        <span>{setTitle(currPost.repliersType)}</span>
+        can reply
+      </button>
+      {isRepliersOpen && <RepliersPickerModal toggleModal={toggleModal} />}
+    </div>
+  );
 };

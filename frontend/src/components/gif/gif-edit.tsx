@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ContentLoader } from "../loaders/content-loader";
 import { Fragment } from "react";
@@ -8,10 +8,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
 import { setNewPost } from "../../store/actions/post.actions";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
 export const GifEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
+
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -24,7 +35,7 @@ export const GifEdit: FC = () => {
   };
 
   const onRemoveGif = () => {
-    dispatch(setNewPost({ ...newPost, gif: null }));
+    dispatch(setNewPost({ ...currPost, gif: null }, newPostType));
   };
 
   return (
@@ -34,7 +45,7 @@ export const GifEdit: FC = () => {
         <BtnRemoveContent onRemoveContent={onRemoveGif} />
         <img
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          src={isPlaying ? newPost.gif!.url : newPost.gif!.staticUrl}
+          src={isPlaying ? currPost.gif!.url : currPost.gif!.staticUrl}
           alt="gif"
           onClick={onTogglePlay}
           onLoad={onImageLoad}

@@ -6,7 +6,7 @@ import { UserMsg } from "../../../../shared/interfaces/system.interface";
 export function setIsPageLoading(
   isPageLoading: boolean
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       dispatch({ type: "SET_IS_PAGE_LOADING", isPageLoading });
     } catch (err) {
@@ -18,7 +18,7 @@ export function setIsPageLoading(
 export function setIsSideBarShown(
   isSideBarShown: boolean
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       dispatch({ type: "SET_IS_SIDEBAR_SHOWN", isSideBarShown });
     } catch (err) {
@@ -30,7 +30,7 @@ export function setIsSideBarShown(
 export function setUserMsg(
   userMsg: UserMsg
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       dispatch({ type: "SET_USER_MSG", userMsg });
       setTimeout(() => {

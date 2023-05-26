@@ -1,6 +1,7 @@
 import { Document } from "mongoose";
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
+import { ReactIcon } from "../../frontend/src/types/elements.interface";
 
 export type PostDocument = Post & Document;
 
@@ -16,22 +17,35 @@ export type NewPostVideo = {
   file: File | null;
 };
 
-export interface NewPost {
+interface audienceSettings {
+  title: string;
+  value: string;
+}
+
+interface repliersSetting {
+  title: string;
+  icon: ReactIcon;
+  value: string;
+}
+
+export type BasicPost = {
   text: string;
-  imgs: NewPostImg[];
   video?: NewPostVideo | null;
   videoUrl?: string;
   gif: Gif | null;
-  poll?: Poll;
+  poll: Poll | null;
   schedule?: Date;
   location?: Location;
+  isPublic: boolean;
   audience: string;
   repliersType: string;
-  isPublic: boolean;
-  userId: string;
+};
+
+export interface NewPost extends BasicPost {
+  imgs: NewPostImg[];
 }
 
-export interface Post extends NewPost {
+export interface Post extends BasicPost {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +53,7 @@ export interface Post extends NewPost {
   rechirps: number;
   likes: number;
   views: number;
+  imgs: PostImg[];
   user: {
     id: string;
     username: string;

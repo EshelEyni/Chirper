@@ -4,6 +4,7 @@ import { postService } from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
+import { NewPostType } from "../reducers/post.reducer";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
@@ -95,13 +96,46 @@ export function updatePost(
 }
 
 export function setNewPost(
-  post: NewPost
+  newPost: NewPost,
+  newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      dispatch({ type: "SET_NEW_POST", post });
+      if (newPostType === "post") {
+        dispatch({ type: "SET_NEW_POST", newPost });
+      } else {
+        dispatch({ type: "SET_SIDEBAR_NEW_POST", newPost });
+      }
     } catch (err) {
       console.log("PostActions: err in setNewPost", err);
+    }
+  };
+}
+
+export function clearNewPost(
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      if (newPostType === "post") {
+        dispatch({ type: "CLEAR_NEW_POST" });
+      } else {
+        dispatch({ type: "CLEAR_SIDEBAR_NEW_POST" });
+      }
+    } catch (err) {
+      console.log("PostActions: err in clearNewPost", err);
+    }
+  };
+}
+
+export function setNewPostType(
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      dispatch({ type: "SET_NEW_POST_TYPE", newPostType });
+    } catch (err) {
+      console.log("PostActions: err in setNewPostType", err);
     }
   };
 }

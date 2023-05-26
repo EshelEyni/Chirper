@@ -21,7 +21,7 @@ export const SideBar = () => {
       <div className="main-container">
         <Logo />
         <NavList />
-        <BtnCreatePost isLinkToNestedPage={true} isDisabled={false} />
+        <BtnCreatePost isSideBarBtn={true} isDisabled={false} />
       </div>
       {loggedinUser && (
         <div className="user-preview-container" onClick={toggleModal}>

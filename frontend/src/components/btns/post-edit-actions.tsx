@@ -5,36 +5,40 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, FC, Fragment } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
-import { Gif as GifType } from "../../../../shared/interfaces/gif.interface";
-import { Poll, Emoji } from "../../../../shared/interfaces/post.interface";
+import { Poll, Emoji, NewPost } from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store/store";
 import { setNewPost } from "../../store/actions/post.actions";
 import { IoLocationSharp } from "react-icons/io5";
+import { NewPostType } from "../../store/reducers/post.reducer";
 
 interface PostEditActionsProps {
   isPickerShown: boolean;
-  poll: Poll | null;
-  setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
 }
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 
 type ElementVisibility = Record<UIElement, boolean>;
 
-export const PostEditActions: React.FC<PostEditActionsProps> = ({
-  isPickerShown,
-  poll,
-  setPoll,
-}) => {
+export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const { newPost } = useSelector((state: RootState) => state.postModule);
+  const {
+    newPost,
+    sideBarNewPost,
+    newPostType,
+  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule
+  );
+
+  const newPostTypeRef = useRef(newPostType);
+  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const [elementVisibility, setElementVisibility] = useState<ElementVisibility>({
@@ -47,9 +51,9 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (newPost.imgs.length < 3) setIsMultiple(true);
+    if (currPost.imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [newPost.imgs]);
+  }, [currPost.imgs]);
 
   const btns: {
     name: string;
@@ -62,12 +66,13 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
-      isDisabled: newPost.imgs.length === 4 || !!newPost.gif || !!poll || !!newPost.video,
+      isDisabled:
+        currPost.imgs.length === 4 || !!currPost.gif || !!currPost.poll || !!currPost.video,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: newPost.imgs.length > 0 || !!newPost.gif || !!poll || !!newPost.video,
+      isDisabled: currPost.imgs.length > 0 || !!currPost.gif || !!currPost.poll || !!currPost.video,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -77,7 +82,11 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
       name: "poll",
       icon: <FiList />,
       isDisabled:
-        newPost.imgs.length > 0 || !!newPost.gif || !!poll || !!newPost.video || !!newPost.schedule,
+        currPost.imgs.length > 0 ||
+        !!currPost.gif ||
+        !!currPost.poll ||
+        !!currPost.video ||
+        !!currPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         const defaultPoll: Poll = {
@@ -93,7 +102,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
           isVotingOff: false,
           createdAt: Date.now(),
         };
-        setPoll(defaultPoll);
+        dispatch(setNewPost({ ...currPost, poll: defaultPoll }, newPostType));
       },
     },
     {
@@ -108,7 +117,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: !!poll,
+      isDisabled: !!currPost.poll,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostScedule();
@@ -154,7 +163,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
       return;
     }
 
-    const isImagesGreaterThan4 = [...files].length + newPost.imgs.length > 4;
+    const isImagesGreaterThan4 = [...files].length + currPost.imgs.length > 4;
 
     if (isImagesGreaterThan4) {
       dispatch(
@@ -206,7 +215,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
     });
 
   const onUploadImgs = async (files: File[]) => {
-    const newImgs = [...newPost.imgs];
+    const newImgs = [...currPost.imgs];
     for (let i = 0; i < files.length; i++) {
       try {
         const file = files[i];
@@ -214,10 +223,10 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
         if (file) {
           const currIdx = newImgs.length;
           newImgs.push({ url: "", isLoading: true, file });
-          dispatch(setNewPost({ ...newPost, imgs: [...newImgs] }));
+          dispatch(setNewPost({ ...currPost, imgs: [...newImgs] }, newPostType));
           const dataUrl = await readAsDataURL(file);
           newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-          dispatch(setNewPost({ ...newPost, imgs: [...newImgs] }));
+          dispatch(setNewPost({ ...currPost, imgs: [...newImgs] }, newPostType));
         }
       } catch (error) {
         console.error("Error reading file:", error);
@@ -227,9 +236,11 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
 
   const onUploadVideo = async (file: File) => {
     try {
-      dispatch(setNewPost({ ...newPost, video: { url: "", isLoading: true, file } }));
+      dispatch(setNewPost({ ...currPost, video: { url: "", isLoading: true, file } }, newPostType));
       const dataUrl = await readAsDataURL(file);
-      dispatch(setNewPost({ ...newPost, video: { url: dataUrl, isLoading: false, file } }));
+      dispatch(
+        setNewPost({ ...currPost, video: { url: dataUrl, isLoading: false, file } }, newPostType)
+      );
     } catch (error) {
       console.error("Error reading file:", error);
     }
@@ -237,8 +248,8 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
 
   const onEmojiPicked = (emoji: Emoji) => {
     const nativeEmoji = emoji.native;
-    const newPostText = newPost.text + nativeEmoji;
-    dispatch(setNewPost({ ...newPost, text: newPostText }));
+    const newPostText = currPost.text + nativeEmoji;
+    dispatch(setNewPost({ ...currPost, text: newPostText }, newPostType));
   };
 
   const onToggleElementVisibility = (elementName: UIElement) => {
@@ -269,7 +280,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <div className="post-edit-action-btns">
         {btns.map((btn, idx) => {
           if (btn.name === "img-upload") {
@@ -286,7 +297,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
                   type={btn.type}
                   accept={"image/*,video/*"}
                   multiple={isMultiple}
-                  disabled={newPost.imgs.length === 4 || !isPickerShown}
+                  disabled={currPost.imgs.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadFile}
                   style={{ display: "none" }}
@@ -299,6 +310,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
               <div className="emoji-button-container" key={idx}>
                 <button
                   className={"post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")}
+                  disabled={btn.isDisabled}
                   onClick={btn.onClickFn}
                 >
                   <div className="post-edit-action-icon-container">{btn.icon}</div>
@@ -320,6 +332,7 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
             return (
               <button
                 key={idx}
+                disabled={btn.isDisabled}
                 className={"post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")}
                 onClick={btn.onClickFn}
               >
@@ -330,12 +343,8 @@ export const PostEditActions: React.FC<PostEditActionsProps> = ({
         })}
       </div>
       {elementVisibility.gifPicker && (
-        <GifPickerModal
-          // gif={gif}
-          // setGif={setGif}
-          onToggleElementVisibility={onToggleElementVisibility}
-        />
+        <GifPickerModal onToggleElementVisibility={onToggleElementVisibility} />
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };

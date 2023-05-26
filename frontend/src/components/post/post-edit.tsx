@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { BtnCreatePost } from "../btns/btn-create-post";
-import { PostEditActionBtns } from "../btns/post-edit-action-btns";
+import { PostEditActions } from "../btns/post-edit-actions";
 import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
-import { NewPost, Poll } from "../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg, Poll } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import { addPost, setNewPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
@@ -51,14 +51,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
-
-  const [text, setText] = useState<string>("");
-  const [imgs, setImgs] = useState<{ url: string; isLoading: boolean; file: File }[]>([]);
-  const [video, setVideo] = useState<{ url: string; isLoading: boolean; file: File | null } | null>(
-    null
-  );
-  const [gif, setGif] = useState<GifType | null>(null);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
+  const [isPostValid, setIsPostValid] = useState<boolean>(true);
+  const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
+  const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
+
   const [poll, setPoll] = useState<Poll | null>(null);
 
   const [postSettings, setPostSettings] = useState<{
@@ -76,26 +73,28 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     },
   });
 
-  const [isBtnCreatePostDisabled, setIsBtnCreatePostDisabled] = useState<boolean>(true);
-  const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
-  const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
-
   useEffect(() => {
-    if ((text.length > 0 && text.length <= 247) || imgs.length > 0 || gif || video) {
-      setIsBtnCreatePostDisabled(false);
+    if (
+      (newPost.text.length > 0 && newPost.text.length <= 247) ||
+      newPost.imgs.length > 0 ||
+      newPost.gif ||
+      newPost.video ||
+      poll?.options.some(option => !option.text)
+    ) {
+      setIsPostValid(true);
     } else {
-      setIsBtnCreatePostDisabled(true);
+      setIsPostValid(false);
     }
-  }, [text, imgs, gif, video]);
+  }, [newPost.text, newPost.imgs, newPost.gif, newPost.video]);
 
   const detectURL = useRef(
-    utilService.debounce(async (text: string, isVideoRemoved: boolean) => {
+    utilService.debounce(async (newPost: NewPost, text: string, isVideoRemoved: boolean) => {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = text.match(urlRegex);
       let youtubeURL = "";
       if (urls) {
         for (let i = urls.length - 1; i >= 0; i--) {
-          if (urls[i].includes("youtube.com/watch")) {
+          if (urls[i].includes("https://www.youtube.com/watch")) {
             youtubeURL = urls[i];
             break;
           }
@@ -103,17 +102,23 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       }
 
       if (youtubeURL && !isVideoRemoved) {
-        setVideo({ url: youtubeURL, isLoading: false, file: null });
-      } else {
-        setVideo(null);
+        dispatch(
+          setNewPost({
+            ...newPost,
+            text,
+            video: { url: youtubeURL, isLoading: false, file: null },
+          })
+        );
+      } else if (newPost.video) {
+        dispatch(setNewPost({ ...newPost, text, video: null }));
       }
     }, 500)
   );
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target.value;
-    setText(inputValue);
-    detectURL.current(inputValue, isVideoRemoved);
+    dispatch(setNewPost({ ...newPost, text: inputValue }));
+    detectURL.current(newPost, inputValue, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
@@ -123,29 +128,25 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostSaveInProgress(true);
       if (!loggedinUser) return;
 
-      if (text) {
-        newPost.text = text;
-      }
-
-      if (imgs.length > 0) {
-        const prms = imgs.map(async (img, idx) => {
+      if (newPost.imgs.length > 0) {
+        const prms = newPost.imgs.map(async (img, idx) => {
           const currImgUrl = await uploadFileToCloudinary(img.file, "image");
           return { url: currImgUrl, sortOrder: idx };
         });
         const savedImgUrl = await Promise.all(prms);
-        newPost.imgs = savedImgUrl.filter(img => img.url);
+        newPost.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
       }
 
-      if (video) {
-        if (video.file) {
-          const videoUrl = await uploadFileToCloudinary(video.file, "video");
+      if (newPost.video) {
+        if (newPost.video.file) {
+          const videoUrl = await uploadFileToCloudinary(newPost.video.file, "video");
           newPost.videoUrl = videoUrl;
         } else {
-          newPost.videoUrl = video.url;
+          newPost.videoUrl = newPost.video.url;
         }
+        delete newPost.video;
       }
 
-      if (gif) newPost.gif = gif;
       if (poll) newPost.poll = { ...poll };
       await dispatch(addPost(newPost));
 
@@ -155,17 +156,17 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           audience: "everyone",
           repliersType: "everyone",
           isPublic: true,
-        } as NewPost)
+          imgs: [],
+          video: null,
+          gif: null,
+        } as unknown as NewPost)
       );
 
-      setIsPickerShown(false);
-      setText("");
-      setImgs([]);
-      setVideo(null);
-      setGif(null);
       setPoll(null);
+      setIsPickerShown(false);
       setPostSaveInProgress(false);
-      setIsBtnCreatePostDisabled(true);
+      setIsPostValid(false);
+      textAreaRef.current!.style.height = "auto";
     } catch (err) {
       setPostSaveInProgress(false);
     }
@@ -183,6 +184,16 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     navigate("post-location");
   };
 
+  const onAddPostToThread = () => {
+    if (!isPickerShown) return;
+    if (isHomePage) navigate("/compose");
+  };
+
+  const onRemoveVideo = () => {
+    const videoUrl = newPost.video?.url;
+    dispatch(setNewPost({ ...newPost, video: null }));
+    setIsVideoRemoved(true);
+  };
   return (
     <section
       className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
@@ -206,19 +217,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
             placeholder={poll ? "Ask a question..." : "What's happening?"}
-            value={text}
+            value={newPost.text}
             onChange={handleTextChange}
             ref={textAreaRef}
           />
-          {imgs.length > 0 && <PostEditImg imgs={imgs} setImgs={setImgs} />}
-          {video && (
-            <PostEditVideo
-              video={video}
-              setVideo={setVideo}
-              setIsVideoRemoved={setIsVideoRemoved}
-            />
-          )}
-          {gif && <GifEdit gif={gif} setGif={setGif} />}
+          {newPost.imgs.length > 0 && <PostEditImg />}
+          {newPost.video && <PostEditVideo onRemoveVideo={onRemoveVideo} />}
+          {newPost.gif && <GifEdit />}
           {poll && <PollEdit poll={poll} setPoll={setPoll} />}
 
           <div className="btn-replires-location-container">
@@ -232,30 +237,20 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             )}
           </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <PostEditActionBtns
-              imgs={imgs}
-              setImgs={setImgs}
-              video={video}
-              setVideo={setVideo}
-              gif={gif}
-              setGif={setGif}
-              isPickerShown={isPickerShown}
-              poll={poll}
-              setPoll={setPoll}
-            />
+            <PostEditActions isPickerShown={isPickerShown} poll={poll} setPoll={setPoll} />
             <div className="secondary-action-container">
-              {text.length > 0 && (
+              {isPostValid && (
                 <div className="indicator-thread-btn-container">
-                  <TextIndicator textLength={text.length} />
+                  <TextIndicator textLength={newPost.text.length} />
                   <hr className="vertical" />
-                  <button className="btn-add-thread">
+                  <button className="btn-add-thread" onClick={onAddPostToThread}>
                     <AiOutlinePlus className="btn-add-thread-icon" />
                   </button>
                 </div>
               )}
               <BtnCreatePost
                 isLinkToNestedPage={false}
-                isDisabled={isBtnCreatePostDisabled}
+                isDisabled={!isPostValid}
                 onAddPost={onAddPost}
               />
             </div>

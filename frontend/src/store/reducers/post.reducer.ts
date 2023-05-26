@@ -12,7 +12,9 @@ const initialState: {
     audience: "everyone",
     repliersType: "everyone",
     isPublic: true,
-  } as NewPost,
+    imgs: [],
+    video: null,
+  } as unknown as NewPost,
 };
 
 export function postReducer(

@@ -4,14 +4,24 @@ import { Location } from "./location.interface";
 
 export type PostDocument = Post & Document;
 
+export type PostImg = {
+  url: string;
+  sortOrder: number;
+};
+
+export type NewPostImg = { url: string; isLoading: boolean; file: File };
+export type NewPostVideo = {
+  url: string;
+  isLoading: boolean;
+  file: File | null;
+};
+
 export interface NewPost {
   text: string;
-  imgs?: {
-    url: string;
-    sortOrder: number;
-  }[];
+  imgs: NewPostImg[];
+  video?: NewPostVideo | null;
   videoUrl?: string;
-  gif?: Gif;
+  gif: Gif | null;
   poll?: Poll;
   schedule?: Date;
   location?: Location;

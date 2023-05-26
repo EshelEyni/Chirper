@@ -1,7 +1,6 @@
-import mongoose, { Document, Query } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { gifSchema } from "../gif/gif.model";
 import { pollSchema } from "./poll.model";
-import { Post } from "../../../../shared/interfaces/post.interface";
 
 export interface IPost {
   commentSum: number;
@@ -65,6 +64,48 @@ const locationSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
+    audience: {
+      type: String,
+      required: true,
+    },
+    repliersType: {
+      type: String,
+      required: true,
+    },
+    isPublic: {
+      type: Boolean,
+      required: true,
+    },
+    isReply: {
+      type: Boolean,
+      default: false,
+    },
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    },
+    isRechirp: {
+      type: Boolean,
+      default: false,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    text: {
+      type: String,
+      trim: true,
+    },
+    imgs: {
+      type: [imgsSchema],
+      default: undefined,
+    },
+    videoUrl: String,
+    gif: gifSchema,
+    poll: pollSchema,
+    schedule: Date,
+    location: locationSchema,
     commentSum: {
       type: Number,
       default: 0,
@@ -81,35 +122,6 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    audience: {
-      type: String,
-      required: true,
-    },
-    repliersType: {
-      type: String,
-      required: true,
-    },
-    isPublic: {
-      type: Boolean,
-      required: true,
-    },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    text: {
-      type: String,
-      trim: true,
-    },
-    imgs: {
-      type: [imgsSchema],
-      default: undefined,
-    },
-    videoUrl: String,
-    gif: gifSchema,
-    poll: pollSchema,
-    schedule: Date,
-    location: locationSchema,
   },
   {
     toObject: {

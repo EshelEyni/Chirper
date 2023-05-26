@@ -6,13 +6,11 @@ import { FaRegHeart } from "react-icons/fa";
 import { utilService } from "../../services/util.service/utils.service";
 import { FaRegComment } from "react-icons/fa";
 
-interface PostPreviewActionBtnsProps {
+interface PostPreviewActionsProps {
   post: Post;
 }
 
-export const PostPreviewActionBtns: React.FC<PostPreviewActionBtnsProps> = ({
-  post,
-}) => {
+export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
   const iconClassName = "icon";
   const btns = [
     {
@@ -49,9 +47,7 @@ export const PostPreviewActionBtns: React.FC<PostPreviewActionBtnsProps> = ({
           <button key={idx} className={"btn-action " + name}>
             <div className="icon-container">{icon}</div>
             {name != "share" && (
-              <span className="count">
-                {count > 0 ? utilService.formatCount(count) : ""}
-              </span>
+              <span className="count">{count > 0 ? utilService.formatCount(count) : ""}</span>
             )}
           </button>
         );

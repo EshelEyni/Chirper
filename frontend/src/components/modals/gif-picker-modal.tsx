@@ -7,19 +7,13 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { GifSearchBar } from "../gif/gif-search-bar";
 import { ContentLoader } from "../loaders/content-loader";
-import { UIElement } from "../btns/post-edit-action-btns";
+import { UIElement } from "../btns/post-edit-actions";
 
 interface GifPickerProps {
-  gif: Gif | null;
-  setGif: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifPickerModal: React.FC<GifPickerProps> = ({
-  gif,
-  setGif,
-  onToggleElementVisibility,
-}) => {
+export const GifPickerModal: React.FC<GifPickerProps> = ({ onToggleElementVisibility }) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -55,11 +49,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
         </header>
 
         {gifs.length > 0 ? (
-          <GifList
-            setGif={setGif}
-            onToggleElementVisibility={onToggleElementVisibility}
-            gifs={gifs}
-          />
+          <GifList onToggleElementVisibility={onToggleElementVisibility} gifs={gifs} />
         ) : (
           <ContentLoader />
         )}

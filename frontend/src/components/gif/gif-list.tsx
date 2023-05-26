@@ -1,20 +1,26 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
-import { UIElement } from "../btns/post-edit-action-btns";
+import { UIElement } from "../btns/post-edit-actions";
+import { AppDispatch } from "../../store/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { setNewPost } from "../../store/actions/post.actions";
 
 interface GifListProps {
   gifs: Gif[];
-  setGif: (url: Gif | null) => void;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifList: React.FC<GifListProps> = ({ gifs, setGif, onToggleElementVisibility }) => {
+export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const { newPost }: { newPost: NewPost } = useSelector((state: RootState) => state.postModule);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const handleGifClick = (gif: Gif) => {
-    setGif({ url: gif.url, staticUrl: gif.staticUrl, description: gif.description });
+    dispatch(setNewPost({ ...newPost, gif }));
     onToggleElementVisibility("gifPicker");
   };
 

@@ -16,15 +16,7 @@ import { RootState } from "../../store/store";
 import { setNewPost } from "../../store/actions/post.actions";
 import { IoLocationSharp } from "react-icons/io5";
 
-interface PostEditActionBtnsProps {
-  imgs: { url: string; isLoading: boolean; file: File }[];
-  setImgs: (urls: { url: string; isLoading: boolean; file: File }[]) => void;
-  video: { url: string; isLoading: boolean; file: File | null } | null;
-  setVideo: React.Dispatch<
-    React.SetStateAction<{ url: string; isLoading: boolean; file: File | null } | null>
-  >;
-  gif: GifType | null;
-  setGif: (url: GifType | null) => void;
+interface PostEditActionsProps {
   isPickerShown: boolean;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
@@ -34,13 +26,7 @@ export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locatio
 
 type ElementVisibility = Record<UIElement, boolean>;
 
-export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
-  imgs,
-  setImgs,
-  video,
-  setVideo,
-  gif,
-  setGif,
+export const PostEditActions: React.FC<PostEditActionsProps> = ({
   isPickerShown,
   poll,
   setPoll,
@@ -61,9 +47,9 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (imgs.length < 3) setIsMultiple(true);
+    if (newPost.imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [imgs]);
+  }, [newPost.imgs]);
 
   const btns: {
     name: string;
@@ -76,12 +62,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       name: "img-upload",
       icon: <FiImage />,
       type: "file",
-      isDisabled: imgs.length === 4 || !!gif || !!poll || !!video,
+      isDisabled: newPost.imgs.length === 4 || !!newPost.gif || !!poll || !!newPost.video,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: imgs.length > 0 || !!gif || !!poll || !!video,
+      isDisabled: newPost.imgs.length > 0 || !!newPost.gif || !!poll || !!newPost.video,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -90,7 +76,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     {
       name: "poll",
       icon: <FiList />,
-      isDisabled: imgs.length > 0 || !!gif || !!poll || !!video || !!newPost.schedule,
+      isDisabled:
+        newPost.imgs.length > 0 || !!newPost.gif || !!poll || !!newPost.video || !!newPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         const defaultPoll: Poll = {
@@ -167,7 +154,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       return;
     }
 
-    const isImagesGreaterThan4 = [...files].length + imgs.length > 4;
+    const isImagesGreaterThan4 = [...files].length + newPost.imgs.length > 4;
 
     if (isImagesGreaterThan4) {
       dispatch(
@@ -219,7 +206,7 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
     });
 
   const onUploadImgs = async (files: File[]) => {
-    const newImgs = [...imgs];
+    const newImgs = [...newPost.imgs];
     for (let i = 0; i < files.length; i++) {
       try {
         const file = files[i];
@@ -227,11 +214,10 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
         if (file) {
           const currIdx = newImgs.length;
           newImgs.push({ url: "", isLoading: true, file });
-          setImgs([...newImgs]);
-
+          dispatch(setNewPost({ ...newPost, imgs: [...newImgs] }));
           const dataUrl = await readAsDataURL(file);
           newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-          setImgs([...newImgs]);
+          dispatch(setNewPost({ ...newPost, imgs: [...newImgs] }));
         }
       } catch (error) {
         console.error("Error reading file:", error);
@@ -241,9 +227,9 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
 
   const onUploadVideo = async (file: File) => {
     try {
-      setVideo({ url: "", isLoading: true, file });
+      dispatch(setNewPost({ ...newPost, video: { url: "", isLoading: true, file } }));
       const dataUrl = await readAsDataURL(file);
-      setVideo({ url: dataUrl, isLoading: false, file });
+      dispatch(setNewPost({ ...newPost, video: { url: dataUrl, isLoading: false, file } }));
     } catch (error) {
       console.error("Error reading file:", error);
     }
@@ -295,18 +281,12 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
                   if (fileRef.current && !btn.isDisabled && isPickerShown) fileRef.current.click();
                 }}
               >
-                <div
-                  className="post-edit-action-icon-container"
-                  // style={{ pointerEvents: isPickerShown ? "all" : "none" }}
-                  // htmlFor={btn.name}
-                >
-                  {btn.icon}
-                </div>
+                <div className="post-edit-action-icon-container">{btn.icon}</div>
                 <input
                   type={btn.type}
                   accept={"image/*,video/*"}
                   multiple={isMultiple}
-                  disabled={imgs.length === 4 || !isPickerShown}
+                  disabled={newPost.imgs.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadFile}
                   style={{ display: "none" }}
@@ -351,8 +331,8 @@ export const PostEditActionBtns: React.FC<PostEditActionBtnsProps> = ({
       </div>
       {elementVisibility.gifPicker && (
         <GifPickerModal
-          gif={gif}
-          setGif={setGif}
+          // gif={gif}
+          // setGif={setGif}
           onToggleElementVisibility={onToggleElementVisibility}
         />
       )}

@@ -1,7 +1,7 @@
 import { Post } from "../../../../shared/interfaces/post.interface";
 import { utilService } from "../../services/util.service/utils.service";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
-import { PostPreviewActionBtns } from "../btns/post-preview-action-brns";
+import { PostPreviewActions } from "../btns/post-preview-actions";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
 import { GifDisplay } from "../gif/gif-display";
@@ -99,7 +99,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           )}
         </div>
         <footer className="flex">
-          <PostPreviewActionBtns post={post} />
+          <PostPreviewActions post={post} />
         </footer>
       </div>
     </article>

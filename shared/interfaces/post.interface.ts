@@ -43,6 +43,7 @@ export type BasicPost = {
 
 export interface NewPost extends BasicPost {
   imgs: NewPostImg[];
+  userId?: string;
 }
 
 export interface Post extends BasicPost {

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import gifService from "./gif.service";
 import { asyncErrorCatcher, AppError } from "../../services/error.service";
+import factory from "../../services/factory.service";
+import { GifCategoryModel, GifModel } from "./gif.model";
 
 const categories = [
   "Agree",
@@ -49,31 +51,8 @@ const categories = [
 ];
 const categorySet = new Set(categories);
 
-const getGifCategories = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const gifHeaders = await gifService.getGifCategories();
-
-  res.status(200).send({
-    status: "success",
-    requestedAt: new Date().toISOString(),
-    results: gifHeaders.length,
-    data: gifHeaders,
-  });
-});
-
-const getGifByCategory = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { category } = req.params;
-  if (!category) throw new AppError("No category provided", 400);
-  if (!categorySet.has(category)) throw new AppError("Invalid category provided", 400);
-
-  const gifs = await gifService.getGifByCategory(category);
-
-  res.status(200).send({
-    status: "success",
-    requestedAt: new Date().toISOString(),
-    results: gifs.length,
-    data: gifs,
-  });
-});
+const getGifCategories = factory.getAll(GifCategoryModel);
+const getGifByCategory = factory.getAll(GifModel);
 
 const getGifsBySearchTerm = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {

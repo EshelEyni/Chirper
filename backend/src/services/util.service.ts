@@ -14,6 +14,7 @@ export interface QueryString {
 type AnyObject = { [key: string]: any };
 
 const filterObj = (obj: AnyObject, ...allowedFields: string[]): AnyObject => {
+  if (allowedFields.length === 0) return obj;
   return Object.keys(obj).reduce((newObj: AnyObject, key: string) => {
     if (allowedFields.includes(key)) {
       newObj[key] = obj[key];

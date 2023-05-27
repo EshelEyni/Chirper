@@ -98,4 +98,13 @@ const asyncErrorCatcher = (fn: AsyncExpressMiddleware) => {
   };
 };
 
-export { AppError, errorHandler, asyncErrorCatcher };
+const validatePatchRequestBody = (body: object) => {
+  if (Object.keys(body).length === 0) {
+    throw new AppError(
+      "No data received in the request. Please provide some properties to update.",
+      400
+    );
+  }
+};
+
+export { AppError, errorHandler, asyncErrorCatcher, validatePatchRequestBody };

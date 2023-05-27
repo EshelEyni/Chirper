@@ -16,27 +16,22 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .paginate();
 
   let posts = (await features.getQuery().populate(_populateUser()).exec()) as unknown as Post[];
-
   if (posts.length > 0) {
     await _populateUserPollVotes(...(posts as unknown as IPost[]));
   }
   posts = posts.filter(post => post.user !== null);
-
   return posts as unknown as Post[];
 }
 
 async function getById(postId: string): Promise<IPost | null> {
   const post = await PostModel.findById(postId).populate(_populateUser()).exec();
-
   await _populateUserPollVotes(post as unknown as IPost);
-
   return post as unknown as IPost;
 }
 
 async function add(post: NewPost): Promise<Post> {
   const savedPost = await new PostModel(post).save();
   const populatedPost = await PostModel.findById(savedPost.id).populate(_populateUser()).exec();
-
   return populatedPost as unknown as Post;
 }
 
@@ -44,8 +39,9 @@ async function update(id: string, post: Post): Promise<Post> {
   const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
     new: true,
     runValidators: true,
-  });
-
+  })
+    .populate(_populateUser())
+    .exec();
   return updatedPost as unknown as Post;
 }
 

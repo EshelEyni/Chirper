@@ -213,6 +213,7 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   }
   next();
 });
+
 postSchema.virtual("user", {
   ref: "User",
   localField: "userId",

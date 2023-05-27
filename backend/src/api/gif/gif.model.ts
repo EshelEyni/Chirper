@@ -2,10 +2,20 @@ import mongoose from "mongoose";
 
 const gifSchema = new mongoose.Schema(
   {
-    url: String,
-    staticUrl: String,
-    description: String,
+    url: {
+      type: String,
+      required: [true, "A gif must have a url"],
+    },
+    staticUrl: {
+      type: String,
+      required: [true, "A gif must have a static url"],
+    },
+    description: {
+      type: String,
+      required: [true, "A gif must have a description"],
+    },
     sortOrder: Number,
+    category: String,
   },
   {
     toObject: {
@@ -25,6 +35,8 @@ const gifSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+gifSchema.index({ category: 1 });
 
 const gifCategorySchema = new mongoose.Schema(
   {

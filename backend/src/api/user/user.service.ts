@@ -4,7 +4,6 @@ import { APIFeatures, filterObj } from "../../services/util.service";
 
 async function query(): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), {}).filter().sort().limitFields().paginate();
-
   const users = await features.getQuery().exec();
   return users as unknown as User[];
 }

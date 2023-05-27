@@ -5,7 +5,7 @@ import { createClient } from "@google/maps";
 import { Location } from "../../../../shared/interfaces/location.interface";
 
 const googleMapsClient = createClient({
-  key: config.googleApiKey,
+  key: config.googleApiKey!,
   Promise: Promise,
 });
 

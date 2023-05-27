@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
-import { QueryString } from "../../services/util.service.js";
-import { NewPost, Post } from "../../../../shared/interfaces/post.interface.js";
-
-import { logger } from "../../services/logger.service";
+import { QueryString } from "../../services/util.service";
+import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import postService from "./post.service";
-import { asyncErrorCatcher, AppError } from "../../services/error.service";
+import {
+  asyncErrorCatcher,
+  AppError,
+  validatePatchRequestBody,
+} from "../../services/error.service";
+import factory from "../../services/factory.service";
+import { PostModel } from "./post.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -20,7 +24,6 @@ const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<
 
 const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  if (!id) throw new AppError("No post id provided", 400);
   const post = await postService.getById(id);
   if (!post) throw new AppError(`Post with id ${id} not found`, 404);
 
@@ -44,11 +47,8 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
 
 const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  if (!id) throw new AppError("No post id provided", 400);
   const postToUpdate = req.body;
-  const isPostToUpdateEmpty = Object.keys(postToUpdate).length === 0;
-  if (isPostToUpdateEmpty) throw new AppError("No post provided", 400);
-
+  validatePatchRequestBody(postToUpdate);
   const updatedPost = await postService.update(id, postToUpdate);
   if (!updatedPost) throw new AppError(`Post with id ${id} not found`, 404);
   res.status(200).send({
@@ -57,17 +57,7 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-const removePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  if (!id) throw new AppError("No post id provided", 400);
-  const removedPost = await postService.remove(id);
-  if (!removedPost) throw new AppError(`Post with id ${id} not found`, 404);
-  logger.warn(`Post with id ${id} removed`);
-  res.status(204).send({
-    status: "success",
-    data: id,
-  });
-});
+const removePost = factory.deleteOne(PostModel);
 
 const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { postId, optionIdx } = req.body;

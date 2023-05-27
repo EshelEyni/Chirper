@@ -78,7 +78,7 @@ const userSchema = new Schema(
         validator: function (v: string): boolean {
           return /\S+@\S+\.\S+/.test(v);
         },
-        message: "email must be valid",
+        message: "Please provide a valid email",
       },
     },
     isAdmin: { type: Boolean, default: false },

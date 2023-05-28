@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC } from "react";
 import { BtnRemoveContent } from "../btns/btn-remove-content";
 import { VideoPlayer } from "../video/video-player";
 import { ContentLoader } from "../loaders/content-loader";
@@ -6,28 +6,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
-import { setNewPost } from "../../store/actions/post.actions";
 import { NewPostType } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 type PostEditVideoProps = {
+  currNewPost: NewPost;
   setIsVideoRemoved: (isVideoRemoved: boolean) => void;
 };
 
-export const PostEditVideo: FC<PostEditVideoProps> = ({ setIsVideoRemoved }) => {
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
+export const PostEditVideo: FC<PostEditVideoProps> = ({ currNewPost, setIsVideoRemoved }) => {
+  const { newPostType }: { newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule.newPostState
   );
 
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
   const dispatch: AppDispatch = useDispatch();
 
   const onRemoveVideo = () => {
-    dispatch(setNewPost({ ...currPost, video: null }, newPostType));
+    dispatch(updateCurrNewPost({ ...currNewPost, video: null }, newPostType));
     setIsVideoRemoved(true);
   };
 
@@ -35,11 +30,11 @@ export const PostEditVideo: FC<PostEditVideoProps> = ({ setIsVideoRemoved }) => 
     <section className="post-edit-video">
       <div className="post-edit-video-player-container">
         <BtnRemoveContent onRemoveContent={onRemoveVideo} />
-        {currPost.video?.isLoading ? (
+        {currNewPost.video?.isLoading ? (
           <ContentLoader />
         ) : (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          <VideoPlayer videoUrl={currPost.video!.url} />
+          <VideoPlayer videoUrl={currNewPost.video!.url} />
         )}
       </div>
 

@@ -1,7 +1,7 @@
 import { Post } from "../../../../shared/interfaces/post.interface";
 import { utilService } from "../../services/util.service/utils.service";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
-import { PostPreviewActions } from "../btns/post-preview-actions";
+import { PostPreviewActions } from "./post-preview-actions";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
 import { GifDisplay } from "../gif/gif-display";

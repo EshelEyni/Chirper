@@ -95,35 +95,70 @@ export function updatePost(
   };
 }
 
-export function setNewPost(
+export function setNewPosts(
+  newPosts: NewPost[],
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      if (newPostType === "home-page") {
+        dispatch({ type: "SET_HOME_PAGE_NEW_POSTS", newPosts });
+      } else {
+        dispatch({ type: "SET_SIDE_BAR_NEW_POSTS", newPosts });
+      }
+    } catch (err) {
+      console.log("PostActions: err in setNewPosts", err);
+    }
+  };
+}
+
+export function addNewPost(
+  post: NewPost,
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      if (newPostType === "home-page") {
+        dispatch({ type: "ADD_HOME_PAGE_NEW_POST", post });
+      } else {
+        dispatch({ type: "ADD_SIDE_BAR_NEW_POST", post });
+      }
+    } catch (err) {
+      console.log("PostActions: err in addNewPost", err);
+    }
+  };
+}
+
+export function removeNewPost(
+  postId: string,
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      if (newPostType === "home-page") {
+        dispatch({ type: "REMOVE_HOME_PAGE_NEW_POST", postId });
+      } else {
+        dispatch({ type: "REMOVE_SIDE_BAR_NEW_POST", postId });
+      }
+    } catch (err) {
+      console.log("PostActions: err in removeNewPost", err);
+    }
+  };
+}
+
+export function updateCurrNewPost(
   newPost: NewPost,
   newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      if (newPostType === "post") {
-        dispatch({ type: "SET_NEW_POST", newPost });
+      if (newPostType === "home-page") {
+        dispatch({ type: "UPDATE_HOME_PAGE_NEW_POST", newPost });
       } else {
-        dispatch({ type: "SET_SIDEBAR_NEW_POST", newPost });
+        dispatch({ type: "UPDATE_SIDE_BAR_NEW_POST", newPost });
       }
     } catch (err) {
-      console.log("PostActions: err in setNewPost", err);
-    }
-  };
-}
-
-export function clearNewPost(
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "post") {
-        dispatch({ type: "CLEAR_NEW_POST" });
-      } else {
-        dispatch({ type: "CLEAR_SIDEBAR_NEW_POST" });
-      }
-    } catch (err) {
-      console.log("PostActions: err in clearNewPost", err);
+      console.log("PostActions: err in updateCurrNewPost", err);
     }
   };
 }

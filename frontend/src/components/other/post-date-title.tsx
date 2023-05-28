@@ -1,6 +1,7 @@
 import { AiOutlineSchedule } from "react-icons/ai";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
+
 interface PostDateTitleProps {
   date: Date;
   isLink?: boolean;

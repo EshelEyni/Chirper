@@ -37,7 +37,7 @@ function formatCount(count: number): string {
   }
 }
 
-function makeKey(length = 5): string {
+function makeId(length = 5): string {
   let txt = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < length; i++) {
@@ -87,7 +87,7 @@ function handleServerResponse<T>(response: JsendResponse): T {
 export const utilService = {
   formatTime,
   formatCount,
-  makeKey,
+  makeId,
   debounce,
   getTimeZone,
   getDaysInMonth,

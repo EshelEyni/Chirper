@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { BtnCreatePost } from "../btns/btn-create-post";
-import { PostEditActions } from "../btns/post-edit-actions";
+import { PostEditActions } from "./post-edit-actions";
 import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost, NewPostImg } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
-import { addPost, clearNewPost, setNewPost } from "../../store/actions/post.actions";
+import { addPost, setNewPosts, updateCurrNewPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
 import { utilService } from "../../services/util.service/utils.service";
-import { NewPostType } from "../../store/reducers/post.reducer";
+import { NewPostState } from "../../store/reducers/post.reducer";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -34,38 +34,38 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
+  const { newPostState }: { newPostState: NewPostState } = useSelector(
     (state: RootState) => state.postModule
   );
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
+  const { newPostType } = newPostState;
+  const newPostTypeRef = useRef(newPostState.newPostType);
+
+  const getCurrPost = (): NewPost => {
+    const { homePage, sideBar } = newPostState;
+    if (newPostTypeRef.current === "home-page") return homePage.posts[homePage.currPostIdx];
+    else return sideBar.posts[sideBar.currPostIdx];
+  };
+  const [currNewPost, setCurrNewPost] = useState<NewPost>(getCurrPost());
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [isPostValid, setIsPostValid] = useState<boolean>(true);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
   const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
   const [isComposeMounted, setIsComposeMounted] = useState<boolean>(false);
-  const [inputTextValue, setInputTextValue] = useState(currPost.text);
+  const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
 
   useEffect(() => {
-    const isValid = checkIfPostValid(currPost);
+    const isValid = checkIfPostValid(currNewPost);
     if (isValid !== isPostValid) {
       setIsPostValid(isValid);
     }
-  }, [
-    inputTextValue.length,
-    currPost.imgs.length,
-    currPost.gif,
-    currPost.video,
-    currPost.poll,
-    currPost.poll?.options,
-    isComposeMounted,
-  ]);
+  }, [inputTextValue.length, currNewPost, isComposeMounted]);
 
-  const checkIfPostValid = (currPost: NewPost): boolean => {
+  useEffect(() => {
+    setCurrNewPost(getCurrPost());
+  }, [newPostState]);
+
+  const checkIfPostValid = (currPost: NewPost | null): boolean => {
+    if (!currPost) return false;
     if (isComposeMounted) return false;
     if (currPost.poll) {
       return (
@@ -98,18 +98,16 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       }
 
       if (youtubeURL && youtubeURL !== currPost.video?.url && !isVideoRemoved) {
-        dispatch(
-          setNewPost(
-            {
-              ...currPost,
-              text,
-              video: { url: youtubeURL, isLoading: false, file: null },
-            },
-            newPostType
-          )
-        );
+        const newPost = {
+          ...currPost,
+          text,
+          video: { url: youtubeURL, isLoading: false, file: null },
+        };
+
+        dispatch(updateCurrNewPost(newPost, newPostType));
       } else if (currPost.video) {
-        dispatch(setNewPost({ ...currPost, text, video: null }, newPostType));
+        const newPost = { ...currPost, text, video: null };
+        dispatch(updateCurrNewPost(newPost, newPostType));
       }
     }, 500)
   );
@@ -117,42 +115,46 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setInputTextValue(value);
-    detectURL.current(currPost, value, isVideoRemoved);
+    detectURL.current(currNewPost, value, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
 
   const handleTextBlur = () => {
-    dispatch(setNewPost({ ...currPost, text: inputTextValue }, newPostType));
+    if (!currNewPost) return;
+    const newPost = { ...currNewPost, text: inputTextValue };
+    dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   const onAddPost = async () => {
+    if (!currNewPost) return;
     try {
       setPostSaveInProgress(true);
       if (!loggedinUser) return;
 
-      if (currPost.imgs.length > 0) {
-        const prms = currPost.imgs.map(async (img, idx) => {
+      if (currNewPost.imgs.length > 0) {
+        const prms = currNewPost.imgs.map(async (img, idx) => {
           const currImgUrl = await uploadFileToCloudinary(img.file, "image");
           return { url: currImgUrl, sortOrder: idx };
         });
         const savedImgUrl = await Promise.all(prms);
-        currPost.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
+        currNewPost.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
       }
 
-      if (currPost.video) {
-        if (currPost.video.file) {
-          const videoUrl = await uploadFileToCloudinary(currPost.video.file, "video");
-          currPost.videoUrl = videoUrl;
+      if (currNewPost.video) {
+        if (currNewPost.video.file) {
+          const videoUrl = await uploadFileToCloudinary(currNewPost.video.file, "video");
+          currNewPost.videoUrl = videoUrl;
         } else {
-          currPost.videoUrl = currPost.video.url;
+          currNewPost.videoUrl = currNewPost.video.url;
         }
-        delete currPost.video;
+        delete currNewPost.video;
       }
 
-      await dispatch(addPost(currPost));
+      await dispatch(addPost(currNewPost));
 
-      dispatch(clearNewPost(newPostType));
+      dispatch(setNewPosts([], newPostType));
+      setInputTextValue("");
       setIsPickerShown(false);
       setPostSaveInProgress(false);
       setIsPostValid(false);
@@ -172,14 +174,18 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const onGoToLocationPage = () => {
     if (!isPickerShown) return;
-    navigate("post-location");
+    navigate("/post-location");
   };
 
   const onAddPostToThread = () => {
     if (!isPickerShown) return;
-    setIsComposeMounted(true);
-    setIsPickerShown(false);
-    if (isHomePage) navigate("/compose");
+    if (isHomePage) {
+      setIsComposeMounted(true);
+      setIsPickerShown(false);
+      navigate("/compose");
+    } else {
+      setIsPickerShown(false);
+    }
   };
 
   return (
@@ -194,37 +200,45 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
 
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isPickerShown && <BtnToggleAudience />}
-          {currPost.schedule && <PostDateTitle date={currPost.schedule} isLink={isPickerShown} />}
+          {isPickerShown && <BtnToggleAudience currNewPost={currNewPost} />}
+          {currNewPost?.schedule && (
+            <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
+          )}
           <textarea
             className={
               "post-edit-text-area" +
               (isHomePage ? " home-page-height" : "") +
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
-            placeholder={currPost.poll ? "Ask a question..." : "What's happening?"}
+            placeholder={currNewPost?.poll ? "Ask a question..." : "What's happening?"}
             value={!isComposeMounted ? inputTextValue : ""}
             onChange={handleTextChange}
             onBlur={handleTextBlur}
             ref={textAreaRef}
           />
-          {currPost.imgs.length > 0 && !isComposeMounted && <PostEditImg />}
-          {currPost.video && !isComposeMounted && (
-            <PostEditVideo setIsVideoRemoved={setIsVideoRemoved} />
+          {currNewPost && currNewPost.imgs.length > 0 && !isComposeMounted && (
+            <PostEditImg currNewPost={currNewPost} />
           )}
-          {currPost.gif && !isComposeMounted && <GifEdit />}
-          {currPost.poll && !isComposeMounted && <PollEdit />}
-
+          {currNewPost?.video && !isComposeMounted && (
+            <PostEditVideo currNewPost={currNewPost} setIsVideoRemoved={setIsVideoRemoved} />
+          )}
+          {currNewPost?.gif && !isComposeMounted && <GifEdit currNewPost={currNewPost} />}
+          {currNewPost?.poll && !isComposeMounted && <PollEdit currNewPost={currNewPost} />}
           <div className="btn-replires-location-container">
-            {isPickerShown && <BtnToggleRepliers />}
-            {currPost.location && !isComposeMounted && (
+            {isPickerShown && <BtnToggleRepliers currNewPost={currNewPost} />}
+            {currNewPost?.location && !isComposeMounted && (
               <div className="post-edit-location-title" onClick={onGoToLocationPage}>
-                <IoLocationSharp /> {currPost.location.name}
+                <IoLocationSharp /> {currNewPost.location.name}
               </div>
             )}
           </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <PostEditActions isPickerShown={isPickerShown} />
+            <PostEditActions
+              currNewPost={currNewPost}
+              isPickerShown={isPickerShown}
+              inputTextValue={inputTextValue}
+              setInputTextValue={setInputTextValue}
+            />
             <div className="secondary-action-container">
               {inputTextValue.length > 0 && !isComposeMounted && (
                 <div className="indicator-thread-btn-container">

@@ -4,56 +4,67 @@ import { AppDispatch } from "../../store/types";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, Fragment } from "react";
 import { BtnClose } from "../../components/btns/btn-close";
-import { setNewPost } from "../../store/actions/post.actions";
 import { Location } from "../../../../shared/interfaces/location.interface";
 import { LocationSearchBar } from "../../components/location/location-search-bar";
 import { LocationList } from "../../components/location/location-list";
 import { ContentLoader } from "../../components/loaders/content-loader";
 import { locationService } from "../../services/location.service";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { NewPostState } from "../../store/reducers/post.reducer";
 
 export const PostLocation = () => {
-  const { newPost } = useSelector((state: RootState) => state.postModule);
+  const { newPostState }: { newPostState: NewPostState } = useSelector(
+    (state: RootState) => state.postModule
+  );
+  const { newPostType } = newPostState;
+  const currNewPost =
+    newPostType === "home-page"
+      ? newPostState.homePage.posts[newPostState.homePage.currPostIdx]
+      : newPostState.sideBar.posts[newPostState.sideBar.currPostIdx];
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isNoResults, setisNoResults] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchLocations();
-  }, []);
+    if (!currNewPost) return;
+    if (currNewPost) {
+      fetchLocations();
+    }
+  }, [currNewPost]);
 
   const onGoBack = () => {
-    navigate("");
+    navigate("/");
   };
 
   const onConfirmLocation = () => {
-    navigate("");
-    if (!selectedLocation) return;
-    dispatch(setNewPost({ ...newPost, location: selectedLocation }));
+    navigate("/");
+    if (!selectedLocation || !currNewPost) return;
+    dispatch(updateCurrNewPost({ ...currNewPost, location: selectedLocation }, newPostType));
   };
 
   const onClearLocation = () => {
-    navigate("");
+    navigate("/");
+    if (!currNewPost) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { location, ...postWithOutLocation } = newPost;
-    dispatch(setNewPost(postWithOutLocation));
+    const { location, ...postWithOutLocation } = currNewPost;
+    dispatch(updateCurrNewPost(postWithOutLocation, newPostType));
   };
 
   const fetchLocations = async () => {
     const locations = await locationService.getUserDefaultLocations();
     if (!locations) return;
-    if (newPost.location) {
+    if (currNewPost?.location) {
       const isLocationExist = locations.find((location: Location) => {
-        return location.placeId === newPost?.location?.placeId;
+        return location.placeId === currNewPost?.location?.placeId;
       });
       if (!isLocationExist) {
-        locations.unshift(newPost.location);
+        locations.unshift(currNewPost.location);
       }
       setLocations(locations);
-      setSelectedLocation(newPost.location);
+      setSelectedLocation(currNewPost.location);
     } else {
       setLocations(locations);
       setSelectedLocation(locations[0]);
@@ -73,7 +84,7 @@ export const PostLocation = () => {
             <h3 className="post-location-title">Tag location</h3>
           </div>
           <div className="post-location-header-btns-container">
-            {newPost.location && (
+            {currNewPost?.location && (
               <button className="btn-clear-location" onClick={onClearLocation}>
                 <span>Remove</span>
               </button>
@@ -93,8 +104,9 @@ export const PostLocation = () => {
         />
         <main className="post-location-main-container">
           {isLoading && <ContentLoader />}
-          {!isLoading && !isNoResults && (
+          {!isLoading && !isNoResults && currNewPost && (
             <LocationList
+              currNewPost={currNewPost}
               locations={locations}
               selectedLocation={selectedLocation}
               setSelectedLocation={setSelectedLocation}

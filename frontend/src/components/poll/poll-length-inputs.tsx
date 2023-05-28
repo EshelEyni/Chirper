@@ -1,25 +1,22 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect } from "react";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { CustomSelect } from "../other/custom-select";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
 import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { setNewPost } from "../../store/actions/post.actions";
 import { NewPostType } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
 
-export const PollLengthInputs: FC = () => {
+type PollLengthInputsProps = {
+  currNewPost: NewPost;
+};
+
+export const PollLengthInputs: FC<PollLengthInputsProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
+  const { newPostType }: { newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule.newPostState
   );
-
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
 
   const handleValueChange = (inputType: string, value: number | string) => {
     const setPollLength = (inputType: string, value: number | string) => {
@@ -31,24 +28,19 @@ export const PollLengthInputs: FC = () => {
         };
       } else {
         return {
-          ...currPost.poll!.length,
+          ...currNewPost.poll!.length,
           [inputType]: value,
         };
       }
     };
-
-    dispatch(
-      setNewPost(
-        {
-          ...currPost,
-          poll: {
-            ...currPost.poll!,
-            length: setPollLength(inputType, value),
-          },
-        },
-        newPostType
-      )
-    );
+    const newPost = {
+      ...currNewPost,
+      poll: {
+        ...currNewPost.poll!,
+        length: setPollLength(inputType, value),
+      },
+    };
+    dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   useEffect(() => {
@@ -57,21 +49,21 @@ export const PollLengthInputs: FC = () => {
         if (input.type === "hours" || input.type === "minutes") {
           return {
             ...input,
-            isDisabled: currPost.poll!.length.days === 7,
-            value: currPost.poll!.length.days === 7 ? 0 : input.value,
+            isDisabled: currNewPost.poll!.length.days === 7,
+            value: currNewPost.poll!.length.days === 7 ? 0 : input.value,
           };
         }
         return input;
       });
     });
-  }, [currPost.poll!.length.days]);
+  }, [currNewPost.poll!.length.days]);
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(
     [
       {
         label: "Days",
         type: "days",
-        value: currPost.poll!.length.days,
+        value: currNewPost.poll!.length.days,
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
@@ -80,8 +72,8 @@ export const PollLengthInputs: FC = () => {
       {
         label: "Hours",
         type: "hours",
-        value: currPost.poll!.length.hours,
-        isDisabled: currPost.poll!.length.days === 7,
+        value: currNewPost.poll!.length.hours,
+        isDisabled: currNewPost.poll!.length.days === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(24).keys()],
@@ -89,8 +81,8 @@ export const PollLengthInputs: FC = () => {
       {
         label: "Minutes",
         type: "minutes",
-        value: currPost.poll!.length.minutes,
-        isDisabled: currPost.poll!.length.days === 7,
+        value: currNewPost.poll!.length.minutes,
+        isDisabled: currNewPost.poll!.length.days === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(60).keys()],

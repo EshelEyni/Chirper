@@ -11,10 +11,13 @@ import { ProfileDetails } from "./pages/main-pages/profile-details";
 import { ListsPage } from "./pages/main-pages/lists-page";
 import { LoginPage } from "./pages/main-pages/login";
 import { SignupPage } from "./pages/main-pages/signup";
+import { PostLocation } from "./pages/secondary-pages/post-location";
+import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
 
 interface Route {
   path: string;
   component: () => JSX.Element;
+  onlyHomePage?: boolean;
 }
 
 const routes: Route[] = [
@@ -51,14 +54,6 @@ const routes: Route[] = [
     component: AnalyticsPage,
   },
   {
-    path: "post-schedule",
-    component: HomePage,
-  },
-  {
-    path: "post-location",
-    component: HomePage,
-  },
-  {
     path: "login",
     component: LoginPage,
   },
@@ -69,6 +64,16 @@ const routes: Route[] = [
 ];
 
 const nestedRoutes: Route[] = [
+  {
+    path: "post-schedule",
+    component: PostSchedule,
+    onlyHomePage: true,
+  },
+  {
+    path: "post-location",
+    component: PostLocation,
+    onlyHomePage: true,
+  },
   {
     path: "compose",
     component: ComposePage,

@@ -1,23 +1,13 @@
-import { FC, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { RepliersPickerModal } from "../modals/repliers-picker-modal";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { FaGlobeAmericas } from "react-icons/fa";
-import { NewPostType } from "../../store/reducers/post.reducer";
 
-export const BtnToggleRepliers: FC = () => {
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
-  );
+type BtnToggleRepliersProps = {
+  currNewPost: NewPost;
+};
 
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
-
+export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) => {
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
   const toggleModal = () => {
     setIsRepliersOpen(!isRepliersOpen);
@@ -33,10 +23,12 @@ export const BtnToggleRepliers: FC = () => {
     <div className="btn-toggle-repliers-container">
       <button className="btn-toggle-repliers" onClick={() => toggleModal()}>
         <FaGlobeAmericas />
-        <span>{setTitle(currPost.repliersType)}</span>
+        <span>{setTitle(currNewPost.repliersType)}</span>
         can reply
       </button>
-      {isRepliersOpen && <RepliersPickerModal toggleModal={toggleModal} />}
+      {isRepliersOpen && (
+        <RepliersPickerModal currNewPost={currNewPost} toggleModal={toggleModal} />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { useInView } from "react-intersection-observer";
 import { GifDescriptionModal } from "./gif-description-details";

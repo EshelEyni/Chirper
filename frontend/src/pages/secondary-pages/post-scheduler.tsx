@@ -6,9 +6,10 @@ import { CustomSelect } from "../../components/other/custom-select";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { setNewPost } from "../../store/actions/post.actions";
 import { AppDispatch } from "../../store/types";
 import { utilService } from "../../services/util.service/utils.service";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { NewPostState } from "../../store/reducers/post.reducer";
 
 type SetterFunctions = {
   month: (date: Date) => Date;
@@ -20,46 +21,54 @@ type SetterFunctions = {
 };
 
 export const PostSchedule = () => {
-  const { newPost } = useSelector((state: RootState) => state.postModule);
+  const { newPostState }: { newPostState: NewPostState } = useSelector(
+    (state: RootState) => state.postModule
+  );
+  const { newPostType } = newPostState;
+  const currNewPost =
+    newPostType === "home-page"
+      ? newPostState.homePage.posts[newPostState.homePage.currPostIdx]
+      : newPostState.sideBar.posts[newPostState.sideBar.currPostIdx];
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
   const getDefaultValues = (type: string) => {
+    const defaultNewDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
     switch (type) {
       case "schedule":
-        return newPost.schedule
-          ? new Date(newPost.schedule)
-          : new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+        return currNewPost.schedule ? new Date(currNewPost.schedule) : defaultNewDate;
 
       case "month":
-        return newPost.schedule
+        return currNewPost.schedule
           ? new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-              new Date(0, newPost.schedule.getMonth())
+              new Date(0, currNewPost.schedule.getMonth())
             )
           : new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-              new Date(0, new Date().getMonth())
+              new Date(0, defaultNewDate.getMonth())
             );
 
       case "day":
-        return newPost.schedule ? newPost.schedule.getDate() : new Date().getDate() + 5;
+        return currNewPost.schedule ? currNewPost.schedule.getDate() : defaultNewDate.getDate();
 
       case "year":
-        return newPost.schedule ? newPost.schedule.getFullYear() : new Date().getFullYear();
+        return currNewPost.schedule
+          ? currNewPost.schedule.getFullYear()
+          : defaultNewDate.getFullYear();
 
       case "hour":
-        return newPost.schedule ? newPost.schedule.getHours() : new Date().getHours();
+        return currNewPost.schedule ? currNewPost.schedule.getHours() : defaultNewDate.getHours();
 
       case "minute":
-        return newPost.schedule ? newPost.schedule.getMinutes() : new Date().getMinutes();
+        return currNewPost.schedule
+          ? currNewPost.schedule.getMinutes()
+          : defaultNewDate.getMinutes();
 
-      case "amPm":
-        return newPost.schedule
-          ? new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: true }).format(
-              new Date(0, 0, 0, newPost.schedule.getHours())
-            )
-          : new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: true }).format(
-              new Date(0, 0, 0, new Date().getHours())
-            );
+      case "amPm": {
+        const hour = currNewPost.schedule
+          ? currNewPost.schedule.getHours()
+          : defaultNewDate.getHours();
+        return hour >= 12 ? "PM" : "AM";
+      }
     }
   };
 
@@ -78,7 +87,6 @@ export const PostSchedule = () => {
   const getErrorLocation = (newDate: Date): "time" | "date" => {
     const newMonth = newDate.getMonth();
     const newDay = newDate.getDate();
-
     const currDate = new Date();
     const currMonth = currDate.getMonth();
     const currDay = currDate.getDate();
@@ -231,19 +239,20 @@ export const PostSchedule = () => {
   }, [schedule]);
 
   const onGoBack = () => {
-    navigate("");
+    navigate("/");
   };
 
   const onConfirmSchedule = () => {
-    navigate("");
-    dispatch(setNewPost({ ...newPost, schedule }));
+    navigate("/");
+    const newPost = { ...currNewPost, schedule };
+    dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   const onClearSchedule = () => {
-    navigate("");
+    navigate("/");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { schedule, ...postWithOutSchedule } = newPost;
-    dispatch(setNewPost(postWithOutSchedule));
+    const { schedule, ...postWithOutSchedule } = currNewPost;
+    dispatch(updateCurrNewPost(postWithOutSchedule, newPostType));
   };
 
   const onGoToUnsentPostsPage = () => {
@@ -262,7 +271,7 @@ export const PostSchedule = () => {
             <h3 className="post-schedule-title">Schedule</h3>
           </div>
           <div className="post-schedule-header-btns-container">
-            {newPost.schedule && (
+            {currNewPost.schedule && (
               <button className="btn-clear-schedule" onClick={onClearSchedule}>
                 <span>Clear</span>
               </button>
@@ -272,12 +281,14 @@ export const PostSchedule = () => {
               onClick={onConfirmSchedule}
               disabled={isDateInvalid.status}
             >
-              {!newPost.schedule ? "Confirm" : "Update"}
+              {!currNewPost.schedule ? "Confirm" : "Update"}
             </button>
           </div>
         </header>
         <main className="post-schedule-main-container">
-          {!isDateInvalid.status && <PostDateTitle date={schedule ? schedule : new Date()} />}
+          {!isDateInvalid.status && currNewPost.schedule && (
+            <PostDateTitle date={currNewPost.schedule} />
+          )}
 
           <div className="date-inputs">
             <h3 className="date-inputs-title">Date</h3>

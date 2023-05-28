@@ -1,31 +1,28 @@
 import { AiOutlinePlus } from "react-icons/ai";
-import { createRef, useState, useEffect, FC, useRef } from "react";
+import { createRef, useState, useEffect, FC } from "react";
 import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
-import { setNewPost } from "../../store/actions/post.actions";
 import { NewPostType } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
 
-export const PollOptionsInput: FC = () => {
+type PollOptionsInputProps = {
+  currNewPost: NewPost;
+};
+
+export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
+  const { newPostType }: { newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule.newPostState
   );
-
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
 
   const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
 
   useEffect(() => {
-    setInputRefs(currPost.poll!.options.map(() => createRef<HTMLInputElement>()));
+    setInputRefs(currNewPost.poll!.options.map(() => createRef<HTMLInputElement>()));
     inputRefs[0]?.current?.focus();
-  }, [currPost.poll!.options.length]);
+  }, [currNewPost.poll!.options.length]);
 
   useEffect(() => {
     if (inputRefs.length > 0) {
@@ -41,24 +38,20 @@ export const PollOptionsInput: FC = () => {
   });
 
   const onAddChoice = () => {
-    if (currPost.poll!.options.length < 5) {
+    if (currNewPost.poll!.options.length < 5) {
       const defaultOption = {
         text: "",
         voteSum: 0,
         isLoggedinUserVoted: false,
       };
-      dispatch(
-        setNewPost(
-          {
-            ...currPost,
-            poll: {
-              ...currPost.poll!,
-              options: [...currPost.poll!.options, defaultOption],
-            },
-          },
-          newPostType
-        )
-      );
+      const newPost = {
+        ...currNewPost,
+        poll: {
+          ...currNewPost.poll!,
+          options: [...currNewPost.poll!.options, defaultOption],
+        },
+      };
+      dispatch(updateCurrNewPost(newPost, newPostType));
     }
   };
 
@@ -74,25 +67,21 @@ export const PollOptionsInput: FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-    const options = [...currPost.poll!.options];
+    const options = [...currNewPost.poll!.options];
     options[idx].text = e.target.value;
-    dispatch(
-      setNewPost(
-        {
-          ...currPost,
-          poll: {
-            ...currPost.poll!,
-            options,
-          },
-        },
-        newPostType
-      )
-    );
+    const newPost = {
+      ...currNewPost,
+      poll: {
+        ...currNewPost.poll!,
+        options,
+      },
+    };
+    dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   return (
     <div className="poll-options-container">
-      {currPost.poll!.options.map((option, idx) => (
+      {currNewPost.poll!.options.map((option, idx) => (
         <div
           key={idx}
           className={
@@ -122,7 +111,7 @@ export const PollOptionsInput: FC = () => {
               <span className="option-text-indicator">{option.text.length + "/" + 25}</span>
             )}
           </div>
-          {idx === currPost.poll!.options.length - 1 && idx != 3 && (
+          {idx === currNewPost.poll!.options.length - 1 && idx != 3 && (
             <button className="btn-add-option" onClick={onAddChoice}>
               <AiOutlinePlus className="add-option-icon" />
             </button>

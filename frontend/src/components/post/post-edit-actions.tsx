@@ -12,34 +12,34 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store/store";
-import { setNewPost } from "../../store/actions/post.actions";
 import { IoLocationSharp } from "react-icons/io5";
 import { NewPostType } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 interface PostEditActionsProps {
+  currNewPost: NewPost;
   isPickerShown: boolean;
+  inputTextValue: string;
+  setInputTextValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 
 type ElementVisibility = Record<UIElement, boolean>;
 
-export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => {
+export const PostEditActions: FC<PostEditActionsProps> = ({
+  currNewPost,
+  isPickerShown,
+  inputTextValue,
+  setInputTextValue,
+}) => {
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { newPostType }: { newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule.newPostState
+  );
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
-  );
-
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
-
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const [elementVisibility, setElementVisibility] = useState<ElementVisibility>({
     gifPicker: false,
@@ -51,9 +51,9 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (currPost.imgs.length < 3) setIsMultiple(true);
+    if (currNewPost.imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [currPost.imgs]);
+  }, [currNewPost.imgs]);
 
   const btns: {
     name: string;
@@ -67,12 +67,19 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
       icon: <FiImage />,
       type: "file",
       isDisabled:
-        currPost.imgs.length === 4 || !!currPost.gif || !!currPost.poll || !!currPost.video,
+        currNewPost.imgs.length === 4 ||
+        !!currNewPost.gif ||
+        !!currNewPost.poll ||
+        !!currNewPost.video,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
-      isDisabled: currPost.imgs.length > 0 || !!currPost.gif || !!currPost.poll || !!currPost.video,
+      isDisabled:
+        currNewPost.imgs.length > 0 ||
+        !!currNewPost.gif ||
+        !!currNewPost.poll ||
+        !!currNewPost.video,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -82,11 +89,11 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
       name: "poll",
       icon: <FiList />,
       isDisabled:
-        currPost.imgs.length > 0 ||
-        !!currPost.gif ||
-        !!currPost.poll ||
-        !!currPost.video ||
-        !!currPost.schedule,
+        currNewPost.imgs.length > 0 ||
+        !!currNewPost.gif ||
+        !!currNewPost.poll ||
+        !!currNewPost.video ||
+        !!currNewPost.schedule,
       onClickFn: () => {
         if (!isPickerShown) return;
         const defaultPoll: Poll = {
@@ -102,7 +109,8 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
           isVotingOff: false,
           createdAt: Date.now(),
         };
-        dispatch(setNewPost({ ...currPost, poll: defaultPoll }, newPostType));
+        const newPost = { ...currNewPost, poll: defaultPoll };
+        dispatch(updateCurrNewPost(newPost, newPostType));
       },
     },
     {
@@ -117,7 +125,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: !!currPost.poll,
+      isDisabled: !!currNewPost.poll,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostScedule();
@@ -163,7 +171,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
       return;
     }
 
-    const isImagesGreaterThan4 = [...files].length + currPost.imgs.length > 4;
+    const isImagesGreaterThan4 = [...files].length + currNewPost.imgs.length > 4;
 
     if (isImagesGreaterThan4) {
       dispatch(
@@ -215,7 +223,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
     });
 
   const onUploadImgs = async (files: File[]) => {
-    const newImgs = [...currPost.imgs];
+    const newImgs = [...currNewPost.imgs];
     for (let i = 0; i < files.length; i++) {
       try {
         const file = files[i];
@@ -223,10 +231,10 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
         if (file) {
           const currIdx = newImgs.length;
           newImgs.push({ url: "", isLoading: true, file });
-          dispatch(setNewPost({ ...currPost, imgs: [...newImgs] }, newPostType));
+          dispatch(updateCurrNewPost({ ...currNewPost, imgs: [...newImgs] }, newPostType));
           const dataUrl = await readAsDataURL(file);
           newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-          dispatch(setNewPost({ ...currPost, imgs: [...newImgs] }, newPostType));
+          dispatch(updateCurrNewPost({ ...currNewPost, imgs: [...newImgs] }, newPostType));
         }
       } catch (error) {
         console.error("Error reading file:", error);
@@ -236,11 +244,11 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
 
   const onUploadVideo = async (file: File) => {
     try {
-      dispatch(setNewPost({ ...currPost, video: { url: "", isLoading: true, file } }, newPostType));
+      const newPostPreLoad = { ...currNewPost, video: { url: "", isLoading: true, file } };
+      dispatch(updateCurrNewPost(newPostPreLoad, newPostType));
       const dataUrl = await readAsDataURL(file);
-      dispatch(
-        setNewPost({ ...currPost, video: { url: dataUrl, isLoading: false, file } }, newPostType)
-      );
+      const newPost = { ...currNewPost, video: { url: dataUrl, isLoading: false, file } };
+      dispatch(updateCurrNewPost(newPost, newPostType));
     } catch (error) {
       console.error("Error reading file:", error);
     }
@@ -248,8 +256,9 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
 
   const onEmojiPicked = (emoji: Emoji) => {
     const nativeEmoji = emoji.native;
-    const newPostText = currPost.text + nativeEmoji;
-    dispatch(setNewPost({ ...currPost, text: newPostText }, newPostType));
+    const newPostText = inputTextValue + nativeEmoji;
+    setInputTextValue(newPostText);
+    dispatch(updateCurrNewPost({ ...currNewPost, text: newPostText }, newPostType));
   };
 
   const onToggleElementVisibility = (elementName: UIElement) => {
@@ -297,7 +306,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
                   type={btn.type}
                   accept={"image/*,video/*"}
                   multiple={isMultiple}
-                  disabled={currPost.imgs.length === 4 || !isPickerShown}
+                  disabled={currNewPost.imgs.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadFile}
                   style={{ display: "none" }}
@@ -343,7 +352,10 @@ export const PostEditActions: FC<PostEditActionsProps> = ({ isPickerShown }) => 
         })}
       </div>
       {elementVisibility.gifPicker && (
-        <GifPickerModal onToggleElementVisibility={onToggleElementVisibility} />
+        <GifPickerModal
+          currNewPost={currNewPost}
+          onToggleElementVisibility={onToggleElementVisibility}
+        />
       )}
     </Fragment>
   );

@@ -19,7 +19,7 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
 
   const onClickBtn = () => {
     if (isSideBarBtn) {
-      dispatch(setNewPostType("side-bar-post"));
+      dispatch(setNewPostType("side-bar"));
       navigate("/compose");
     } else {
       if (isDisabled) return;

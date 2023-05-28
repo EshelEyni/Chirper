@@ -1,19 +1,23 @@
-import { Fragment, useState, useEffect, useRef } from "react";
+import { Fragment, useState, useRef } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { postService } from "../../services/post.service";
 import { GifCategoryList } from "../gif/gif-category-list";
 import { GifList } from "../gif/gif-list";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { GifSearchBar } from "../gif/gif-search-bar";
 import { ContentLoader } from "../loaders/content-loader";
-import { UIElement } from "../btns/post-edit-actions";
+import { UIElement } from "../post/post-edit-actions";
+import { NewPost } from "../../../../shared/interfaces/post.interface";
 
 interface GifPickerProps {
+  currNewPost: NewPost;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifPickerModal: React.FC<GifPickerProps> = ({ onToggleElementVisibility }) => {
+export const GifPickerModal: React.FC<GifPickerProps> = ({
+  currNewPost,
+  onToggleElementVisibility,
+}) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -49,7 +53,11 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({ onToggleElementVisibi
         </header>
 
         {gifs.length > 0 ? (
-          <GifList onToggleElementVisibility={onToggleElementVisibility} gifs={gifs} />
+          <GifList
+            currNewPost={currNewPost}
+            onToggleElementVisibility={onToggleElementVisibility}
+            gifs={gifs}
+          />
         ) : (
           <ContentLoader />
         )}

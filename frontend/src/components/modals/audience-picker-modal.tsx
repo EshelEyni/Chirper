@@ -1,4 +1,4 @@
-import { FC, Fragment, useRef } from "react";
+import { FC, Fragment } from "react";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-solid.svg";
 import { AiOutlineCheck } from "react-icons/ai";
@@ -6,45 +6,37 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
-import { setNewPost } from "../../store/actions/post.actions";
 import { NewPostType } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 interface AudiencePickerModalProps {
+  currNewPost: NewPost;
   toggleModal: (type: string) => void;
 }
 
-export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ toggleModal }) => {
-  const {
-    newPost,
-    sideBarNewPost,
-    newPostType,
-  }: { newPost: NewPost; sideBarNewPost: NewPost; newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule
+export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ currNewPost, toggleModal }) => {
+  const { newPostType }: { newPostType: NewPostType } = useSelector(
+    (state: RootState) => state.postModule.newPostState
   );
-
-  const newPostTypeRef = useRef(newPostType);
-  const currPost = newPostTypeRef.current === "side-bar-post" ? sideBarNewPost : newPost;
-
   const dispatch: AppDispatch = useDispatch();
-
   const iconClassName = "picker-modal-option-icon";
   const audinceOptions = [
     {
       title: "Everyone",
       icon: <GoGlobe className={iconClassName} />,
       value: "everyone",
-      isSelected: currPost.audience === "everyone",
+      isSelected: currNewPost.audience === "everyone",
     },
     {
       title: "Chirper Circle",
       icon: <ChirperCircleIcon className={iconClassName} />,
       value: "chirper-circle",
-      isSelected: currPost.audience === "chirper-circle",
+      isSelected: currNewPost.audience === "chirper-circle",
     },
   ];
 
   const onOptionClick = (option: string) => {
-    dispatch(setNewPost({ ...currPost, audience: option }, newPostType));
+    dispatch(updateCurrNewPost({ ...currNewPost, audience: option }, newPostType));
     toggleModal("audience");
   };
 

@@ -17,11 +17,14 @@ import { BtnToggleRepliers } from "../btns/btn-toggle-repliers";
 import { PollEdit } from "../poll/poll-edit";
 import { PostDateTitle } from "../other/post-date-title";
 import { IoLocationSharp } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
 import { utilService } from "../../services/util.service/utils.service";
 import { NewPostState } from "../../store/reducers/post.reducer";
+import { PostList } from "./post-list";
+import { addNewPostToThread } from "../../store/actions/post.actions";
+import { set } from "mongoose";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -32,20 +35,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
+  const location = useLocation();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPostState }: { newPostState: NewPostState } = useSelector(
-    (state: RootState) => state.postModule
-  );
+  const { newPostState } = useSelector((state: RootState) => state.postModule);
   const { newPostType } = newPostState;
+  const { homePage, sideBar } = newPostState;
   const newPostTypeRef = useRef(newPostState.newPostType);
-
-  const getCurrPost = (): NewPost => {
-    const { homePage, sideBar } = newPostState;
-    if (newPostTypeRef.current === "home-page") return homePage.posts[homePage.currPostIdx];
-    else return sideBar.posts[sideBar.currPostIdx];
-  };
-  const [currNewPost, setCurrNewPost] = useState<NewPost>(getCurrPost());
+  const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
+  const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
+  const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [isPostValid, setIsPostValid] = useState<boolean>(true);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
@@ -54,17 +52,30 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
 
   useEffect(() => {
-    const isValid = checkIfPostValid(currNewPost);
+    const isValid = checkIfPostsAreValid(currNewPost);
     if (isValid !== isPostValid) {
       setIsPostValid(isValid);
     }
   }, [inputTextValue.length, currNewPost, isComposeMounted]);
 
   useEffect(() => {
-    setCurrNewPost(getCurrPost());
+    if (newPostTypeRef.current === "home-page") {
+      const currPost = homePage.posts[homePage.currPostIdx];
+      setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
+      setCurrNewPost(currPost);
+      setInputTextValue(currPost.text);
+      setPostCurrNewPostList(homePage.posts.filter((_, idx) => idx > homePage.currPostIdx));
+    } else {
+      const currPost = sideBar.posts[sideBar.currPostIdx];
+      setPreCurrNewPostList(sideBar.posts);
+      setCurrNewPost(currPost);
+      setInputTextValue(currPost.text);
+      setPostCurrNewPostList(sideBar.posts);
+    }
+    setIsComposeMounted(location.pathname === "/compose" && isHomePage);
   }, [newPostState]);
 
-  const checkIfPostValid = (currPost: NewPost | null): boolean => {
+  const checkIfPostsAreValid = (currPost: NewPost | null): boolean => {
     if (!currPost) return false;
     if (isComposeMounted) return false;
     if (currPost.poll) {
@@ -166,7 +177,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const openPicker = () => {
     if (isHomePage && !isPickerShown) {
-      setIsComposeMounted(false);
       setIsPickerShown(true);
       textAreaRef.current?.focus();
     }
@@ -177,14 +187,26 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     navigate("/post-location");
   };
 
-  const onAddPostToThread = () => {
+  const onAddPostToThread = async () => {
     if (!isPickerShown) return;
     if (isHomePage) {
-      setIsComposeMounted(true);
+      if (!currNewPost) return;
+      const newPost = { ...currNewPost, text: inputTextValue };
+      await dispatch(updateCurrNewPost(newPost, newPostType));
+      // setInputTextValue("");
       setIsPickerShown(false);
+      await dispatch(addNewPostToThread(newPostType));
       navigate("/compose");
     } else {
-      setIsPickerShown(false);
+      dispatch(addNewPostToThread(newPostType));
+    }
+  };
+
+  const setTextPlaceholder = () => {
+    if (currNewPost?.poll) return "Ask a question...";
+    else {
+      if (sideBar.currPostIdx === 0 && homePage.currPostIdx === 0) return "What's happening?";
+      else return "Add another Chirp!";
     }
   };
 
@@ -195,12 +217,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     >
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {postSaveInProgress && <span className="progress-bar"></span>}
-
+      {!isComposeMounted && preCurrNewPostList.length > 0 && (
+        <PostList newPosts={preCurrNewPostList} />
+      )}
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
-
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isPickerShown && <BtnToggleAudience currNewPost={currNewPost} />}
+          {isPickerShown && currNewPost && <BtnToggleAudience currNewPost={currNewPost} />}
           {currNewPost?.schedule && (
             <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
           )}
@@ -210,7 +233,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               (isHomePage ? " home-page-height" : "") +
               (isHomePage && !isPickerShown ? " pt-10" : "")
             }
-            placeholder={currNewPost?.poll ? "Ask a question..." : "What's happening?"}
+            placeholder={setTextPlaceholder()}
             value={!isComposeMounted ? inputTextValue : ""}
             onChange={handleTextChange}
             onBlur={handleTextBlur}
@@ -225,7 +248,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {currNewPost?.gif && !isComposeMounted && <GifEdit currNewPost={currNewPost} />}
           {currNewPost?.poll && !isComposeMounted && <PollEdit currNewPost={currNewPost} />}
           <div className="btn-replires-location-container">
-            {isPickerShown && <BtnToggleRepliers currNewPost={currNewPost} />}
+            {isPickerShown && currNewPost && <BtnToggleRepliers currNewPost={currNewPost} />}
             {currNewPost?.location && !isComposeMounted && (
               <div className="post-edit-location-title" onClick={onGoToLocationPage}>
                 <IoLocationSharp /> {currNewPost.location.name}
@@ -233,14 +256,16 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             )}
           </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <PostEditActions
-              currNewPost={currNewPost}
-              isPickerShown={isPickerShown}
-              inputTextValue={inputTextValue}
-              setInputTextValue={setInputTextValue}
-            />
+            {currNewPost && (
+              <PostEditActions
+                currNewPost={currNewPost}
+                isPickerShown={isPickerShown}
+                inputTextValue={inputTextValue}
+                setInputTextValue={setInputTextValue}
+              />
+            )}
             <div className="secondary-action-container">
-              {inputTextValue.length > 0 && !isComposeMounted && (
+              {(isPostValid || inputTextValue.length > 0) && !isComposeMounted && (
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
@@ -249,11 +274,21 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                   </button>
                 </div>
               )}
-              <BtnCreatePost isSideBarBtn={false} isDisabled={!isPostValid} onAddPost={onAddPost} />
+              <BtnCreatePost
+                isSideBarBtn={false}
+                isDisabled={!isPostValid}
+                onAddPost={onAddPost}
+                btnText={
+                  sideBar.currPostIdx === 0 && homePage.currPostIdx === 0 ? "Chirp" : "Chirp All"
+                }
+              />
             </div>
           </div>
         </main>
       </div>
+      {!isComposeMounted && postCurrNewPostList.length > 0 && (
+        <PostList newPosts={postCurrNewPostList} />
+      )}
     </section>
   );
 };

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
-import { NewPostType } from "../../store/reducers/post.reducer";
 import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 type PollEditProps = {
@@ -13,9 +12,7 @@ type PollEditProps = {
 };
 export const PollEdit: FC<PollEditProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType }: { newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule.newPostState
-  );
+  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
 
   const onRemovePoll = () => {
     dispatch(updateCurrNewPost({ ...currNewPost, poll: null }, newPostType));

@@ -1,4 +1,5 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { utilService } from "../../services/util.service/utils.service";
 
 export type NewPostState = {
   homePage: {
@@ -14,16 +15,19 @@ export type NewPostState = {
 
 export type NewPostType = "home-page" | "side-bar";
 
-const getDefaultNewPost: NewPost = {
-  text: "",
-  audience: "everyone",
-  repliersType: "everyone",
-  isPublic: true,
-  imgs: [],
-  video: null,
-  videoUrl: "",
-  gif: null,
-  poll: null,
+const getDefaultNewPost = (): NewPost => {
+  return {
+    id: utilService.makeId(),
+    text: "",
+    audience: "everyone",
+    repliersType: "everyone",
+    isPublic: true,
+    imgs: [],
+    video: null,
+    videoUrl: "",
+    gif: null,
+    poll: null,
+  };
 };
 
 const initialState: {
@@ -35,11 +39,11 @@ const initialState: {
   post: null,
   newPostState: {
     homePage: {
-      posts: [{ ...getDefaultNewPost }],
+      posts: [getDefaultNewPost()],
       currPostIdx: 0,
     },
     sideBar: {
-      posts: [{ ...getDefaultNewPost }],
+      posts: [getDefaultNewPost()],
       currPostIdx: 0,
     },
     newPostType: "home-page",
@@ -79,7 +83,7 @@ export function postReducer(
       const newPostState: NewPostState = {
         ...state.newPostState,
         homePage: {
-          posts: action.newPosts.length ? action.newPosts : [{ ...getDefaultNewPost }],
+          posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
           currPostIdx: 0,
         },
       };
@@ -89,8 +93,25 @@ export function postReducer(
         newPostState,
       };
     }
+    case "SET_HOME_PAGE_CURR_NEW_POST": {
+      const currPostIdx = state.newPostState.homePage.posts.findIndex(
+        post => post.id === action.newPost.id
+      );
+
+      const newPostState: NewPostState = {
+        ...state.newPostState,
+        homePage: {
+          ...state.newPostState.homePage,
+          currPostIdx,
+        },
+      };
+      return {
+        ...state,
+        newPostState,
+      };
+    }
     case "ADD_HOME_PAGE_NEW_POST": {
-      const newPosts = [...state.newPostState.homePage.posts, action.newPost];
+      const newPosts = [...state.newPostState.homePage.posts, getDefaultNewPost()];
       const currPostIdx = newPosts.length - 1;
       const newPostState: NewPostState = {
         ...state.newPostState,
@@ -141,7 +162,7 @@ export function postReducer(
       const newPostState: NewPostState = {
         ...state.newPostState,
         sideBar: {
-          posts: action.newPosts.length ? action.newPosts : [{ ...getDefaultNewPost }],
+          posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
           currPostIdx: 0,
         },
       };
@@ -151,8 +172,24 @@ export function postReducer(
         newPostState,
       };
     }
+    case "SET_SIDE_BAR_CURR_NEW_POST": {
+      const currPostIdx = state.newPostState.sideBar.posts.findIndex(
+        post => post.id === action.newPost.id
+      );
+      const newPostState: NewPostState = {
+        ...state.newPostState,
+        sideBar: {
+          ...state.newPostState.sideBar,
+          currPostIdx,
+        },
+      };
+      return {
+        ...state,
+        newPostState,
+      };
+    }
     case "ADD_SIDE_BAR_NEW_POST": {
-      const newPosts = [...state.newPostState.sideBar.posts, action.newPost];
+      const newPosts = [...state.newPostState.sideBar.posts, getDefaultNewPost()];
       const currPostIdx = newPosts.length - 1;
       const newPostState: NewPostState = {
         ...state.newPostState,

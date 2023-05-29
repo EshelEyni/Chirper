@@ -13,7 +13,6 @@ import Picker from "@emoji-mart/react";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store/store";
 import { IoLocationSharp } from "react-icons/io5";
-import { NewPostType } from "../../store/reducers/post.reducer";
 import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 interface PostEditActionsProps {
@@ -34,9 +33,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   setInputTextValue,
 }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPostType }: { newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule.newPostState
-  );
+  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);

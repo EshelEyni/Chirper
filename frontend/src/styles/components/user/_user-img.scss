@@ -10,8 +10,13 @@
     border-radius: 50%;
     transition: filter 0.3s ease-in-out;
   }
+}
 
-  img:hover {
-    filter: brightness(85%);
+.post-edit .content-container,
+.post-preview {
+  .user-img-container {
+    img:hover {
+      filter: brightness(85%);
+    }
   }
 }

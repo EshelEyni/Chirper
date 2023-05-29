@@ -4,7 +4,6 @@ import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
-import { NewPostType } from "../../store/reducers/post.reducer";
 import { updateCurrNewPost } from "../../store/actions/post.actions";
 
 type PollOptionsInputProps = {
@@ -13,9 +12,7 @@ type PollOptionsInputProps = {
 
 export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType }: { newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule.newPostState
-  );
+  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
 
   const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
 

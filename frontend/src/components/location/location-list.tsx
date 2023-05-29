@@ -7,7 +7,6 @@ import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../store/actions/post.actions";
-import { NewPostType } from "../../store/reducers/post.reducer";
 
 interface LocationListProps {
   currNewPost: NewPost;
@@ -24,9 +23,7 @@ export const LocationList: FC<LocationListProps> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { newPostType }: { newPostType: NewPostType } = useSelector(
-    (state: RootState) => state.postModule.newPostState
-  );
+  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
 
   const onClickLocation = (location: Location) => {
     setSelectedLocation(location);

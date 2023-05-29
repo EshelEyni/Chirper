@@ -70,9 +70,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
 
   return (
     <article className="post-preview">
-      <div className="user-img-container">
-        <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
-      </div>
+      <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
       <div className="post-preview-main-container">
         <header className="post-preview-header">
           <div className="post-preview-header-main">

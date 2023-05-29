@@ -6,7 +6,7 @@
   background-color: var(--color-background);
   padding: rem(5px) rem(16px);
   position: relative;
-  
+
   .btn-container {
     padding: rem(5px) 0;
   }
@@ -21,10 +21,13 @@
     flex-grow: 1;
     gap: rem(16px);
 
-    .post-edit-user-img {
-      width: rem(45px);
-      height: rem(45px);
-      border-radius: 50%;
+    .user-img-container {
+      min-width: rem(50px);
+      .user-img {
+        width: rem(45px);
+        height: rem(45px);
+        border-radius: 50%;
+      }
     }
 
     .main-content {
@@ -51,7 +54,7 @@
           align-items: center;
           gap: rem(4px);
           font-weight: 600;
-          font-size: rem(11px);
+          font-size: rem(13px);
           color: var(--color-primary);
           border: 1px solid var(--color-border);
           border-radius: 35px;
@@ -72,7 +75,7 @@
         outline: none;
         resize: none;
         min-height: rem(100px);
-        font-size: rem(14px);
+        font-size: rem(20px);
         color: var(--color-text);
         line-height: 1.5;
         font-family: var(--font-primary);
@@ -112,7 +115,7 @@
             align-items: center;
             gap: rem(4px);
             font-weight: 600;
-            font-size: rem(12px);
+            font-size: rem(14px);
             color: var(--color-primary);
 
             span::first-letter {
@@ -180,8 +183,8 @@
 
         .btn-create-post {
           font-size: rem(14px);
-          width: rem(60px);
-          padding: rem(7.5px);
+          min-width: rem(60px);
+          padding: rem(7.5px) rem(12px);
         }
       }
     }

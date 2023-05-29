@@ -18,7 +18,7 @@ interface GifListProps {
 
 export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVisibility }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType }: { newPostType: NewPostType } = useSelector(
+  const { newPostType } = useSelector(
     (state: RootState) => state.postModule.newPostState
   );
 

@@ -20,5 +20,15 @@
     }
 
     @include scrollbar-hidden;
+
+    .content-container .main-content {
+      .post-edit-imgs {
+        &.cols-1 {
+          .post-edit-img-container {
+            height: rem(300px);
+          }
+        }
+      }
+    }
   }
 }

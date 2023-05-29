@@ -112,16 +112,15 @@ export function setNewPosts(
   };
 }
 
-export function addNewPost(
-  post: NewPost,
+export function addNewPostToThread(
   newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
       if (newPostType === "home-page") {
-        dispatch({ type: "ADD_HOME_PAGE_NEW_POST", post });
+        dispatch({ type: "ADD_HOME_PAGE_NEW_POST" });
       } else {
-        dispatch({ type: "ADD_SIDE_BAR_NEW_POST", post });
+        dispatch({ type: "ADD_SIDE_BAR_NEW_POST" });
       }
     } catch (err) {
       console.log("PostActions: err in addNewPost", err);
@@ -129,7 +128,7 @@ export function addNewPost(
   };
 }
 
-export function removeNewPost(
+export function removeNewPostFromThread(
   postId: string,
   newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -171,6 +170,23 @@ export function setNewPostType(
       dispatch({ type: "SET_NEW_POST_TYPE", newPostType });
     } catch (err) {
       console.log("PostActions: err in setNewPostType", err);
+    }
+  };
+}
+
+export function setCurrNewPost(
+  currPost: NewPost,
+  newPostType: NewPostType
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      if (newPostType === "home-page") {
+        dispatch({ type: "SET_HOME_PAGE_CURR_NEW_POST", newPost: currPost });
+      } else {
+        dispatch({ type: "SET_SIDE_BAR_CURR_NEW_POST", newPost: currPost });
+      }
+    } catch (err) {
+      console.log("PostActions: err in setCurrNewPost", err);
     }
   };
 }

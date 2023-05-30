@@ -12,7 +12,9 @@ type PollOptionsInputProps = {
 
 export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
+  const {
+    newPostState: { sideBar, homePage, newPostType },
+  } = useSelector((state: RootState) => state.postModule);
 
   const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
 
@@ -23,7 +25,11 @@ export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => 
 
   useEffect(() => {
     if (inputRefs.length > 0) {
-      inputRefs[0].current?.focus();
+      if (newPostType === "home-page" && currNewPost.currIdx === homePage.currPostIdx) {
+        inputRefs[0].current?.focus();
+      } else if (newPostType === "side-bar" && currNewPost.currIdx === sideBar.currPostIdx) {
+        inputRefs[0].current?.focus();
+      }
     }
   }, [inputRefs]);
 
@@ -100,6 +106,7 @@ export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => 
               }}
               ref={inputRefs[idx]}
               maxLength={25}
+              value={option.text}
             />
             <span className={"option-input-placeholder" + (option ? " text-filled" : "")}>
               {`Choice ${idx + 1}`}

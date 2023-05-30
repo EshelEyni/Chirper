@@ -1,5 +1,4 @@
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-import { utilService } from "../../services/util.service/utils.service";
 
 export type NewPostState = {
   homePage: {
@@ -15,9 +14,9 @@ export type NewPostState = {
 
 export type NewPostType = "home-page" | "side-bar";
 
-const getDefaultNewPost = (): NewPost => {
+const getDefaultNewPost = (currIdx = 0): NewPost => {
   return {
-    id: utilService.makeId(),
+    currIdx,
     text: "",
     audience: "everyone",
     repliersType: "everyone",
@@ -94,15 +93,11 @@ export function postReducer(
       };
     }
     case "SET_HOME_PAGE_CURR_NEW_POST": {
-      const currPostIdx = state.newPostState.homePage.posts.findIndex(
-        post => post.id === action.newPost.id
-      );
-
       const newPostState: NewPostState = {
         ...state.newPostState,
         homePage: {
           ...state.newPostState.homePage,
-          currPostIdx,
+          currPostIdx: action.newPost.currIdx,
         },
       };
       return {
@@ -111,8 +106,8 @@ export function postReducer(
       };
     }
     case "ADD_HOME_PAGE_NEW_POST": {
-      const newPosts = [...state.newPostState.homePage.posts, getDefaultNewPost()];
-      const currPostIdx = newPosts.length - 1;
+      const currPostIdx = state.newPostState.homePage.posts.length;
+      const newPosts = [...state.newPostState.homePage.posts, getDefaultNewPost(currPostIdx)];
       const newPostState: NewPostState = {
         ...state.newPostState,
         homePage: {
@@ -173,14 +168,11 @@ export function postReducer(
       };
     }
     case "SET_SIDE_BAR_CURR_NEW_POST": {
-      const currPostIdx = state.newPostState.sideBar.posts.findIndex(
-        post => post.id === action.newPost.id
-      );
       const newPostState: NewPostState = {
         ...state.newPostState,
         sideBar: {
           ...state.newPostState.sideBar,
-          currPostIdx,
+          currPostIdx: action.newPost.currIdx,
         },
       };
       return {
@@ -189,8 +181,8 @@ export function postReducer(
       };
     }
     case "ADD_SIDE_BAR_NEW_POST": {
-      const newPosts = [...state.newPostState.sideBar.posts, getDefaultNewPost()];
-      const currPostIdx = newPosts.length - 1;
+      const currPostIdx = state.newPostState.sideBar.posts.length;
+      const newPosts = [...state.newPostState.sideBar.posts, getDefaultNewPost(currPostIdx)];
       const newPostState: NewPostState = {
         ...state.newPostState,
         sideBar: {

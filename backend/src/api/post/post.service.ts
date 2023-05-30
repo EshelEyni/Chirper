@@ -1,6 +1,6 @@
 import { NewPost, Post, PollOption } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
-import { IPost, PostModel } from "./post.model";
+import { PostModel } from "./post.model";
 import { PollResultModel } from "./poll.model";
 import { APIFeatures } from "../../services/util.service";
 import { asyncLocalStorage } from "../../services/als.service";
@@ -17,22 +17,47 @@ async function query(queryString: QueryString): Promise<Post[]> {
 
   let posts = (await features.getQuery().populate(_populateUser()).exec()) as unknown as Post[];
   if (posts.length > 0) {
-    await _populateUserPollVotes(...(posts as unknown as IPost[]));
+    await _populateUserPollVotes(...(posts as unknown as Post[]));
   }
   posts = posts.filter(post => post.user !== null);
   return posts as unknown as Post[];
 }
 
-async function getById(postId: string): Promise<IPost | null> {
+async function getById(postId: string): Promise<Post | null> {
   const post = await PostModel.findById(postId).populate(_populateUser()).exec();
-  await _populateUserPollVotes(post as unknown as IPost);
-  return post as unknown as IPost;
+  await _populateUserPollVotes(post as unknown as Post);
+  return post as unknown as Post;
 }
 
-async function add(post: NewPost): Promise<Post> {
-  const savedPost = await new PostModel(post).save();
-  const populatedPost = await PostModel.findById(savedPost.id).populate(_populateUser()).exec();
-  return populatedPost as unknown as Post;
+async function add(thread: NewPost[]): Promise<Post> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const savedThread: Post[] = [];
+
+    for (let i = 0; i < thread.length; i++) {
+      const currPost = thread[i];
+
+      if (i > 0) {
+        currPost.linkToPreviousThreadPost = savedThread[i - 1].id;
+      }
+
+      const savedPost = await new PostModel(currPost).save();
+      savedThread.push(savedPost as unknown as Post);
+    }
+
+    const populatedPost = await PostModel.findById(savedThread[0].id)
+      .populate(_populateUser())
+      .exec();
+    await session.commitTransaction();
+    return populatedPost as unknown as Post;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 }
 
 async function update(id: string, post: Post): Promise<Post> {
@@ -95,14 +120,14 @@ function _populateUser(): mongoose.PopulateOptions {
   };
 }
 
-async function _populateUserPollVotes(...posts: IPost[]) {
+async function _populateUserPollVotes(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const userId = store?.loggedinUserId;
   if (!userId) return;
 
   const pollResults = await PollResultModel.find({
     userId: new mongoose.Types.ObjectId(userId),
-    postId: { $in: posts.map(post => post._id) },
+    postId: { $in: posts.map(post => post.id) },
   }).exec();
 
   if (!pollResults.length) return;
@@ -111,7 +136,7 @@ async function _populateUserPollVotes(...posts: IPost[]) {
 
   for (const post of posts) {
     if (post.poll) {
-      const pollResult = pollResultsMap.get(post._id.toString());
+      const pollResult = pollResultsMap.get(post.id.toString());
       if (pollResult) post.poll.options[pollResult.optionIdx].isLoggedinUserVoted = true;
     }
   }

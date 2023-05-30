@@ -44,12 +44,12 @@ export function removePost(
 }
 
 export function addPost(
-  post: NewPost
+  posts: NewPost[]
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.add(post);
-      const isPublished = !post.schedule;
+      const addedPost = await postService.add(posts);
+      const isPublished = !addedPost.schedule;
       if (isPublished) {
         dispatch({ type: "ADD_POST", post: addedPost });
       } else {
@@ -57,7 +57,7 @@ export function addPost(
           dateStyle: "full",
           timeStyle: "short",
           timeZone: "UTC",
-        }).format(post.schedule);
+        }).format(addedPost.schedule);
 
         const msg: UserMsg = {
           type: "info",
@@ -69,14 +69,14 @@ export function addPost(
         }, 2000);
       }
     } catch (err) {
-      const msg: UserMsg = {
-        type: "error",
-        text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      };
-      dispatch({ type: "SET_USER_MSG", userMsg: msg });
-      setTimeout(() => {
-        dispatch({ type: "SET_USER_MSG", userMsg: null });
-      }, 2000);
+      // const msg: UserMsg = {
+      //   type: "error",
+      //   text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      // };
+      // dispatch({ type: "SET_USER_MSG", userMsg: msg });
+      // setTimeout(() => {
+      //   dispatch({ type: "SET_USER_MSG", userMsg: null });
+      // }, 2000);
       console.log("PostActions: err in addPost", err);
     }
   };
@@ -129,15 +129,14 @@ export function addNewPostToThread(
 }
 
 export function removeNewPostFromThread(
-  postId: string,
   newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
       if (newPostType === "home-page") {
-        dispatch({ type: "REMOVE_HOME_PAGE_NEW_POST", postId });
+        dispatch({ type: "REMOVE_HOME_PAGE_NEW_POST" });
       } else {
-        dispatch({ type: "REMOVE_SIDE_BAR_NEW_POST", postId });
+        dispatch({ type: "REMOVE_SIDE_BAR_NEW_POST" });
       }
     } catch (err) {
       console.log("PostActions: err in removeNewPost", err);

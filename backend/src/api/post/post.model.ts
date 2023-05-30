@@ -1,48 +1,7 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Query } from "mongoose";
 import { gifSchema } from "../gif/gif.model";
 import { pollSchema } from "./poll.model";
-
-export interface IPost {
-  commentSum: number;
-  rechirpSum: number;
-  likeSum: number;
-  viewSum: number;
-  audience: string;
-  repliersType: string;
-  isPublic: boolean;
-  userId: mongoose.Schema.Types.ObjectId;
-  text?: string;
-  imgs?: { url: string; sortOrder: number }[];
-  videoUrl?: string;
-  gif?: {
-    url: string;
-    staticUrl: string;
-    description: string;
-    sortOrder: number;
-  };
-  poll?: {
-    options: {
-      text: string;
-      voteSum: number;
-      isLoggedinUserVoted: boolean;
-    }[];
-    length: {
-      days: number;
-      hours: number;
-      minutes: number;
-    };
-  };
-  schedule?: Date;
-  location?: {
-    placeId: string;
-    name: string;
-    lat: number;
-    lng: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-  _id: mongoose.Schema.Types.ObjectId;
-}
+import { Post } from "../../../../shared/interfaces/post.interface";
 
 const imgsSchema = new mongoose.Schema(
   {
@@ -76,9 +35,9 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
-    isReply: {
-      type: Boolean,
-      default: false,
+    linkToPreviousThreadPost: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
     },
     replyTo: {
       type: mongoose.Schema.Types.ObjectId,
@@ -221,10 +180,10 @@ postSchema.virtual("user", {
   justOne: true,
 });
 
-// postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
-//   this.find({ isPublic: true });
-//   next();
-// });
+postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
+  this.find({ isPublic: true });
+  next();
+});
 
 const PostModel = mongoose.model("Post", postSchema);
 

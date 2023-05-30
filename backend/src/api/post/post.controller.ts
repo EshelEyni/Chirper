@@ -35,9 +35,13 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedinUserId } = req;
-  const currPost = req.body as unknown as NewPost;
-  if (loggedinUserId) currPost.userId = loggedinUserId;
-  const post = await postService.add(currPost);
+  const thread = req.body as unknown as NewPost[];
+  if (loggedinUserId) {
+    thread.forEach(post => {
+      post.userId = loggedinUserId;
+    });
+  }
+  const post = await postService.add(thread);
 
   res.status(201).send({
     status: "success",

@@ -33,7 +33,9 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   setInputTextValue,
 }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
+  const {
+    newPostState: { sideBar, homePage, newPostType },
+  } = useSelector((state: RootState) => state.postModule);
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
@@ -122,7 +124,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: !!currNewPost.poll,
+      isDisabled: !!currNewPost.poll || !!homePage.currPostIdx || !!sideBar.currPostIdx,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostScedule();

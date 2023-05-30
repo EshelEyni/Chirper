@@ -22,6 +22,11 @@
     @include scrollbar-hidden;
 
     .content-container .main-content {
+      .post-edit-text-area {
+        &.not-first-post {
+          min-height: 0;
+        }
+      }
       .post-edit-imgs {
         &.cols-1 {
           .post-edit-img-container {

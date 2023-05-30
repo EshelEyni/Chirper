@@ -15,16 +15,14 @@ export const ComposePage = () => {
     newPostType: NewPostType;
   } = useSelector((state: RootState) => state.postModule.newPostState);
 
-  const onGoBack = () => {
+  const onGoBack = async () => {
+    if (newPostType === "side-bar") {
+      await dispatch(setNewPosts([], "side-bar"));
+      await dispatch(setNewPostType("home-page"));
+    } else {
+      await dispatch(setNewPosts([], "home-page"));
+    }
     navigate(-1);
-    setTimeout(() => {
-      if (newPostType === "side-bar") {
-        dispatch(setNewPosts([], "side-bar"));
-        dispatch(setNewPostType("home-page"));
-      } else {
-        dispatch(setNewPosts([], "home-page"));
-      }
-    }, 250);
   };
 
   return (

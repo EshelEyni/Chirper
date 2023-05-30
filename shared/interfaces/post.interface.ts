@@ -17,17 +17,6 @@ export type NewPostVideo = {
   file: File | null;
 };
 
-interface audienceSettings {
-  title: string;
-  value: string;
-}
-
-interface repliersSetting {
-  title: string;
-  icon: ReactIcon;
-  value: string;
-}
-
 export type BasicPost = {
   text: string;
   video?: NewPostVideo | null;
@@ -42,12 +31,15 @@ export type BasicPost = {
 };
 
 export interface NewPost extends BasicPost {
+  currIdx: number;
   imgs: NewPostImg[];
   userId?: string;
+  linkToPreviousThreadPost?: string;
 }
 
 export interface Post extends BasicPost {
   id: string;
+  replyTo: string;
   createdAt: Date;
   updatedAt: Date;
   commentSum: number;

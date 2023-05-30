@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
 import { setNewPostType } from "../../store/actions/post.actions";
-import { useRef } from "react";
 
 interface BtnCreatePostProps {
   isSideBarBtn: boolean;
@@ -19,7 +18,6 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-  const btnTextRef = useRef(btnText);
   const onClickBtn = () => {
     if (isSideBarBtn) {
       dispatch(setNewPostType("side-bar"));
@@ -35,7 +33,7 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
       className={"btn-create-post" + (!isSideBarBtn && isDisabled ? " disabled" : "")}
       onClick={onClickBtn}
     >
-      {btnTextRef.current}
+      {btnText}
     </button>
   );
 };

@@ -70,6 +70,16 @@
         }
       }
 
+      .btn-remove-post-from-thread {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: rem(20px);
+      }
+
       .post-edit-text-area {
         border: none;
         outline: none;
@@ -85,7 +95,11 @@
         }
 
         &.pt-10 {
-          padding-top: 10px;
+          padding-top: rem(10px);
+        }
+
+        &.not-first-post {
+          margin-top: rem(10px);
         }
 
         &::placeholder {
@@ -172,6 +186,11 @@
             width: rem(22px);
             border: 1px solid var(--color-border);
             border-radius: 50%;
+
+            &.disabled {
+              cursor: default;
+              opacity: 0.5;
+            }
 
             .btn-add-thread-icon {
               height: rem(16px);

@@ -7,7 +7,12 @@ import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost, NewPostImg } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
-import { addPost, setNewPosts, updateCurrNewPost } from "../../store/actions/post.actions";
+import {
+  addPost,
+  removeNewPostFromThread,
+  setNewPosts,
+  updateCurrNewPost,
+} from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -21,10 +26,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
 import { utilService } from "../../services/util.service/utils.service";
-import { NewPostState } from "../../store/reducers/post.reducer";
 import { PostList } from "./post-list";
 import { addNewPostToThread } from "../../store/actions/post.actions";
-import { set } from "mongoose";
+import { AiOutlineClose } from "react-icons/ai";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -32,31 +36,37 @@ interface PostEditProps {
 }
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const {
+    newPostState: { sideBar, homePage, newPostType },
+  } = useSelector((state: RootState) => state.postModule);
+
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const location = useLocation();
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPostState } = useSelector((state: RootState) => state.postModule);
-  const { newPostType } = newPostState;
-  const { homePage, sideBar } = newPostState;
-  const newPostTypeRef = useRef(newPostState.newPostType);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const newPostTypeRef = useRef(newPostType);
+
   const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
   const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
   const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
-  const [isPostValid, setIsPostValid] = useState<boolean>(true);
+  const [isPostsValid, setIsPostsValid] = useState<boolean>(false);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
   const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
-  const [isComposeMounted, setIsComposeMounted] = useState<boolean>(false);
+  const [isMultipePosts, setIsMultipePosts] = useState<boolean>(false);
+  const [isFirstPostInThread, setIsFirstPostInThread] = useState<boolean>(false);
   const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
+  const isBtnAdThreadDisabled = preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
 
   useEffect(() => {
-    const isValid = checkIfPostsAreValid(currNewPost);
-    if (isValid !== isPostValid) {
-      setIsPostValid(isValid);
+    const isValid = checkIfPostsAreValid(
+      preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList)
+    );
+    if (isValid !== isPostsValid) {
+      setIsPostsValid(isValid);
     }
-  }, [inputTextValue.length, currNewPost, isComposeMounted]);
+  }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
 
   useEffect(() => {
     if (newPostTypeRef.current === "home-page") {
@@ -65,33 +75,50 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setCurrNewPost(currPost);
       setInputTextValue(currPost.text);
       setPostCurrNewPostList(homePage.posts.filter((_, idx) => idx > homePage.currPostIdx));
+      setIsMultipePosts(homePage.posts.length > 1);
+      setIsFirstPostInThread(homePage.currPostIdx === 0);
     } else {
       const currPost = sideBar.posts[sideBar.currPostIdx];
       setPreCurrNewPostList(sideBar.posts);
       setCurrNewPost(currPost);
       setInputTextValue(currPost.text);
       setPostCurrNewPostList(sideBar.posts);
+      setIsMultipePosts(sideBar.posts.length > 1);
+      setIsFirstPostInThread(sideBar.currPostIdx === 0);
     }
-    setIsComposeMounted(location.pathname === "/compose" && isHomePage);
-  }, [newPostState]);
+    if (location.pathname === "/compose" && isHomePage) {
+      setIsPickerShown(false);
+      setPreCurrNewPostList([]);
+      setCurrNewPost(null);
+      setInputTextValue("");
+      setPostCurrNewPostList([]);
+    }
+  }, [homePage.posts, homePage.currPostIdx, sideBar.posts, sideBar.currPostIdx, location.pathname]);
 
-  const checkIfPostsAreValid = (currPost: NewPost | null): boolean => {
-    if (!currPost) return false;
-    if (isComposeMounted) return false;
-    if (currPost.poll) {
+  const checkifPostTextIsValid = (post: NewPost): boolean => {
+    let currPostText = "";
+    if (newPostType === "home-page") {
+      currPostText = post.currIdx === homePage.currPostIdx ? inputTextValue : post.text;
+    } else {
+      currPostText = post.currIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+    }
+
+    return currPostText.length > 0 && currPostText.length <= 247;
+  };
+
+  const checkIfPostIsValid = (post: NewPost | null): boolean => {
+    if (!post) return false;
+    if (post.poll) {
       return (
-        currPost.poll.options.every(option => option.text.length > 0) &&
-        inputTextValue.length > 0 &&
-        inputTextValue.length <= 247
+        post.poll.options.every(option => option.text.length > 0) && checkifPostTextIsValid(post)
       );
     } else {
-      return (
-        (inputTextValue.length > 0 && inputTextValue.length <= 247) ||
-        currPost.imgs.length > 0 ||
-        !!currPost.gif ||
-        !!currPost.video
-      );
+      return checkifPostTextIsValid(post) || post.imgs.length > 0 || !!post.gif || !!post.video;
     }
+  };
+
+  const checkIfPostsAreValid = (newPosts: NewPost[]): boolean => {
+    return newPosts.every(post => checkIfPostIsValid(post));
   };
 
   const detectURL = useRef(
@@ -138,38 +165,41 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   };
 
   const onAddPost = async () => {
-    if (!currNewPost) return;
+    if (!currNewPost || !loggedinUser) return;
     try {
       setPostSaveInProgress(true);
-      if (!loggedinUser) return;
 
-      if (currNewPost.imgs.length > 0) {
-        const prms = currNewPost.imgs.map(async (img, idx) => {
-          const currImgUrl = await uploadFileToCloudinary(img.file, "image");
-          return { url: currImgUrl, sortOrder: idx };
-        });
-        const savedImgUrl = await Promise.all(prms);
-        currNewPost.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
-      }
+      const thread = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
 
-      if (currNewPost.video) {
-        if (currNewPost.video.file) {
-          const videoUrl = await uploadFileToCloudinary(currNewPost.video.file, "video");
-          currNewPost.videoUrl = videoUrl;
-        } else {
-          currNewPost.videoUrl = currNewPost.video.url;
+      for (const post of thread) {
+        if (post.imgs.length > 0) {
+          const prms = post.imgs.map(async (img, idx) => {
+            const currImgUrl = await uploadFileToCloudinary(img.file, "image");
+            return { url: currImgUrl, sortOrder: idx };
+          });
+          const savedImgUrl = await Promise.all(prms);
+          post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
         }
-        delete currNewPost.video;
-      }
 
-      await dispatch(addPost(currNewPost));
+        if (post.video) {
+          if (post.video.file) {
+            const videoUrl = await uploadFileToCloudinary(post.video.file, "video");
+            post.videoUrl = videoUrl;
+          } else {
+            post.videoUrl = post.video.url;
+          }
+          delete post.video;
+        }
+      }
+      await dispatch(addPost(thread));
 
       dispatch(setNewPosts([], newPostType));
       setInputTextValue("");
       setIsPickerShown(false);
       setPostSaveInProgress(false);
-      setIsPostValid(false);
-      textAreaRef.current!.style.height = "auto";
+      setIsPostsValid(false);
+      if (textAreaRef.current) textAreaRef.current.style.height = "auto";
+      if (location.pathname === "/compose") navigate("/");
     } catch (err) {
       setPostSaveInProgress(false);
     }
@@ -193,19 +223,19 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       if (!currNewPost) return;
       const newPost = { ...currNewPost, text: inputTextValue };
       await dispatch(updateCurrNewPost(newPost, newPostType));
-      // setInputTextValue("");
       setIsPickerShown(false);
       await dispatch(addNewPostToThread(newPostType));
       navigate("/compose");
     } else {
-      dispatch(addNewPostToThread(newPostType));
+      await dispatch(addNewPostToThread(newPostType));
+      textAreaRef.current?.focus();
     }
   };
 
   const setTextPlaceholder = () => {
     if (currNewPost?.poll) return "Ask a question...";
     else {
-      if (sideBar.currPostIdx === 0 && homePage.currPostIdx === 0) return "What's happening?";
+      if (isFirstPostInThread) return "What's happening?";
       else return "Add another Chirp!";
     }
   };
@@ -217,39 +247,47 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     >
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {postSaveInProgress && <span className="progress-bar"></span>}
-      {!isComposeMounted && preCurrNewPostList.length > 0 && (
-        <PostList newPosts={preCurrNewPostList} />
-      )}
+      {preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isPickerShown && currNewPost && <BtnToggleAudience currNewPost={currNewPost} />}
-          {currNewPost?.schedule && (
+          {isPickerShown && currNewPost && isFirstPostInThread && (
+            <BtnToggleAudience currNewPost={currNewPost} />
+          )}
+          {currNewPost?.schedule && isFirstPostInThread && (
             <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
+          )}
+          {!isFirstPostInThread && !isHomePage && !checkIfPostIsValid(currNewPost) && (
+            <button className="btn-remove-post-from-thread">
+              <AiOutlineClose
+                color="var(--color-primary)"
+                size={15}
+                onClick={() => dispatch(removeNewPostFromThread(newPostType))}
+              />
+            </button>
           )}
           <textarea
             className={
               "post-edit-text-area" +
               (isHomePage ? " home-page-height" : "") +
-              (isHomePage && !isPickerShown ? " pt-10" : "")
+              (isHomePage && !isPickerShown ? " pt-10" : "") +
+              (!isFirstPostInThread ? " not-first-post" : "")
             }
             placeholder={setTextPlaceholder()}
-            value={!isComposeMounted ? inputTextValue : ""}
+            value={inputTextValue}
             onChange={handleTextChange}
             onBlur={handleTextBlur}
             ref={textAreaRef}
           />
-          {currNewPost && currNewPost.imgs.length > 0 && !isComposeMounted && (
-            <PostEditImg currNewPost={currNewPost} />
-          )}
-          {currNewPost?.video && !isComposeMounted && (
+          {currNewPost && currNewPost.imgs.length > 0 && <PostEditImg currNewPost={currNewPost} />}
+          {currNewPost?.video && (
             <PostEditVideo currNewPost={currNewPost} setIsVideoRemoved={setIsVideoRemoved} />
           )}
-          {currNewPost?.gif && !isComposeMounted && <GifEdit currNewPost={currNewPost} />}
-          {currNewPost?.poll && !isComposeMounted && <PollEdit currNewPost={currNewPost} />}
+          {currNewPost?.gif && <GifEdit currNewPost={currNewPost} />}
+          {currNewPost?.poll && <PollEdit currNewPost={currNewPost} />}
           <div className="btn-replires-location-container">
             {isPickerShown && currNewPost && <BtnToggleRepliers currNewPost={currNewPost} />}
-            {currNewPost?.location && !isComposeMounted && (
+            {currNewPost?.location && (
               <div className="post-edit-location-title" onClick={onGoToLocationPage}>
                 <IoLocationSharp /> {currNewPost.location.name}
               </div>
@@ -265,30 +303,30 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               />
             )}
             <div className="secondary-action-container">
-              {(isPostValid || inputTextValue.length > 0) && !isComposeMounted && (
+              {(checkIfPostIsValid(currNewPost) || inputTextValue.length > 0) && (
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
-                  <button className="btn-add-thread" onClick={onAddPostToThread}>
+                  <button
+                    className={"btn-add-thread" + (isBtnAdThreadDisabled ? " disabled" : "")}
+                    onClick={onAddPostToThread}
+                    disabled={isBtnAdThreadDisabled}
+                  >
                     <AiOutlinePlus className="btn-add-thread-icon" />
                   </button>
                 </div>
               )}
               <BtnCreatePost
                 isSideBarBtn={false}
-                isDisabled={!isPostValid}
+                isDisabled={!isPostsValid}
                 onAddPost={onAddPost}
-                btnText={
-                  sideBar.currPostIdx === 0 && homePage.currPostIdx === 0 ? "Chirp" : "Chirp All"
-                }
+                btnText={isMultipePosts && !isHomePage ? "Chirp All" : "Chirp"}
               />
             </div>
           </div>
         </main>
       </div>
-      {!isComposeMounted && postCurrNewPostList.length > 0 && (
-        <PostList newPosts={postCurrNewPostList} />
-      )}
+      {postCurrNewPostList.length > 0 && <PostList newPosts={postCurrNewPostList} />}
     </section>
   );
 };

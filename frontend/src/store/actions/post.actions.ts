@@ -4,7 +4,6 @@ import { postService } from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
-import { NewPostType } from "../reducers/post.reducer";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
@@ -69,14 +68,14 @@ export function addPost(
         }, 2000);
       }
     } catch (err) {
-      // const msg: UserMsg = {
-      //   type: "error",
-      //   text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      // };
-      // dispatch({ type: "SET_USER_MSG", userMsg: msg });
-      // setTimeout(() => {
-      //   dispatch({ type: "SET_USER_MSG", userMsg: null });
-      // }, 2000);
+      const msg: UserMsg = {
+        type: "error",
+        text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      };
+      dispatch({ type: "SET_USER_MSG", userMsg: msg });
+      setTimeout(() => {
+        dispatch({ type: "SET_USER_MSG", userMsg: null });
+      }, 2000);
       console.log("PostActions: err in addPost", err);
     }
   };
@@ -91,101 +90,6 @@ export function updatePost(
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
       console.log("PostActions: err in updatePost", err);
-    }
-  };
-}
-
-export function setNewPosts(
-  newPosts: NewPost[],
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "home-page") {
-        dispatch({ type: "SET_HOME_PAGE_NEW_POSTS", newPosts });
-      } else {
-        dispatch({ type: "SET_SIDE_BAR_NEW_POSTS", newPosts });
-      }
-    } catch (err) {
-      console.log("PostActions: err in setNewPosts", err);
-    }
-  };
-}
-
-export function addNewPostToThread(
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "home-page") {
-        dispatch({ type: "ADD_HOME_PAGE_NEW_POST" });
-      } else {
-        dispatch({ type: "ADD_SIDE_BAR_NEW_POST" });
-      }
-    } catch (err) {
-      console.log("PostActions: err in addNewPost", err);
-    }
-  };
-}
-
-export function removeNewPostFromThread(
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "home-page") {
-        dispatch({ type: "REMOVE_HOME_PAGE_NEW_POST" });
-      } else {
-        dispatch({ type: "REMOVE_SIDE_BAR_NEW_POST" });
-      }
-    } catch (err) {
-      console.log("PostActions: err in removeNewPost", err);
-    }
-  };
-}
-
-export function updateCurrNewPost(
-  newPost: NewPost,
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "home-page") {
-        dispatch({ type: "UPDATE_HOME_PAGE_NEW_POST", newPost });
-      } else {
-        dispatch({ type: "UPDATE_SIDE_BAR_NEW_POST", newPost });
-      }
-    } catch (err) {
-      console.log("PostActions: err in updateCurrNewPost", err);
-    }
-  };
-}
-
-export function setNewPostType(
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      dispatch({ type: "SET_NEW_POST_TYPE", newPostType });
-    } catch (err) {
-      console.log("PostActions: err in setNewPostType", err);
-    }
-  };
-}
-
-export function setCurrNewPost(
-  currPost: NewPost,
-  newPostType: NewPostType
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      if (newPostType === "home-page") {
-        dispatch({ type: "SET_HOME_PAGE_CURR_NEW_POST", newPost: currPost });
-      } else {
-        dispatch({ type: "SET_SIDE_BAR_CURR_NEW_POST", newPost: currPost });
-      }
-    } catch (err) {
-      console.log("PostActions: err in setCurrNewPost", err);
     }
   };
 }

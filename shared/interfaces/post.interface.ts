@@ -31,7 +31,7 @@ export type BasicPost = {
 };
 
 export interface NewPost extends BasicPost {
-  currIdx: number;
+  idx: number;
   imgs: NewPostImg[];
   userId?: string;
   linkToPreviousThreadPost?: string;

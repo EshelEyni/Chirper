@@ -8,8 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
 import { utilService } from "../../services/util.service/utils.service";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
-import { NewPostState } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 type SetterFunctions = {
   month: (date: Date) => Date;
@@ -21,14 +20,11 @@ type SetterFunctions = {
 };
 
 export const PostSchedule = () => {
-  const { newPostState }: { newPostState: NewPostState } = useSelector(
-    (state: RootState) => state.postModule
-  );
-  const { newPostType } = newPostState;
+  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
   const currNewPost =
     newPostType === "home-page"
-      ? newPostState.homePage.posts[newPostState.homePage.currPostIdx]
-      : newPostState.sideBar.posts[newPostState.sideBar.currPostIdx];
+      ? homePage.posts[homePage.currPostIdx]
+      : sideBar.posts[sideBar.currPostIdx];
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 

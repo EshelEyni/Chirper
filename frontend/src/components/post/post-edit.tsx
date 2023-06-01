@@ -8,11 +8,12 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { NewPost, NewPostImg } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import {
-  addPost,
+  addNewPostToThread,
   removeNewPostFromThread,
   setNewPosts,
   updateCurrNewPost,
-} from "../../store/actions/post.actions";
+} from "../../store/actions/new-post.actions";
+import { addPost } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -27,7 +28,6 @@ import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
 import { utilService } from "../../services/util.service/utils.service";
 import { PostList } from "./post-list";
-import { addNewPostToThread } from "../../store/actions/post.actions";
 import { AiOutlineClose } from "react-icons/ai";
 
 interface PostEditProps {
@@ -37,9 +37,7 @@ interface PostEditProps {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const {
-    newPostState: { sideBar, homePage, newPostType },
-  } = useSelector((state: RootState) => state.postModule);
+  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -98,9 +96,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const checkifPostTextIsValid = (post: NewPost): boolean => {
     let currPostText = "";
     if (newPostType === "home-page") {
-      currPostText = post.currIdx === homePage.currPostIdx ? inputTextValue : post.text;
+      currPostText = post.idx === homePage.currPostIdx ? inputTextValue : post.text;
     } else {
-      currPostText = post.currIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+      currPostText = post.idx === sideBar.currPostIdx ? inputTextValue : post.text;
     }
 
     return currPostText.length > 0 && currPostText.length <= 247;

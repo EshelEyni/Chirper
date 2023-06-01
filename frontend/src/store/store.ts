@@ -6,12 +6,14 @@ import { authReducer } from "./reducers/auth.reducer";
 import { systemReducer } from "./reducers/system.reducer";
 import { userReducer } from "./reducers/user.reducer";
 import { postReducer } from "./reducers/post.reducer";
+import { newPostReducer } from "./reducers/new-post.reducer";
 
 const rootReducer = combineReducers({
   userModule: userReducer,
   authModule: authReducer,
   systemModule: systemReducer,
   postModule: postReducer,
+  newPostModule: newPostReducer,
 });
 
 export const store = createStore(

@@ -9,20 +9,16 @@ import { LocationSearchBar } from "../../components/location/location-search-bar
 import { LocationList } from "../../components/location/location-list";
 import { ContentLoader } from "../../components/loaders/content-loader";
 import { locationService } from "../../services/location.service";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
-import { NewPostState } from "../../store/reducers/post.reducer";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 export const PostLocation = () => {
-  const { newPostState }: { newPostState: NewPostState } = useSelector(
-    (state: RootState) => state.postModule
-  );
-  const { newPostType } = newPostState;
-  const currNewPost =
-    newPostType === "home-page"
-      ? newPostState.homePage.posts[newPostState.homePage.currPostIdx]
-      : newPostState.sideBar.posts[newPostState.sideBar.currPostIdx];
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
+  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const currNewPost =
+    newPostType === "home-page"
+      ? homePage.posts[homePage.currPostIdx]
+      : sideBar.posts[sideBar.currPostIdx];
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);

@@ -41,7 +41,7 @@ const initialState: NewPostState = {
   newPostType: "home-page",
 };
 
-export function postReducer(
+export function newPostReducer(
   state = initialState,
   action: {
     type: string;

@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
-import { setNewPostType } from "../../store/actions/post.actions";
+import { setNewPostType } from "../../store/actions/new-post.actions";
 
 interface BtnCreatePostProps {
   isSideBarBtn: boolean;

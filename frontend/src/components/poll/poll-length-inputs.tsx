@@ -5,7 +5,7 @@ import { useCustomSelect } from "../../hooks/useCustomSelect";
 import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 type PollLengthInputsProps = {
   currNewPost: NewPost;
@@ -13,7 +13,7 @@ type PollLengthInputsProps = {
 
 export const PollLengthInputs: FC<PollLengthInputsProps> = ({ currNewPost }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   const handleValueChange = (inputType: string, value: number | string) => {
     const setPollLength = (inputType: string, value: number | string) => {

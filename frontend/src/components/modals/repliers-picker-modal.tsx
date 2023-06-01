@@ -5,7 +5,7 @@ import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 interface RepliersPickerModalProps {
   currNewPost: NewPost;
@@ -13,7 +13,7 @@ interface RepliersPickerModalProps {
 }
 
 export const RepliersPickerModal: FC<RepliersPickerModalProps> = ({ currNewPost, toggleModal }) => {
-  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   const dispatch: AppDispatch = useDispatch();
 

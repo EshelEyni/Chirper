@@ -17,20 +17,21 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
   const modalHeight = 364;
   const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
   const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsPlaying(inView);
-  }, [inView]);
+    if (!isUserPaused) setIsPlaying(inView);
+  }, [inView, isUserPaused]);
 
   const onTogglePlay = () => {
     setIsPlaying(prevState => !prevState);
+    setIsUserPaused(prevState => !prevState);
   };
 
   const onToggleDescription = (e: React.MouseEvent) => {
     e.stopPropagation();
     updateModalPosition();
-
     setIsDescriptionShown(!isDescriptionShown);
   };
 

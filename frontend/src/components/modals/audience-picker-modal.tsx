@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 interface AudiencePickerModalProps {
   currNewPost: NewPost;
@@ -14,7 +14,7 @@ interface AudiencePickerModalProps {
 }
 
 export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ currNewPost, toggleModal }) => {
-  const { newPostType } = useSelector((state: RootState) => state.postModule.newPostState);
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const dispatch: AppDispatch = useDispatch();
   const iconClassName = "picker-modal-option-icon";
   const audinceOptions = [

@@ -7,8 +7,7 @@ import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
-import { NewPostType } from "../../store/reducers/post.reducer";
-import { updateCurrNewPost } from "../../store/actions/post.actions";
+import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 interface GifListProps {
   currNewPost: NewPost;
@@ -18,9 +17,7 @@ interface GifListProps {
 
 export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVisibility }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector(
-    (state: RootState) => state.postModule.newPostState
-  );
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 

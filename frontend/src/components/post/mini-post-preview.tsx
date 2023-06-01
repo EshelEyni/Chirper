@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { VideoPlayer } from "../video/video-player";
 import { PollEdit } from "../poll/poll-edit";
-import { setCurrNewPost } from "../../store/actions/post.actions";
 import { AppDispatch } from "../../store/types";
+import { setNewPost } from "../../store/actions/new-post.actions";
 
 interface MiniPostPreviewProps {
   newPost: NewPost;
@@ -16,26 +16,24 @@ interface MiniPostPreviewProps {
 
 export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({ newPost }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const {
-    newPostState: { homePage, sideBar, newPostType },
-  } = useSelector((state: RootState) => state.postModule);
+  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
   const dispatch: AppDispatch = useDispatch();
 
   const onSetCurrPost = (currPost: NewPost) => {
-    dispatch(setCurrNewPost(currPost, newPostType));
+    dispatch(setNewPost(currPost, newPostType));
   };
 
   const setText = () => {
     if (newPost.text) return newPost.text;
-    if (newPost.currIdx === 0) return "What's happening?";
+    if (newPost.idx === 0) return "What's happening?";
     return "Add another Chirp!";
   };
 
   const setIsPostLineRender = () => {
     if (newPostType === "home-page") {
-      return newPost.currIdx !== homePage.posts.length - 1;
+      return newPost.idx !== homePage.posts.length - 1;
     } else if (newPostType === "side-bar") {
-      return newPost.currIdx !== sideBar.posts.length - 1;
+      return newPost.idx !== sideBar.posts.length - 1;
     }
   };
   return (

@@ -1,5 +1,6 @@
 import { Location } from "../../../shared/interfaces/location.interface";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
+import { cacheService } from "./cache.service";
 import { httpService } from "./http.service";
 import { utilService } from "./util.service/utils.service";
 import queryString from "query-string";
@@ -29,10 +30,18 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 
 async function getUserDefaultLocations(): Promise<Location[] | null> {
   try {
+    const cacheLocation = cacheService.get("location", 5);
+    if (cacheLocation) {
+      return cacheLocation;
+    }
     const currLocation = await _getCurrentLocation();
     if (currLocation) {
       const query = queryString.stringify(currLocation);
       const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse;
+      cacheService.set("location", {
+        cachedAt: Date.now(),
+        data: response.data,
+      });
       return utilService.handleServerResponse<Location[]>(response);
     } else {
       return null;

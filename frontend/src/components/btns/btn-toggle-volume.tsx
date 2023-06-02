@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
 import { VideoVolumeSlider } from "../video/video-volume-slider";
-import { set } from "mongoose";
 import { storageService } from "../../services/storage.service";
 
 type BtnToggleVolumeProps = {

@@ -35,6 +35,7 @@ export interface NewPost extends BasicPost {
   imgs: NewPostImg[];
   userId?: string;
   linkToPreviousThreadPost?: string;
+  isDraft?: boolean;
 }
 
 export interface Post extends BasicPost {

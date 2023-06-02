@@ -35,6 +35,10 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
     linkToPreviousThreadPost: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
@@ -128,6 +132,9 @@ function validateSchedule(post: Document) {
   }
 }
 
+postSchema.index({ createdAt: -1 });
+postSchema.index({ userId: 1 });
+
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
     const err = new Error("At least one of text, gif, imgs, or poll is required");
@@ -152,7 +159,7 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
 });
 
 postSchema.pre("save", function (this: Document, next: () => void) {
-  if (this.get("schedule") === undefined) {
+  if (this.get("schedule") === undefined && this.get("isDraft") === undefined) {
     this.set("isPublic", true);
   } else {
     this.set("isPublic", false);

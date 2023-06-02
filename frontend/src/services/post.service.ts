@@ -44,7 +44,7 @@ async function remove(postId: string) {
   }
 }
 
-async function add(posts: NewPost[]): Promise<Post> {
+async function add(...posts: NewPost[]): Promise<Post> {
   try {
     const res = (await httpService.post("post", posts)) as unknown as JsendResponse;
     const addedPost = res.data;

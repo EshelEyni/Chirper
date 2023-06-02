@@ -77,10 +77,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setIsFirstPostInThread(homePage.currPostIdx === 0);
     } else {
       const currPost = sideBar.posts[sideBar.currPostIdx];
-      setPreCurrNewPostList(sideBar.posts);
+      setPreCurrNewPostList(sideBar.posts.filter((_, idx) => idx < sideBar.currPostIdx));
       setCurrNewPost(currPost);
       setInputTextValue(currPost.text);
-      setPostCurrNewPostList(sideBar.posts);
+      setPostCurrNewPostList(sideBar.posts.filter((_, idx) => idx > sideBar.currPostIdx));
       setIsMultipePosts(sideBar.posts.length > 1);
       setIsFirstPostInThread(sideBar.currPostIdx === 0);
     }
@@ -91,6 +91,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setInputTextValue("");
       setPostCurrNewPostList([]);
     }
+
+    return () => {
+      setPreCurrNewPostList([]);
+      setCurrNewPost(null);
+      setInputTextValue("");
+      setPostCurrNewPostList([]);
+    };
   }, [homePage.posts, homePage.currPostIdx, sideBar.posts, sideBar.currPostIdx, location.pathname]);
 
   const checkifPostTextIsValid = (post: NewPost): boolean => {
@@ -292,14 +299,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             )}
           </div>
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            {currNewPost && (
-              <PostEditActions
-                currNewPost={currNewPost}
-                isPickerShown={isPickerShown}
-                inputTextValue={inputTextValue}
-                setInputTextValue={setInputTextValue}
-              />
-            )}
+            <PostEditActions
+              currNewPost={currNewPost}
+              isPickerShown={isPickerShown}
+              inputTextValue={inputTextValue}
+              setInputTextValue={setInputTextValue}
+            />
             <div className="secondary-action-container">
               {(checkIfPostIsValid(currNewPost) || inputTextValue.length > 0) && (
                 <div className="indicator-thread-btn-container">

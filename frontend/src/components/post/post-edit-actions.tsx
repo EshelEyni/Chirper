@@ -16,7 +16,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 
 interface PostEditActionsProps {
-  currNewPost: NewPost;
+  currNewPost: NewPost | null;
   isPickerShown: boolean;
   inputTextValue: string;
   setInputTextValue: React.Dispatch<React.SetStateAction<string>>;
@@ -48,9 +48,10 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!currNewPost) return;
     if (currNewPost.imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [currNewPost.imgs]);
+  }, [currNewPost?.imgs]);
 
   const btns: {
     name: string;
@@ -64,19 +65,19 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
       icon: <FiImage />,
       type: "file",
       isDisabled:
-        currNewPost.imgs.length === 4 ||
-        !!currNewPost.gif ||
-        !!currNewPost.poll ||
-        !!currNewPost.video,
+        currNewPost?.imgs.length === 4 ||
+        !!currNewPost?.gif ||
+        !!currNewPost?.poll ||
+        !!currNewPost?.video,
     },
     {
       name: "gif-upload",
       icon: <RiFileGifLine />,
       isDisabled:
-        currNewPost.imgs.length > 0 ||
-        !!currNewPost.gif ||
-        !!currNewPost.poll ||
-        !!currNewPost.video,
+        (currNewPost?.imgs.length && currNewPost.imgs.length > 0) ||
+        !!currNewPost?.gif ||
+        !!currNewPost?.poll ||
+        !!currNewPost?.video,
       onClickFn: () => {
         if (!isPickerShown) return;
         onToggleElementVisibility("gifPicker");
@@ -86,13 +87,13 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
       name: "poll",
       icon: <FiList />,
       isDisabled:
-        currNewPost.imgs.length > 0 ||
-        !!currNewPost.gif ||
-        !!currNewPost.poll ||
-        !!currNewPost.video ||
-        !!currNewPost.schedule,
+        (currNewPost?.imgs.length && currNewPost.imgs.length > 0) ||
+        !!currNewPost?.gif ||
+        !!currNewPost?.poll ||
+        !!currNewPost?.video ||
+        !!currNewPost?.schedule,
       onClickFn: () => {
-        if (!isPickerShown) return;
+        if (!isPickerShown || !currNewPost) return;
         const defaultPoll: Poll = {
           options: [
             { text: "", voteSum: 0, isLoggedinUserVoted: false },
@@ -122,7 +123,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: !!currNewPost.poll || !!homePage.currPostIdx || !!sideBar.currPostIdx,
+      isDisabled: !!currNewPost?.poll || !!homePage.currPostIdx || !!sideBar.currPostIdx,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostScedule();
@@ -140,6 +141,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   ];
 
   const onUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!currNewPost) return;
     const { files } = e.target;
     if (!files) return;
     const fileTypes = [...files].map(file => file.type.slice(0, 5));
@@ -220,6 +222,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     });
 
   const onUploadImgs = async (files: File[]) => {
+    if (!currNewPost) return;
     const newImgs = [...currNewPost.imgs];
     for (let i = 0; i < files.length; i++) {
       try {
@@ -240,6 +243,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   };
 
   const onUploadVideo = async (file: File) => {
+    if (!currNewPost) return;
     try {
       const newPostPreLoad = { ...currNewPost, video: { url: "", isLoading: true, file } };
       dispatch(updateCurrNewPost(newPostPreLoad, newPostType));
@@ -252,6 +256,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   };
 
   const onEmojiPicked = (emoji: Emoji) => {
+    if (!currNewPost) return;
     const nativeEmoji = emoji.native;
     const newPostText = inputTextValue + nativeEmoji;
     setInputTextValue(newPostText);
@@ -303,7 +308,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
                   type={btn.type}
                   accept={"image/*,video/*"}
                   multiple={isMultiple}
-                  disabled={currNewPost.imgs.length === 4 || !isPickerShown}
+                  disabled={currNewPost?.imgs.length === 4 || !isPickerShown}
                   id={btn.name}
                   onChange={onUploadFile}
                   style={{ display: "none" }}
@@ -348,7 +353,8 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
           }
         })}
       </div>
-      {elementVisibility.gifPicker && (
+
+      {elementVisibility.gifPicker && currNewPost && (
         <GifPickerModal
           currNewPost={currNewPost}
           onToggleElementVisibility={onToggleElementVisibility}

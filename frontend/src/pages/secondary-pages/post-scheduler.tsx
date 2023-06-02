@@ -235,17 +235,17 @@ export const PostSchedule = () => {
   }, [schedule]);
 
   const onGoBack = () => {
-    navigate("/");
+    navigate(-1);
   };
 
   const onConfirmSchedule = () => {
-    navigate("/");
+    navigate(-1);
     const newPost = { ...currNewPost, schedule };
     dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   const onClearSchedule = () => {
-    navigate("/");
+    navigate(-1);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { schedule, ...postWithOutSchedule } = currNewPost;
     dispatch(updateCurrNewPost(postWithOutSchedule, newPostType));

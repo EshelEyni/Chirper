@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
 import { setNewPostType } from "../../store/actions/new-post.actions";
 
@@ -17,11 +17,13 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   btnText = "Chirp",
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const onClickBtn = () => {
     if (isSideBarBtn) {
       dispatch(setNewPostType("side-bar"));
-      navigate("/compose");
+      const currPathName = location.pathname === "/" ? "" : location.pathname;
+      navigate(`${currPathName}/compose`);
     } else {
       if (isDisabled) return;
       onAddPost && onAddPost();

@@ -45,7 +45,6 @@ export const ComposePage = () => {
         setIsSavePostDraftModalOpen(true);
       } else {
         discardPostThread();
-        navigate(-1);
       }
     }
   };

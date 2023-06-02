@@ -28,7 +28,7 @@ export const LocationList: FC<LocationListProps> = ({
   const onClickLocation = (location: Location) => {
     setSelectedLocation(location);
     dispatch(updateCurrNewPost({ ...currNewPost, location }, newPostType));
-    navigate("");
+    navigate(-1);
   };
 
   return (

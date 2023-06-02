@@ -36,6 +36,30 @@
           }
         }
       }
+
+      .btn-replires-location-container {
+        .btn-toggle-repliers-container {
+          .picker-modal.repliers {
+            position: fixed;
+            top: 40%;
+            left: 30%;
+          }
+        }
+      }
+
+      .btns-container {
+        .post-edit-action-btns {
+          .emoji-button-container {
+            .emoji-picker-container {
+              .emoji-picker-modal-container {
+                position: fixed;
+                top: 47.5%;
+                left: 50%;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

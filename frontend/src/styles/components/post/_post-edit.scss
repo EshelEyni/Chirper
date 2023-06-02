@@ -116,13 +116,7 @@
 
         .btn-toggle-repliers-container {
           position: relative;
-          padding: rem(4px);
-          border-radius: 35px;
-
-          &:hover {
-            background-color: var(--color-primary-light);
-          }
-
+          
           .btn-toggle-repliers {
             display: flex;
             justify-content: flex-start;
@@ -130,10 +124,16 @@
             gap: rem(4px);
             font-weight: 600;
             font-size: rem(14px);
+            border-radius: 35px;
+            padding: rem(5px);
             color: var(--color-primary);
 
             span::first-letter {
               text-transform: uppercase;
+            }
+
+            &:hover {
+              background-color: var(--color-primary-light);
             }
           }
         }

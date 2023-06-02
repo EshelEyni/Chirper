@@ -22,6 +22,7 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 
     return utilService.handleServerResponse<Location[]>(response);
   } catch (err) {
+    console.log(err);
     throw err;
   }
 }
@@ -46,7 +47,7 @@ function _getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           resolve({ lat, lng });

@@ -19,9 +19,9 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const onClickBtn = () => {
+  const onClickBtn = async () => {
     if (isSideBarBtn) {
-      dispatch(setNewPostType("side-bar"));
+      await dispatch(setNewPostType("side-bar"));
       const currPathName = location.pathname === "/" ? "" : location.pathname;
       navigate(`${currPathName}/compose`);
     } else {

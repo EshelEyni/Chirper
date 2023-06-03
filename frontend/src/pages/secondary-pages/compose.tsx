@@ -31,7 +31,7 @@ export const ComposePage = () => {
       newPostType === "home-page" ? { ...homePage.posts[0] } : { ...sideBar.posts[0] };
     if (!postToSave) return;
     postToSave.isDraft = true;
-    await postService.add(postToSave);
+    await postService.add([postToSave]);
     discardPostThread();
   };
 

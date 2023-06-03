@@ -13,6 +13,7 @@ import { RootState } from "../../store/store";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { Logo } from "../other/logo";
 import { VideoPlayer } from "../video/video-player";
+import { PostRepliedToUsersList } from "./post-replied-to-users-list";
 
 interface PostPreviewProps {
   post: Post;
@@ -90,6 +91,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           </div>
         </header>
         <div className="post-preview-body">
+          {post.repliedPostDetails && post.repliedPostDetails.length > 0 && (
+            <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
+          )}
           <p
             className="post-preview-text"
             dangerouslySetInnerHTML={{ __html: formmatText(post.text) }}

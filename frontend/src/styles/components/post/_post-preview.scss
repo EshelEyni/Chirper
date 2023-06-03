@@ -106,6 +106,18 @@
         }
       }
     }
+
+    .replying-to-list-container {
+      display: flex;
+      align-items: flex-start;
+      gap: rem(5px);
+      height: rem(20px);
+      color: var(--color-text-gray);
+
+      .reply-to-user-link {
+        color: var(--color-primary);
+      }
+    }
   }
 }
 
@@ -120,6 +132,10 @@
   opacity: 0.5;
   border-bottom: none;
   padding: rem(5px) 0;
+
+  &.reply {
+    opacity: 1;
+  }
 
   .mini-post-preview-side-bar {
     display: flex;
@@ -139,6 +155,10 @@
   }
 
   .post-preview-main-container {
+    display: flex;
+    flex-direction: column;
+    gap: rem(5px);
+
     .post-preview-body {
       display: flex;
       flex-direction: column;
@@ -148,6 +168,11 @@
       .post-preview-text {
         font-size: rem(20px);
       }
+    }
+
+    .replying-to-list-container {
+      align-items: center;
+      height: rem(50px);
     }
   }
 }

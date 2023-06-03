@@ -33,7 +33,13 @@ export const LoginPage = () => {
         <div>username</div>
         <input type="text" name="username" onChange={handleChange} autoComplete="off" />
         <div>password</div>
-        <input type="password" name="password" onChange={handleChange} autoComplete="off" />
+        <input
+          type="password"
+          name="password"
+          onChange={handleChange}
+          autoComplete="off"
+          value={user.password}
+        />
       </div>
 
       <button onClick={onLogin}>login</button>

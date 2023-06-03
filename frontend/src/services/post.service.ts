@@ -14,9 +14,7 @@ export const postService = {
 
 async function query(): Promise<Post[]> {
   try {
-    const response = (await httpService.get(
-      "post?linkToPreviousThreadPost[exists]=false"
-    )) as unknown as JsendResponse;
+    const response = await httpService.get("post?previousThreadPostId[exists]=false");
     return utilService.handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");
@@ -26,7 +24,7 @@ async function query(): Promise<Post[]> {
 
 async function getById(postId: string): Promise<Post> {
   try {
-    const response = (await httpService.get(`post/${postId}`)) as unknown as JsendResponse;
+    const response = await httpService.get(`post/${postId}`);
     return utilService.handleServerResponse<Post>(response);
   } catch (err) {
     console.log("postService: Cannot get post");
@@ -44,9 +42,9 @@ async function remove(postId: string) {
   }
 }
 
-async function add(...posts: NewPost[]): Promise<Post> {
+async function add(posts: NewPost[]): Promise<Post> {
   try {
-    const res = (await httpService.post("post", posts)) as unknown as JsendResponse;
+    const res = await httpService.post("post", posts);
     const addedPost = res.data;
     return addedPost;
   } catch (err) {

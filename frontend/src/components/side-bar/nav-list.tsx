@@ -64,7 +64,7 @@ export const NavList = () => {
       isShown: !!loggedinUser,
     },
     {
-      path: "/profile",
+      path: `/profile/${loggedinUser?.id}`,
       title: "Profile",
       iconActive: <FaUser className="active-icon" />,
       iconUnActive: <FaRegUser className="unactive-icon" />,

@@ -1,7 +1,7 @@
 import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { RootState } from "../store";
-import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { NewPostType } from "../reducers/new-post.reducer";
 
 export function setNewPostType(
@@ -18,11 +18,16 @@ export function setNewPostType(
 
 export function setNewPosts(
   newPosts: NewPost[],
-  newPostType: NewPostType
+  newPostType: NewPostType,
+  repliedToPost?: Post
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      dispatch({ type: "SET_NEW_POSTS", newPosts, newPostType });
+      if (newPostType !== "reply") {
+        dispatch({ type: "SET_NEW_POSTS", newPosts, newPostType });
+      } else {
+        dispatch({ type: "SET_NEW_POSTS", repliedToPost, newPostType });
+      }
     } catch (err) {
       console.log("PostActions: err in setNewPosts", err);
     }

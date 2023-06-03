@@ -37,16 +37,23 @@ const postSchema = new mongoose.Schema(
     },
     isDraft: {
       type: Boolean,
-      default: false,
     },
-    linkToPreviousThreadPost: {
+    previousThreadPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
     },
-    replyTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
+    repliedPostDetails: [
+      {
+        postId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Post",
+        },
+        postOwner: {
+          userId: mongoose.Schema.Types.ObjectId,
+          username: String,
+        },
+      },
+    ],
     isRechirp: {
       type: Boolean,
       default: false,

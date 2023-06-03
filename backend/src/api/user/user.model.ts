@@ -94,6 +94,7 @@ const userSchema = new Schema(
       virtuals: true,
       transform: (doc: Document, ret: Record<string, unknown>) => {
         delete ret.password;
+        delete ret.passwordConfirm;
         delete ret._id;
         delete ret.active;
         delete ret.loginAttempts;
@@ -105,6 +106,7 @@ const userSchema = new Schema(
       virtuals: true,
       transform: (doc: Document, ret: Record<string, unknown>) => {
         delete ret.password;
+        delete ret.passwordConfirm;
         delete ret._id;
         delete ret.active;
         delete ret.loginAttempts;

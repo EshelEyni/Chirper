@@ -40,13 +40,12 @@ async function add(thread: NewPost[]): Promise<Post> {
       const currPost = thread[i];
 
       if (i > 0) {
-        currPost.linkToPreviousThreadPost = savedThread[i - 1].id;
+        currPost.previousThreadPostId = savedThread[i - 1].id;
       }
 
       const savedPost = await new PostModel(currPost).save();
       savedThread.push(savedPost as unknown as Post);
     }
-
     const populatedPost = await PostModel.findById(savedThread[0].id)
       .populate(_populateUser())
       .exec();

@@ -17,6 +17,15 @@ export type NewPostVideo = {
   file: File | null;
 };
 
+export type repliedPostDetails = {
+  postId: string;
+  postOwner: {
+    username: string;
+    userId: string;
+  };
+};
+
+
 export type BasicPost = {
   text: string;
   video?: NewPostVideo | null;
@@ -28,19 +37,19 @@ export type BasicPost = {
   isPublic: boolean;
   audience: string;
   repliersType: string;
+  repliedPostDetails?: repliedPostDetails[];
 };
 
 export interface NewPost extends BasicPost {
   idx: number;
   imgs: NewPostImg[];
   userId?: string;
-  linkToPreviousThreadPost?: string;
+  previousThreadPostId?: string;
   isDraft?: boolean;
 }
 
 export interface Post extends BasicPost {
   id: string;
-  replyTo: string;
   createdAt: Date;
   updatedAt: Date;
   commentSum: number;

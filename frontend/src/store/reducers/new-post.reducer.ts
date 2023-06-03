@@ -1,4 +1,4 @@
-import { NewPost } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, repliedPostDetails } from "../../../../shared/interfaces/post.interface";
 
 export type NewPostState = {
   homePage: {
@@ -9,17 +9,22 @@ export type NewPostState = {
     posts: NewPost[];
     currPostIdx: number;
   };
+  reply: {
+    repliedToPost: Post | null;
+    reply: NewPost;
+  };
   newPostType: NewPostType;
 };
 
 export type NewPostType = "home-page" | "side-bar" | "reply";
 
-const getDefaultNewPost = (idx = 0): NewPost => {
+const getDefaultNewPost = (idx = 0, repliedPostDetails?: repliedPostDetails[]): NewPost => {
   return {
     idx,
     text: "",
     audience: "everyone",
     repliersType: "everyone",
+    repliedPostDetails,
     isPublic: true,
     imgs: [],
     video: null,
@@ -38,6 +43,10 @@ const initialState: NewPostState = {
     posts: [getDefaultNewPost()],
     currPostIdx: 0,
   },
+  reply: {
+    repliedToPost: null,
+    reply: getDefaultNewPost(),
+  },
   newPostType: "home-page",
 };
 
@@ -45,6 +54,7 @@ export function newPostReducer(
   state = initialState,
   action: {
     type: string;
+    repliedToPost: Post;
     newPosts: NewPost[];
     newPost: NewPost;
     updatedPost: NewPost;
@@ -74,7 +84,41 @@ export function newPostReducer(
             currPostIdx: 0,
           },
         };
+      } else if (action.newPostType === "reply") {
+        if (!action.repliedToPost) {
+          newPostState = {
+            ...state,
+            reply: {
+              repliedToPost: null,
+              reply: getDefaultNewPost(),
+            },
+          };
+          return newPostState;
+        }
+
+        const {
+          id,
+          user: { id: userId, username },
+        } = action.repliedToPost;
+
+        const currRepliedPostDetails = {
+          postId: id,
+          postOwner: { userId, username },
+        };
+
+        const repliedPostDetails = action.repliedToPost.repliedPostDetails?.length
+          ? [...action.repliedToPost.repliedPostDetails, currRepliedPostDetails]
+          : [currRepliedPostDetails];
+
+        newPostState = {
+          ...state,
+          reply: {
+            repliedToPost: action.repliedToPost,
+            reply: getDefaultNewPost(0, repliedPostDetails),
+          },
+        };
       }
+
       return newPostState;
     }
     case "SET_NEW_POST": {
@@ -117,6 +161,11 @@ export function newPostReducer(
           state.sideBar.currPostIdx === idx ? action.newPost : post
         );
         newPostState = { ...state, sideBar: { ...state.sideBar, posts: newPosts } };
+      } else if (action.newPostType === "reply") {
+        newPostState = {
+          ...state,
+          reply: { ...state.reply, reply: action.newPost },
+        };
       }
 
       return newPostState;

@@ -43,11 +43,29 @@ export const SignupPage = () => {
         <div>fullname</div>
         <input type="text" name="fullname" onChange={handleChange} autoComplete="off" />
         <div>email</div>
-        <input type="text" name="email" onChange={handleChange} autoComplete="off" />
+        <input
+          type="text"
+          name="email"
+          onChange={handleChange}
+          autoComplete="off"
+          value={user.email}
+        />
         <div>password</div>
-        <input type="password" name="password" onChange={handleChange} autoComplete="off" />
+        <input
+          type="password"
+          name="password"
+          onChange={handleChange}
+          autoComplete="off"
+          value={user.password}
+        />
         <div>passwordConfirm</div>
-        <input type="password" name="passwordConfirm" onChange={handleChange} autoComplete="off" />
+        <input
+          type="password"
+          name="passwordConfirm"
+          onChange={handleChange}
+          autoComplete="off"
+          value={user.passwordConfirm}
+        />
       </div>
 
       <button onClick={onSignup}>signup</button>

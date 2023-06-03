@@ -5,11 +5,12 @@ import { BtnCreatePost } from "../btns/btn-create-post";
 import { PostEditActions } from "./post-edit-actions";
 import { TextIndicator } from "../other/text-indicator";
 import { AiOutlinePlus } from "react-icons/ai";
-import { NewPost, NewPostImg } from "../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg, Post } from "../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../store/types";
 import {
   addNewPostToThread,
   removeNewPostFromThread,
+  setNewPostType,
   setNewPosts,
   updateCurrNewPost,
 } from "../../store/actions/new-post.actions";
@@ -29,6 +30,7 @@ import { PostEditVideo } from "./post-edit-video";
 import { utilService } from "../../services/util.service/utils.service";
 import { PostList } from "./post-list";
 import { AiOutlineClose } from "react-icons/ai";
+import { MiniPostPreview } from "./mini-post-preview";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -37,7 +39,9 @@ interface PostEditProps {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { sideBar, homePage, reply, newPostType } = useSelector(
+    (state: RootState) => state.newPostModule
+  );
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,6 +50,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const newPostTypeRef = useRef(newPostType);
 
   const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
+  const [replyToPost, setReplyToPost] = useState<Post | null>(null);
   const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
   const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
@@ -67,7 +72,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
 
   useEffect(() => {
-    if (newPostTypeRef.current === "home-page") {
+    const postType = newPostTypeRef.current;
+    if (postType === "home-page") {
       const currPost = homePage.posts[homePage.currPostIdx];
       setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
       setCurrNewPost(currPost);
@@ -75,7 +81,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostCurrNewPostList(homePage.posts.filter((_, idx) => idx > homePage.currPostIdx));
       setIsMultipePosts(homePage.posts.length > 1);
       setIsFirstPostInThread(homePage.currPostIdx === 0);
-    } else {
+    } else if (postType === "side-bar") {
       const currPost = sideBar.posts[sideBar.currPostIdx];
       setPreCurrNewPostList(sideBar.posts.filter((_, idx) => idx < sideBar.currPostIdx));
       setCurrNewPost(currPost);
@@ -83,6 +89,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostCurrNewPostList(sideBar.posts.filter((_, idx) => idx > sideBar.currPostIdx));
       setIsMultipePosts(sideBar.posts.length > 1);
       setIsFirstPostInThread(sideBar.currPostIdx === 0);
+    } else if (postType === "reply") {
+      setCurrNewPost(reply.reply);
+      setInputTextValue(reply.reply.text);
+      setReplyToPost(reply.repliedToPost);
     }
     if (location.pathname === "/compose" && isHomePage) {
       setIsPickerShown(false);
@@ -92,13 +102,29 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostCurrNewPostList([]);
     }
 
+    if (!isHomePage) textAreaRef.current?.focus();
+
     return () => {
       setPreCurrNewPostList([]);
       setCurrNewPost(null);
       setInputTextValue("");
       setPostCurrNewPostList([]);
     };
-  }, [homePage.posts, homePage.currPostIdx, sideBar.posts, sideBar.currPostIdx, location.pathname]);
+  }, [
+    homePage.posts,
+    homePage.currPostIdx,
+    sideBar.posts,
+    sideBar.currPostIdx,
+    reply,
+    location.pathname,
+  ]);
+
+  const setBtnTitleText = (): string => {
+    const postType = newPostTypeRef.current;
+    if (currNewPost?.schedule) return "Schedule";
+    if (postType === "reply") return "Reply";
+    return isMultipePosts && !isHomePage ? "Chirp All" : "Chirp";
+  };
 
   const checkifPostTextIsValid = (post: NewPost): boolean => {
     let currPostText = "";
@@ -173,7 +199,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     if (!currNewPost || !loggedinUser) return;
     try {
       setPostSaveInProgress(true);
-
       const thread = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
 
       for (const post of thread) {
@@ -197,8 +222,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         }
       }
       await dispatch(addPost(thread));
-
-      dispatch(setNewPosts([], newPostType));
+      if (newPostType !== "reply") dispatch(setNewPosts([], newPostType));
+      else {
+        dispatch(setNewPostType("home-page"));
+        dispatch(setNewPosts([], newPostType));
+      }
       setInputTextValue("");
       setIsPickerShown(false);
       setPostSaveInProgress(false);
@@ -238,6 +266,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   };
 
   const setTextPlaceholder = () => {
+    const postType = newPostTypeRef.current;
+    if (postType === "reply") {
+      const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.user.id;
+      if (isLoggedinUserPost) return "Add another Chirp!";
+      return "Chirp your reply...";
+    }
     if (currNewPost?.poll) return "Ask a question...";
     else {
       if (isFirstPostInThread) return "What's happening?";
@@ -252,7 +286,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     >
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {postSaveInProgress && <span className="progress-bar"></span>}
-      {preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
+      {!isHomePage && preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
+      {!isHomePage && replyToPost && <MiniPostPreview post={replyToPost} />}
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
@@ -262,15 +297,18 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {currNewPost?.schedule && isFirstPostInThread && (
             <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
           )}
-          {!isFirstPostInThread && !isHomePage && !checkIfPostIsValid(currNewPost) && (
-            <button className="btn-remove-post-from-thread">
-              <AiOutlineClose
-                color="var(--color-primary)"
-                size={15}
-                onClick={() => dispatch(removeNewPostFromThread(newPostType))}
-              />
-            </button>
-          )}
+          {!isFirstPostInThread &&
+            !isHomePage &&
+            newPostTypeRef.current !== "reply" &&
+            !checkIfPostIsValid(currNewPost) && (
+              <button className="btn-remove-post-from-thread">
+                <AiOutlineClose
+                  color="var(--color-primary)"
+                  size={15}
+                  onClick={() => dispatch(removeNewPostFromThread(newPostType))}
+                />
+              </button>
+            )}
           <textarea
             className={
               "post-edit-text-area" +
@@ -323,13 +361,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                 isSideBarBtn={false}
                 isDisabled={!isPostsValid}
                 onAddPost={onAddPost}
-                btnText={isMultipePosts && !isHomePage ? "Chirp All" : "Chirp"}
+                btnText={setBtnTitleText()}
               />
             </div>
           </div>
         </main>
       </div>
-      {postCurrNewPostList.length > 0 && <PostList newPosts={postCurrNewPostList} />}
+      {!isHomePage && postCurrNewPostList.length > 0 && <PostList newPosts={postCurrNewPostList} />}
     </section>
   );
 };

@@ -63,6 +63,10 @@ const postSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    repostedById: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     text: {
       type: String,
       trim: true,
@@ -80,7 +84,7 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    rechirpSum: {
+    repostSum: {
       type: Number,
       default: 0,
     },

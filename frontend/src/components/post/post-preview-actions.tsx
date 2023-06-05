@@ -10,6 +10,7 @@ import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPostType, setNewPosts } from "../../store/actions/new-post.actions";
 import { RootState } from "../../store/store";
+import { addPost } from "../../store/actions/post.actions";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -23,6 +24,8 @@ type Btn = {
 };
 
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
@@ -43,9 +46,10 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "rechirp",
       icon: <AiOutlineRetweet className={iconClassName} />,
-      count: post.rechirps,
+      count: post.repostSum,
       onClickFunc: () => {
-        console.log("rechirp");
+        const repostedPost = { ...post };
+        dispatch(addPost({ repostedPost }));
       },
     },
     {

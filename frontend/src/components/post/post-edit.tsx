@@ -199,9 +199,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     if (!currNewPost || !loggedinUser) return;
     try {
       setPostSaveInProgress(true);
-      const thread = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
+      const posts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
 
-      for (const post of thread) {
+      for (const post of posts) {
         if (post.imgs.length > 0) {
           const prms = post.imgs.map(async (img, idx) => {
             const currImgUrl = await uploadFileToCloudinary(img.file, "image");
@@ -221,7 +221,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           delete post.video;
         }
       }
-      await dispatch(addPost(thread));
+      await dispatch(addPost({ posts }));
       if (newPostType !== "reply") dispatch(setNewPosts([], newPostType));
       else {
         dispatch(setNewPostType("home-page"));

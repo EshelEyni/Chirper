@@ -35,13 +35,16 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedinUserId } = req;
-  const thread = req.body as unknown as NewPost[];
-  if (loggedinUserId) {
-    thread.forEach(post => {
+  const { posts, repostedPost } = req.body as unknown as { posts: NewPost[]; repostedPost: Post };
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (posts) {
+    posts.forEach(post => {
       post.userId = loggedinUserId;
     });
+  } else if (repostedPost) {
+    repostedPost.repostedById = loggedinUserId;
   }
-  const post = await postService.add(thread);
+  const post = await postService.add({ posts, repostedPost });
 
   res.status(201).send({
     status: "success",

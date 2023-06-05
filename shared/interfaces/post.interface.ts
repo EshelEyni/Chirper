@@ -5,6 +5,12 @@ import { ReactIcon } from "../../frontend/src/types/elements.interface";
 
 export type PostDocument = Post & Document;
 
+
+export type AddPostParams = {
+  posts?: NewPost[];
+  repostedPost?: Post;
+};
+
 export type PostImg = {
   url: string;
   sortOrder: number;
@@ -25,7 +31,6 @@ export type repliedPostDetails = {
   };
 };
 
-
 export type BasicPost = {
   text: string;
   video?: NewPostVideo | null;
@@ -38,6 +43,7 @@ export type BasicPost = {
   audience: string;
   repliersType: string;
   repliedPostDetails?: repliedPostDetails[];
+  repostedById?: string;
 };
 
 export interface NewPost extends BasicPost {
@@ -53,17 +59,22 @@ export interface Post extends BasicPost {
   createdAt: Date;
   updatedAt: Date;
   commentSum: number;
-  rechirps: number;
+  repostSum: number;
   likes: number;
   views: number;
   imgs: PostImg[];
-  user: {
+  createdBy: {
     id: string;
     username: string;
     fullname: string;
     isAdmin?: boolean;
     isVerified?: boolean;
     imgUrl: string;
+  };
+  repostedBy?: {
+    id: string;
+    username: string;
+    fullname: string;
   };
 }
 

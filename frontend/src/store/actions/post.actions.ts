@@ -2,7 +2,7 @@ import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { postService } from "../../services/post.service";
 import { RootState } from "../store";
-import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { AddPostParams, NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -42,31 +42,36 @@ export function removePost(
   };
 }
 
-export function addPost(
-  posts: NewPost[]
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+export function addPost({
+  posts,
+  repostedPost,
+}: AddPostParams): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.add(posts);
-      const isPublished = !addedPost.schedule;
-      if (isPublished) {
-        dispatch({ type: "ADD_POST", post: addedPost });
-      } else {
-        const dateStr = new Intl.DateTimeFormat("en-US", {
-          dateStyle: "full",
-          timeStyle: "short",
-          timeZone: "UTC",
-        }).format(addedPost.schedule);
+      let addedPost: Post | null = null;
+      if (posts) {
+        addedPost = await postService.add({ posts });
+        const isPublished = !addedPost.schedule;
+        if (!isPublished) {
+          const dateStr = new Intl.DateTimeFormat("en-US", {
+            dateStyle: "full",
+            timeStyle: "short",
+            timeZone: "UTC",
+          }).format(addedPost.schedule);
 
-        const msg: UserMsg = {
-          type: "info",
-          text: `Your Chirp will be sent on ${dateStr}`,
-        };
-        dispatch({ type: "SET_USER_MSG", userMsg: msg });
-        setTimeout(() => {
-          dispatch({ type: "SET_USER_MSG", userMsg: null });
-        }, 2000);
+          const msg: UserMsg = {
+            type: "info",
+            text: `Your Chirp will be sent on ${dateStr}`,
+          };
+          dispatch({ type: "SET_USER_MSG", userMsg: msg });
+          setTimeout(() => {
+            dispatch({ type: "SET_USER_MSG", userMsg: null });
+          }, 2000);
+        }
+      } else if (repostedPost) {
+        addedPost = await postService.add({ repostedPost });
       }
+      dispatch({ type: "ADD_POST", post: addedPost });
     } catch (err) {
       const msg: UserMsg = {
         type: "error",

@@ -1,4 +1,9 @@
-import { NewPost, Post, PollOption } from "../../../../shared/interfaces/post.interface";
+import {
+  NewPost,
+  Post,
+  PollOption,
+  AddPostParams,
+} from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
 import { PollResultModel } from "./poll.model";
@@ -15,7 +20,10 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  let posts = (await features.getQuery().populate(_populateUser()).exec()) as unknown as Post[];
+  let posts = (await features
+    .getQuery()
+    .populate(_populatePostOwner())
+    .exec()) as unknown as Post[];
   if (posts.length > 0) {
     await _populateUserPollVotes(...(posts as unknown as Post[]));
   }
@@ -24,32 +32,42 @@ async function query(queryString: QueryString): Promise<Post[]> {
 }
 
 async function getById(postId: string): Promise<Post | null> {
-  const post = await PostModel.findById(postId).populate(_populateUser()).exec();
+  const post = await PostModel.findById(postId).populate(_populatePostOwner()).exec();
   await _populateUserPollVotes(post as unknown as Post);
   return post as unknown as Post;
 }
 
-async function add(thread: NewPost[]): Promise<Post> {
+async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const savedThread: Post[] = [];
+    let populatedPost: Post | null = null;
+    if (posts) {
+      const savedThread: Post[] = [];
 
-    for (let i = 0; i < thread.length; i++) {
-      const currPost = thread[i];
+      for (let i = 0; i < posts.length; i++) {
+        const currPost = posts[i];
 
-      if (i > 0) {
-        currPost.previousThreadPostId = savedThread[i - 1].id;
+        if (i > 0) {
+          currPost.previousThreadPostId = savedThread[i - 1].id;
+        }
+
+        const savedPost = await new PostModel(currPost).save();
+        savedThread.push(savedPost as unknown as Post);
       }
-
-      const savedPost = await new PostModel(currPost).save();
-      savedThread.push(savedPost as unknown as Post);
+      populatedPost = (await PostModel.findById(savedThread[0].id)
+        .populate(_populatePostOwner())
+        .exec()) as unknown as Post;
+    } else if (repostedPost) {
+      const savedPost = await new PostModel(repostedPost).save();
+      populatedPost = (await PostModel.findById(savedPost.id)
+        .populate(_populatePostOwner())
+        .exec()) as unknown as Post;
     }
-    const populatedPost = await PostModel.findById(savedThread[0].id)
-      .populate(_populateUser())
-      .exec();
+
     await session.commitTransaction();
+    if (!populatedPost) throw new AppError("post not found", 404);
     return populatedPost as unknown as Post;
   } catch (error) {
     await session.abortTransaction();
@@ -64,7 +82,7 @@ async function update(id: string, post: Post): Promise<Post> {
     new: true,
     runValidators: true,
   })
-    .populate(_populateUser())
+    .populate(_populatePostOwner())
     .exec();
   return updatedPost as unknown as Post;
 }
@@ -112,9 +130,16 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
   }
 }
 
-function _populateUser(): mongoose.PopulateOptions {
+function _populatePostOwner(): mongoose.PopulateOptions {
   return {
     path: "user",
+    select: "_id username fullname imgUrl isVerified isAdmin",
+  };
+}
+
+function _populatePostRepostedBy(): mongoose.PopulateOptions {
+  return {
+    path: "repostedBy",
     select: "_id username fullname imgUrl isVerified isAdmin",
   };
 }

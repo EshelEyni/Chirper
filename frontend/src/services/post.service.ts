@@ -1,7 +1,7 @@
 import { httpService } from "./http.service";
-import { NewPost, Post } from "../../../shared/interfaces/post.interface";
-import { JsendResponse } from "../../../shared/interfaces/system.interface";
+import { AddPostParams, Post } from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
+import { JsendResponse } from "../../../shared/interfaces/system.interface";
 
 export const postService = {
   query,
@@ -42,11 +42,16 @@ async function remove(postId: string) {
   }
 }
 
-async function add(posts: NewPost[]): Promise<Post> {
+async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
   try {
-    const res = await httpService.post("post", posts);
-    const addedPost = res.data;
-    return addedPost;
+    let res: JsendResponse | null = null;
+    if (posts) {
+      res = await httpService.post("post", posts);
+    } else if (repostedPost) {
+      res = await httpService.post("post", repostedPost);
+    }
+    if (!res) throw new Error("postService: Cannot add post");
+    return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add post");
     throw err;

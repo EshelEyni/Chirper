@@ -25,6 +25,14 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
+  const isPostReplyFromPostOwner = () => {
+    if (!post || !loggedinUser) return false;
+    return (
+      post?.repliedPostDetails &&
+      post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser.id
+    );
+  };
+
   const formmatText = (text: string): string => {
     const urls = text.match(/(https?:\/\/[^\s]+)/g);
     const urlsSet = new Set(urls);
@@ -69,52 +77,65 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     return formmatedText;
   };
 
+  const onNavigateToPostDetails = () => {
+    console.log("onNavigateToPostDetails");
+  };
+
   return (
     <article className="post-preview">
-      <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
-      <div className="post-preview-main-container">
-        <header className="post-preview-header">
-          <div className="post-preview-header-main">
-            <div className="user-info">
-              <h3>{post.user.fullname}</h3>
-              <span>@{post.user.username}</span>
-              {post.user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
-              {post.user.isAdmin && <Logo />}
+      <div className="post-preview-content-wrapper">
+        <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
+        <div className="post-preview-main-container">
+          <header className="post-preview-header">
+            <div className="post-preview-header-main">
+              <div className="user-info">
+                <h3>{post.user.fullname}</h3>
+                <span>@{post.user.username}</span>
+                {post.user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
+                {post.user.isAdmin && <Logo />}
+              </div>
+              <span className="post-preview-header-dot">·</span>
+              <div className="post-time">
+                <span>{utilService.formatTime(post.createdAt)}</span>
+              </div>
             </div>
-            <span className="post-preview-header-dot">·</span>
-            <div className="post-time">
-              <span>{utilService.formatTime(post.createdAt)}</span>
+            <div className="post-preview-header-options-container">
+              <IoEllipsisHorizontalSharp />
             </div>
-          </div>
-          <div className="post-preview-header-options-container">
-            <IoEllipsisHorizontalSharp />
-          </div>
-        </header>
-        <div className="post-preview-body">
-          {post.repliedPostDetails && post.repliedPostDetails.length > 0 && (
-            <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
-          )}
-          <p
-            className="post-preview-text"
-            dangerouslySetInnerHTML={{ __html: formmatText(post.text) }}
-          ></p>
-          {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
-          {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
-          {post.gif && <GifDisplay gif={post.gif} />}
-          {poll && (
-            <PollDisplay
-              isLoggedinUserPost={isLoggedinUserPost}
-              postId={post.id}
-              postStartDate={postStartDate}
-              poll={poll}
-              setPoll={setPoll}
-            />
-          )}
+          </header>
+          <main className="post-preview-body">
+            {!isPostReplyFromPostOwner() &&
+              post.repliedPostDetails &&
+              post.repliedPostDetails.length > 0 && (
+                <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
+              )}
+            <p
+              className="post-preview-text"
+              dangerouslySetInnerHTML={{ __html: formmatText(post.text) }}
+            ></p>
+            {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
+            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
+            {post.gif && <GifDisplay gif={post.gif} />}
+            {poll && (
+              <PollDisplay
+                isLoggedinUserPost={isLoggedinUserPost}
+                postId={post.id}
+                postStartDate={postStartDate}
+                poll={poll}
+                setPoll={setPoll}
+              />
+            )}
+          </main>
+          <footer className="flex">
+            <PostPreviewActions post={post} />
+          </footer>
         </div>
-        <footer className="flex">
-          <PostPreviewActions post={post} />
-        </footer>
       </div>
+      {isPostReplyFromPostOwner() && (
+        <button className="btn-show-thread" onClick={onNavigateToPostDetails}>
+          <span>Show this thread</span>
+        </button>
+      )}
     </article>
   );
 };

@@ -141,6 +141,7 @@ function validateSchedule(post: Document) {
 
 postSchema.index({ createdAt: -1 });
 postSchema.index({ userId: 1 });
+postSchema.index({ schedule: 1 }, { partialFilterExpression: { schedule: { $exists: true } } });
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {

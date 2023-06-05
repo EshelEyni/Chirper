@@ -1,54 +1,60 @@
 .post-preview,
 .mini-post-preview {
   display: flex;
-  gap: rem(12px);
+  flex-direction: column;
   width: 100%;
-  padding: rem(12px) rem(16px);
   border-bottom: 1px solid var(--color-secondary-border);
+  transition: all 0.1s ease-in-out;
 
-  .post-preview-main-container {
-    flex: 1;
+  .post-preview-content-wrapper {
+    display: flex;
+    gap: rem(12px);
+    width: 100%;
+    padding: rem(12px) rem(16px);
+    .post-preview-main-container {
+      flex: 1;
 
-    .post-preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      .post-preview-header-main {
+      .post-preview-header {
         display: flex;
         align-items: center;
-        gap: rem(5px);
+        justify-content: space-between;
 
-        .user-info {
+        .post-preview-header-main {
           display: flex;
           align-items: center;
           gap: rem(5px);
-          font-size: rem(14px);
-          font-weight: 700;
 
-          .post-preview-blue-check-mark {
-            width: rem(20px);
-            height: rem(20px);
-          }
-
-          .logo-container {
-            width: rem(20px);
-            height: rem(20px);
-            border-radius: 5px;
-            background-color: var(--color-primary);
+          .user-info {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: rem(3px);
+            gap: rem(5px);
+            font-size: rem(14px);
+            font-weight: 700;
 
-            svg {
-              stroke: white;
+            .post-preview-blue-check-mark {
+              width: rem(20px);
+              height: rem(20px);
+            }
+
+            .logo-container {
+              width: rem(20px);
+              height: rem(20px);
+              border-radius: 5px;
+              background-color: var(--color-primary);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: rem(3px);
+
+              svg {
+                stroke: white;
+              }
             }
           }
-        }
 
-        .post-time {
-          font-size: rem(12px);
+          .post-time {
+            font-size: rem(12px);
+          }
         }
       }
     }
@@ -123,8 +129,25 @@
 
 .post-preview {
   &:hover {
-    background-color: var(--color-hover-light);
     border-bottom: 1px solid var(--color-hover-light);
+
+    .post-preview-content-wrapper,
+    .btn-show-thread {
+      background-color: var(--color-hover-light);
+    }
+  }
+
+  .btn-show-thread {
+    display: flex;
+    align-items: center;
+    height: rem(50px);
+    width: 100%;
+    color: var(--color-primary);
+    padding-left: rem(66px);
+
+    &:hover {
+      background-color: var( --color-hover-medium);
+    }
   }
 }
 

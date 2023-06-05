@@ -49,7 +49,7 @@ export type BasicPost = {
 export interface NewPost extends BasicPost {
   idx: number;
   imgs: NewPostImg[];
-  userId?: string;
+  createdById?: string;
   previousThreadPostId?: string;
   isDraft?: boolean;
 }

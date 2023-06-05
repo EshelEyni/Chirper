@@ -58,7 +58,7 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    userId: {
+    createdById: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
@@ -192,9 +192,53 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   next();
 });
 
-postSchema.virtual("user", {
+function populateCreatedBy(doc: Document) {
+  return doc.populate("createdBy", {
+    _id: 1,
+    username: 1,
+    fullname: 1,
+    imgUrl: 1,
+    isVerified: 1,
+    isAdmin: 1,
+  });
+}
+
+function populateRepostedBy(doc: Document) {
+  return doc.populate("repostedBy", {
+    _id: 1,
+    username: 1,
+    fullname: 1,
+  });
+}
+
+postSchema.post(/^find/, async function (doc) {
+  if (doc.length > 0) return;
+  await populateCreatedBy(doc);
+  if (doc.repostedById) {
+    await populateRepostedBy(doc);
+  }
+});
+
+postSchema.post(/^find/, async function (docs) {
+  if (docs.length === undefined) return;
+  for (const doc of docs) {
+    await populateCreatedBy(doc);
+    if (doc.repostedById) {
+      await populateRepostedBy(doc);
+    }
+  }
+});
+
+postSchema.virtual("createdBy", {
   ref: "User",
-  localField: "userId",
+  localField: "createdById",
+  foreignField: "_id",
+  justOne: true,
+});
+
+postSchema.virtual("repostedBy", {
+  ref: "User",
+  localField: "repostedById",
   foreignField: "_id",
   justOne: true,
 });

@@ -46,9 +46,9 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
   try {
     let res: JsendResponse | null = null;
     if (posts) {
-      res = await httpService.post("post", posts);
+      res = await httpService.post("post", { posts });
     } else if (repostedPost) {
-      res = await httpService.post("post", repostedPost);
+      res = await httpService.post("post", { repostedPost });
     }
     if (!res) throw new Error("postService: Cannot add post");
     return utilService.handleServerResponse<Post>(res);

@@ -14,6 +14,7 @@ import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mar
 import { Logo } from "../other/logo";
 import { VideoPlayer } from "../video/video-player";
 import { PostRepliedToUsersList } from "./post-replied-to-users-list";
+import { BiRepost } from "react-icons/bi";
 
 interface PostPreviewProps {
   post: Post;
@@ -21,7 +22,7 @@ interface PostPreviewProps {
 
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const isLoggedinUserPost = loggedinUser?.id === post.user.id;
+  const isLoggedinUserPost = loggedinUser?.id === post.createdBy.id;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
@@ -83,16 +84,28 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
 
   return (
     <article className="post-preview">
+      {post.repostedBy && (
+        <div className="post-preview-repost-container">
+          <div className="repost-icon-container">
+            <BiRepost size={22} />
+          </div>
+          <span className="post-preview-repost-user">{`${
+            post.repostedBy.id === loggedinUser?.id ? "You" : post.repostedBy.fullname
+          } Rechiped`}</span>
+        </div>
+      )}
       <div className="post-preview-content-wrapper">
-        <UserImg imgUrl={post.user.imgUrl || userService.getDefaultUserImgUrl()} />
+        <UserImg imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()} />
         <div className="post-preview-main-container">
           <header className="post-preview-header">
             <div className="post-preview-header-main">
               <div className="user-info">
-                <h3>{post.user.fullname}</h3>
-                <span>@{post.user.username}</span>
-                {post.user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
-                {post.user.isAdmin && <Logo />}
+                <h3>{post.createdBy.fullname}</h3>
+                <span>@{post.createdBy.username}</span>
+                {post.createdBy.isVerified && (
+                  <BlueCheckMark className="post-preview-blue-check-mark" />
+                )}
+                {post.createdBy.isAdmin && <Logo />}
               </div>
               <span className="post-preview-header-dot">·</span>
               <div className="post-time">

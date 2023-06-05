@@ -1,9 +1,4 @@
-import {
-  NewPost,
-  Post,
-  PollOption,
-  AddPostParams,
-} from "../../../../shared/interfaces/post.interface";
+import { Post, PollOption, AddPostParams } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
 import { PollResultModel } from "./poll.model";
@@ -20,19 +15,16 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  let posts = (await features
-    .getQuery()
-    .populate(_populatePostOwner())
-    .exec()) as unknown as Post[];
+  let posts = (await features.getQuery().exec()) as unknown as Post[];
   if (posts.length > 0) {
     await _populateUserPollVotes(...(posts as unknown as Post[]));
   }
-  posts = posts.filter(post => post.user !== null);
+  posts = posts.filter(post => post.createdBy !== null);
   return posts as unknown as Post[];
 }
 
 async function getById(postId: string): Promise<Post | null> {
-  const post = await PostModel.findById(postId).populate(_populatePostOwner()).exec();
+  const post = await PostModel.findById(postId).exec();
   await _populateUserPollVotes(post as unknown as Post);
   return post as unknown as Post;
 }
@@ -56,14 +48,10 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
         const savedPost = await new PostModel(currPost).save();
         savedThread.push(savedPost as unknown as Post);
       }
-      populatedPost = (await PostModel.findById(savedThread[0].id)
-        .populate(_populatePostOwner())
-        .exec()) as unknown as Post;
+      populatedPost = (await PostModel.findById(savedThread[0].id).exec()) as unknown as Post;
     } else if (repostedPost) {
       const savedPost = await new PostModel(repostedPost).save();
-      populatedPost = (await PostModel.findById(savedPost.id)
-        .populate(_populatePostOwner())
-        .exec()) as unknown as Post;
+      populatedPost = (await PostModel.findById(savedPost.id).exec()) as unknown as Post;
     }
 
     await session.commitTransaction();
@@ -81,9 +69,7 @@ async function update(id: string, post: Post): Promise<Post> {
   const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
     new: true,
     runValidators: true,
-  })
-    .populate(_populatePostOwner())
-    .exec();
+  }).exec();
   return updatedPost as unknown as Post;
 }
 
@@ -128,20 +114,6 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
   } finally {
     session.endSession();
   }
-}
-
-function _populatePostOwner(): mongoose.PopulateOptions {
-  return {
-    path: "user",
-    select: "_id username fullname imgUrl isVerified isAdmin",
-  };
-}
-
-function _populatePostRepostedBy(): mongoose.PopulateOptions {
-  return {
-    path: "repostedBy",
-    select: "_id username fullname imgUrl isVerified isAdmin",
-  };
 }
 
 async function _populateUserPollVotes(...posts: Post[]) {

@@ -7,11 +7,17 @@ const requestSanitizer = (req: Request, res: Response, next: NextFunction) => {
   const { query } = req;
 
   if (body) {
-    for (const key in body) {
-      if (typeof body[key] === "string") {
-        body[key] = sanitizeHtml(body[key] as string);
+    const sanitizeBody = (body: any) => {
+      for (const key in body) {
+        if (typeof body[key] === "string") {
+          body[key] = sanitizeHtml(body[key] as string);
+        } else if (typeof body[key] === "object") {
+          sanitizeBody(body[key]);
+        }
       }
-    }
+    };
+
+    sanitizeBody(body);
   }
 
   if (params) {

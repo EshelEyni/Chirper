@@ -47,7 +47,7 @@ export const PollDisplay: FC<PollDisplayProps> = ({
     setPoll(updatedPoll);
   };
 
-  const pollVoteSum = poll.options.reduce((acc, option) => acc + option.voteSum, 0) || 0;
+  const pollVoteCount = poll.options.reduce((acc, option) => acc + option.voteCount, 0) || 0;
 
   const setPollTimeCount = () => {
     const postStartTimestamp = new Date(postStartDate).getTime();
@@ -82,14 +82,14 @@ export const PollDisplay: FC<PollDisplayProps> = ({
       <ul className="poll-display-options-list">
         {poll.options.map((option, idx) => {
           return poll.isVotingOff ? (
-            <PollDisplayOptionResult key={idx} option={option} pollVoteSum={pollVoteSum} />
+            <PollDisplayOptionResult key={idx} option={option} pollVoteCount={pollVoteCount} />
           ) : (
             <PollDisplayOption key={idx} option={option} idx={idx} onVote={onVote} />
           );
         })}
       </ul>
       <div className="poll-display-details">
-        <span className="poll-display-details-vote-sum">{pollVoteSum} votes</span>
+        <span>{pollVoteCount} votes</span>
         <span>·</span>
         <span>{setPollTimeCount()}</span>
       </div>

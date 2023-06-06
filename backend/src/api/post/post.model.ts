@@ -23,6 +23,10 @@ const locationSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
+    originalPostId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    },
     audience: {
       type: String,
       required: true,
@@ -54,10 +58,6 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
-    isRechirp: {
-      type: Boolean,
-      default: false,
-    },
     createdById: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -80,28 +80,28 @@ const postSchema = new mongoose.Schema(
     poll: pollSchema,
     schedule: Date,
     location: locationSchema,
-    commentSum: {
-      type: Number,
-      default: 0,
-    },
-    repostSum: {
-      type: Number,
-      default: 0,
-    },
-    likeSum: {
-      type: Number,
-      default: 0,
-    },
-    viewSum: {
-      type: Number,
-      default: 0,
-    },
+    // commentCount: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // repostCount: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // likeCount: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // viewCount: {
+    //   type: Number,
+    //   default: 0,
+    // },
   },
   {
     toObject: {
       virtuals: true,
       transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret.userId;
+        delete ret.createdById;
         delete ret._id;
         return ret;
       },
@@ -109,7 +109,7 @@ const postSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret.userId;
+        delete ret.createdById;
         delete ret._id;
         return ret;
       },
@@ -146,6 +146,16 @@ function validateSchedule(post: Document) {
 postSchema.index({ createdAt: -1 });
 postSchema.index({ userId: 1 });
 postSchema.index({ schedule: 1 }, { partialFilterExpression: { schedule: { $exists: true } } });
+postSchema.index(
+  { originalPostId: 1, repostedById: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      originalPostId: { $type: "objectId" },
+      repostedById: { $type: "objectId" },
+    },
+  }
+);
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
@@ -212,8 +222,9 @@ function populateRepostedBy(doc: Document) {
 }
 
 postSchema.post(/^find/, async function (doc) {
-  if (doc.length > 0) return;
+  if (doc.length !== undefined) return;
   await populateCreatedBy(doc);
+  await doc.populate("repostCount");
   if (doc.repostedById) {
     await populateRepostedBy(doc);
   }
@@ -223,6 +234,7 @@ postSchema.post(/^find/, async function (docs) {
   if (docs.length === undefined) return;
   for (const doc of docs) {
     await populateCreatedBy(doc);
+    await doc.populate("repostCount");
     if (doc.repostedById) {
       await populateRepostedBy(doc);
     }
@@ -242,6 +254,34 @@ postSchema.virtual("repostedBy", {
   foreignField: "_id",
   justOne: true,
 });
+
+// postSchema.virtual("commentCount", {
+//   ref: "Post",
+//   localField: "_id",
+//   foreignField: "postId",
+//   count: true,
+// });
+
+postSchema.virtual("repostCount", {
+  ref: "Post",
+  localField: "_id",
+  foreignField: "originalPostId",
+  count: true,
+});
+
+// postSchema.virtual("likeCount", {
+//   ref: "Like",
+//   localField: "_id",
+//   foreignField: "postId",
+//   count: true,
+// });
+
+// postSchema.virtual("viewCount", {
+//   ref: "View",
+//   localField: "_id",
+//   foreignField: "postId",
+//   count: true,
+// });
 
 postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
   this.find({ isPublic: true });

@@ -23,9 +23,9 @@ export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => 
 
   useEffect(() => {
     if (inputRefs.length > 0) {
-      if (newPostType === "home-page" && currNewPost.currIdx === homePage.currPostIdx) {
+      if (newPostType === "home-page" && currNewPost.idx === homePage.currPostIdx) {
         inputRefs[0].current?.focus();
-      } else if (newPostType === "side-bar" && currNewPost.currIdx === sideBar.currPostIdx) {
+      } else if (newPostType === "side-bar" && currNewPost.idx === sideBar.currPostIdx) {
         inputRefs[0].current?.focus();
       }
     }
@@ -42,7 +42,7 @@ export const PollOptionsInput: FC<PollOptionsInputProps> = ({ currNewPost }) => 
     if (currNewPost.poll!.options.length < 5) {
       const defaultOption = {
         text: "",
-        voteSum: 0,
+        voteCount: 0,
         isLoggedinUserVoted: false,
       };
       const newPost = {

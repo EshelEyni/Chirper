@@ -4,17 +4,17 @@ import { AiOutlineCheckCircle } from "react-icons/ai";
 
 type PollDisplayOptionResultProps = {
   option: PollOption;
-  pollVoteSum: number;
+  pollVoteCount: number;
 };
 
 export const PollDisplayOptionResult: FC<PollDisplayOptionResultProps> = ({
   option,
-  pollVoteSum,
+  pollVoteCount,
 }) => {
   const percentage = useMemo(() => {
-    const sum = pollVoteSum || 1;
-    return Number(((option.voteSum / sum) * 100).toFixed(1));
-  }, [option.voteSum, pollVoteSum]);
+    const count = pollVoteCount || 1;
+    return Number(((option.voteCount / count) * 100).toFixed(1));
+  }, [option.voteCount, pollVoteCount]);
 
   return (
     <li className="poll-display-option-result">

@@ -14,7 +14,9 @@ export const postService = {
 
 async function query(): Promise<Post[]> {
   try {
-    const response = await httpService.get("post?previousThreadPostId[exists]=false");
+    const response = await httpService.get(
+      "post?sort=-updatedAt&previousThreadPostId[exists]=false"
+    );
     return utilService.handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");

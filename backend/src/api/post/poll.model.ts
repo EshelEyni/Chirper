@@ -7,7 +7,7 @@ const pollOptionSchema = new mongoose.Schema(
       required: true,
     },
 
-    voteSum: {
+    voteCount: {
       type: Number,
       default: 0,
     },

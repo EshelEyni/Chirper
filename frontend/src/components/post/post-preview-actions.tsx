@@ -35,7 +35,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "comment",
       icon: <FaRegComment className={iconClassName} />,
-      count: post.commentSum,
+      count: post.commentCount,
       onClickFunc: async () => {
         await dispatch(setNewPostType("reply"));
         await dispatch(setNewPosts([], "reply", post));
@@ -46,7 +46,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "rechirp",
       icon: <AiOutlineRetweet className={iconClassName} />,
-      count: post.repostSum,
+      count: post.repostCount,
       onClickFunc: () => {
         const repostedPost = { ...post };
         dispatch(addPost({ repostedPost }));

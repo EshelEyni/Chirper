@@ -50,6 +50,11 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
       }
       populatedPost = (await PostModel.findById(savedThread[0].id).exec()) as unknown as Post;
     } else if (repostedPost) {
+      if (repostedPost.repostedBy?.id === repostedPost.repostedById)
+        throw new AppError("cannot repost your own repost", 400);
+
+      repostedPost.createdById = repostedPost.createdBy.id;
+      repostedPost.originalPostId = repostedPost.id;
       const savedPost = await new PostModel(repostedPost).save();
       populatedPost = (await PostModel.findById(savedPost.id).exec()) as unknown as Post;
     }
@@ -92,7 +97,7 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
 
     const option = poll.options[optionIdx];
     if (!option) throw new AppError("option not found", 404);
-    option.voteSum++;
+    option.voteCount++;
     await post.save({ session });
 
     const vote = {
@@ -106,8 +111,8 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
 
     await session.commitTransaction();
 
-    const { text, voteSum } = option;
-    return { text, voteSum, isLoggedinUserVoted: true };
+    const { text, voteCount } = option;
+    return { text, voteCount, isLoggedinUserVoted: true };
   } catch (error) {
     await session.abortTransaction();
     throw error;

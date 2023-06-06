@@ -1,7 +1,6 @@
 import { Document } from "mongoose";
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
-import { ReactIcon } from "../../frontend/src/types/elements.interface";
 
 export type PostDocument = Post & Document;
 
@@ -43,23 +42,24 @@ export type BasicPost = {
   audience: string;
   repliersType: string;
   repliedPostDetails?: repliedPostDetails[];
+  createdById?: string;
   repostedById?: string;
 };
 
 export interface NewPost extends BasicPost {
   idx: number;
   imgs: NewPostImg[];
-  createdById?: string;
   previousThreadPostId?: string;
   isDraft?: boolean;
 }
 
 export interface Post extends BasicPost {
   id: string;
+  originalPostId?: string;
   createdAt: Date;
   updatedAt: Date;
-  commentSum: number;
-  repostSum: number;
+  commentCount: number;
+  repostCount: number;
   likes: number;
   views: number;
   imgs: PostImg[];
@@ -80,7 +80,7 @@ export interface Post extends BasicPost {
 
 export type PollOption = {
   text: string;
-  voteSum: number;
+  voteCount: number;
   isLoggedinUserVoted: boolean;
 };
 

@@ -96,8 +96,8 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
         if (!isPickerShown || !currNewPost) return;
         const defaultPoll: Poll = {
           options: [
-            { text: "", voteSum: 0, isLoggedinUserVoted: false },
-            { text: "", voteSum: 0, isLoggedinUserVoted: false },
+            { text: "", voteCount: 0, isLoggedinUserVoted: false },
+            { text: "", voteCount: 0, isLoggedinUserVoted: false },
           ],
           length: {
             days: 1,

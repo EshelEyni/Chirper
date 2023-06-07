@@ -16,6 +16,18 @@ export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, Any
   };
 }
 
+export function updatePosts(
+  posts: Post[]
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      dispatch({ type: "UPDATE_POSTS", posts });
+    } catch (err) {
+      console.log("PostActions: err in updatePosts", err);
+    }
+  };
+}
+
 export function getPost(
   postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -50,24 +62,25 @@ export function addPost({
     try {
       let addedPost: Post | null = null;
       if (posts) {
+        console.log("posts", posts);
         addedPost = await postService.add({ posts });
-        const isPublished = !addedPost.schedule;
-        if (!isPublished) {
-          const dateStr = new Intl.DateTimeFormat("en-US", {
-            dateStyle: "full",
-            timeStyle: "short",
-            timeZone: "UTC",
-          }).format(addedPost.schedule);
+        // const isPublished = !addedPost.schedule;
+        // if (!isPublished) {
+        //   const dateStr = new Intl.DateTimeFormat("en-US", {
+        //     dateStyle: "full",
+        //     timeStyle: "short",
+        //     timeZone: "UTC",
+        //   }).format(addedPost.schedule);
 
-          const msg: UserMsg = {
-            type: "info",
-            text: `Your Chirp will be sent on ${dateStr}`,
-          };
-          dispatch({ type: "SET_USER_MSG", userMsg: msg });
-          setTimeout(() => {
-            dispatch({ type: "SET_USER_MSG", userMsg: null });
-          }, 2000);
-        }
+        //   const msg: UserMsg = {
+        //     type: "info",
+        //     text: `Your Chirp will be sent on ${dateStr}`,
+        //   };
+        //   dispatch({ type: "SET_USER_MSG", userMsg: msg });
+        //   setTimeout(() => {
+        //     dispatch({ type: "SET_USER_MSG", userMsg: null });
+        //   }, 2000);
+        // }
       } else if (repostedPost) {
         addedPost = await postService.add({ repostedPost });
       }

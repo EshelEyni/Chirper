@@ -21,6 +21,8 @@ export function postReducer(
   switch (action.type) {
     case "SET_POSTS":
       return { ...state, posts: action.posts };
+    case "UPDATE_POSTS":
+      return { ...state, posts: action.posts };
     case "SET_POST":
       return { ...state, post: action.post };
     case "REMOVE_POST":

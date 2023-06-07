@@ -98,7 +98,7 @@ export function newPostReducer(
 
         const {
           id,
-          user: { id: userId, username },
+          createdBy: { id: userId, username },
         } = action.repliedToPost;
 
         const currRepliedPostDetails = {

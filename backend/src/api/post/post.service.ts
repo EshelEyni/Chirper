@@ -1,4 +1,4 @@
-import { Post, PollOption, AddPostParams } from "../../../../shared/interfaces/post.interface";
+import { Post, PollOption, NewPost } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
 import { PollResultModel } from "./poll.model";
@@ -29,36 +29,46 @@ async function getById(postId: string): Promise<Post | null> {
   return post as unknown as Post;
 }
 
-async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
+async function add(post: NewPost): Promise<Post> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const savedPost = await new PostModel(post).save({ session });
+    if (savedPost.repliedPostDetails) {
+      const { repliedPostDetails } = savedPost;
+      const repliedToPostId = repliedPostDetails.at(-1)?.postId;
+      await PostModel.updateOne(
+        { _id: repliedToPostId },
+        { $inc: { repliesCount: 1 } },
+        { session }
+      );
+    }
+    await session.commitTransaction();
+    return (await PostModel.findById(savedPost.id).exec()) as unknown as Post;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function addMany(posts: NewPost[]): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    let populatedPost: Post | null = null;
-    if (posts) {
-      const savedThread: Post[] = [];
+    const savedThread: Post[] = [];
+    for (let i = 0; i < posts.length; i++) {
+      const currPost = posts[i];
+      if (i === 0) currPost.repliesCount = 1;
+      else currPost.previousThreadPostId = savedThread[i - 1].id;
 
-      for (let i = 0; i < posts.length; i++) {
-        const currPost = posts[i];
-
-        if (i > 0) {
-          currPost.previousThreadPostId = savedThread[i - 1].id;
-        }
-
-        const savedPost = await new PostModel(currPost).save();
-        savedThread.push(savedPost as unknown as Post);
-      }
-      populatedPost = (await PostModel.findById(savedThread[0].id).exec()) as unknown as Post;
-    } else if (repostedPost) {
-      if (repostedPost.repostedBy?.id === repostedPost.repostedById)
-        throw new AppError("cannot repost your own repost", 400);
-
-      repostedPost.createdById = repostedPost.createdBy.id;
-      repostedPost.originalPostId = repostedPost.id;
-      const savedPost = await new PostModel(repostedPost).save();
-      populatedPost = (await PostModel.findById(savedPost.id).exec()) as unknown as Post;
+      const savedPost = await new PostModel(currPost).save();
+      savedThread.push(savedPost as unknown as Post);
     }
-
+    const originalPost = savedThread[0];
+    const populatedPost = (await PostModel.findById(originalPost.id).exec()) as unknown as Post;
     await session.commitTransaction();
     if (!populatedPost) throw new AppError("post not found", 404);
     return populatedPost as unknown as Post;
@@ -160,6 +170,7 @@ export default {
   query,
   getById,
   add,
+  addMany,
   update,
   remove,
   setPollVote,

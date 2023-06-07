@@ -80,10 +80,10 @@ const postSchema = new mongoose.Schema(
     poll: pollSchema,
     schedule: Date,
     location: locationSchema,
-    // commentCount: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    repliesCount: {
+      type: Number,
+      default: 0,
+    },
     // repostCount: {
     //   type: Number,
     //   default: 0,
@@ -254,13 +254,6 @@ postSchema.virtual("repostedBy", {
   foreignField: "_id",
   justOne: true,
 });
-
-// postSchema.virtual("commentCount", {
-//   ref: "Post",
-//   localField: "_id",
-//   foreignField: "postId",
-//   count: true,
-// });
 
 postSchema.virtual("repostCount", {
   ref: "Post",

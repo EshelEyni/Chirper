@@ -35,22 +35,38 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedinUserId } = req;
-  const { posts, repostedPost } = req.body as unknown as { posts: NewPost[]; repostedPost: Post };
+  const post = req.body as unknown as NewPost;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  post.createdById = loggedinUserId;
+  const savedPost = await postService.add(post);
+
+  res.status(201).send({
+    status: "success",
+    data: savedPost,
+  });
+});
+
+const addPostThread = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const posts = req.body as unknown as NewPost[];
 
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
-  if (posts) {
-    posts.forEach(post => {
-      post.createdById = loggedinUserId;
-    });
-  } else if (repostedPost) {
-    repostedPost.repostedById = loggedinUserId;
-  }
-  const post = await postService.add({ posts, repostedPost });
+  posts.forEach(post => {
+    post.createdById = loggedinUserId;
+  });
+  const post = await postService.addMany(posts);
 
   res.status(201).send({
     status: "success",
     data: post,
   });
+});
+
+const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const { postId } = req.body;
+
+  console.log("req.body", req.body);
 });
 
 const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
@@ -82,4 +98,13 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
   });
 });
 
-export { getPosts, getPostById, addPost, updatePost, removePost, savePollVote };
+export {
+  getPosts,
+  getPostById,
+  addPost,
+  addPostThread,
+  repostPost,
+  updatePost,
+  removePost,
+  savePollVote,
+};

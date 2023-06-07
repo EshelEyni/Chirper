@@ -14,7 +14,7 @@ import {
   setNewPosts,
   updateCurrNewPost,
 } from "../../store/actions/new-post.actions";
-import { addPost } from "../../store/actions/post.actions";
+import { addPost, updatePosts } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -42,6 +42,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { sideBar, homePage, reply, newPostType } = useSelector(
     (state: RootState) => state.newPostModule
   );
+  const { posts } = useSelector((state: RootState) => state.postModule);
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -199,9 +200,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     if (!currNewPost || !loggedinUser) return;
     try {
       setPostSaveInProgress(true);
-      const posts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
+      const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
 
-      for (const post of posts) {
+      for (const post of newPosts) {
         if (post.imgs.length > 0) {
           const prms = post.imgs.map(async (img, idx) => {
             const currImgUrl = await uploadFileToCloudinary(img.file, "image");
@@ -221,9 +222,18 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           delete post.video;
         }
       }
-      await dispatch(addPost({ posts }));
+      await dispatch(addPost({ posts: newPosts }));
       if (newPostType !== "reply") dispatch(setNewPosts([], newPostType));
       else {
+        const postToUpdate = replyToPost ? { ...replyToPost } : null;
+        if (postToUpdate) {
+          postToUpdate.repliesCount++;
+          const updatedPosts = posts.map(post => {
+            if (post.id === postToUpdate.id) return postToUpdate;
+            return post;
+          });
+          dispatch(updatePosts(updatedPosts));
+        }
         dispatch(setNewPostType("home-page"));
         dispatch(setNewPosts([], newPostType));
       }
@@ -268,7 +278,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const setTextPlaceholder = () => {
     const postType = newPostTypeRef.current;
     if (postType === "reply") {
-      const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.user.id;
+      const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.createdBy.id;
       if (isLoggedinUserPost) return "Add another Chirp!";
       return "Chirp your reply...";
     }

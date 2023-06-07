@@ -33,9 +33,9 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   const iconClassName = "icon";
   const btns: Btn[] = [
     {
-      name: "comment",
+      name: "reply",
       icon: <FaRegComment className={iconClassName} />,
-      count: post.commentCount,
+      count: post.repliesCount,
       onClickFunc: async () => {
         await dispatch(setNewPostType("reply"));
         await dispatch(setNewPosts([], "reply", post));

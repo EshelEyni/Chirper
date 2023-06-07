@@ -15,7 +15,7 @@ export const postService = {
 async function query(): Promise<Post[]> {
   try {
     const response = await httpService.get(
-      "post?sort=-updatedAt&previousThreadPostId[exists]=false"
+      "post?sort=-createdAt&previousThreadPostId[exists]=false"
     );
     return utilService.handleServerResponse<Post[]>(response);
   } catch (err) {
@@ -48,9 +48,14 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
   try {
     let res: JsendResponse | null = null;
     if (posts) {
-      res = await httpService.post("post", { posts });
+      if (posts.length > 1) {
+        res = await httpService.post("post/thread", posts);
+      } else {
+        const post = posts[0];
+        res = await httpService.post("post", post);
+      }
     } else if (repostedPost) {
-      res = await httpService.post("post", { repostedPost });
+      res = await httpService.post("post", repostedPost);
     }
     if (!res) throw new Error("postService: Cannot add post");
     return utilService.handleServerResponse<Post>(res);
@@ -62,7 +67,7 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
 
 async function update(post: Post) {
   try {
-    const updatedPost = await httpService.put(`post/${post.id}`, post);
+    const updatedPost = await httpService.patch(`post/${post.id}`, post);
     return updatedPost;
   } catch (err) {
     console.log("postService: Cannot update post");

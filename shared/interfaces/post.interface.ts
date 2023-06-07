@@ -51,6 +51,7 @@ export interface NewPost extends BasicPost {
   imgs: NewPostImg[];
   previousThreadPostId?: string;
   isDraft?: boolean;
+  repliesCount?: number;
 }
 
 export interface Post extends BasicPost {
@@ -58,7 +59,7 @@ export interface Post extends BasicPost {
   originalPostId?: string;
   createdAt: Date;
   updatedAt: Date;
-  commentCount: number;
+  repliesCount: number;
   repostCount: number;
   likes: number;
   views: number;

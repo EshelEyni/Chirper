@@ -22,80 +22,87 @@
   width: 100%;
   height: rem(32px);
 
-  .btn-action {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  .btn-action-container {
+    position: relative;
 
-    .icon-container {
+    & * {
+      transition: all 2s ease-in-out;
+    }
+
+    .btn-action {
       display: flex;
       align-items: center;
-      justify-content: center;
-      height: rem(32px);
-      width: rem(32px);
-      background-color: transparent;
-      border: none;
-      position: relative;
-      padding: rem(5px);
+      justify-content: flex-end;
 
-      .icon {
-        height: rem(15px);
-        width: rem(15px);
-        color: var(--color-text-gray);
-      }
+      .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: rem(32px);
+        width: rem(32px);
+        background-color: transparent;
+        border: none;
+        position: relative;
+        padding: rem(5px);
 
-      &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0);
-        transition: opacity 0.1s, transform 0.1s;
-      }
-    }
-
-    span {
-      color: var(--color-text-gray);
-      font-size: rem(12px);
-      font-weight: 400;
-      font-family: var(--font-primary);
-      margin: 0 rem(12px);
-    }
-
-    &.reply,
-    &.view,
-    &.share {
-      @include hover-effect(var(--color-info));
-    }
-
-    &.rechirp {
-      &:not(.clicked) {
-        @include hover-effect(var(--color-success));
-      }
-
-      &.clicked {
-        & * {
-          color: var(--color-success);
+        .icon {
+          height: rem(15px);
+          width: rem(15px);
+          color: var(--color-text-gray);
         }
 
-        .icon-container {
-          .icon {
-            height: rem(18px);
-            width: rem(18px);
+        &::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0);
+          transition: opacity 0.1s, transform 0.1s;
+        }
+      }
+
+      span {
+        color: var(--color-text-gray);
+        font-size: rem(12px);
+        font-weight: 400;
+        font-family: var(--font-primary);
+        margin: 0 rem(12px);
+      }
+
+      &.reply,
+      &.view,
+      &.share {
+        @include hover-effect(var(--color-info));
+      }
+
+      &.rechirp {
+        &:not(.clicked) {
+          @include hover-effect(var(--color-success));
+        }
+
+        &.clicked {
+          & * {
+            color: var(--color-success);
+          }
+
+          .icon-container {
+            .icon {
+              height: rem(18px);
+              width: rem(18px);
+            }
           }
         }
       }
-    }
 
-    &.like {
-      @include hover-effect(var(--color-like));
+      &.like {
+        @include hover-effect(var(--color-like));
+      }
     }
   }
-
   &:last-child {
     margin-right: rem(50px);
   }

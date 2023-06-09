@@ -86,6 +86,7 @@
           text-overflow: ellipsis;
           max-width: rem(200px);
           line-height: 1;
+
           &:hover {
             text-decoration: underline;
           }
@@ -149,6 +150,7 @@
     .post-preview-repost-user {
       font-size: rem(14px);
       font-weight: 700;
+      cursor: pointer;
 
       &:hover {
         text-decoration: underline;

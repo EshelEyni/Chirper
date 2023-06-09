@@ -1,16 +1,7 @@
 import { httpService } from "./http.service";
-import { AddPostParams, Post } from "../../../shared/interfaces/post.interface";
+import { NewPost, Post } from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
-
-export const postService = {
-  query,
-  getById,
-  remove,
-  add,
-  update,
-  savePollVote,
-};
 
 async function query(): Promise<Post[]> {
   try {
@@ -36,15 +27,14 @@ async function getById(postId: string): Promise<Post> {
 
 async function remove(postId: string) {
   try {
-    const response = await httpService.delete(`post/${postId}`);
-    console.log(response);
+    await httpService.delete(`post/${postId}`);
   } catch (err) {
     console.log("postService: Cannot remove post");
     throw err;
   }
 }
 
-async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
+async function add(posts: NewPost[]): Promise<Post> {
   try {
     let res: JsendResponse | null = null;
     if (posts) {
@@ -54,13 +44,30 @@ async function add({ posts, repostedPost }: AddPostParams): Promise<Post> {
         const post = posts[0];
         res = await httpService.post("post", post);
       }
-    } else if (repostedPost) {
-      res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
     }
     if (!res) throw new Error("postService: Cannot add post");
     return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add post");
+    throw err;
+  }
+}
+
+async function addRepost(repostedPost: Post): Promise<Post> {
+  try {
+    const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
+    return utilService.handleServerResponse<Post>(res);
+  } catch (err) {
+    console.log("postService: Cannot add repost");
+    throw err;
+  }
+}
+
+async function removeRepost(repostedPost: Post): Promise<void> {
+  try {
+    await httpService.delete(`post/repost?postId=${repostedPost.id}`);
+  } catch (err) {
+    console.log("postService: Cannot remove repost");
     throw err;
   }
 }
@@ -82,3 +89,14 @@ async function savePollVote(postId: string, optionIdx: number) {
     console.log("postService: Cannot save poll vote", err);
   }
 }
+
+export const postService = {
+  query,
+  getById,
+  add,
+  addRepost,
+  update,
+  remove,
+  removeRepost,
+  savePollVote,
+};

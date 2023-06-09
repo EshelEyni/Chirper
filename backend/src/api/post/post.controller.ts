@@ -9,7 +9,6 @@ import {
 } from "../../services/error.service";
 import factory from "../../services/factory.service";
 import { PostModel } from "./post.model";
-import { RepostModel } from "./repost.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -91,6 +90,21 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
 
 const removePost = factory.deleteOne(PostModel);
 
+const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const { postId } = req.query;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!postId) throw new AppError("No post id provided", 400);
+  else if (typeof postId !== "string") throw new AppError("Post id must be a string", 400);
+
+  await postService.removeRepost(postId, loggedinUserId);
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
 const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { postId, optionIdx } = req.body;
   const { loggedinUserId } = req;
@@ -106,22 +120,6 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
   });
 });
 
-const getAllReposts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  let docs = await RepostModel.find({});
-  docs = docs.map(doc => doc.toObject());
-
-  const reposts = docs.map((doc: any) => {
-    return {
-      ...doc.post,
-      repostedBy: doc.repostedBy,
-    };
-  });
-  res.status(200).send({
-    status: "success",
-    data: reposts,
-  });
-});
-
 export {
   getPosts,
   getPostById,
@@ -130,6 +128,6 @@ export {
   repostPost,
   updatePost,
   removePost,
+  removeRepost,
   savePollVote,
-  getAllReposts,
 };

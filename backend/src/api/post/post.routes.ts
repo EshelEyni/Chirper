@@ -8,21 +8,24 @@ import {
   repostPost,
   updatePost,
   removePost,
+  removeRepost,
   savePollVote,
-  getAllReposts,
 } from "./post.controller";
 
 const router = express.Router();
 
 router.get("/", getPosts);
-router.get("/repost", getAllReposts);
 router.get("/:id", getPostById);
 router.use(requireAuth);
-router.post("/", addPost);
+
+router.delete("/repost", removeRepost);
+router.post("/repost", repostPost);
 router.post("/thread", addPostThread);
+
+router.post("/", addPost);
 router.patch("/:id", updatePost);
 router.delete("/:id", removePost);
+
 router.post("/poll/vote", savePollVote);
 
-router.post("/repost", repostPost);
 export default router;

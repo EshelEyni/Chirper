@@ -196,9 +196,6 @@ function populateCreatedBy(doc: Document) {
 }
 
 postSchema.post(/^find/, async function (doc) {
-  console.log("doc: ", doc);
-  console.log("doc.length: ", doc.length);
-
   if (doc.length !== undefined) return;
   await populateCreatedBy(doc);
 });

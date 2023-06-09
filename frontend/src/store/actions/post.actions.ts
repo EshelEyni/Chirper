@@ -2,7 +2,7 @@ import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { postService } from "../../services/post.service";
 import { RootState } from "../store";
-import { AddPostParams, NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -59,7 +59,7 @@ export function addPost(
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.add({ posts });
+      const addedPost = await postService.add(posts);
       // const isPublished = !addedPost.schedule;
       // if (!isPublished) {
       //   const dateStr = new Intl.DateTimeFormat("en-US", {
@@ -93,14 +93,28 @@ export function addPost(
 }
 
 export function repostPost(
-  repostedPost: Post
+  post: Post
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.add({ repostedPost });
+      const addedPost = await postService.addRepost(post);
       dispatch({ type: "ADD_REPOST", post: addedPost });
     } catch (err) {
       console.log("PostActions: err in repostPost", err);
+    }
+  };
+}
+
+export function removeRepost(
+  post: Post,
+  loggedinUserId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      await postService.removeRepost(post);
+      dispatch({ type: "REMOVE_REPOST", post, loggedinUserId });
+    } catch (err) {
+      console.log("PostActions: err in removeRepost", err);
     }
   };
 }

@@ -9,6 +9,7 @@ import { alStoreType } from "../../middlewares/setupAls.middleware";
 import mongoose from "mongoose";
 import { AppError } from "../../services/error.service";
 import { Document } from "mongoose";
+import { logger } from "../../services/logger.service";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -180,6 +181,29 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
+async function removeRepost(postId: string, loggedinUserId: string): Promise<Post> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const removedRepost = await RepostModel.findOneAndRemove({
+      postId,
+      repostOwnerId: loggedinUserId,
+    }).session(session);
+
+    await PostModel.updateOne({ _id: postId }, { $inc: { repostsCount: -1 } }).session(session);
+
+    await session.commitTransaction();
+    logger.warn(`Deleted repost of Post With ${postId} by user ${loggedinUserId}`);
+    return removedRepost as unknown as Post;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
 async function setPollVote(postId: string, optionIdx: number, userId: string): Promise<PollOption> {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -250,7 +274,6 @@ async function _setLoggedinUserActionState(post: Post) {
     isBookmarked: false,
   };
 
-  console.log("_setLoggedinUserActionState:", post);
   if (loggedinUserId) {
     post.loggedinUserActionState.isReposted = !!(await RepostModel.exists({
       postId: new mongoose.Types.ObjectId(post.id),
@@ -291,5 +314,6 @@ export default {
   repost,
   update,
   remove,
+  removeRepost,
   setPollVote,
 };

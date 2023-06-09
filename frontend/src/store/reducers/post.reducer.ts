@@ -16,6 +16,7 @@ export function postReducer(
     post: Post;
     postId: string;
     updatedPost: Post;
+    loggedinUserId: string;
   }
 ) {
   switch (action.type) {
@@ -46,6 +47,27 @@ export function postReducer(
         return post;
       });
       return { ...state, posts: [action.post, ...posts] };
+    }
+    case "REMOVE_REPOST": {
+      const posts = state.posts
+        .filter(
+          post =>
+            post.id !== action.post.id ||
+            !(post.repostedBy && post.repostedBy.id === action.loggedinUserId)
+        )
+        .map(post => {
+          if (post.id === action.post.id)
+            return {
+              ...post,
+              repostsCount: post.repostsCount - 1,
+              loggedinUserActionState: {
+                ...post.loggedinUserActionState,
+                isReposted: false,
+              },
+            };
+          return post;
+        });
+      return { ...state, posts };
     }
     case "UPDATE_POST":
       return { ...state, post: action.updatedPost };

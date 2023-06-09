@@ -4,7 +4,6 @@ import { Location } from "./location.interface";
 
 export type PostDocument = Post & Document;
 
-
 export type AddPostParams = {
   posts?: NewPost[];
   repostedPost?: Post;
@@ -48,6 +47,7 @@ export type BasicPost = {
 
 export interface NewPost extends BasicPost {
   idx: number;
+  key: string;
   imgs: NewPostImg[];
   previousThreadPostId?: string;
   isDraft?: boolean;
@@ -60,9 +60,9 @@ export interface Post extends BasicPost {
   createdAt: Date;
   updatedAt: Date;
   repliesCount: number;
-  repostCount: number;
-  likes: number;
-  views: number;
+  repostsCount: number;
+  likesCount: number;
+  viewsCount: number;
   imgs: PostImg[];
   createdBy: {
     id: string;
@@ -77,7 +77,15 @@ export interface Post extends BasicPost {
     username: string;
     fullname: string;
   };
+  loggedinUserActionState: loggedinUserActionState;
 }
+
+export type loggedinUserActionState = {
+  isLiked: boolean;
+  isReposted: boolean;
+  isViewed: boolean;
+  isBookmarked: boolean;
+};
 
 export type PollOption = {
   text: string;

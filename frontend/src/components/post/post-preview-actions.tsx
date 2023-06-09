@@ -10,7 +10,7 @@ import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPostType, setNewPosts } from "../../store/actions/new-post.actions";
 import { RootState } from "../../store/store";
-import { addPost } from "../../store/actions/post.actions";
+import { addPost, repostPost, updatePosts } from "../../store/actions/post.actions";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -21,15 +21,17 @@ type Btn = {
   icon: JSX.Element;
   count: number;
   onClickFunc: () => void;
+  isClicked?: boolean;
 };
 
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { posts } = useSelector((state: RootState) => state.postModule);
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-
+  const { isReposted } = post.loggedinUserActionState;
   const iconClassName = "icon";
   const btns: Btn[] = [
     {
@@ -46,16 +48,17 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "rechirp",
       icon: <AiOutlineRetweet className={iconClassName} />,
-      count: post.repostCount,
-      onClickFunc: () => {
+      count: post.repostsCount,
+      isClicked: isReposted,
+      onClickFunc: async () => {
         const repostedPost = { ...post };
-        dispatch(addPost({ repostedPost }));
+        await dispatch(repostPost(repostedPost));
       },
     },
     {
       name: "like",
       icon: <FaRegHeart className={iconClassName} />,
-      count: post.likes,
+      count: post.likesCount,
       onClickFunc: () => {
         console.log("like");
       },
@@ -63,7 +66,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "view",
       icon: <RiBarChartGroupedFill className={iconClassName} />,
-      count: post.views,
+      count: post.viewsCount,
       onClickFunc: () => {
         console.log("view");
       },
@@ -82,7 +85,11 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       {btns.map((btn, idx) => {
         const { name, icon, count, onClickFunc } = btn;
         return (
-          <button key={idx} className={"btn-action " + name} onClick={onClickFunc}>
+          <button
+            key={idx}
+            className={"btn-action " + name + (btn.isClicked ? " clicked" : "")}
+            onClick={onClickFunc}
+          >
             <div className="icon-container">{icon}</div>
             {name != "share" && (
               <span className="count">{count > 0 ? utilService.formatCount(count) : ""}</span>

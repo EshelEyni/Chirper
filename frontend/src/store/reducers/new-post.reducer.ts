@@ -1,4 +1,5 @@
 import { NewPost, Post, repliedPostDetails } from "../../../../shared/interfaces/post.interface";
+import { utilService } from "../../services/util.service/utils.service";
 
 export type NewPostState = {
   homePage: {
@@ -21,6 +22,7 @@ export type NewPostType = "home-page" | "side-bar" | "reply";
 const getDefaultNewPost = (idx = 0, repliedPostDetails?: repliedPostDetails[]): NewPost => {
   return {
     idx,
+    key: utilService.makeId(),
     text: "",
     audience: "everyone",
     repliersType: "everyone",

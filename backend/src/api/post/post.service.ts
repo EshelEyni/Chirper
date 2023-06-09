@@ -1,12 +1,14 @@
 import { Post, PollOption, NewPost } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
+import { RepostModel } from "./repost.model";
 import { PollResultModel } from "./poll.model";
 import { APIFeatures } from "../../services/util.service";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls.middleware";
 import mongoose from "mongoose";
 import { AppError } from "../../services/error.service";
+import { Document } from "mongoose";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -15,11 +17,40 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  let posts = (await features.getQuery().exec()) as unknown as Post[];
+  const postDocs = (await features.getQuery().exec()) as unknown as Document[];
+  let posts = postDocs.map(post => post.toObject()) as unknown as Post[];
+
+  let repostDocs = await RepostModel.find({})
+    .populate("post")
+    .populate(_populateRepostedBy())
+    .exec();
+  repostDocs = repostDocs.map(doc => doc.toObject());
+
+  const reposts = repostDocs.map((doc: any) => {
+    const { createdAt, updatedAt, post, repostedBy } = doc;
+    post.createdAt = createdAt;
+    post.updatedAt = updatedAt;
+    return {
+      ...post,
+      repostedBy,
+    };
+  });
+
+  posts = [...posts, ...reposts]
+    .sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+    .filter(post => post.createdBy !== null);
+
+  const setLoggedinUserActionStatePrms = posts.map(async post => {
+    await _setLoggedinUserActionState(post);
+  });
+
+  await Promise.all(setLoggedinUserActionStatePrms);
+
   if (posts.length > 0) {
     await _populateUserPollVotes(...(posts as unknown as Post[]));
   }
-  posts = posts.filter(post => post.createdBy !== null);
   return posts as unknown as Post[];
 }
 
@@ -44,7 +75,16 @@ async function add(post: NewPost): Promise<Post> {
       );
     }
     await session.commitTransaction();
-    return (await PostModel.findById(savedPost.id).exec()) as unknown as Post;
+    const postDoc = await PostModel.findById(savedPost.id).exec();
+    if (!postDoc) throw new AppError("post not found", 404);
+    const populatedPost = postDoc.toObject() as unknown as Post;
+    populatedPost.loggedinUserActionState = {
+      isLiked: false,
+      isReposted: false,
+      isViewed: false,
+      isBookmarked: false,
+    };
+    return populatedPost as unknown as Post;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -64,14 +104,61 @@ async function addMany(posts: NewPost[]): Promise<Post> {
       if (i === 0) currPost.repliesCount = 1;
       else currPost.previousThreadPostId = savedThread[i - 1].id;
 
-      const savedPost = await new PostModel(currPost).save();
+      const savedPost = await new PostModel(currPost).save({ session });
       savedThread.push(savedPost as unknown as Post);
     }
-    const originalPost = savedThread[0];
-    const populatedPost = (await PostModel.findById(originalPost.id).exec()) as unknown as Post;
     await session.commitTransaction();
-    if (!populatedPost) throw new AppError("post not found", 404);
+    const originalPost = savedThread[0];
+    const postDoc = await PostModel.findById(originalPost.id).exec();
+    if (!postDoc) throw new AppError("post not found", 404);
+    const populatedPost = postDoc.toObject() as unknown as Post;
+    populatedPost.loggedinUserActionState = {
+      isLiked: false,
+      isReposted: false,
+      isViewed: false,
+      isBookmarked: false,
+    };
     return populatedPost as unknown as Post;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function repost(postId: string, loggedinUserId: string): Promise<Post> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const savedRepost = await new RepostModel({
+      postId,
+      repostOwnerId: loggedinUserId,
+    }).save({ session });
+
+    await PostModel.updateOne({ _id: postId }, { $inc: { repostsCount: 1 } }, { session });
+    await session.commitTransaction();
+
+    let doc = (await RepostModel.find({ _id: savedRepost.id })
+      .populate("post")
+      .populate(_populateRepostedBy())
+      .exec()) as unknown as any;
+
+    doc = doc[0].toObject();
+
+    const { createdAt, updatedAt, post, repostedBy } = doc;
+
+    post.createdAt = createdAt;
+    post.updatedAt = updatedAt;
+    const repost = {
+      ...post,
+      repostedBy,
+    } as unknown as Post;
+
+    await _setLoggedinUserActionState(repost);
+
+    return repost;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -133,11 +220,11 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
 
 async function _populateUserPollVotes(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
-  const userId = store?.loggedinUserId;
-  if (!userId) return;
+  const loggedinUserId = store?.loggedinUserId;
+  if (!loggedinUserId || posts.some(post => post.poll)) return;
 
   const pollResults = await PollResultModel.find({
-    userId: new mongoose.Types.ObjectId(userId),
+    userId: new mongoose.Types.ObjectId(loggedinUserId),
     postId: { $in: posts.map(post => post.id) },
   }).exec();
 
@@ -150,6 +237,25 @@ async function _populateUserPollVotes(...posts: Post[]) {
       const pollResult = pollResultsMap.get(post.id.toString());
       if (pollResult) post.poll.options[pollResult.optionIdx].isLoggedinUserVoted = true;
     }
+  }
+}
+
+async function _setLoggedinUserActionState(post: Post) {
+  const store = asyncLocalStorage.getStore() as alStoreType;
+  const loggedinUserId = store?.loggedinUserId;
+  post.loggedinUserActionState = {
+    isLiked: false,
+    isReposted: false,
+    isViewed: false,
+    isBookmarked: false,
+  };
+
+  console.log("_setLoggedinUserActionState:", post);
+  if (loggedinUserId) {
+    post.loggedinUserActionState.isReposted = !!(await RepostModel.exists({
+      postId: new mongoose.Types.ObjectId(post.id),
+      repostOwnerId: new mongoose.Types.ObjectId(loggedinUserId),
+    }));
   }
 }
 
@@ -166,11 +272,23 @@ function _checkPollExperation(
   if (pollEndTime < currTime) throw new AppError("poll ended", 400);
 }
 
+function _populateRepostedBy() {
+  return {
+    path: "repostedBy",
+    select: {
+      _id: 1,
+      username: 1,
+      fullname: 1,
+    },
+  };
+}
+
 export default {
   query,
   getById,
   add,
   addMany,
+  repost,
   update,
   remove,
   setPollVote,

@@ -43,7 +43,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     (state: RootState) => state.newPostModule
   );
   const { posts } = useSelector((state: RootState) => state.postModule);
-
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -222,7 +221,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           delete post.video;
         }
       }
-      await dispatch(addPost({ posts: newPosts }));
+      await dispatch(addPost(newPosts));
       if (newPostType !== "reply") dispatch(setNewPosts([], newPostType));
       else {
         const postToUpdate = replyToPost ? { ...replyToPost } : null;
@@ -283,10 +282,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       return "Chirp your reply...";
     }
     if (currNewPost?.poll) return "Ask a question...";
-    else {
+    if (!isHomePage) {
       if (isFirstPostInThread) return "What's happening?";
       else return "Add another Chirp!";
-    }
+    } else return "What's happening?";
   };
 
   return (

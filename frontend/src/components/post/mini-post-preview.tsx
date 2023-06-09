@@ -22,6 +22,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({ newPost, post 
   const dispatch: AppDispatch = useDispatch();
 
   const onSetCurrPost = (currPost: NewPost | undefined) => {
+    console.log("onSetCurrPost called with:", currPost);
     if (!currPost) return;
     dispatch(setNewPost(currPost, newPostType));
   };

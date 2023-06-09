@@ -24,6 +24,7 @@ function formatTime(currDate: Date): string {
   } else if (minutes > 0) {
     return `${minutes}m`;
   } else {
+    if (seconds == 0) return `now`;
     return `${seconds}s`;
   }
 }

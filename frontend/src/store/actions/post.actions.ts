@@ -54,36 +54,29 @@ export function removePost(
   };
 }
 
-export function addPost({
-  posts,
-  repostedPost,
-}: AddPostParams): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+export function addPost(
+  posts: NewPost[]
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      let addedPost: Post | null = null;
-      if (posts) {
-        console.log("posts", posts);
-        addedPost = await postService.add({ posts });
-        // const isPublished = !addedPost.schedule;
-        // if (!isPublished) {
-        //   const dateStr = new Intl.DateTimeFormat("en-US", {
-        //     dateStyle: "full",
-        //     timeStyle: "short",
-        //     timeZone: "UTC",
-        //   }).format(addedPost.schedule);
+      const addedPost = await postService.add({ posts });
+      // const isPublished = !addedPost.schedule;
+      // if (!isPublished) {
+      //   const dateStr = new Intl.DateTimeFormat("en-US", {
+      //     dateStyle: "full",
+      //     timeStyle: "short",
+      //     timeZone: "UTC",
+      //   }).format(addedPost.schedule);
 
-        //   const msg: UserMsg = {
-        //     type: "info",
-        //     text: `Your Chirp will be sent on ${dateStr}`,
-        //   };
-        //   dispatch({ type: "SET_USER_MSG", userMsg: msg });
-        //   setTimeout(() => {
-        //     dispatch({ type: "SET_USER_MSG", userMsg: null });
-        //   }, 2000);
-        // }
-      } else if (repostedPost) {
-        addedPost = await postService.add({ repostedPost });
-      }
+      //   const msg: UserMsg = {
+      //     type: "info",
+      //     text: `Your Chirp will be sent on ${dateStr}`,
+      //   };
+      //   dispatch({ type: "SET_USER_MSG", userMsg: msg });
+      //   setTimeout(() => {
+      //     dispatch({ type: "SET_USER_MSG", userMsg: null });
+      //   }, 2000);
+      // }
       dispatch({ type: "ADD_POST", post: addedPost });
     } catch (err) {
       const msg: UserMsg = {
@@ -95,6 +88,19 @@ export function addPost({
         dispatch({ type: "SET_USER_MSG", userMsg: null });
       }, 2000);
       console.log("PostActions: err in addPost", err);
+    }
+  };
+}
+
+export function repostPost(
+  repostedPost: Post
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const addedPost = await postService.add({ repostedPost });
+      dispatch({ type: "ADD_REPOST", post: addedPost });
+    } catch (err) {
+      console.log("PostActions: err in repostPost", err);
     }
   };
 }

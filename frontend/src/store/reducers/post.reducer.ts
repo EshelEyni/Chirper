@@ -32,6 +32,21 @@ export function postReducer(
       };
     case "ADD_POST":
       return { ...state, posts: [action.post, ...state.posts] };
+    case "ADD_REPOST": {
+      const posts = state.posts.map(post => {
+        if (post.id === action.post.id)
+          return {
+            ...post,
+            repostsCount: post.repostsCount + 1,
+            loggedinUserActionState: {
+              ...post.loggedinUserActionState,
+              isReposted: true,
+            },
+          };
+        return post;
+      });
+      return { ...state, posts: [action.post, ...posts] };
+    }
     case "UPDATE_POST":
       return { ...state, post: action.updatedPost };
     default:

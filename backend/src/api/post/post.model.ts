@@ -23,10 +23,6 @@ const locationSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
-    originalPostId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
     audience: {
       type: String,
       required: true,
@@ -63,10 +59,6 @@ const postSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
-    repostedById: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
     text: {
       type: String,
       trim: true,
@@ -84,18 +76,18 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // repostCount: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // likeCount: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // viewCount: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    repostsCount: {
+      type: Number,
+      default: 0,
+    },
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
+    viewsCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     toObject: {
@@ -146,16 +138,6 @@ function validateSchedule(post: Document) {
 postSchema.index({ createdAt: -1 });
 postSchema.index({ userId: 1 });
 postSchema.index({ schedule: 1 }, { partialFilterExpression: { schedule: { $exists: true } } });
-postSchema.index(
-  { originalPostId: 1, repostedById: 1 },
-  {
-    unique: true,
-    partialFilterExpression: {
-      originalPostId: { $type: "objectId" },
-      repostedById: { $type: "objectId" },
-    },
-  }
-);
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   if (!validateContent(this)) {
@@ -213,31 +195,18 @@ function populateCreatedBy(doc: Document) {
   });
 }
 
-function populateRepostedBy(doc: Document) {
-  return doc.populate("repostedBy", {
-    _id: 1,
-    username: 1,
-    fullname: 1,
-  });
-}
-
 postSchema.post(/^find/, async function (doc) {
+  console.log("doc: ", doc);
+  console.log("doc.length: ", doc.length);
+
   if (doc.length !== undefined) return;
   await populateCreatedBy(doc);
-  await doc.populate("repostCount");
-  if (doc.repostedById) {
-    await populateRepostedBy(doc);
-  }
 });
 
 postSchema.post(/^find/, async function (docs) {
   if (docs.length === undefined) return;
   for (const doc of docs) {
     await populateCreatedBy(doc);
-    await doc.populate("repostCount");
-    if (doc.repostedById) {
-      await populateRepostedBy(doc);
-    }
   }
 });
 
@@ -247,34 +216,6 @@ postSchema.virtual("createdBy", {
   foreignField: "_id",
   justOne: true,
 });
-
-postSchema.virtual("repostedBy", {
-  ref: "User",
-  localField: "repostedById",
-  foreignField: "_id",
-  justOne: true,
-});
-
-postSchema.virtual("repostCount", {
-  ref: "Post",
-  localField: "_id",
-  foreignField: "originalPostId",
-  count: true,
-});
-
-// postSchema.virtual("likeCount", {
-//   ref: "Like",
-//   localField: "_id",
-//   foreignField: "postId",
-//   count: true,
-// });
-
-// postSchema.virtual("viewCount", {
-//   ref: "View",
-//   localField: "_id",
-//   foreignField: "postId",
-//   count: true,
-// });
 
 postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Error) => void) {
   this.find({ isPublic: true });

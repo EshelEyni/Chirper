@@ -73,7 +73,22 @@
     }
 
     &.rechirp {
-      @include hover-effect(var(--color-primary));
+      &:not(.clicked) {
+        @include hover-effect(var(--color-success));
+      }
+
+      &.clicked {
+        & * {
+          color: var(--color-success);
+        }
+
+        .icon-container {
+          .icon {
+            height: rem(18px);
+            width: rem(18px);
+          }
+        }
+      }
     }
 
     &.like {

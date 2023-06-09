@@ -14,7 +14,7 @@ import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mar
 import { Logo } from "../other/logo";
 import { VideoPlayer } from "../video/video-player";
 import { PostRepliedToUsersList } from "./post-replied-to-users-list";
-import { BiRepost } from "react-icons/bi";
+import { AiOutlineRetweet } from "react-icons/ai";
 
 interface PostPreviewProps {
   post: Post;
@@ -82,19 +82,28 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     console.log("onNavigateToPostDetails");
   };
 
+  const onNavigateToProfile = (userId: string) => {
+    console.log("onNavigateToProfile: ", userId);
+  };
+
   return (
     <article className="post-preview">
       {post.repostedBy && (
         <div className="post-preview-repost-container">
-          <div className="repost-icon-container">
-            <BiRepost size={22} />
+          <div className="repost-icon-container" onClick={onNavigateToPostDetails}>
+            <AiOutlineRetweet size={18} />
           </div>
-          <span className="post-preview-repost-user">{`${
-            post.repostedBy.id === loggedinUser?.id ? "You" : post.repostedBy.fullname
-          } Rechiped`}</span>
+          <span
+            className="post-preview-repost-user"
+            onClick={() => onNavigateToProfile(post.repostedBy!.id)}
+          >
+            {`${
+              post.repostedBy.id === loggedinUser?.id ? "You" : post.repostedBy.fullname
+            } Rechiped`}
+          </span>
         </div>
       )}
-      <div className="post-preview-content-wrapper">
+      <div className={"post-preview-content-wrapper" + (post.repostedBy ? " with-repost" : "")}>
         <UserImg imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()} />
         <div className="post-preview-main-container">
           <header className="post-preview-header">

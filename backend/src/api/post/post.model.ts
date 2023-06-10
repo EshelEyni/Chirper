@@ -66,12 +66,20 @@ const postSchema = new mongoose.Schema(
     imgs: {
       type: [imgsSchema],
       default: undefined,
+      validate: {
+        validator: (imgs: Post["imgs"]) => (!imgs ? true : imgs.length <= 4),
+        message: "Post must have no more than 4 images.",
+      },
     },
     videoUrl: String,
     gif: gifSchema,
     poll: pollSchema,
     schedule: Date,
     location: locationSchema,
+    quotedPostId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    },
     repliesCount: {
       type: Number,
       default: 0,
@@ -195,21 +203,56 @@ function populateCreatedBy(doc: Document) {
   });
 }
 
+function populateQuotedPost(doc: Document) {
+  return doc.populate("quotedPost", {
+    _id: 1,
+    text: 1,
+    videoUrl: 1,
+    gif: 1,
+    poll: 1,
+    imgs: 1,
+    isPublic: 1,
+    audience: 1,
+    repliersType: 1,
+    createdAt: 1,
+    createdById: 1,
+  });
+}
+
 postSchema.post(/^find/, async function (doc) {
   if (doc.length !== undefined) return;
   await populateCreatedBy(doc);
+  if (doc.get("quotedPostId")) {
+    await populateQuotedPost(doc);
+    if (doc.get("quotedPost")) {
+      await populateCreatedBy(doc.get("quotedPost"));
+    }
+  }
 });
 
 postSchema.post(/^find/, async function (docs) {
   if (docs.length === undefined) return;
   for (const doc of docs) {
     await populateCreatedBy(doc);
+    if (doc.get("quotedPostId")) {
+      await populateQuotedPost(doc);
+      if (doc.get("quotedPost")) {
+        await populateCreatedBy(doc.get("quotedPost"));
+      }
+    }
   }
 });
 
 postSchema.virtual("createdBy", {
   ref: "User",
   localField: "createdById",
+  foreignField: "_id",
+  justOne: true,
+});
+
+postSchema.virtual("quotedPost", {
+  ref: "Post",
+  localField: "quotedPostId",
   foreignField: "_id",
   justOne: true,
 });

@@ -6,6 +6,7 @@ type RepostOptionsModalProps = {
   isReposted: boolean;
   onRepost: () => void;
   onRemoveRepost: () => void;
+  onQuotePost: () => void;
 };
 
 export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
@@ -13,6 +14,7 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
   isReposted,
   onRepost,
   onRemoveRepost,
+  onQuotePost,
 }) => {
   const btns = [
     {
@@ -23,7 +25,7 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
     {
       name: "quote rechirp",
       icon: <HiOutlinePencilAlt className="icon" size={20} />,
-      onClickFunc: () => console.log("quote rechirp"),
+      onClickFunc: () => onQuotePost(),
     },
   ];
   return (

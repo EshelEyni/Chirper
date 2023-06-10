@@ -26,7 +26,6 @@
       .user-img {
         width: rem(45px);
         height: rem(45px);
-        border-radius: 50%;
       }
     }
 
@@ -110,13 +109,29 @@
         }
       }
 
+      .mini-post-preview {
+        &.quote {
+          pointer-events: none;
+
+          .post-preview-content-wrapper {
+            .post-preview-main-container {
+              .post-preview-body {
+                .link-to-poll {
+                  opacity: 0.5;
+                }
+              }
+            }
+          }
+        }
+      }
+
       .btn-replires-location-container {
         display: flex;
         gap: rem(10px);
 
         .btn-toggle-repliers-container {
           position: relative;
-          
+
           .btn-toggle-repliers {
             display: flex;
             justify-content: flex-start;

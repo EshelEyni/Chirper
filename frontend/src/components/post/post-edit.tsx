@@ -14,7 +14,7 @@ import {
   setNewPosts,
   updateCurrNewPost,
 } from "../../store/actions/new-post.actions";
-import { addPost, updatePosts } from "../../store/actions/post.actions";
+import { addPost, addQuotePost, updatePosts } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -39,7 +39,7 @@ interface PostEditProps {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { sideBar, homePage, reply, newPostType } = useSelector(
+  const { sideBar, homePage, reply, quote, newPostType } = useSelector(
     (state: RootState) => state.newPostModule
   );
   const { posts } = useSelector((state: RootState) => state.postModule);
@@ -51,6 +51,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
   const [replyToPost, setReplyToPost] = useState<Post | null>(null);
+  const [quotePost, setQuotePost] = useState<Post | null>(null);
   const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
   const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
@@ -93,6 +94,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setCurrNewPost(reply.reply);
       setInputTextValue(reply.reply.text);
       setReplyToPost(reply.repliedToPost);
+    } else if (postType === "quote") {
+      setCurrNewPost(quote.quote);
+      setInputTextValue(quote.quote.text);
+      setQuotePost(quote.quotedPost);
     }
     if (location.pathname === "/compose" && isHomePage) {
       setIsPickerShown(false);
@@ -116,6 +121,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     sideBar.posts,
     sideBar.currPostIdx,
     reply,
+    quote,
     location.pathname,
   ]);
 
@@ -130,8 +136,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     let currPostText = "";
     if (newPostType === "home-page") {
       currPostText = post.idx === homePage.currPostIdx ? inputTextValue : post.text;
-    } else {
+    } else if (newPostType === "side-bar") {
       currPostText = post.idx === sideBar.currPostIdx ? inputTextValue : post.text;
+    } else {
+      currPostText = post.text;
     }
 
     return currPostText.length > 0 && currPostText.length <= 247;
@@ -144,7 +152,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         post.poll.options.every(option => option.text.length > 0) && checkifPostTextIsValid(post)
       );
     } else {
-      return checkifPostTextIsValid(post) || post.imgs.length > 0 || !!post.gif || !!post.video;
+      return (
+        checkifPostTextIsValid(post) ||
+        post.imgs.length > 0 ||
+        !!post.gif ||
+        !!post.video ||
+        !!post.quotedPostId
+      );
     }
   };
 
@@ -189,10 +203,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     e.target.style.height = e.target.scrollHeight + "px";
   };
 
-  const handleTextBlur = () => {
+  const handleTextBlur = async () => {
     if (!currNewPost) return;
     const newPost = { ...currNewPost, text: inputTextValue };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    await dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
   const onAddPost = async () => {
@@ -221,9 +235,13 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           delete post.video;
         }
       }
-      await dispatch(addPost(newPosts));
-      if (newPostType !== "reply") dispatch(setNewPosts([], newPostType));
-      else {
+      if (newPostType === "quote") {
+        const post = newPosts[0];
+        await dispatch(addQuotePost(post));
+      } else {
+        await dispatch(addPost(newPosts));
+      }
+      if (newPostType === "reply") {
         const postToUpdate = replyToPost ? { ...replyToPost } : null;
         if (postToUpdate) {
           postToUpdate.repliesCount++;
@@ -235,7 +253,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         }
         dispatch(setNewPostType("home-page"));
         dispatch(setNewPosts([], newPostType));
+      } else {
+        dispatch(setNewPosts([], newPostType));
       }
+
       setInputTextValue("");
       setIsPickerShown(false);
       setPostSaveInProgress(false);
@@ -275,17 +296,30 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   };
 
   const setTextPlaceholder = () => {
-    const postType = newPostTypeRef.current;
-    if (postType === "reply") {
-      const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.createdBy.id;
-      if (isLoggedinUserPost) return "Add another Chirp!";
-      return "Chirp your reply...";
+    const { current: postType } = newPostTypeRef;
+    switch (postType) {
+      case "reply": {
+        if (currNewPost?.poll) return "Ask a question...";
+        const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.createdBy.id;
+        if (isLoggedinUserPost) return "Add another Chirp!";
+        return "Chirp your reply...";
+      }
+      case "quote": {
+        return "Add a comment!";
+      }
+      case "side-bar": {
+        if (currNewPost?.poll) return "Ask a question...";
+        if (isFirstPostInThread) return "What's happening?";
+        else return "Add another Chirp!";
+      }
+      case "home-page": {
+        if (currNewPost?.poll) return "Ask a question...";
+        return "What's happening?";
+      }
+      default: {
+        return "What's happening?";
+      }
     }
-    if (currNewPost?.poll) return "Ask a question...";
-    if (!isHomePage) {
-      if (isFirstPostInThread) return "What's happening?";
-      else return "Add another Chirp!";
-    } else return "What's happening?";
   };
 
   return (
@@ -296,7 +330,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {postSaveInProgress && <span className="progress-bar"></span>}
       {!isHomePage && preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
-      {!isHomePage && replyToPost && <MiniPostPreview post={replyToPost} />}
+      {!isHomePage && replyToPost && <MiniPostPreview post={replyToPost} type={"reply"} />}
       <div className="content-container">
         {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
@@ -308,7 +342,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           )}
           {!isFirstPostInThread &&
             !isHomePage &&
-            newPostTypeRef.current !== "reply" &&
+            (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
             !checkIfPostIsValid(currNewPost) && (
               <button className="btn-remove-post-from-thread">
                 <AiOutlineClose
@@ -345,6 +379,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               </div>
             )}
           </div>
+          {quotePost && <MiniPostPreview quotedPost={quotePost} type={"quote"} />}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
             <PostEditActions
               currNewPost={currNewPost}

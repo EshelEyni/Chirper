@@ -14,12 +14,20 @@ export type NewPostState = {
     repliedToPost: Post | null;
     reply: NewPost;
   };
+  quote: {
+    quotedPost: Post | null;
+    quote: NewPost;
+  };
   newPostType: NewPostType;
 };
 
-export type NewPostType = "home-page" | "side-bar" | "reply";
+export type NewPostType = "home-page" | "side-bar" | "reply" | "quote";
 
-const getDefaultNewPost = (idx = 0, repliedPostDetails?: repliedPostDetails[]): NewPost => {
+const getDefaultNewPost = (
+  idx = 0,
+  repliedPostDetails?: repliedPostDetails[],
+  quotedPostId?: string
+): NewPost => {
   return {
     idx,
     key: utilService.makeId(),
@@ -28,6 +36,7 @@ const getDefaultNewPost = (idx = 0, repliedPostDetails?: repliedPostDetails[]): 
     repliersType: "everyone",
     repliedPostDetails,
     isPublic: true,
+    quotedPostId: quotedPostId,
     imgs: [],
     video: null,
     videoUrl: "",
@@ -49,6 +58,10 @@ const initialState: NewPostState = {
     repliedToPost: null,
     reply: getDefaultNewPost(),
   },
+  quote: {
+    quotedPost: null,
+    quote: getDefaultNewPost(),
+  },
   newPostType: "home-page",
 };
 
@@ -57,6 +70,7 @@ export function newPostReducer(
   action: {
     type: string;
     repliedToPost: Post;
+    quotedPost: Post;
     newPosts: NewPost[];
     newPost: NewPost;
     updatedPost: NewPost;
@@ -119,6 +133,26 @@ export function newPostReducer(
             reply: getDefaultNewPost(0, repliedPostDetails),
           },
         };
+      } else if (action.newPostType === "quote") {
+        if (!action.quotedPost) {
+          newPostState = {
+            ...state,
+            quote: {
+              quotedPost: null,
+              quote: getDefaultNewPost(),
+            },
+          };
+
+          return newPostState;
+        }
+
+        newPostState = {
+          ...state,
+          quote: {
+            quotedPost: action.quotedPost,
+            quote: getDefaultNewPost(0, undefined, action.quotedPost.id),
+          },
+        };
       }
 
       return newPostState;
@@ -167,6 +201,11 @@ export function newPostReducer(
         newPostState = {
           ...state,
           reply: { ...state.reply, reply: action.newPost },
+        };
+      } else if (action.newPostType === "quote") {
+        newPostState = {
+          ...state,
+          quote: { ...state.quote, quote: action.newPost },
         };
       }
 

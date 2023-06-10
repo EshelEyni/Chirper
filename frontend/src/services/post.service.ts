@@ -63,6 +63,16 @@ async function addRepost(repostedPost: Post): Promise<Post> {
   }
 }
 
+async function addQuote(post: NewPost): Promise<Post> {
+  try {
+    const res = await httpService.post("post/quote", post);
+    return utilService.handleServerResponse<Post>(res);
+  } catch (err) {
+    console.log("postService: Cannot add quote");
+    throw err;
+  }
+}
+
 async function removeRepost(repostedPost: Post): Promise<void> {
   try {
     await httpService.delete(`post/repost?postId=${repostedPost.id}`);
@@ -95,6 +105,7 @@ export const postService = {
   getById,
   add,
   addRepost,
+  addQuote,
   update,
   remove,
   removeRepost,

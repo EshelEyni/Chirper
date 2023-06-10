@@ -76,6 +76,31 @@ const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
+const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  const post = req.body as unknown as NewPost;
+  post.createdById = loggedinUserId;
+
+  let savedPost: Post | null = null;
+  const isRepost = !post.text && !post.imgs?.length && !post.gif && !post.video;
+  if (isRepost) {
+    try {
+      if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
+      savedPost = await postService.repost(post.quotedPostId, loggedinUserId);
+    } catch (error) {
+      savedPost = null;
+    }
+  } else {
+    savedPost = await postService.add(post);
+  }
+
+  res.status(201).send({
+    status: "success",
+    data: savedPost,
+  });
+});
+
 const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const postToUpdate = req.body;
@@ -126,6 +151,7 @@ export {
   addPost,
   addPostThread,
   repostPost,
+  quotePost,
   updatePost,
   removePost,
   removeRepost,

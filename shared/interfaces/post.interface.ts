@@ -45,10 +45,25 @@ export type BasicPost = {
   repostedById?: string;
 };
 
+export interface QuotedPost extends BasicPost {
+  id: string;
+  createdAt: Date;
+  imgs: PostImg[];
+  createdBy: {
+    id: string;
+    username: string;
+    fullname: string;
+    isAdmin?: boolean;
+    isVerified?: boolean;
+    imgUrl: string;
+  };
+}
+
 export interface NewPost extends BasicPost {
   idx: number;
   key: string;
   imgs: NewPostImg[];
+  quotedPostId?: string;
   previousThreadPostId?: string;
   isDraft?: boolean;
   repliesCount?: number;
@@ -56,7 +71,6 @@ export interface NewPost extends BasicPost {
 
 export interface Post extends BasicPost {
   id: string;
-  originalPostId?: string;
   createdAt: Date;
   updatedAt: Date;
   repliesCount: number;
@@ -64,6 +78,7 @@ export interface Post extends BasicPost {
   likesCount: number;
   viewsCount: number;
   imgs: PostImg[];
+  quotedPost?: QuotedPost;
   createdBy: {
     id: string;
     username: string;

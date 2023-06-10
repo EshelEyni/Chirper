@@ -56,9 +56,12 @@ async function query(queryString: QueryString): Promise<Post[]> {
 }
 
 async function getById(postId: string): Promise<Post | null> {
-  const post = await PostModel.findById(postId).exec();
-  await _populateUserPollVotes(post as unknown as Post);
-  return post as unknown as Post;
+  const postDoc = await PostModel.findById(postId).exec();
+  if (!postDoc) return null;
+  const post = postDoc.toObject() as unknown as Post;
+  await _populateUserPollVotes(post);
+  await _setLoggedinUserActionState(post);
+  return post;
 }
 
 async function add(post: NewPost): Promise<Post> {

@@ -91,10 +91,18 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   };
 
   const onRemoveRepost = async () => {
-    if (!loggedinUser) return console.log("no loggedin user");
+    if (!loggedinUser) return;
     const repostedPost = { ...post };
     await dispatch(removeRepost(repostedPost, loggedinUser.id));
     setIsRepostModalOpen(prev => !prev);
+  };
+
+  const onQuotePost = async () => {
+    setIsRepostModalOpen(prev => !prev);
+    await dispatch(setNewPostType("quote"));
+    await dispatch(setNewPosts([], "quote", post));
+    const currPathName = location.pathname === "/" ? "" : location.pathname;
+    navigate(`${currPathName}/compose`);
   };
 
   return (
@@ -118,6 +126,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
                 onToggleModal={() => setIsRepostModalOpen(prev => !prev)}
                 onRepost={onRepost}
                 onRemoveRepost={onRemoveRepost}
+                onQuotePost={onQuotePost}
                 isReposted={isReposted}
               />
             )}

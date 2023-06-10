@@ -10,6 +10,7 @@ import {
   removePost,
   removeRepost,
   savePollVote,
+  quotePost,
 } from "./post.controller";
 
 const router = express.Router();
@@ -18,9 +19,10 @@ router.get("/", getPosts);
 router.get("/:id", getPostById);
 router.use(requireAuth);
 
-router.delete("/repost", removeRepost);
-router.post("/repost", repostPost);
 router.post("/thread", addPostThread);
+router.post("/repost", repostPost);
+router.delete("/repost", removeRepost);
+router.post("/quote", quotePost);
 
 router.post("/", addPost);
 router.patch("/:id", updatePost);

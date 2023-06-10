@@ -15,6 +15,7 @@ import { Logo } from "../other/logo";
 import { VideoPlayer } from "../video/video-player";
 import { PostRepliedToUsersList } from "./post-replied-to-users-list";
 import { AiOutlineRetweet } from "react-icons/ai";
+import { MiniPostPreview } from "./mini-post-preview";
 
 interface PostPreviewProps {
   post: Post;
@@ -147,6 +148,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
                 setPoll={setPoll}
               />
             )}
+            {post.quotedPost && <MiniPostPreview quotedPost={post.quotedPost} type={"quote"} />}
           </main>
           <footer className="flex">
             <PostPreviewActions post={post} />

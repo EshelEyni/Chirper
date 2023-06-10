@@ -105,6 +105,23 @@ export function repostPost(
   };
 }
 
+export function addQuotePost(
+  post: NewPost
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const addedPost = await postService.addQuote(post);
+      if (addedPost?.repostedBy) {
+        dispatch({ type: "ADD_REPOST", post: addedPost });
+      } else if (addedPost) {
+        dispatch({ type: "ADD_POST", post: addedPost });
+      }
+    } catch (err) {
+      console.log("PostActions: err in quotePost", err);
+    }
+  };
+}
+
 export function removeRepost(
   post: Post,
   loggedinUserId: string

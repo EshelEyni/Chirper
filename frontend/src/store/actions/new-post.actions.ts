@@ -19,14 +19,19 @@ export function setNewPostType(
 export function setNewPosts(
   newPosts: NewPost[],
   newPostType: NewPostType,
-  repliedToPost?: Post
+  post?: Post
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      if (newPostType !== "reply") {
-        dispatch({ type: "SET_NEW_POSTS", newPosts, newPostType });
-      } else {
-        dispatch({ type: "SET_NEW_POSTS", repliedToPost, newPostType });
+      switch (newPostType) {
+        case "reply":
+          dispatch({ type: "SET_NEW_POSTS", repliedToPost: post, newPostType });
+          break;
+        case "quote":
+          dispatch({ type: "SET_NEW_POSTS", quotedPost: post, newPostType });
+          break;
+        default:
+          dispatch({ type: "SET_NEW_POSTS", newPosts, newPostType });
       }
     } catch (err) {
       console.log("PostActions: err in setNewPosts", err);

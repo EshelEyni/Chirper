@@ -91,7 +91,8 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
         !!currNewPost?.gif ||
         !!currNewPost?.poll ||
         !!currNewPost?.video ||
-        !!currNewPost?.schedule,
+        !!currNewPost?.schedule ||
+        !!currNewPost?.quotedPostId,
       onClickFn: () => {
         if (!isPickerShown || !currNewPost) return;
         const defaultPoll: Poll = {
@@ -123,7 +124,11 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     {
       name: "schedule",
       icon: <CiCalendarDate />,
-      isDisabled: !!currNewPost?.poll || !!homePage.currPostIdx || !!sideBar.currPostIdx,
+      isDisabled:
+        !!currNewPost?.poll ||
+        !!homePage.currPostIdx ||
+        !!sideBar.currPostIdx ||
+        !!currNewPost?.quotedPostId,
       onClickFn: () => {
         if (!isPickerShown) return;
         onOpenPostScedule();

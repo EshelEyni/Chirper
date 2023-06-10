@@ -100,6 +100,22 @@ async function savePollVote(postId: string, optionIdx: number) {
   }
 }
 
+async function addLike(postId: string) {
+  try {
+    return await httpService.post(`post/${postId}/like`);
+  } catch (err) {
+    console.log("postService: Cannot add like", err);
+  }
+}
+
+async function removeLike(postId: string) {
+  try {
+    return await httpService.delete(`post/${postId}/like`);
+  } catch (err) {
+    console.log("postService: Cannot remove like", err);
+  }
+}
+
 export const postService = {
   query,
   getById,
@@ -110,4 +126,6 @@ export const postService = {
   remove,
   removeRepost,
   savePollVote,
+  addLike,
+  removeLike,
 };

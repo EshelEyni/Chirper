@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import { AppError } from "../../services/error.service";
 import { Document } from "mongoose";
 import { logger } from "../../services/logger.service";
+import { PostLikeModel } from "./post-like.model";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -184,12 +185,12 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
-async function removeRepost(postId: string, loggedinUserId: string): Promise<Post> {
+async function removeRepost(postId: string, loggedinUserId: string): Promise<void> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const removedRepost = await RepostModel.findOneAndRemove({
+    await RepostModel.findOneAndRemove({
       postId,
       repostOwnerId: loggedinUserId,
     }).session(session);
@@ -198,7 +199,6 @@ async function removeRepost(postId: string, loggedinUserId: string): Promise<Pos
 
     await session.commitTransaction();
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedinUserId}`);
-    return removedRepost as unknown as Post;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -245,6 +245,46 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
   }
 }
 
+async function addLike(postId: string, userId: string): Promise<void> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    await new PostLikeModel({
+      postId,
+      userId,
+    }).save({ session });
+
+    await PostModel.updateOne({ _id: postId }, { $inc: { likesCount: 1 } }).session(session);
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function removeLike(postId: string, userId: string): Promise<void> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    await PostLikeModel.findOneAndRemove({
+      postId,
+      userId,
+    }).session(session);
+
+    await PostModel.updateOne({ _id: postId }, { $inc: { likesCount: -1 } }).session(session);
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
 async function _populateUserPollVotes(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
@@ -281,6 +321,11 @@ async function _setLoggedinUserActionState(post: Post) {
     post.loggedinUserActionState.isReposted = !!(await RepostModel.exists({
       postId: new mongoose.Types.ObjectId(post.id),
       repostOwnerId: new mongoose.Types.ObjectId(loggedinUserId),
+    }));
+
+    post.loggedinUserActionState.isLiked = !!(await PostLikeModel.exists({
+      postId: new mongoose.Types.ObjectId(post.id),
+      userId: new mongoose.Types.ObjectId(loggedinUserId),
     }));
   }
 }
@@ -319,4 +364,6 @@ export default {
   remove,
   removeRepost,
   setPollVote,
+  addLike,
+  removeLike,
 };

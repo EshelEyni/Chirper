@@ -2,7 +2,7 @@ import { Post } from "../../../../shared/interfaces/post.interface";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { utilService } from "../../services/util.service/utils.service";
 import { FaRegComment } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import { RootState } from "../../store/store";
 import { removeRepost, repostPost } from "../../store/actions/post.actions";
 import { useState } from "react";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
+import { postService } from "../../services/post.service";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -26,14 +27,22 @@ type Btn = {
   isClicked?: boolean;
 };
 
+type LikeState = {
+  isLiked: boolean;
+  likesCount: number;
+};
+
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const { isReposted } = post.loggedinUserActionState;
-
+  const { isReposted, isLiked } = post.loggedinUserActionState;
+  const [likeState, setLikeState] = useState<LikeState>({
+    isLiked,
+    likesCount: post.likesCount,
+  });
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
 
   const iconClassName = "icon";
@@ -60,10 +69,27 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "like",
-      icon: <FaRegHeart className={iconClassName} />,
-      count: post.likesCount,
+      icon: likeState.isLiked ? (
+        <FaHeart className={iconClassName} />
+      ) : (
+        <FaRegHeart className={iconClassName} />
+      ),
+      count: likeState.likesCount,
+      isClicked: likeState.isLiked,
       onClickFunc: () => {
-        console.log("like");
+        if (likeState.isLiked) {
+          postService.removeLike(post.id);
+          setLikeState({
+            isLiked: false,
+            likesCount: likeState.likesCount - 1,
+          });
+        } else {
+          postService.addLike(post.id);
+          setLikeState({
+            isLiked: true,
+            likesCount: likeState.likesCount + 1,
+          });
+        }
       },
     },
     {

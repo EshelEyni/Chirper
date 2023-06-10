@@ -145,6 +145,32 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
   });
 });
 
+const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const postId = req.params.id;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!postId) throw new AppError("No post id provided", 400);
+  await postService.addLike(postId, loggedinUserId);
+
+  res.status(201).send({
+    status: "success",
+    data: null,
+  });
+});
+
+const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const postId = req.params.id;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!postId) throw new AppError("No post id provided", 400);
+  await postService.removeLike(postId, loggedinUserId);
+
+  res.status(204).send({
+    status: "success",
+    data: null,
+  });
+});
+
 export {
   getPosts,
   getPostById,
@@ -156,4 +182,6 @@ export {
   removePost,
   removeRepost,
   savePollVote,
+  addLike,
+  removeLike,
 };

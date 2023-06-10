@@ -61,7 +61,7 @@
           border-radius: 50%;
           opacity: 0;
           transform: translate(-50%, -50%) scale(0);
-          transition: opacity 0.1s, transform 0.1s;
+          transition: all 0.1s ease-in-out;
         }
       }
 
@@ -80,9 +80,7 @@
       }
 
       &.rechirp {
-        &:not(.clicked) {
-          @include hover-effect(var(--color-success));
-        }
+        @include hover-effect(var(--color-success));
 
         &.clicked {
           & * {
@@ -100,6 +98,19 @@
 
       &.like {
         @include hover-effect(var(--color-like));
+
+        &.clicked {
+          & * {
+            color: var(--color-like);
+          }
+
+          .icon-container {
+            .icon {
+              height: rem(18px);
+              width: rem(18px);
+            }
+          }
+        }
       }
     }
   }

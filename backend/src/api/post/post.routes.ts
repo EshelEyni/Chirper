@@ -11,6 +11,8 @@ import {
   removeRepost,
   savePollVote,
   quotePost,
+  addLike,
+  removeLike,
 } from "./post.controller";
 
 const router = express.Router();
@@ -23,6 +25,8 @@ router.post("/thread", addPostThread);
 router.post("/repost", repostPost);
 router.delete("/repost", removeRepost);
 router.post("/quote", quotePost);
+router.delete("/:id/like", removeLike);
+router.post("/:id/like", addLike);
 
 router.post("/", addPost);
 router.patch("/:id", updatePost);

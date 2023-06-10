@@ -209,6 +209,7 @@
     border-radius: 25px;
     align-items: flex-start;
     cursor: pointer;
+    margin: rem(5px) 0;
 
     &:hover {
       background-color: var(--color-hover-medium);

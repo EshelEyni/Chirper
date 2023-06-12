@@ -1,4 +1,9 @@
-import { Post, PollOption, NewPost } from "../../../../shared/interfaces/post.interface";
+import {
+  Post,
+  PollOption,
+  NewPost,
+  PostReplyResult,
+} from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
 import { RepostModel } from "./repost.model";
@@ -66,36 +71,12 @@ async function getById(postId: string): Promise<Post | null> {
 }
 
 async function add(post: NewPost): Promise<Post> {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const savedPost = await new PostModel(post).save({ session });
-    if (savedPost.repliedPostDetails) {
-      const { repliedPostDetails } = savedPost;
-      const repliedToPostId = repliedPostDetails.at(-1)?.postId;
-      await PostModel.updateOne(
-        { _id: repliedToPostId },
-        { $inc: { repliesCount: 1 } },
-        { session }
-      );
-    }
-    await session.commitTransaction();
-    const postDoc = await PostModel.findById(savedPost.id).exec();
-    if (!postDoc) throw new AppError("post not found", 404);
-    const populatedPost = postDoc.toObject() as unknown as Post;
-    populatedPost.loggedinUserActionState = {
-      isLiked: false,
-      isReposted: false,
-      isViewed: false,
-      isBookmarked: false,
-    };
-    return populatedPost as unknown as Post;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
-  }
+  const savedPost = await new PostModel(post).save();
+  const postDoc = await PostModel.findById(savedPost.id).exec();
+  if (!postDoc) throw new AppError("post not found", 404);
+  const populatedPost = postDoc.toObject() as unknown as Post;
+  await _setLoggedinUserActionState(populatedPost, { isDefault: true });
+  return populatedPost as unknown as Post;
 }
 
 async function addMany(posts: NewPost[]): Promise<Post> {
@@ -117,13 +98,36 @@ async function addMany(posts: NewPost[]): Promise<Post> {
     const postDoc = await PostModel.findById(originalPost.id).exec();
     if (!postDoc) throw new AppError("post not found", 404);
     const populatedPost = postDoc.toObject() as unknown as Post;
-    populatedPost.loggedinUserActionState = {
-      isLiked: false,
-      isReposted: false,
-      isViewed: false,
-      isBookmarked: false,
-    };
+    await _setLoggedinUserActionState(populatedPost, { isDefault: true });
     return populatedPost as unknown as Post;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const savedReply = await new PostModel(replyPost).save({ session });
+    const repliedToPostDoc = await PostModel.findByIdAndUpdate(
+      replyPost.repliedPostDetails?.at(-1)?.postId,
+      { $inc: { repliesCount: 1 } },
+      { session, new: true }
+    );
+    if (!repliedToPostDoc) throw new AppError("post not found", 404);
+    await session.commitTransaction();
+    const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(updatedPost);
+
+    const postDoc = await PostModel.findById(savedReply.id).exec();
+    if (!postDoc) throw new AppError("post not found", 404);
+    const reply = postDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(reply, { isDefault: true });
+    return { updatedPost, reply };
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -173,11 +177,16 @@ async function repost(postId: string, loggedinUserId: string): Promise<Post> {
 }
 
 async function update(id: string, post: Post): Promise<Post> {
-  const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
+  const postDoc = await PostModel.findByIdAndUpdate(id, post, {
     new: true,
     runValidators: true,
   }).exec();
-  return updatedPost as unknown as Post;
+
+  if (!postDoc) throw new AppError("post not found", 404);
+  const updatedPost = postDoc.toObject() as unknown as Post;
+  await _populateUserPollVotes(updatedPost);
+  await _setLoggedinUserActionState(updatedPost);
+  return updatedPost;
 }
 
 async function remove(postId: string): Promise<Post> {
@@ -307,7 +316,7 @@ async function _populateUserPollVotes(...posts: Post[]) {
   }
 }
 
-async function _setLoggedinUserActionState(post: Post) {
+async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {}) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
   post.loggedinUserActionState = {
@@ -316,6 +325,8 @@ async function _setLoggedinUserActionState(post: Post) {
     isViewed: false,
     isBookmarked: false,
   };
+
+  if (isDefault) return;
 
   if (loggedinUserId) {
     post.loggedinUserActionState.isReposted = !!(await RepostModel.exists({
@@ -359,6 +370,7 @@ export default {
   getById,
   add,
   addMany,
+  addReply,
   repost,
   update,
   remove,

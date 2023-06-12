@@ -62,6 +62,19 @@ const addPostThread = asyncErrorCatcher(async (req: Request, res: Response): Pro
   });
 });
 
+const addReply = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const post = req.body as unknown as NewPost;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  post.createdById = loggedinUserId;
+  const replyAndUpdatedPost = await postService.addReply(post);
+
+  res.status(201).send({
+    status: "success",
+    data: replyAndUpdatedPost,
+  });
+});
+
 const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedinUserId } = req;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
@@ -176,6 +189,7 @@ export {
   getPostById,
   addPost,
   addPostThread,
+  addReply,
   repostPost,
   quotePost,
   updatePost,

@@ -5,6 +5,7 @@ import {
   getPostById,
   addPost,
   addPostThread,
+  addReply,
   repostPost,
   updatePost,
   removePost,
@@ -22,13 +23,14 @@ router.get("/:id", getPostById);
 router.use(requireAuth);
 
 router.post("/thread", addPostThread);
+router.post("/reply", addReply);
 router.post("/repost", repostPost);
 router.delete("/repost", removeRepost);
 router.post("/quote", quotePost);
 router.delete("/:id/like", removeLike);
 router.post("/:id/like", addLike);
-
 router.post("/", addPost);
+
 router.patch("/:id", updatePost);
 router.delete("/:id", removePost);
 

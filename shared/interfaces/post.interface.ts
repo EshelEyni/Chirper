@@ -4,9 +4,9 @@ import { Location } from "./location.interface";
 
 export type PostDocument = Post & Document;
 
-export type AddPostParams = {
-  posts?: NewPost[];
-  repostedPost?: Post;
+export type PostReplyResult = {
+  updatedPost: Post;
+  reply: Post;
 };
 
 export type PostImg = {

@@ -1,5 +1,5 @@
 import { httpService } from "./http.service";
-import { NewPost, Post } from "../../../shared/interfaces/post.interface";
+import { NewPost, Post, PostReplyResult } from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
 
@@ -49,6 +49,16 @@ async function add(posts: NewPost[]): Promise<Post> {
     return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add post");
+    throw err;
+  }
+}
+
+async function addReply(reply: NewPost): Promise<PostReplyResult> {
+  try {
+    const res = await httpService.post("post/reply", reply);
+    return utilService.handleServerResponse<PostReplyResult>(res);
+  } catch (err) {
+    console.log("postService: Cannot add reply");
     throw err;
   }
 }
@@ -120,6 +130,7 @@ export const postService = {
   query,
   getById,
   add,
+  addReply,
   addRepost,
   addQuote,
   update,

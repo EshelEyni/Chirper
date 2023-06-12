@@ -16,18 +16,6 @@ export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, Any
   };
 }
 
-export function updatePosts(
-  posts: Post[]
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      dispatch({ type: "UPDATE_POSTS", posts });
-    } catch (err) {
-      console.log("PostActions: err in updatePosts", err);
-    }
-  };
-}
-
 export function getPost(
   postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -88,6 +76,19 @@ export function addPost(
         dispatch({ type: "SET_USER_MSG", userMsg: null });
       }, 2000);
       console.log("PostActions: err in addPost", err);
+    }
+  };
+}
+
+export function addReply(
+  post: NewPost
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const { updatedPost, reply } = await postService.addReply(post);
+      dispatch({ type: "ADD_REPLY", post: updatedPost, reply });
+    } catch (err) {
+      console.log("PostActions: err in addReply", err);
     }
   };
 }

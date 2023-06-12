@@ -14,6 +14,8 @@ export function postReducer(
     type: string;
     posts: Post[];
     post: Post;
+    reply: Post;
+    repost: Post;
     postId: string;
     updatedPost: Post;
     loggedinUserId: string;
@@ -21,8 +23,6 @@ export function postReducer(
 ) {
   switch (action.type) {
     case "SET_POSTS":
-      return { ...state, posts: action.posts };
-    case "UPDATE_POSTS":
       return { ...state, posts: action.posts };
     case "SET_POST":
       return { ...state, post: action.post };
@@ -33,6 +33,18 @@ export function postReducer(
       };
     case "ADD_POST":
       return { ...state, posts: [action.post, ...state.posts] };
+    case "ADD_REPLY": {
+      return {
+        ...state,
+        posts: [
+          action.reply,
+          ...state.posts.map(post => {
+            if (post.id === action.post.id) return action.post;
+            return post;
+          }),
+        ],
+      };
+    }
     case "ADD_REPOST": {
       const posts = state.posts.map(post => {
         if (post.id === action.post.id)

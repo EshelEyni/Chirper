@@ -14,7 +14,7 @@ import {
   setNewPosts,
   updateCurrNewPost,
 } from "../../store/actions/new-post.actions";
-import { addPost, addQuotePost, updatePosts } from "../../store/actions/post.actions";
+import { addPost, addQuotePost, addReply } from "../../store/actions/post.actions";
 import { PostEditImg } from "./post-edit-img";
 import { GifEdit } from "../gif/gif-edit";
 import { BtnClose } from "../btns/btn-close";
@@ -42,7 +42,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const { sideBar, homePage, reply, quote, newPostType } = useSelector(
     (state: RootState) => state.newPostModule
   );
-  const { posts } = useSelector((state: RootState) => state.postModule);
+
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -139,7 +139,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     } else if (newPostType === "side-bar") {
       currPostText = post.idx === sideBar.currPostIdx ? inputTextValue : post.text;
     } else {
-      currPostText = post.text;
+      currPostText = inputTextValue;
     }
 
     return currPostText.length > 0 && currPostText.length <= 247;
@@ -238,24 +238,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       if (newPostType === "quote") {
         const post = newPosts[0];
         await dispatch(addQuotePost(post));
+      } else if (newPostType === "reply") {
+        const post = newPosts[0];
+        await dispatch(addReply(post));
       } else {
         await dispatch(addPost(newPosts));
       }
-      if (newPostType === "reply") {
-        const postToUpdate = replyToPost ? { ...replyToPost } : null;
-        if (postToUpdate) {
-          postToUpdate.repliesCount++;
-          const updatedPosts = posts.map(post => {
-            if (post.id === postToUpdate.id) return postToUpdate;
-            return post;
-          });
-          dispatch(updatePosts(updatedPosts));
-        }
-        dispatch(setNewPostType("home-page"));
-        dispatch(setNewPosts([], newPostType));
-      } else {
-        dispatch(setNewPosts([], newPostType));
-      }
+
+      dispatch(setNewPostType("home-page"));
+      dispatch(setNewPosts([], newPostType));
 
       setInputTextValue("");
       setIsPickerShown(false);

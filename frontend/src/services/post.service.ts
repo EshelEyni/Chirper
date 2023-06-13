@@ -1,5 +1,10 @@
 import { httpService } from "./http.service";
-import { NewPost, Post, PostReplyResult } from "../../../shared/interfaces/post.interface";
+import {
+  NewPost,
+  Post,
+  PostReplyResult,
+  PostRepostResult,
+} from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
 
@@ -63,10 +68,10 @@ async function addReply(reply: NewPost): Promise<PostReplyResult> {
   }
 }
 
-async function addRepost(repostedPost: Post): Promise<Post> {
+async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
   try {
     const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
-    return utilService.handleServerResponse<Post>(res);
+    return utilService.handleServerResponse<PostRepostResult>(res);
   } catch (err) {
     console.log("postService: Cannot add repost");
     throw err;
@@ -83,9 +88,10 @@ async function addQuote(post: NewPost): Promise<Post> {
   }
 }
 
-async function removeRepost(repostedPost: Post): Promise<void> {
+async function removeRepost(repostedPostId: string): Promise<Post> {
   try {
-    await httpService.delete(`post/repost?postId=${repostedPost.id}`);
+    const res = await httpService.delete(`post/repost?postId=${repostedPostId}`);
+    return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot remove repost");
     throw err;
@@ -110,19 +116,23 @@ async function savePollVote(postId: string, optionIdx: number) {
   }
 }
 
-async function addLike(postId: string) {
+async function addLike(postId: string): Promise<Post> {
   try {
-    return await httpService.post(`post/${postId}/like`);
+    const res = await httpService.post(`post/${postId}/like`);
+    return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add like", err);
+    throw err;
   }
 }
 
-async function removeLike(postId: string) {
+async function removeLike(postId: string): Promise<Post> {
   try {
-    return await httpService.delete(`post/${postId}/like`);
+    const res = await httpService.delete(`post/${postId}/like`);
+    return utilService.handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot remove like", err);
+    throw err;
   }
 }
 

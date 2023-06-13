@@ -3,6 +3,7 @@ import {
   PollOption,
   NewPost,
   PostReplyResult,
+  PostRepostResult,
 } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
@@ -123,9 +124,9 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
 
-    const postDoc = await PostModel.findById(savedReply.id).exec();
-    if (!postDoc) throw new AppError("post not found", 404);
-    const reply = postDoc.toObject() as unknown as Post;
+    const replyDoc = await PostModel.findById(savedReply.id).exec();
+    if (!replyDoc) throw new AppError("reply post not found", 404);
+    const reply = replyDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(reply, { isDefault: true });
     return { updatedPost, reply };
   } catch (error) {
@@ -136,7 +137,7 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
   }
 }
 
-async function repost(postId: string, loggedinUserId: string): Promise<Post> {
+async function repost(postId: string, loggedinUserId: string): Promise<PostRepostResult> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -146,28 +147,36 @@ async function repost(postId: string, loggedinUserId: string): Promise<Post> {
       repostOwnerId: loggedinUserId,
     }).save({ session });
 
-    await PostModel.updateOne({ _id: postId }, { $inc: { repostsCount: 1 } }, { session });
+    const repostedPostDoc = await PostModel.findByIdAndUpdate(
+      postId,
+      { $inc: { repostsCount: 1 } },
+      { session, new: true }
+    );
+    if (!repostedPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
+    const updatedPost = repostedPostDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(updatedPost);
 
-    let doc = (await RepostModel.find({ _id: savedRepost.id })
+    const repostDoc = await RepostModel.findById(savedRepost.id)
       .populate("post")
       .populate(_populateRepostedBy())
-      .exec()) as unknown as any;
+      .exec();
 
-    doc = doc[0].toObject();
+    if (!repostDoc) throw new AppError("repost not found", 404);
+    const repostObj = repostDoc.toObject() as unknown as any;
 
-    const { createdAt, updatedAt, post, repostedBy } = doc;
+    const { createdAt, updatedAt, post, repostedBy } = repostObj;
 
-    post.createdAt = createdAt;
-    post.updatedAt = updatedAt;
     const repost = {
       ...post,
+      createdAt,
+      updatedAt,
       repostedBy,
     } as unknown as Post;
 
     await _setLoggedinUserActionState(repost);
 
-    return repost;
+    return { updatedPost, repost };
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -194,7 +203,7 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
-async function removeRepost(postId: string, loggedinUserId: string): Promise<void> {
+async function removeRepost(postId: string, loggedinUserId: string): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -204,10 +213,20 @@ async function removeRepost(postId: string, loggedinUserId: string): Promise<voi
       repostOwnerId: loggedinUserId,
     }).session(session);
 
-    await PostModel.updateOne({ _id: postId }, { $inc: { repostsCount: -1 } }).session(session);
-
+    const postDoc = await PostModel.findByIdAndUpdate(
+      postId,
+      { $inc: { repostsCount: -1 } },
+      { session, new: true }
+    );
+    if (!postDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
+
+    const updatedPost = postDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(updatedPost);
+
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedinUserId}`);
+
+    return updatedPost;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -254,7 +273,7 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
   }
 }
 
-async function addLike(postId: string, userId: string): Promise<void> {
+async function addLike(postId: string, userId: string): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -264,8 +283,18 @@ async function addLike(postId: string, userId: string): Promise<void> {
       userId,
     }).save({ session });
 
-    await PostModel.updateOne({ _id: postId }, { $inc: { likesCount: 1 } }).session(session);
+    const postDoc = await PostModel.findByIdAndUpdate(
+      postId,
+      { $inc: { likesCount: 1 } },
+      { session, new: true }
+    );
+    if (!postDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
+
+    const updatedPost = postDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(updatedPost);
+
+    return updatedPost;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -274,7 +303,7 @@ async function addLike(postId: string, userId: string): Promise<void> {
   }
 }
 
-async function removeLike(postId: string, userId: string): Promise<void> {
+async function removeLike(postId: string, userId: string): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -284,8 +313,19 @@ async function removeLike(postId: string, userId: string): Promise<void> {
       userId,
     }).session(session);
 
-    await PostModel.updateOne({ _id: postId }, { $inc: { likesCount: -1 } }).session(session);
+    const postDoc = await PostModel.findByIdAndUpdate(
+      postId,
+      { $inc: { likesCount: -1 } },
+      { session, new: true }
+    );
+
+    if (!postDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
+
+    const updatedPost = postDoc.toObject() as unknown as Post;
+    await _setLoggedinUserActionState(updatedPost);
+
+    return updatedPost;
   } catch (error) {
     await session.abortTransaction();
     throw error;

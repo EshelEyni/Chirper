@@ -46,43 +46,41 @@ export function postReducer(
       };
     }
     case "ADD_REPOST": {
-      const posts = state.posts.map(post => {
-        if (post.id === action.post.id)
-          return {
-            ...post,
-            repostsCount: post.repostsCount + 1,
-            loggedinUserActionState: {
-              ...post.loggedinUserActionState,
-              isReposted: true,
-            },
-          };
-        return post;
-      });
-      return { ...state, posts: [action.post, ...posts] };
+      return {
+        ...state,
+        posts: [
+          action.repost,
+          ...state.posts.map(post => {
+            if (post.id === action.post.id) return action.post;
+            return post;
+          }),
+        ],
+      };
     }
     case "REMOVE_REPOST": {
-      const posts = state.posts
-        .filter(
-          post =>
-            post.id !== action.post.id ||
-            !(post.repostedBy && post.repostedBy.id === action.loggedinUserId)
-        )
-        .map(post => {
-          if (post.id === action.post.id)
-            return {
-              ...post,
-              repostsCount: post.repostsCount - 1,
-              loggedinUserActionState: {
-                ...post.loggedinUserActionState,
-                isReposted: false,
-              },
-            };
-          return post;
-        });
-      return { ...state, posts };
+      return {
+        ...state,
+        posts: state.posts
+          .filter(
+            post =>
+              post.id !== action.post.id ||
+              !(post.repostedBy && post.repostedBy.id === action.loggedinUserId)
+          )
+          .map(post => {
+            if (post.id === action.post.id) return action.post;
+            return post;
+          }),
+      };
     }
     case "UPDATE_POST":
-      return { ...state, post: action.updatedPost };
+      return {
+        posts: state.posts.map(post => {
+          if (post.id === action.updatedPost.id) return action.updatedPost;
+          return post;
+        }),
+        post:
+          state.post && state.post.id === action.updatedPost.id ? action.updatedPost : state.post,
+      };
     default:
       return state;
   }

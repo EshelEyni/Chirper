@@ -10,10 +10,9 @@ import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPostType, setNewPosts } from "../../store/actions/new-post.actions";
 import { RootState } from "../../store/store";
-import { removeRepost, repostPost } from "../../store/actions/post.actions";
+import { addLike, removeLike, removeRepost, repostPost } from "../../store/actions/post.actions";
 import { useState } from "react";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
-import { postService } from "../../services/post.service";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -27,11 +26,6 @@ type Btn = {
   isClicked?: boolean;
 };
 
-type LikeState = {
-  isLiked: boolean;
-  likesCount: number;
-};
-
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
@@ -39,10 +33,6 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const { isReposted, isLiked } = post.loggedinUserActionState;
-  const [likeState, setLikeState] = useState<LikeState>({
-    isLiked,
-    likesCount: post.likesCount,
-  });
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
 
   const iconClassName = "icon";
@@ -69,26 +59,18 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "like",
-      icon: likeState.isLiked ? (
+      icon: isLiked ? (
         <FaHeart className={iconClassName} />
       ) : (
         <FaRegHeart className={iconClassName} />
       ),
-      count: likeState.likesCount,
-      isClicked: likeState.isLiked,
+      count: post.likesCount,
+      isClicked: isLiked,
       onClickFunc: () => {
-        if (likeState.isLiked) {
-          postService.removeLike(post.id);
-          setLikeState({
-            isLiked: false,
-            likesCount: likeState.likesCount - 1,
-          });
+        if (isLiked) {
+          dispatch(removeLike(post.id));
         } else {
-          postService.addLike(post.id);
-          setLikeState({
-            isLiked: true,
-            likesCount: likeState.likesCount + 1,
-          });
+          dispatch(addLike(post.id));
         }
       },
     },
@@ -118,8 +100,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
 
   const onRemoveRepost = async () => {
     if (!loggedinUser) return;
-    const repostedPost = { ...post };
-    await dispatch(removeRepost(repostedPost, loggedinUser.id));
+    await dispatch(removeRepost(post.id, loggedinUser.id));
     setIsRepostModalOpen(prev => !prev);
   };
 

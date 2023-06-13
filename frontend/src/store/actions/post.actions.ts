@@ -98,8 +98,8 @@ export function repostPost(
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.addRepost(post);
-      dispatch({ type: "ADD_REPOST", post: addedPost });
+      const { updatedPost, repost } = await postService.addRepost(post);
+      dispatch({ type: "ADD_REPOST", post: updatedPost, repost });
     } catch (err) {
       console.log("PostActions: err in repostPost", err);
     }
@@ -124,15 +124,41 @@ export function addQuotePost(
 }
 
 export function removeRepost(
-  post: Post,
+  postId: string,
   loggedinUserId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      await postService.removeRepost(post);
-      dispatch({ type: "REMOVE_REPOST", post, loggedinUserId });
+      const updatedPost = await postService.removeRepost(postId);
+      dispatch({ type: "REMOVE_REPOST", post: updatedPost, loggedinUserId });
     } catch (err) {
       console.log("PostActions: err in removeRepost", err);
+    }
+  };
+}
+
+export function addLike(
+  postId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await postService.addLike(postId);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      console.log("PostActions: err in likePost", err);
+    }
+  };
+}
+
+export function removeLike(
+  postId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await postService.removeLike(postId);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      console.log("PostActions: err in removeLike", err);
     }
   };
 }

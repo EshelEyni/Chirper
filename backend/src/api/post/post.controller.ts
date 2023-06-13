@@ -81,11 +81,11 @@ const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   const { postId } = req.query;
   if (!postId) throw new AppError("No post id provided", 400);
   else if (typeof postId !== "string") throw new AppError("Post id must be a string", 400);
-  const post = await postService.repost(postId, loggedinUserId);
+  const repostAndUpdatedPost = await postService.repost(postId, loggedinUserId);
 
   res.status(201).send({
     status: "success",
-    data: post,
+    data: repostAndUpdatedPost,
   });
 });
 
@@ -100,7 +100,7 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
   if (isRepost) {
     try {
       if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
-      savedPost = await postService.repost(post.quotedPostId, loggedinUserId);
+      // savedPost = await postService.repost(post.quotedPostId, loggedinUserId);
     } catch (error) {
       savedPost = null;
     }
@@ -135,11 +135,11 @@ const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Prom
   if (!postId) throw new AppError("No post id provided", 400);
   else if (typeof postId !== "string") throw new AppError("Post id must be a string", 400);
 
-  await postService.removeRepost(postId, loggedinUserId);
+  const updatedPost = await postService.removeRepost(postId, loggedinUserId);
 
-  res.status(204).json({
+  res.status(200).json({
     status: "success",
-    data: null,
+    data: updatedPost,
   });
 });
 
@@ -163,11 +163,11 @@ const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
   const postId = req.params.id;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
-  await postService.addLike(postId, loggedinUserId);
+  const updatedPost = await postService.addLike(postId, loggedinUserId);
 
   res.status(201).send({
     status: "success",
-    data: null,
+    data: updatedPost,
   });
 });
 
@@ -176,11 +176,11 @@ const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promis
   const postId = req.params.id;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
-  await postService.removeLike(postId, loggedinUserId);
+  const updatedPost = await postService.removeLike(postId, loggedinUserId);
 
-  res.status(204).send({
+  res.status(200).send({
     status: "success",
-    data: null,
+    data: updatedPost,
   });
 });
 

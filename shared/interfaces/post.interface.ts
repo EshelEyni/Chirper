@@ -9,6 +9,11 @@ export type PostReplyResult = {
   reply: Post;
 };
 
+export type PostRepostResult = {
+  updatedPost: Post;
+  repost: Post;
+};
+
 export type PostImg = {
   url: string;
   sortOrder: number;

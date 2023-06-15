@@ -46,7 +46,7 @@ async function add(posts: NewPost[]): Promise<Post> {
       if (posts.length > 1) {
         res = await httpService.post("post/thread", posts);
       } else {
-        const post = posts[0];
+        const [post] = posts;
         res = await httpService.post("post", post);
       }
     }

@@ -10,4 +10,10 @@ export interface Gif {
   url: string;
   staticUrl: string;
   description: string;
+  size: {
+    height: number;
+    width: number;
+  };
+  placeholderUrl: string;
+  staticPlaceholderUrl: string;
 }

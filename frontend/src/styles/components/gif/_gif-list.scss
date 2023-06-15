@@ -14,13 +14,20 @@
   }
 
   .gif-list-main-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: rem(5px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: rem(5px);
   }
 
   .gif-list-item {
+    height: 120px;
+    flex-grow: 1;
     position: relative;
     cursor: pointer;
+
+    img {
+      object-fit: fill;
+    }
   }
 }

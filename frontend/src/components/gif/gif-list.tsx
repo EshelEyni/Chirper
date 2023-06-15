@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
+import { gifPlaceholderBcg } from "../../services/gif.service";
 
 interface GifListProps {
   currNewPost: NewPost;
@@ -58,10 +59,20 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
         {gifs.length === 0 && <ContentLoader />}
         {gifs.length > 0 &&
           gifs.map((gif, idx) => {
+            const ratio = gif.size.width / gif.size.height;
+            const width = 120 * ratio + "px";
             return (
-              <div className="gif-list-item" key={idx} onClick={() => handleGifClick(gif)}>
+              <div
+                className="gif-list-item"
+                key={gif.id}
+                onClick={() => handleGifClick(gif)}
+                style={{
+                  backgroundColor: gifPlaceholderBcg[idx % gifPlaceholderBcg.length],
+                  width: width,
+                }}
+              >
                 <img
-                  src={isPlaying ? gif.url : gif.staticUrl}
+                  src={isPlaying ? gif.placeholderUrl : gif.staticPlaceholderUrl}
                   alt={gif.description}
                   loading="lazy"
                 />

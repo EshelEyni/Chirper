@@ -203,6 +203,18 @@
     opacity: 1;
   }
 
+  &.reply {
+    .post-preview-content-wrapper {
+      padding: 0;
+    }
+  }
+
+  &.new-post {
+    .post-preview-content-wrapper {
+      padding: 0;
+    }
+  }
+
   &.quote {
     opacity: 1;
     border: 1px solid var(--color-border);

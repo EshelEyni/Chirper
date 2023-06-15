@@ -16,6 +16,21 @@ const gifSchema = new mongoose.Schema(
     },
     sortOrder: Number,
     category: String,
+    size: {
+      type: {
+        width: Number,
+        height: Number,
+      },
+      required: [true, "A gif must have a size"],
+    },
+    placeholderUrl: {
+      type: String,
+      required: [true, "A gif must have a placeholder url"],
+    },
+    staticPlaceholderUrl: {
+      type: String,
+      required: [true, "A gif must have a static placeholder url"],
+    },
   },
   {
     toObject: {

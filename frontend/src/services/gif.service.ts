@@ -36,7 +36,7 @@ async function getGifCategroies(): Promise<GifCategory[]> {
 async function getGifByCategory(category: string): Promise<Gif[]> {
   try {
     const response = await httpService.get(
-      `gif?category=${category}&sort=sortOrder&fields=url,staticUrl,description`
+      `gif?category=${category}&sort=sortOrder&fields=url,staticUrl,description,placeholderUrl,staticPlaceholderUrl,size`
     );
     return utilService.handleServerResponse<Gif[]>(response);
   } catch (err) {
@@ -44,3 +44,5 @@ async function getGifByCategory(category: string): Promise<Gif[]> {
     throw err;
   }
 }
+
+export const gifPlaceholderBcg = ["#00BFFF", "#0BDA51", "#FFD700", "#FF00FF"];

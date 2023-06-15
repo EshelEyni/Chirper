@@ -51,6 +51,50 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
     }
   };
 
+  const formmatText = (text: string): string => {
+    const urls = text.match(/(https?:\/\/[^\s]+)/g);
+    const urlsSet = new Set(urls);
+    let formmatedText = text;
+    if (urlsSet) {
+      urlsSet.forEach(url => {
+        const trimmedUrl = url.replace("https://www.", "");
+        formmatedText = formmatedText.replaceAll(
+          url,
+          `<a href="${url}" target="_blank">${trimmedUrl}</a>`
+        );
+      });
+    }
+    // const hashtags = text.match(/#[^\s]+/g);
+    // if (hashtags) {
+    //   hashtags.forEach(hashtag => {
+    //     const sanitizedHashtag = sanitizeHtml(hashtag);
+    //     formmatedText = formmatedText.replace(
+    //       hashtag,
+    //       `<a href="/explore/tags/${sanitizedHashtag.slice(
+    //         1
+    //       )}" target="_blank">${sanitizedHashtag}</a>`
+    //     );
+    //   });
+    // }
+    // const mentions = text.match(/@[^\s]+/g);
+    // if (mentions) {
+    //   mentions.forEach(mention => {
+    //     const sanitizedMention = sanitizeHtml(mention);
+    //     formmatedText = formmatedText.replace(
+    //       mention,
+    //       `<a href="/${sanitizedMention.slice(1)}" target="_blank">${sanitizedMention}</a>`
+    //     );
+    //   });
+    // }
+
+    const lineBreaks = formmatedText.match(/\n/g);
+    if (lineBreaks) {
+      formmatedText = formmatedText.replaceAll("\n", "<br />");
+    }
+
+    return formmatedText;
+  };
+
   const setIsPostLineRender = () => {
     if (newPost) {
       if (newPostType === "home-page") {
@@ -81,7 +125,10 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
               </div>
               <div className="post-preview-main-container">
                 <div className="post-preview-body">
-                  <p className="post-preview-text">{setText()}</p>
+                  <p
+                    className="post-preview-text"
+                    dangerouslySetInnerHTML={{ __html: formmatText(setText() || "") }}
+                  ></p>
                   {newPost && newPost.imgs && newPost.imgs.length > 0 && (
                     <PostImg
                       imgs={newPost.imgs.map((img, idx) => {
@@ -92,7 +139,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
                   {newPost && newPost.videoUrl && (
                     <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />
                   )}
-                  {newPost && newPost.gif && <GifDisplay gif={newPost.gif} />}
+                  {newPost && newPost.gif && <GifDisplay gif={newPost.gif} isAutoPlay={false} />}
                   {newPost && newPost.poll && <PollEdit currNewPost={newPost} />}
                 </div>
               </div>
@@ -156,7 +203,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
                   {quotedPost.videoUrl && (
                     <VideoPlayer videoUrl={quotedPost.videoUrl} isCustomControls={true} />
                   )}
-                  {quotedPost.gif && <GifDisplay gif={quotedPost.gif} />}
+                  {quotedPost.gif && <GifDisplay gif={quotedPost.gif} isAutoPlay={false} />}
                   {quotedPost.poll && <span className="link-to-poll">Show this poll</span>}
                 </div>
               </div>

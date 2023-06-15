@@ -42,7 +42,7 @@ export const GifCategoryList: React.FC<GifEditProps> = ({
               key={gifCategory.id}
               onClick={() => handleCategoryClick(gifCategory.name)}
             >
-              <img src={gifCategory.imgUrl} alt="gif-category" />
+              <img src={gifCategory.imgUrl} alt="gif-category" loading="lazy" />
               <h5 className="gif-category-preview-title">{gifCategory.name}</h5>
             </div>
           );

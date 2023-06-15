@@ -7,22 +7,27 @@ import { useModalPosition } from "../../hooks/useModalPosition";
 
 interface GifDisplayProps {
   gif: Gif;
+  isAutoPlay?: boolean;
 }
 
-export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, description } }) => {
+export const GifDisplay: React.FC<GifDisplayProps> = ({
+  gif: { url, staticUrl, description },
+  isAutoPlay = true,
+}) => {
+  const modalHeight = 364;
+  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
+  const [isPlaying, setIsPlaying] = useState<boolean>(isAutoPlay);
+  const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
+  const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
 
-  const modalHeight = 364;
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
-  const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);
-
   useEffect(() => {
-    if (!isUserPaused) setIsPlaying(inView);
-  }, [inView, isUserPaused]);
+    console.log("GifDisplay: useEffect: isAutoPlay", isAutoPlay);
+    console.log("GifDisplay: useEffect: isPlaying", isPlaying);
+    setIsPlaying(inView);
+  }, [inView]);
 
   const onTogglePlay = () => {
     setIsPlaying(prevState => !prevState);
@@ -37,7 +42,12 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ gif: { url, staticUrl, d
 
   return (
     <article className="gif-display" onClick={onTogglePlay}>
-      <img src={isPlaying ? url : staticUrl} ref={ref} alt="gif" />
+      <img
+        src={isPlaying ? url : staticUrl}
+        ref={isUserPaused || !isAutoPlay ? undefined : ref}
+        alt="gif"
+        loading="lazy"
+      />
       <div className="gif-display-content-container">
         <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />
         <span className="gif-title">GIF</span>

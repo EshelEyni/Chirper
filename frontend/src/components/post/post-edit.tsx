@@ -107,7 +107,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostCurrNewPostList([]);
     }
 
-    if (!isHomePage) textAreaRef.current?.focus();
+    // textAreaRef.current?.style.setProperty("height", "auto");
+    // textAreaRef.current?.style.setProperty("height", `${textAreaRef.current?.scrollHeight}px`);
+    // if (!isHomePage) textAreaRef.current?.focus();
 
     return () => {
       setPreCurrNewPostList([]);
@@ -236,10 +238,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         }
       }
       if (newPostType === "quote") {
-        const post = newPosts[0];
+        const [post] = newPosts;
         await dispatch(addQuotePost(post));
       } else if (newPostType === "reply") {
-        const post = newPosts[0];
+        const [post] = newPosts;
         await dispatch(addReply(post));
       } else {
         await dispatch(addPost(newPosts));

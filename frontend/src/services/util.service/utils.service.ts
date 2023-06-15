@@ -38,7 +38,7 @@ function formatCount(count: number): string {
   }
 }
 
-function makeId(length = 5): string {
+function makeId(length = 12): string {
   let txt = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < length; i++) {

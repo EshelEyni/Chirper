@@ -19,10 +19,6 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const onImageLoad = () => {
-    setIsLoading(false);
-  };
-
   const onTogglePlay = () => {
     setIsPlaying(!isPlaying);
   };
@@ -42,7 +38,7 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
           src={isPlaying ? currNewPost.gif!.url : currNewPost.gif!.staticUrl}
           alt="gif"
           onClick={onTogglePlay}
-          onLoad={onImageLoad}
+          onLoad={() => setIsLoading(false)}
         />
         {!isPlaying && (
           <button className="btn-play" onClick={onTogglePlay}>

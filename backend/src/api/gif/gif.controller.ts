@@ -75,15 +75,4 @@ const getGifsBySearchTerm = asyncErrorCatcher(
   }
 );
 
-const demoSearch = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const gifs = await gifService.demoSearch();
-
-  res.status(200).send({
-    status: "success",
-    requestedAt: new Date().toISOString(),
-    results: gifs.length,
-    data: gifs,
-  });
-});
-
-export { getGifsBySearchTerm, getGifCategories, getGifByCategory, demoSearch };
+export { getGifsBySearchTerm, getGifCategories, getGifByCategory };

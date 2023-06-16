@@ -14,6 +14,9 @@ import {
   quotePost,
   addLike,
   removeLike,
+  getPostStats,
+  createPostStatsWithView,
+  updatePostStats,
 } from "./post.controller";
 
 const router = express.Router();
@@ -22,6 +25,9 @@ router.get("/", getPosts);
 router.get("/:id", getPostById);
 router.use(requireAuth);
 
+router.get("/:id/stats", getPostStats);
+router.post("/:id/stats", createPostStatsWithView);
+router.patch("/:id/stats", updatePostStats);
 router.post("/thread", addPostThread);
 router.post("/reply", addReply);
 router.post("/repost", repostPost);

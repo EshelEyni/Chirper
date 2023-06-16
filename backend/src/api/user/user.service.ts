@@ -16,7 +16,7 @@ async function getById(userId: string): Promise<User> {
 async function getByUsername(username: string): Promise<User> {
   const features = new APIFeatures(UserModel.find(), { username }).filter();
   const users = await features.getQuery().exec();
-  const user = users[0];
+  const [user] = users;
   return user as unknown as User;
 }
 

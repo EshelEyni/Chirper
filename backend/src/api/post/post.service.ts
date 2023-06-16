@@ -4,6 +4,7 @@ import {
   NewPost,
   PostReplyResult,
   PostRepostResult,
+  PostStatsBody,
 } from "../../../../shared/interfaces/post.interface";
 import { QueryString } from "../../services/util.service.js";
 import { PostModel } from "./post.model";
@@ -17,6 +18,7 @@ import { AppError } from "../../services/error.service";
 import { Document } from "mongoose";
 import { logger } from "../../services/logger.service";
 import { PostLikeModel } from "./post-like.model";
+import { PostStatsModel } from "./post-stats.model";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -95,7 +97,7 @@ async function addMany(posts: NewPost[]): Promise<Post> {
       savedThread.push(savedPost as unknown as Post);
     }
     await session.commitTransaction();
-    const originalPost = savedThread[0];
+    const [originalPost] = savedThread;
     const postDoc = await PostModel.findById(originalPost.id).exec();
     if (!postDoc) throw new AppError("post not found", 404);
     const populatedPost = postDoc.toObject() as unknown as Post;
@@ -334,6 +336,81 @@ async function removeLike(postId: string, userId: string): Promise<Post> {
   }
 }
 
+async function getPostStats(postId: string): Promise<PostStatsBody> {
+  const likesCount = await PostLikeModel.countDocuments({ postId });
+  const repostCount = await RepostModel.countDocuments({ postId });
+  const repliesCount = await PostModel.countDocuments({ previousThreadPostId: postId });
+
+  const postStatsAggregation = await PostStatsModel.aggregate([
+    {
+      $match: {
+        postId: new mongoose.Types.ObjectId(postId),
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        isViewedCount: { $sum: { $cond: ["$isViewed", 1, 0] } },
+        isDetailedViewedCount: { $sum: { $cond: ["$isDetailedViewed", 1, 0] } },
+        isProfileViewedCount: { $sum: { $cond: ["$isProfileViewed", 1, 0] } },
+        isFollowedFromPostCount: { $sum: { $cond: ["$isFollowedFromPost", 1, 0] } },
+        isHashTagClickedCount: { $sum: { $cond: ["$isHashTagClicked", 1, 0] } },
+        isLinkClickedCount: { $sum: { $cond: ["$isLinkClicked", 1, 0] } },
+      },
+    },
+  ]);
+
+  const [postStats] = postStatsAggregation;
+  delete postStats._id;
+
+  const engagementCount =
+    postStats.isDetailedViewedCount +
+    postStats.isProfileViewedCount +
+    postStats.isFollowedFromPostCount +
+    postStats.isHashTagClickedCount +
+    postStats.isLinkClickedCount +
+    likesCount +
+    repostCount +
+    repliesCount;
+
+  return {
+    likesCount,
+    repostCount,
+    repliesCount,
+    ...postStats,
+    engagementCount,
+  };
+}
+
+async function createPostStatsWithView(postId: string, userId: string): Promise<PostStatsBody> {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const postStats = await new PostStatsModel({
+      postId,
+      userId,
+    }).save({ session });
+    await PostModel.findByIdAndUpdate(postId, { $inc: { viewsCount: 1 } }, { session });
+    await session.commitTransaction();
+    return postStats as unknown as PostStatsBody;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function updatePostStats(
+  postId: string,
+  userId: string,
+  stats: Partial<PostStatsBody>
+): Promise<PostStatsBody> {
+  return (await PostStatsModel.findOneAndUpdate({ postId, userId }, stats, {
+    new: true,
+  })) as unknown as PostStatsBody;
+}
+
 async function _populateUserPollVotes(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
@@ -363,6 +440,11 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
     isLiked: false,
     isReposted: false,
     isViewed: false,
+    isDetailedViewed: false,
+    isProfileViewed: false,
+    isFollowedFromPost: false,
+    isHashTagClicked: false,
+    isLinkClicked: false,
     isBookmarked: false,
   };
 
@@ -378,6 +460,20 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
       postId: new mongoose.Types.ObjectId(post.id),
       userId: new mongoose.Types.ObjectId(loggedinUserId),
     }));
+
+    const postStats = (await PostStatsModel.findOne({
+      postId: new mongoose.Types.ObjectId(post.id),
+      userId: new mongoose.Types.ObjectId(loggedinUserId),
+    })) as unknown as PostStatsBody;
+
+    if (postStats) {
+      post.loggedinUserActionState.isViewed = postStats.isViewed;
+      post.loggedinUserActionState.isDetailedViewed = postStats.isDetailedViewed;
+      post.loggedinUserActionState.isProfileViewed = postStats.isProfileViewed;
+      post.loggedinUserActionState.isFollowedFromPost = postStats.isFollowedFromPost;
+      post.loggedinUserActionState.isHashTagClicked = postStats.isHashTagClicked;
+      post.loggedinUserActionState.isLinkClicked = postStats.isLinkClicked;
+    }
   }
 }
 
@@ -418,4 +514,7 @@ export default {
   setPollVote,
   addLike,
   removeLike,
+  getPostStats,
+  createPostStatsWithView,
+  updatePostStats,
 };

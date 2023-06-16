@@ -4,6 +4,8 @@ import {
   Post,
   PostReplyResult,
   PostRepostResult,
+  PostStats,
+  PostStatsBody,
 } from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
@@ -136,6 +138,34 @@ async function removeLike(postId: string): Promise<Post> {
   }
 }
 
+async function addImpression(postId: string) {
+  try {
+    await httpService.post(`post/${postId}/stats`);
+  } catch (err) {
+    console.log("postService: Cannot add impression", err);
+    throw err;
+  }
+}
+
+async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
+  try {
+    await httpService.patch(`post/${postId}/stats`, stats);
+  } catch (err) {
+    console.log("postService: Cannot update post stats", err);
+    throw err;
+  }
+}
+
+async function getPostStats(postId: string): Promise<PostStats> {
+  try {
+    const res = await httpService.get(`post/${postId}/stats`);
+    return utilService.handleServerResponse<PostStats>(res);
+  } catch (err) {
+    console.log("postService: Cannot get post stats", err);
+    throw err;
+  }
+}
+
 export const postService = {
   query,
   getById,
@@ -149,4 +179,7 @@ export const postService = {
   savePollVote,
   addLike,
   removeLike,
+  getPostStats,
+  addImpression,
+  updatePostStats,
 };

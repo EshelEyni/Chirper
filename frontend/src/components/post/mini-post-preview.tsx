@@ -13,6 +13,7 @@ import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mar
 import { Logo } from "../other/logo";
 import { utilService } from "../../services/util.service/utils.service";
 import { PostNotAvailableMsg } from "./post-not-available-msg";
+import { PostPreviewHeader } from "./post-preview-header";
 
 interface MiniPostPreviewProps {
   newPost?: NewPost;
@@ -21,7 +22,7 @@ interface MiniPostPreviewProps {
   type: MiniPostPreviewType;
 }
 
-export type MiniPostPreviewType = "new-post" | "reply" | "quote";
+export type MiniPostPreviewType = "new-post" | "reply" | "quote" | "snapshot-post-stats";
 
 export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
   newPost,
@@ -40,14 +41,20 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
 
   const setText = () => {
     switch (type) {
-      case "new-post":
+      case "new-post": {
+        const currPostIdx = getCurrPostIdx();
         if (newPost?.text) return newPost.text;
-        if (newPost?.idx === 0) return "What's happening?";
+        if (currPostIdx === 0) return "What's happening?";
         return "Add another Chirp!";
+      }
       case "reply":
         return post?.text;
       case "quote":
         return quotedPost?.text;
+      case "snapshot-post-stats":
+        return post?.text;
+      default:
+        return "Text not found";
     }
   };
 
@@ -98,9 +105,11 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
   const setIsPostLineRender = () => {
     if (newPost) {
       if (newPostType === "home-page") {
-        return newPost.idx !== homePage.posts.length - 1;
+        const currPostIdx = getCurrPostIdx();
+        return currPostIdx !== homePage.posts.length - 1;
       } else if (newPostType === "side-bar") {
-        return newPost.idx !== sideBar.posts.length - 1;
+        const currPostIdx = getCurrPostIdx();
+        return currPostIdx !== sideBar.posts.length - 1;
       }
     } else if (post) {
       return true;
@@ -110,6 +119,16 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
   const onNavigateToPost = () => {
     if (quotedPost) {
       console.log("onNavigateToPost: quotedPost", quotedPost);
+    }
+  };
+
+  const getCurrPostIdx = () => {
+    if (newPost) {
+      if (newPostType === "home-page") {
+        return homePage.posts.findIndex(p => p.tempId === newPost?.tempId);
+      } else if (newPostType === "side-bar") {
+        return sideBar.posts.findIndex(p => p.tempId === newPost?.tempId);
+      }
     }
   };
 
@@ -129,18 +148,18 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
                     className="post-preview-text"
                     dangerouslySetInnerHTML={{ __html: formmatText(setText() || "") }}
                   ></p>
-                  {newPost && newPost.imgs && newPost.imgs.length > 0 && (
+                  {newPost.imgs && newPost.imgs.length > 0 && (
                     <PostImg
                       imgs={newPost.imgs.map((img, idx) => {
                         return { url: img.url, sortOrder: idx };
                       })}
                     />
                   )}
-                  {newPost && newPost.videoUrl && (
+                  {newPost.videoUrl && (
                     <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />
                   )}
-                  {newPost && newPost.gif && <GifDisplay gif={newPost.gif} isAutoPlay={false} />}
-                  {newPost && newPost.poll && <PollEdit currNewPost={newPost} />}
+                  {newPost.gif && <GifDisplay gif={newPost.gif} isAutoPlay={false} />}
+                  {newPost.poll && <PollEdit currNewPost={newPost} />}
                 </div>
               </div>
             </div>
@@ -174,23 +193,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
           <article className={`mini-post-preview ${type}`} onClick={onNavigateToPost}>
             <div className="post-preview-content-wrapper">
               <div className="post-preview-main-container">
-                <header className="post-preview-header">
-                  <div className="post-preview-header-main">
-                    <div className="user-info">
-                      <UserImg imgUrl={loggedinUser && loggedinUser.imgUrl} />
-                      <h3>{quotedPost.createdBy.fullname}</h3>
-                      <span>@{quotedPost.createdBy.username}</span>
-                      {quotedPost.createdBy.isVerified && (
-                        <BlueCheckMark className="post-preview-blue-check-mark" />
-                      )}
-                      {quotedPost.createdBy.isAdmin && <Logo />}
-                    </div>
-                    <span className="post-preview-header-dot">·</span>
-                    <div className="post-time">
-                      <span>{utilService.formatTime(quotedPost.createdAt)}</span>
-                    </div>
-                  </div>
-                </header>
+                <PostPreviewHeader post={quotedPost} isMiniPreview={true} />
                 <div className="post-preview-body">
                   <p className="post-preview-text">{setText()}</p>
                   {quotedPost.imgs && quotedPost.imgs.length > 0 && (
@@ -205,6 +208,33 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({
                   )}
                   {quotedPost.gif && <GifDisplay gif={quotedPost.gif} isAutoPlay={false} />}
                   {quotedPost.poll && <span className="link-to-poll">Show this poll</span>}
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      else return <PostNotAvailableMsg />;
+    case "snapshot-post-stats":
+      if (post)
+        return (
+          <article className={`mini-post-preview ${type}`} onClick={onNavigateToPost}>
+            <div className="post-preview-content-wrapper">
+              <div className="post-preview-main-container">
+                <PostPreviewHeader post={post} isMiniPreview={true} />
+                <div className="post-preview-body">
+                  <p className="post-preview-text">{setText()}</p>
+                  {post.imgs && post.imgs.length > 0 && (
+                    <PostImg
+                      imgs={post.imgs.map((img, idx) => {
+                        return { url: img.url, sortOrder: idx };
+                      })}
+                    />
+                  )}
+                  {post.videoUrl && (
+                    <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />
+                  )}
+                  {post.gif && <GifDisplay gif={post.gif} isAutoPlay={false} />}
+                  {post.poll && <span className="link-to-poll">Show this poll</span>}
                 </div>
               </div>
             </div>

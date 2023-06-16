@@ -13,6 +13,7 @@ import { LoginPage } from "./pages/main-pages/login";
 import { SignupPage } from "./pages/main-pages/signup";
 import { PostLocation } from "./pages/secondary-pages/post-location";
 import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
+import { PostStatsPage } from "./pages/secondary-pages/post-stats";
 
 interface Route {
   path: string;
@@ -26,7 +27,7 @@ const routes: Route[] = [
     component: HomePage,
   },
   {
-    path: "explore",
+    path: "explore/:hashtag?",
     component: ExplorePage,
   },
   {
@@ -73,6 +74,10 @@ const nestedRoutes: Route[] = [
     path: "post-location",
     component: PostLocation,
     onlyHomePage: true,
+  },
+  {
+    path: "post-stats/:id",
+    component: PostStatsPage,
   },
   {
     path: "compose",

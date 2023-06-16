@@ -4,12 +4,13 @@ import { IoEllipsisHorizontal } from "react-icons/io5";
 interface UserPreviewProps {
   user: MiniUser;
   isEllipsisShown?: boolean;
+  onClickFunc?: () => void;
 }
 
-export const UserPreview: React.FC<UserPreviewProps> = ({ user, isEllipsisShown }) => {
+export const UserPreview: React.FC<UserPreviewProps> = ({ user, isEllipsisShown, onClickFunc }) => {
   if (!user) return <div></div>;
   return (
-    <div className="user-preview">
+    <div className="user-preview" onClick={onClickFunc ? onClickFunc : undefined}>
       <div className="user-preview-main-container">
         <img src={user.imgUrl} alt="user-img" className="user-preview-img" />
         <div className="user-preview-info">

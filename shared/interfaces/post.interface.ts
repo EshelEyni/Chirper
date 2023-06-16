@@ -65,8 +65,7 @@ export interface QuotedPost extends BasicPost {
 }
 
 export interface NewPost extends BasicPost {
-  idx: number;
-  key: string;
+  tempId: string;
   imgs: NewPostImg[];
   quotedPostId?: string;
   previousThreadPostId?: string;
@@ -104,6 +103,11 @@ export type loggedinUserActionState = {
   isLiked: boolean;
   isReposted: boolean;
   isViewed: boolean;
+  isDetailedViewed: boolean;
+  isProfileViewed: boolean;
+  isFollowedFromPost: boolean;
+  isHashTagClicked: boolean;
+  isLinkClicked: boolean;
   isBookmarked: boolean;
 };
 
@@ -132,3 +136,27 @@ export interface Emoji {
   shortCodes: string;
   unified: string;
 }
+
+export type PostStatsBody = {
+  postId: string;
+  userId: string;
+  isViewed: boolean;
+  isDetailedViewed: boolean;
+  isProfileViewed: boolean;
+  isFollowedFromPost: boolean;
+  isHashTagClicked: boolean;
+  isLinkClicked: boolean;
+};
+
+export type PostStats = {
+  likesCount: number;
+  repostCount: number;
+  repliesCount: number;
+  isViewedCount: number;
+  isDetailedViewedCount: number;
+  isProfileViewedCount: number;
+  isFollowedFromPostCount: number;
+  isHashTagClickedCount: number;
+  isLinkClickedCount: number;
+  engagementCount: number;
+};

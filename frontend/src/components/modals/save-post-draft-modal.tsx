@@ -13,7 +13,7 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
 }) => {
   return (
     <Fragment>
-      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }}></div>
+      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
       <section className="save-post-draft-modal">
         <div className="save-post-draft-modal-header">
           <span className="save-post-draft-title">Save Chirp?</span>

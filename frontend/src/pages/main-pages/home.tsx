@@ -8,6 +8,7 @@ import { PostList } from "../../components/post/post-list";
 import { AppDispatch } from "../../store/types";
 import { setIsPageLoading } from "../../store/actions/system.actions";
 import { PageLoader } from "../../components/loaders/page-loader";
+import { ContentLoader } from "../../components/loaders/content-loader";
 
 export const HomePage = () => {
   const { isPageLoading } = useSelector((state: RootState) => state.systemModule);
@@ -29,11 +30,13 @@ export const HomePage = () => {
           <div className="title-container">
             <h1>Home</h1>
           </div>
-          <div className="main-container">
+          <div className="home-main-container">
             <div className="post-edit-container">
               <PostEdit isHomePage={true} />
             </div>
-            <PostList posts={posts} />
+            <div className="home-page-post-list-container">
+              {posts.length > 0 ? <PostList posts={posts} /> : <ContentLoader />}
+            </div>
           </div>
           <Outlet />
         </main>

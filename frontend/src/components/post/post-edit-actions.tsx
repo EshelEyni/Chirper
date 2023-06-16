@@ -336,7 +336,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
                     <div
                       className="main-screen"
                       onClick={() => onToggleElementVisibility("emojiPicker")}
-                    ></div>
+                    />
                     <div className="emoji-picker-modal-container">
                       <Picker data={data} onEmojiSelect={onEmojiPicked} />
                     </div>

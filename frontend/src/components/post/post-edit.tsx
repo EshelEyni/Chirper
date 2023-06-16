@@ -64,11 +64,15 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const isBtnAdThreadDisabled = preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
 
   useEffect(() => {
-    const isValid = checkIfPostsAreValid(
+    const isValid = checkPostArrayValidity(
       preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList)
     );
     if (isValid !== isPostsValid) {
       setIsPostsValid(isValid);
+    }
+
+    if (isPickerShown && !isHomePage) {
+      textAreaRef.current?.focus();
     }
   }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
 
@@ -107,10 +111,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostCurrNewPostList([]);
     }
 
-    // textAreaRef.current?.style.setProperty("height", "auto");
-    // textAreaRef.current?.style.setProperty("height", `${textAreaRef.current?.scrollHeight}px`);
-    // if (!isHomePage) textAreaRef.current?.focus();
-
     return () => {
       setPreCurrNewPostList([]);
       setCurrNewPost(null);
@@ -134,28 +134,31 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     return isMultipePosts && !isHomePage ? "Chirp All" : "Chirp";
   };
 
-  const checkifPostTextIsValid = (post: NewPost): boolean => {
-    let currPostText = "";
-    if (newPostType === "home-page") {
-      currPostText = post.idx === homePage.currPostIdx ? inputTextValue : post.text;
-    } else if (newPostType === "side-bar") {
-      currPostText = post.idx === sideBar.currPostIdx ? inputTextValue : post.text;
-    } else {
-      currPostText = inputTextValue;
-    }
-
-    return currPostText.length > 0 && currPostText.length <= 247;
-  };
-
-  const checkIfPostIsValid = (post: NewPost | null): boolean => {
+  const checkPostValidity = (post: NewPost | null): boolean => {
     if (!post) return false;
+
+    const checkPostTextValidity = (post: NewPost): boolean => {
+      let currPostText = "";
+      if (newPostType === "home-page") {
+        const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
+        currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
+      } else if (newPostType === "side-bar") {
+        const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
+        currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+      } else {
+        currPostText = inputTextValue;
+      }
+
+      return currPostText.length > 0 && currPostText.length <= 247;
+    };
+
     if (post.poll) {
       return (
-        post.poll.options.every(option => option.text.length > 0) && checkifPostTextIsValid(post)
+        post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity(post)
       );
     } else {
       return (
-        checkifPostTextIsValid(post) ||
+        checkPostTextValidity(post) ||
         post.imgs.length > 0 ||
         !!post.gif ||
         !!post.video ||
@@ -164,8 +167,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     }
   };
 
-  const checkIfPostsAreValid = (newPosts: NewPost[]): boolean => {
-    return newPosts.every(post => checkIfPostIsValid(post));
+  const checkPostArrayValidity = (newPosts: NewPost[]): boolean => {
+    return newPosts.every(post => checkPostValidity(post));
   };
 
   const detectURL = useRef(
@@ -336,7 +339,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {!isFirstPostInThread &&
             !isHomePage &&
             (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
-            !checkIfPostIsValid(currNewPost) && (
+            !checkPostValidity(currNewPost) && (
               <button className="btn-remove-post-from-thread">
                 <AiOutlineClose
                   color="var(--color-primary)"
@@ -381,7 +384,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               setInputTextValue={setInputTextValue}
             />
             <div className="secondary-action-container">
-              {(checkIfPostIsValid(currNewPost) || inputTextValue.length > 0) && (
+              {(checkPostValidity(currNewPost) || inputTextValue.length > 0) && (
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />

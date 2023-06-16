@@ -26,7 +26,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
 
   return (
     <Fragment>
-      <div className="main-screen" onClick={() => onToggleModal(false)}></div>
+      <div className="main-screen" onClick={() => onToggleModal(false)} />
       <div
         className={
           "playback-rate-picker-modal" +

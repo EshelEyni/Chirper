@@ -24,16 +24,17 @@ export type NewPostState = {
 export type NewPostType = "home-page" | "side-bar" | "reply" | "quote";
 
 const getDefaultNewPost = (
-  idx = 0,
   repliedPostDetails?: repliedPostDetails[],
   quotedPostId?: string
 ): NewPost => {
   return {
-    idx,
-    key: utilService.makeId(),
+    tempId: utilService.makeId(),
     text: "",
     audience: "everyone",
     repliersType: "everyone",
+    previousThreadPostId: repliedPostDetails?.length
+      ? repliedPostDetails.at(-1)?.postId
+      : undefined,
     repliedPostDetails,
     isPublic: true,
     quotedPostId: quotedPostId,
@@ -130,7 +131,7 @@ export function newPostReducer(
           ...state,
           reply: {
             repliedToPost: action.repliedToPost,
-            reply: getDefaultNewPost(0, repliedPostDetails),
+            reply: getDefaultNewPost(repliedPostDetails),
           },
         };
       } else if (action.newPostType === "quote") {
@@ -150,7 +151,7 @@ export function newPostReducer(
           ...state,
           quote: {
             quotedPost: action.quotedPost,
-            quote: getDefaultNewPost(0, undefined, action.quotedPost.id),
+            quote: getDefaultNewPost(undefined, action.quotedPost.id),
           },
         };
       }
@@ -162,12 +163,22 @@ export function newPostReducer(
       if (action.newPostType === "home-page") {
         newPostState = {
           ...state,
-          homePage: { ...state.homePage, currPostIdx: action.newPost.idx },
+          homePage: {
+            ...state.homePage,
+            currPostIdx: state.homePage.posts.findIndex(
+              post => post.tempId === action.newPost.tempId
+            ),
+          },
         };
       } else if (action.newPostType === "side-bar") {
         newPostState = {
           ...state,
-          sideBar: { ...state.sideBar, currPostIdx: action.newPost.idx },
+          sideBar: {
+            ...state.sideBar,
+            currPostIdx: state.sideBar.posts.findIndex(
+              post => post.tempId === action.newPost.tempId
+            ),
+          },
         };
       }
       return newPostState;
@@ -176,11 +187,11 @@ export function newPostReducer(
       let newPostState: NewPostState = { ...state };
       if (action.newPostType === "home-page") {
         const currPostIdx = state.homePage.posts.length;
-        const newPosts = [...state.homePage.posts, getDefaultNewPost(currPostIdx)];
+        const newPosts = [...state.homePage.posts, getDefaultNewPost()];
         newPostState = { ...state, homePage: { posts: newPosts, currPostIdx } };
       } else if (action.newPostType === "side-bar") {
         const currPostIdx = state.sideBar.posts.length;
-        const newPosts = [...state.sideBar.posts, getDefaultNewPost(currPostIdx)];
+        const newPosts = [...state.sideBar.posts, getDefaultNewPost()];
         newPostState = { ...state, sideBar: { posts: newPosts, currPostIdx } };
       }
       return newPostState;

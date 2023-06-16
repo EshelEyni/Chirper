@@ -11,7 +11,7 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
 }) => {
   return (
     <Fragment>
-      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }}></div>
+      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
       <section className="confirm-delete-post-draft-modal">
         <div className="confirm-delete-post-draft-modal-header">
           <span className="confirm-delete-post-draft-title">Discard thread?</span>

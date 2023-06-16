@@ -257,7 +257,7 @@ export const PostSchedule = () => {
 
   return (
     <Fragment>
-      <div className="main-screen dark-light" onClick={onGoBack}></div>
+      <div className="main-screen dark-light" onClick={onGoBack} />
       <section className="post-schedule">
         <header className="post-schedule-header">
           <div className="post-schedule-header-close-btn-title-container">

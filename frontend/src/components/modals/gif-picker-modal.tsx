@@ -35,10 +35,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
   return (
     <Fragment>
-      <div
-        className="main-screen dark"
-        onClick={() => onToggleElementVisibility("gifPicker")}
-      ></div>
+      <div className="main-screen dark" onClick={() => onToggleElementVisibility("gifPicker")} />
       <div className="gif-picker">
         <header className="gif-picker-header">
           <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>

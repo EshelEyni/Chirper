@@ -70,7 +70,7 @@ export const PostLocation = () => {
 
   return (
     <Fragment>
-      <div className="main-screen dark-light" onClick={onGoBack}></div>
+      <div className="main-screen dark-light" onClick={onGoBack} />
       <section className="post-location">
         <header className="post-location-header">
           <div className="post-location-header-close-btn-title-container">

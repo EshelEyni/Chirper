@@ -13,7 +13,7 @@ export const PostList: React.FC<PostListProps> = ({ posts, newPosts }) => {
       {posts && posts.map(post => <PostPreview key={`${post.id}-${post.createdAt}`} post={post} />)}
       {newPosts &&
         newPosts.map(newPost => (
-          <MiniPostPreview key={newPost.key} newPost={newPost} type={"new-post"} />
+          <MiniPostPreview key={newPost.tempId} newPost={newPost} type={"new-post"} />
         ))}
     </section>
   );

@@ -17,7 +17,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
 
   return (
     <Fragment>
-      <div className="main-screen" onClick={onToggleDescription}></div>
+      <div className="main-screen" onClick={onToggleDescription} />
       <section
         className="gif-description-modal"
         style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}

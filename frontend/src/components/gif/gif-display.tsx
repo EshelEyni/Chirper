@@ -24,8 +24,6 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   });
 
   useEffect(() => {
-    console.log("GifDisplay: useEffect: isAutoPlay", isAutoPlay);
-    console.log("GifDisplay: useEffect: isPlaying", isPlaying);
     setIsPlaying(inView);
   }, [inView]);
 

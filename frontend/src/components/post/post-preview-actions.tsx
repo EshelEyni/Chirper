@@ -79,7 +79,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <RiBarChartGroupedFill className={iconClassName} />,
       count: post.viewsCount,
       onClickFunc: () => {
-        console.log("view");
+        navigate(`/post-stats/${post.id}`);
       },
     },
     {

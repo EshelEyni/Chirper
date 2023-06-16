@@ -2,18 +2,20 @@ import { GoGraph, GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
 import { MiniUser } from "../../../../shared/interfaces/user.interface";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
-import React from "react";
+import { FC, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { logout } from "../../store/actions/auth.actions";
+import { GiFeather } from "react-icons/gi";
+import { FaAt } from "react-icons/fa";
 
 interface SideBarOptionsModalProps {
   loggedinUser: MiniUser;
   toggleModal: () => void;
 }
 
-export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
+export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   loggedinUser,
   toggleModal,
 }) => {
@@ -35,25 +37,51 @@ export const SideBarOptionsModal: React.FC<SideBarOptionsModalProps> = ({
     navigate("/explore");
   };
 
-  return (
-    <section className="side-bar-options-modal">
-      <div className="side-bar-options-modal-item" onClick={() => navigateTo("/chirper-circle")}>
-        <ChirperCircleIcon className="icon" />
-        <p>Chirper Circle</p>
-      </div>
-      <div className="side-bar-options-modal-item" onClick={() => navigateTo("/analytics")}>
-        <GoGraph className="icon" />
-        <p>Analytics</p>
-      </div>
-      <div className="side-bar-options-modal-item display" onClick={() => navigateTo("/display")}>
-        <IoIosBrush className="icon" />
-        <p>Display</p>
-      </div>
-      <button className="side-bar-options-modal-item" onClick={onLogout}>
-        Logout @{loggedinUser.username}
-      </button>
+  const btns = [
+    {
+      icon: <FaAt className="icon" />,
+      text: "Connect",
+      onClick: () => console.log("connect"),
+    },
+    {
+      icon: <GiFeather className="icon" />,
+      text: "Drafts",
+      onClick: () => console.log("drafts"),
+    },
+    {
+      icon: <ChirperCircleIcon className="icon" />,
+      text: "Chirper Circle",
+      onClick: () => navigateTo("/chirper-circle"),
+    },
+    {
+      icon: <GoGraph className="icon" />,
+      text: "Analytics",
+      onClick: () => navigateTo("/analytics"),
+    },
+    {
+      icon: <IoIosBrush className="icon display" />,
+      text: "Display",
+      onClick: () => navigateTo("/display"),
+    },
+    {
+      text: `Logout @${loggedinUser.username}`,
+      onClick: onLogout,
+    },
+  ];
 
-      <GoTriangleDown className="side-bar-options-modal-arrow" />
-    </section>
+  return (
+    <Fragment>
+      <section className="side-bar-options-modal">
+        {btns.map((btn, index) => (
+          <button key={index} className="side-bar-options-modal-btn" onClick={btn.onClick}>
+            {btn.icon}
+            <span>{btn.text}</span>
+          </button>
+        ))}
+
+        <GoTriangleDown className="side-bar-options-modal-arrow" />
+      </section>
+      <div className="main-screen" onClick={toggleModal} />
+    </Fragment>
   );
 };

@@ -29,6 +29,16 @@ export function getPost(
   };
 }
 
+export function clearPost(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      dispatch({ type: "SET_POST", post: null });
+    } catch (err) {
+      console.log("PostActions: err in clearPost", err);
+    }
+  };
+}
+
 export function removePost(
   postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {

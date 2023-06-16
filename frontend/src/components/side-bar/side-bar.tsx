@@ -24,8 +24,8 @@ export const SideBar = () => {
         <BtnCreatePost isSideBarBtn={true} isDisabled={false} />
       </div>
       {loggedinUser && (
-        <div className="user-preview-container" onClick={toggleModal}>
-          <UserPreview user={loggedinUser} isEllipsisShown={true} />
+        <div className="user-preview-container">
+          <UserPreview user={loggedinUser} isEllipsisShown={true} onClickFunc={toggleModal} />
           {isModalOpen && (
             <SideBarOptionsModal
               loggedinUser={userService.getMiniUser(loggedinUser)}
@@ -34,7 +34,6 @@ export const SideBar = () => {
           )}
         </div>
       )}
-      {isModalOpen && <div className="main-screen" onClick={toggleModal}></div>}
     </div>
   );
 };

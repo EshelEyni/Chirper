@@ -1,6 +1,6 @@
 .side-bar-options-modal {
   position: absolute;
-  top: rem(-175px);
+  top: rem(-300px);
   left: -5%;
   display: flex;
   flex-direction: column;
@@ -8,30 +8,32 @@
   width: rem(300px);
   height: fit-content;
   z-index: 200;
-  box-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.5);
   border-radius: 15px;
-  padding: rem(12px) rem(16px);
-
-  .side-bar-options-modal-item {
+  padding: rem(8px) 0;
+  
+  .side-bar-options-modal-btn {
     display: flex;
     align-items: center;
     gap: rem(10px);
     font-size: rem(18px);
     font-weight: 600;
-    padding: rem(8px);
-    border-radius: 35px;
+    padding: rem(12px) rem(16px);
+    width: 100%;
+    // border-radius: 35px;
     cursor: pointer;
-    
+
     .icon {
       height: 24px;
       width: 24px;
     }
 
-    &.display {
-      .icon {
+    .icon {
+      &.display {
         color: var(--color-primary);
       }
     }
+
     &:hover {
       background-color: var(--color-hover-light);
     }
@@ -39,7 +41,7 @@
 
   .side-bar-options-modal-arrow {
     position: absolute;
-    top: 95%;
+    bottom: rem(-16px);
     left: 50%;
     transform: translateX(-50%);
     height: rem(25px);

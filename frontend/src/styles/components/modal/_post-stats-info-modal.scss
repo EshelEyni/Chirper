@@ -7,7 +7,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
-
+  cursor: default;
   width: rem(320px);
   background-color: var(--color-background);
   border-radius: 15px;

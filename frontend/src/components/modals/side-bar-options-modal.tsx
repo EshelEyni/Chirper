@@ -2,7 +2,7 @@ import { GoGraph, GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
 import { MiniUser } from "../../../../shared/interfaces/user.interface";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
@@ -70,7 +70,7 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   ];
 
   return (
-    <Fragment>
+    <>
       <section className="side-bar-options-modal">
         {btns.map((btn, index) => (
           <button key={index} className="side-bar-options-modal-btn" onClick={btn.onClick}>
@@ -82,6 +82,6 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
         <GoTriangleDown className="side-bar-options-modal-arrow" />
       </section>
       <div className="main-screen" onClick={toggleModal} />
-    </Fragment>
+    </>
   );
 };

@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
@@ -46,7 +46,7 @@ export const RepliersPickerModal: FC<RepliersPickerModalProps> = ({ currNewPost,
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen" onClick={() => toggleModal("repliers")} />
       <section className="picker-modal repliers">
         <h1 className="picker-modal-title">Choose who can reply</h1>
@@ -66,6 +66,6 @@ export const RepliersPickerModal: FC<RepliersPickerModalProps> = ({ currNewPost,
           ))}
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };

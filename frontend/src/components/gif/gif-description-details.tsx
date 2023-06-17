@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 
 type GifDescriptionModalProps = {
   description: string;
@@ -16,7 +16,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen" onClick={onToggleDescription} />
       <section
         className="gif-description-modal"
@@ -33,6 +33,6 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
           Dismiss
         </button>
       </section>
-    </Fragment>
+    </>
   );
 };

@@ -1,4 +1,4 @@
-.repost-options-modal {
+.post-share-options-modal {
   position: absolute;
   top: 0;
   left: 50%;
@@ -8,6 +8,7 @@
   z-index: 2000;
   border-radius: 25px;
   transition: all 0.1s linear;
+  width: max-content;
 
   > :first-child {
     border-radius: 25px 25px 0 0;
@@ -16,12 +17,13 @@
   > :last-child {
     border-radius: 0 0 25px 25px;
   }
-  .btn-repost-option {
+
+  .btn-share-option {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: rem(8px);
-    width: rem(175px);
+    width: 100%;
     padding: rem(12px) rem(16px);
     transition: all 0.1s ease-in-out;
 
@@ -32,7 +34,6 @@
     span {
       font-size: rem(15px);
       font-weight: 600;
-      text-transform: capitalize;
     }
 
     &:hover {

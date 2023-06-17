@@ -1,4 +1,4 @@
-import { Post } from "../../../../shared/interfaces/post.interface";
+import { Post, QuotedPost } from "../../../../shared/interfaces/post.interface";
 import { PostPreviewActions } from "./post-preview-actions";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
@@ -16,6 +16,7 @@ import { useInView } from "react-intersection-observer";
 import { postService } from "../../services/post.service";
 import { useNavigate } from "react-router-dom";
 import { PostPreviewHeader } from "./post-preview-header";
+import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
 
 interface PostPreviewProps {
   post: Post;
@@ -132,7 +133,13 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
                 setPoll={setPoll}
               />
             )}
-            {post.quotedPost && <MiniPostPreview quotedPost={post.quotedPost} type={"quote"} />}
+            {post.quotedPost && (
+              <MiniPostPreview quotedPost={post.quotedPost} type={"quoted-post"}>
+                {({ quotedPost }: { quotedPost: QuotedPost }) => (
+                  <QuotedPostContent quotedPost={quotedPost} />
+                )}
+              </MiniPostPreview>
+            )}
           </main>
           <footer className="flex">
             <PostPreviewActions post={post} />

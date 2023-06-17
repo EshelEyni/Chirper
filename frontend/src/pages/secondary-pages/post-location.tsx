@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect,  } from "react";
 import { BtnClose } from "../../components/btns/btn-close";
 import { Location } from "../../../../shared/interfaces/location.interface";
 import { LocationSearchBar } from "../../components/location/location-search-bar";
@@ -69,7 +69,7 @@ export const PostLocation = () => {
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen dark-light" onClick={onGoBack} />
       <section className="post-location">
         <header className="post-location-header">
@@ -116,6 +116,6 @@ export const PostLocation = () => {
           )}
         </main>
       </section>
-    </Fragment>
+    </>
   );
 };

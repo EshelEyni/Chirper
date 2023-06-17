@@ -344,7 +344,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       {postSaveInProgress && <span className="progress-bar"></span>}
       {!isHomePage && preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
       {!isHomePage && replyToPost && (
-        <MiniPostPreview post={replyToPost} type={"reply"}>
+        <MiniPostPreview post={replyToPost} type={"replied-post"}>
           {({ post }: { post: Post }) => <RepliedPostContent post={post} />}
         </MiniPostPreview>
       )}
@@ -397,7 +397,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             )}
           </div>
           {quotedPost && (
-            <MiniPostPreview quotedPost={quotedPost} type={"quote"}>
+            <MiniPostPreview quotedPost={quotedPost} type={"quoted-post"}>
               {({ quotedPost }: { quotedPost: QuotedPost }) => (
                 <QuotedPostContent quotedPost={quotedPost} />
               )}

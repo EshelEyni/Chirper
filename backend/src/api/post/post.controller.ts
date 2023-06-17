@@ -224,6 +224,49 @@ const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): P
   });
 });
 
+const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  const bookmarkedPosts = await postService.getBookmarkedPosts(loggedinUserId);
+
+  res.status(200).send({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    results: bookmarkedPosts.length,
+    data: bookmarkedPosts,
+  });
+});
+
+const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const postId = req.params.id;
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!postId) throw new AppError("No post id provided", 400);
+
+  const updatedPost = await postService.addBookmarkedPost(postId, loggedinUserId);
+
+  res.status(201).send({
+    status: "success",
+    data: updatedPost,
+  });
+});
+
+const removeBookmarkedPost = asyncErrorCatcher(
+  async (req: Request, res: Response): Promise<void> => {
+    const { loggedinUserId } = req;
+    const postId = req.params.id;
+    if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+    if (!postId) throw new AppError("No post id provided", 400);
+
+    const updatedPost = await postService.removeBookmarkedPost(postId, loggedinUserId);
+
+    res.status(200).json({
+      status: "success",
+      data: updatedPost,
+    });
+  }
+);
+
 export {
   getPosts,
   getPostById,
@@ -241,4 +284,7 @@ export {
   getPostStats,
   createPostStatsWithView,
   updatePostStats,
+  getBookmarkedPosts,
+  addBookmarkedPost,
+  removeBookmarkedPost,
 };

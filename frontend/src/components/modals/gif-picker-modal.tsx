@@ -1,4 +1,4 @@
-import { Fragment, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { GifCategoryList } from "../gif/gif-category-list";
 import { GifList } from "../gif/gif-list";
@@ -34,7 +34,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen dark" onClick={() => onToggleElementVisibility("gifPicker")} />
       <div className="gif-picker">
         <header className="gif-picker-header">
@@ -67,6 +67,6 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
           />
         )}
       </div>
-    </Fragment>
+    </>
   );
 };

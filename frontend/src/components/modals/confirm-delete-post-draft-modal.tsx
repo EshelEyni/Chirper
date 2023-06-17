@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 
 type ConfirmDeleteModalProps = {
   onCloseModal: () => void;
@@ -10,7 +10,7 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
   discardPostThread,
 }) => {
   return (
-    <Fragment>
+    <>
       <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
       <section className="confirm-delete-post-draft-modal">
         <div className="confirm-delete-post-draft-modal-header">
@@ -29,6 +29,6 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
           </button>
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };

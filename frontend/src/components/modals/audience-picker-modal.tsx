@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-solid.svg";
 import { AiOutlineCheck } from "react-icons/ai";
@@ -38,7 +38,7 @@ export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ currNewPost,
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen" onClick={() => toggleModal("audience")} />
       <section className="picker-modal">
         <h1 className="picker-modal-title">Choose audience</h1>
@@ -58,6 +58,6 @@ export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ currNewPost,
           ))}
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };

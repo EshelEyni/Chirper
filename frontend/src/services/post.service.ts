@@ -138,6 +138,16 @@ async function removeLike(postId: string): Promise<Post> {
   }
 }
 
+async function getPostStats(postId: string): Promise<PostStats> {
+  try {
+    const res = await httpService.get(`post/${postId}/stats`);
+    return utilService.handleServerResponse<PostStats>(res);
+  } catch (err) {
+    console.log("postService: Cannot get post stats", err);
+    throw err;
+  }
+}
+
 async function addImpression(postId: string) {
   try {
     await httpService.post(`post/${postId}/stats`);
@@ -156,12 +166,32 @@ async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
   }
 }
 
-async function getPostStats(postId: string): Promise<PostStats> {
+async function getBookmarkedPosts(): Promise<Post[]> {
   try {
-    const res = await httpService.get(`post/${postId}/stats`);
-    return utilService.handleServerResponse<PostStats>(res);
+    const res = await httpService.get("post/bookmark");
+    return utilService.handleServerResponse<Post[]>(res);
   } catch (err) {
-    console.log("postService: Cannot get post stats", err);
+    console.log("postService: Cannot get bookmarked posts", err);
+    throw err;
+  }
+}
+
+async function addBookmark(postId: string): Promise<Post> {
+  try {
+    const res = await httpService.post(`post/${postId}/bookmark`);
+    return utilService.handleServerResponse<Post>(res);
+  } catch (err) {
+    console.log("postService: Cannot add bookmarked post", err);
+    throw err;
+  }
+}
+
+async function removeBookmark(postId: string): Promise<Post> {
+  try {
+    const res = await httpService.delete(`post/${postId}/bookmark`);
+    return utilService.handleServerResponse<Post>(res);
+  } catch (err) {
+    console.log("postService: Cannot remove bookmarked post", err);
     throw err;
   }
 }
@@ -226,4 +256,7 @@ export const postService = {
   addImpression,
   updatePostStats,
   formatPostText,
+  getBookmarkedPosts,
+  addBookmark,
+  removeBookmark,
 };

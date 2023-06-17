@@ -19,6 +19,7 @@ import { Document } from "mongoose";
 import { logger } from "../../services/logger.service";
 import { PostLikeModel } from "./post-like.model";
 import { PostStatsModel } from "./post-stats.model";
+import { BookmarkedPostModel } from "./bookmark-post.model";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -34,23 +35,26 @@ async function query(queryString: QueryString): Promise<Post[]> {
     .populate("post")
     .populate(_populateRepostedBy())
     .exec();
+
+  // TODO: refactor this, can be in one map function
   repostDocs = repostDocs.map(doc => doc.toObject());
 
   const reposts = repostDocs.map((doc: any) => {
     const { createdAt, updatedAt, post, repostedBy } = doc;
-    post.createdAt = createdAt;
-    post.updatedAt = updatedAt;
+
     return {
       ...post,
       repostedBy,
+      createdAt,
+      updatedAt,
     };
   });
 
   posts = [...posts, ...reposts]
+    .filter(post => post.createdBy !== null)
     .sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    })
-    .filter(post => post.createdBy !== null);
+    });
 
   const setLoggedinUserActionStatePrms = posts.map(async post => {
     await _setLoggedinUserActionState(post);
@@ -411,6 +415,47 @@ async function updatePostStats(
   })) as unknown as PostStatsBody;
 }
 
+async function getBookmarkedPosts(loggedinUserId: string): Promise<Post[]> {
+  const bookmarkedPostsDocs = await BookmarkedPostModel.find({
+    bookmarkOwnerId: loggedinUserId,
+  }).exec();
+  const bookmarkedPosts = bookmarkedPostsDocs.map(async doc => {
+    // TODO: defince type correctly
+    const obj = doc.toObject() as unknown as { post: Post };
+    const { post } = obj;
+    await _setLoggedinUserActionState(post);
+    return post;
+  });
+  return bookmarkedPosts as unknown as Post[];
+}
+
+async function addBookmarkedPost(postId: string, loggedinUserId: string): Promise<Post> {
+  await new BookmarkedPostModel({
+    postId,
+    bookmarkOwnerId: loggedinUserId,
+  }).save();
+  const postDoc = await PostModel.findById(postId);
+  if (!postDoc) throw new AppError("post not found", 404);
+  const updatedPost = postDoc.toObject() as unknown as Post;
+  await _setLoggedinUserActionState(updatedPost);
+
+  return updatedPost;
+}
+
+async function removeBookmarkedPost(postId: string, loggedinUserId: string): Promise<Post> {
+  await BookmarkedPostModel.findOneAndRemove({
+    postId,
+    bookmarkOwnerId: loggedinUserId,
+  });
+
+  const postDoc = await PostModel.findById(postId);
+  if (!postDoc) throw new AppError("post not found", 404);
+  const updatedPost = postDoc.toObject() as unknown as Post;
+  await _setLoggedinUserActionState(updatedPost);
+
+  return updatedPost;
+}
+
 async function _populateUserPollVotes(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
@@ -459,6 +504,11 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
     post.loggedinUserActionState.isLiked = !!(await PostLikeModel.exists({
       postId: new mongoose.Types.ObjectId(post.id),
       userId: new mongoose.Types.ObjectId(loggedinUserId),
+    }));
+
+    post.loggedinUserActionState.isBookmarked = !!(await BookmarkedPostModel.exists({
+      postId: new mongoose.Types.ObjectId(post.id),
+      bookmarkOwnerId: new mongoose.Types.ObjectId(loggedinUserId),
     }));
 
     const postStats = (await PostStatsModel.findOne({
@@ -517,4 +567,7 @@ export default {
   getPostStats,
   createPostStatsWithView,
   updatePostStats,
+  getBookmarkedPosts,
+  addBookmarkedPost,
+  removeBookmarkedPost,
 };

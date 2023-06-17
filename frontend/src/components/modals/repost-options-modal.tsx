@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 type RepostOptionsModalProps = {
@@ -18,27 +18,27 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
 }) => {
   const btns = [
     {
-      name: isReposted ? "undo rechirp" : "rechirp",
-      icon: <AiOutlineRetweet className="icon" size={20} />,
+      text: isReposted ? "undo rechirp" : "rechirp",
+      icon: <AiOutlineRetweet size={20} />,
       onClickFunc: isReposted ? onRemoveRepost : onRepost,
     },
     {
-      name: "quote rechirp",
-      icon: <HiOutlinePencilAlt className="icon" size={20} />,
+      text: "quote rechirp",
+      icon: <HiOutlinePencilAlt size={20} />,
       onClickFunc: () => onQuotePost(),
     },
   ];
   return (
-    <Fragment>
+    <>
       <div className="main-screen" onClick={onToggleModal} />
       <section className="repost-options-modal">
         {btns.map((btn, i) => (
           <button className="btn-repost-option" key={i} onClick={btn.onClickFunc}>
             {btn.icon}
-            <span>{btn.name}</span>
+            <span>{btn.text}</span>
           </button>
         ))}
       </section>
-    </Fragment>
+    </>
   );
 };

@@ -17,17 +17,23 @@ import {
   getPostStats,
   createPostStatsWithView,
   updatePostStats,
+  getBookmarkedPosts,
+  addBookmarkedPost,
+  removeBookmarkedPost,
 } from "./post.controller";
 
 const router = express.Router();
 
 router.get("/", getPosts);
-router.get("/:id", getPostById);
+router.get("/:id([a-fA-F0-9]{24})", getPostById);
 router.use(requireAuth);
 
 router.get("/:id/stats", getPostStats);
 router.post("/:id/stats", createPostStatsWithView);
 router.patch("/:id/stats", updatePostStats);
+router.get("/bookmark", getBookmarkedPosts);
+router.post("/:id/bookmark", addBookmarkedPost);
+router.delete("/:id/bookmark", removeBookmarkedPost);
 router.post("/thread", addPostThread);
 router.post("/reply", addReply);
 router.post("/repost", repostPost);

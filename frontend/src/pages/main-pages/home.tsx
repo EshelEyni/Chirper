@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { PostEdit } from "../../components/post/post-edit";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +23,7 @@ export const HomePage = () => {
   }, [posts]);
 
   return (
-    <React.Fragment>
+    <>
       {isPageLoading && <PageLoader />}
       {!isPageLoading && (
         <main className="home">
@@ -41,6 +41,6 @@ export const HomePage = () => {
           <Outlet />
         </main>
       )}
-    </React.Fragment>
+    </>
   );
 };

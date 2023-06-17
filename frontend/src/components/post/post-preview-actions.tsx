@@ -13,6 +13,7 @@ import { RootState } from "../../store/store";
 import { addLike, removeLike, removeRepost, repostPost } from "../../store/actions/post.actions";
 import { useState } from "react";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
+import { PostShareOptionsModal } from "../modals/post-share-options-modal";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -27,13 +28,18 @@ type Btn = {
 };
 
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  // Props
+  const { isReposted, isLiked } = post.loggedinUserActionState;
 
+  // State
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // Hooks
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const { isReposted, isLiked } = post.loggedinUserActionState;
-  const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
 
   const iconClassName = "icon";
   const btns: Btn[] = [
@@ -53,7 +59,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <AiOutlineRetweet className={iconClassName} />,
       count: post.repostsCount,
       isClicked: isReposted,
-      onClickFunc: async () => {
+      onClickFunc: () => {
         setIsRepostModalOpen(prev => !prev);
       },
     },
@@ -87,7 +93,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <FiUpload className={iconClassName} />,
       count: 0,
       onClickFunc: () => {
-        console.log("share");
+        setIsShareModalOpen(prev => !prev);
       },
     },
   ];
@@ -135,6 +141,13 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
                 onRemoveRepost={onRemoveRepost}
                 onQuotePost={onQuotePost}
                 isReposted={isReposted}
+              />
+            )}
+
+            {name === "share" && isShareModalOpen && (
+              <PostShareOptionsModal
+                post={post}
+                onToggleModal={() => setIsShareModalOpen(prev => !prev)}
               />
             )}
           </div>

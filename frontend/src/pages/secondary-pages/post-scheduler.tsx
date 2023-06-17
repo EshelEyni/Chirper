@@ -1,5 +1,5 @@
 import { BtnClose } from "../../components/btns/btn-close";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PostDateTitle } from "../../components/other/post-date-title";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
 import { CustomSelect } from "../../components/other/custom-select";
@@ -256,7 +256,7 @@ export const PostSchedule = () => {
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen dark-light" onClick={onGoBack} />
       <section className="post-schedule">
         <header className="post-schedule-header">
@@ -347,6 +347,6 @@ export const PostSchedule = () => {
           </button>
         </footer>
       </section>
-    </Fragment>
+    </>
   );
 };

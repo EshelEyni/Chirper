@@ -85,6 +85,10 @@ function handleServerResponse<T>(response: JsendResponse): T {
   }
 }
 
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text);
+}
+
 export const utilService = {
   formatTime,
   formatCount,
@@ -93,4 +97,5 @@ export const utilService = {
   getTimeZone,
   getDaysInMonth,
   handleServerResponse,
+  copyToClipboard,
 };

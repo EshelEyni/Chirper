@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 
 type PlaybackRatePickerModalProps = {
@@ -25,7 +25,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
   };
 
   return (
-    <Fragment>
+    <>
       <div className="main-screen" onClick={() => onToggleModal(false)} />
       <div
         className={
@@ -64,6 +64,6 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
           </ul>
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };

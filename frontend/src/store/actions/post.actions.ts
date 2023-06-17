@@ -90,6 +90,19 @@ export function addPost(
   };
 }
 
+export function updatePost(
+  post: Post
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await postService.update(post);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      console.log("PostActions: err in updatePost", err);
+    }
+  };
+}
+
 export function addReply(
   post: NewPost
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
@@ -173,15 +186,28 @@ export function removeLike(
   };
 }
 
-export function updatePost(
-  post: Post
+export function addBookmark(
+  postId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const updatedPost = await postService.update(post);
+      const updatedPost = await postService.addBookmark(postId);
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
-      console.log("PostActions: err in updatePost", err);
+      console.log("PostActions: err in likePost", err);
+    }
+  };
+}
+
+export function removeBookmark(
+  postId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await postService.removeBookmark(postId);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      console.log("PostActions: err in removeLike", err);
     }
   };
 }

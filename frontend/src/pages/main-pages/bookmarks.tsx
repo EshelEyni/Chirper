@@ -1,14 +1,30 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Post } from "../../../../shared/interfaces/post.interface";
+import { postService } from "../../services/post.service";
 
 export const BookmarksPage = () => {
-    
-    useEffect(() => {
-        document.title = "Bookmarks / Chirper";
-      }, []);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
+  useEffect(() => {
+    getBookmarkedPosts();
 
-    return (
-        <div>
-            <h1>Bookmarks Page</h1>
+    document.title = "Bookmarks / Chirper";
+  }, []);
+
+  const getBookmarkedPosts = async () => {
+    const posts = await postService.getBookmarkedPosts();
+    setBookmarkedPosts(posts);
+  };
+
+  return (
+    <div>
+      <h1>Bookmarks Page</h1>
+      {bookmarkedPosts.length > 0 && (
+        <div style={{ width: "600px", overflow: "hidden" }}>
+          {bookmarkedPosts.map(post => (
+            <pre key={post.id}>{JSON.stringify(post, null, 2)}</pre>
+          ))}
         </div>
-    );
+      )}
+    </div>
+  );
 };

@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 
 type SavePostDraftModalProps = {
   onCloseModal: () => void;
@@ -12,7 +12,7 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
   discardPostThread,
 }) => {
   return (
-    <Fragment>
+    <>
       <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
       <section className="save-post-draft-modal">
         <div className="save-post-draft-modal-header">
@@ -31,6 +31,6 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
           </button>
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };

@@ -12,7 +12,11 @@ export interface MiniPostPreviewProps {
   children: (props: any) => JSX.Element;
 }
 
-export type MiniPostPreviewType = "new-post" | "reply" | "quote" | "post-stats-preview";
+export type MiniPostPreviewType =
+  | "new-post"
+  | "replied-post"
+  | "quoted-post"
+  | "post-stats-preview";
 
 export const MiniPostPreview: React.FC<MiniPostPreviewProps> = props => {
   const { newPost, type, children } = props;
@@ -27,11 +31,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = props => {
   return (
     <article
       className={`mini-post-preview ${type}`}
-      onClick={
-        newPostType === "home-page" || newPostType === "side-bar"
-          ? () => onSetCurrPost(newPost)
-          : undefined
-      }
+      onClick={type === "new-post" ? () => onSetCurrPost(newPost) : undefined}
     >
       <div className="post-preview-content-wrapper"> {children(props)}</div>
     </article>

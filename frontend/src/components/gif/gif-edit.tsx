@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { ContentLoader } from "../loaders/content-loader";
-import { Fragment } from "react";
 import { BtnRemoveContent } from "../btns/btn-remove-content";
 import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +28,7 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
   };
 
   return (
-    <Fragment>
+    <>
       {isLoading && <ContentLoader />}
       <div className="gif-edit" style={{ visibility: isLoading ? "hidden" : "visible" }}>
         <BtnRemoveContent onRemoveContent={onRemoveGif} />
@@ -49,6 +48,6 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
         )}
         <span className="gif-title">GIF</span>
       </div>
-    </Fragment>
+    </>
   );
 };

@@ -5,7 +5,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { setUserMsg } from "../../store/actions/system.actions";
-import { useEffect, useState, useRef, FC, Fragment } from "react";
+import { useEffect, useState, useRef, FC } from "react";
 import { GifPickerModal } from "../modals/gif-picker-modal";
 import { Poll, Emoji, NewPost } from "../../../../shared/interfaces/post.interface";
 import data from "@emoji-mart/data";
@@ -296,7 +296,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   };
 
   return (
-    <Fragment>
+    <>
       <div className="post-edit-action-btns">
         {btns.map((btn, idx) => {
           if (btn.name === "img-upload") {
@@ -365,6 +365,6 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
           onToggleElementVisibility={onToggleElementVisibility}
         />
       )}
-    </Fragment>
+    </>
   );
 };

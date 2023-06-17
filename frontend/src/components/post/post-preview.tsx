@@ -1,6 +1,4 @@
 import { Post } from "../../../../shared/interfaces/post.interface";
-import { utilService } from "../../services/util.service/utils.service";
-import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { PostPreviewActions } from "./post-preview-actions";
 import { UserImg } from "../user/user-img";
 import { PostImg } from "./post-img";
@@ -10,12 +8,10 @@ import { PollDisplay } from "../poll/poll-display";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
-import { Logo } from "../other/logo";
 import { VideoPlayer } from "../video/video-player";
 import { PostRepliedToUsersList } from "./post-replied-to-users-list";
 import { AiOutlineRetweet } from "react-icons/ai";
-import { MiniPostPreview } from "./mini-post-preview";
+import { MiniPostPreview } from "./mini-post-preview/mini-post-preview";
 import { useInView } from "react-intersection-observer";
 import { postService } from "../../services/post.service";
 import { useNavigate } from "react-router-dom";
@@ -54,49 +50,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
       post?.repliedPostDetails &&
       post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser.id
     );
-  };
-
-  const formmatText = (text: string): string => {
-    const urls = text.match(/(https?:\/\/[^\s]+)/g);
-    const urlsSet = new Set(urls);
-    let formmatedText = text;
-    if (urlsSet) {
-      urlsSet.forEach(url => {
-        const trimmedUrl = url.replace("https://www.", "");
-        formmatedText = formmatedText.replaceAll(
-          url,
-          `<a href="${url}" data-type="external-link">${trimmedUrl}</a>`
-        );
-      });
-    }
-
-    const hashtags = text.match(/(^|\s)(#[^\s]+)/g);
-    const hashtagsSet = new Set(hashtags);
-    if (hashtagsSet) {
-      hashtagsSet.forEach(hashtag => {
-        formmatedText = formmatedText.replaceAll(
-          hashtag,
-          `<a data-url="${hashtag.slice(1)}" data-type="hashtag">${hashtag}</a>`
-        );
-      });
-    }
-
-    const mentions = text.match(/@[^\s]+/g);
-    if (mentions) {
-      mentions.forEach(mention => {
-        formmatedText = formmatedText.replaceAll(
-          mention,
-          `<a href="/${mention.slice(1)}" data-type="profile-link">${mention}</a>`
-        );
-      });
-    }
-
-    const lineBreaks = formmatedText.match(/\n/g);
-    if (lineBreaks) {
-      formmatedText = formmatedText.replaceAll("\n", "<br />");
-    }
-
-    return formmatedText;
   };
 
   const onNavigateToPostDetails = async () => {
@@ -164,7 +117,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
               )}
             <p
               className="post-preview-text"
-              dangerouslySetInnerHTML={{ __html: formmatText(post.text) }}
+              dangerouslySetInnerHTML={{ __html: postService.formatPostText(post.text) }}
               onClick={handleLinkClick}
             ></p>
             {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}

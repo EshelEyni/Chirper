@@ -117,6 +117,12 @@
             }
           }
         }
+
+        .content-loader-container {
+          position: relative;
+          width: 100%;
+          height: rem(100px);
+        }
       }
     }
   }

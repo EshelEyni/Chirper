@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PostStats } from "../../../../shared/interfaces/post.interface";
+import { Post, PostStats } from "../../../../shared/interfaces/post.interface";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { BtnClose } from "../../components/btns/btn-close";
@@ -8,22 +8,25 @@ import { AppDispatch } from "../../store/types";
 import { clearPost, getPost } from "../../store/actions/post.actions";
 import { postService } from "../../services/post.service";
 import { ContentLoader } from "../../components/loaders/content-loader";
-import { MiniPostPreview } from "../../components/post/mini-post-preview";
+import { MiniPostPreview } from "../../components/post/mini-post-preview/mini-post-preview";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { GoInfo } from "react-icons/go";
 import { PostStatsInfoModal } from "../../components/modals/post-stat-info-modal";
+import { PostStatsPreviewContent } from "../../components/post/mini-post-preview/post-stats-preview-content";
 
 export const PostStatsPage = () => {
+  // State
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { post } = useSelector((state: RootState) => state.postModule);
+  const [postStats, setPostStats] = useState<PostStats | null>(null);
+  const [isLoggedinUserPost, setIsLoggedinUserPost] = useState(false);
+  const [openedModal, setOpenedModal] = useState<string>("");
+
+  // Hooks
   const navigate = useNavigate();
   const params = useParams();
   const dispatch: AppDispatch = useDispatch();
-
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { post } = useSelector((state: RootState) => state.postModule);
-  const [isLoggedinUserPost, setIsLoggedinUserPost] = useState(false);
-  const [postStats, setPostStats] = useState<PostStats | null>(null);
-  const [openedModal, setOpenedModal] = useState<string>("");
   const { id } = params as { id: string };
 
   const postActionStats = [
@@ -94,7 +97,7 @@ export const PostStatsPage = () => {
 
   const onGoBack = () => {
     dispatch(clearPost());
-    navigate(-1);
+    navigate("/");
   };
 
   const onOpenModal = (name: string) => {
@@ -111,7 +114,7 @@ export const PostStatsPage = () => {
       <main className="post-stats-body">
         <BtnClose onClickBtn={onGoBack} />
         <div className="post-stats-main-container">
-          {!post && !postStats ? (
+          {!post ? (
             <ContentLoader />
           ) : !isLoggedinUserPost ? (
             <div className="not-logged-in-user-post-msg">
@@ -125,43 +128,51 @@ export const PostStatsPage = () => {
             </div>
           ) : (
             <div className="post-stats-content">
-              <MiniPostPreview post={post!} type="snapshot-post-stats" />
-              <div className="post-action-stats">
-                {postActionStats.map(action => (
-                  <div className="post-action-stats-item" key={action.name}>
-                    {action.icon}
-                    <span className="post-action-stats-item-count">{action.count}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="post-stats-data">
-                {postStatsData.map(data => {
-                  const { name, count, desc, grid } = data;
-                  const { row, column } = grid;
-                  return (
-                    <div
-                      className="post-stats-data-item"
-                      key={name}
-                      style={{ gridColumn: column, gridRow: row }}
-                    >
-                      <div className="post-stats-data-item-title">
-                        <span className="post-stats-data-item-name">{name}</span>
-                        <div className="btn-post-stats-data-item-info-container">
-                          {openedModal === name && (
-                            <PostStatsInfoModal
-                              onCloseModal={onCloseModal}
-                              name={name}
-                              desc={desc}
-                            />
-                          )}
-                          <GoInfo onClick={() => onOpenModal(name)} />
-                        </div>
+              <MiniPostPreview post={post!} type="post-stats-preview">
+                {({ post }: { post: Post }) => <PostStatsPreviewContent post={post} />}
+              </MiniPostPreview>
+              {postStats ? (
+                <>
+                  <div className="post-action-stats">
+                    {postActionStats.map(action => (
+                      <div className="post-action-stats-item" key={action.name}>
+                        {action.icon}
+                        <span className="post-action-stats-item-count">{action.count}</span>
                       </div>
-                      <h1 className="post-stats-data-item-count">{count}</h1>
-                    </div>
-                  );
-                })}
-              </div>
+                    ))}
+                  </div>
+                  <div className="post-stats-data">
+                    {postStatsData.map(data => {
+                      const { name, count, desc, grid } = data;
+                      const { row, column } = grid;
+                      return (
+                        <div
+                          className="post-stats-data-item"
+                          key={name}
+                          style={{ gridColumn: column, gridRow: row }}
+                        >
+                          <div className="post-stats-data-item-title">
+                            <span className="post-stats-data-item-name">{name}</span>
+                            <div className="btn-post-stats-data-item-info-container">
+                              {openedModal === name && (
+                                <PostStatsInfoModal
+                                  onCloseModal={onCloseModal}
+                                  name={name}
+                                  desc={desc}
+                                />
+                              )}
+                              <GoInfo onClick={() => onOpenModal(name)} />
+                            </div>
+                          </div>
+                          <h1 className="post-stats-data-item-count">{count}</h1>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <ContentLoader />
+              )}
             </div>
           )}
         </div>

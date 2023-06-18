@@ -26,8 +26,9 @@ export function systemReducer(
       return { ...state, isPageLoading: action.isPageLoading };
     case "SET_IS_SIDEBAR_SHOWN":
       return { ...state, isSideBarShown: action.isSideBarShown };
-    case "SET_USER_MSG":
+    case "SET_USER_MSG": {
       return { ...state, userMsg: action.userMsg };
+    }
 
     default:
       return state;

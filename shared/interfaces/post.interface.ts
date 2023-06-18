@@ -110,6 +110,10 @@ export type loggedinUserActionState = {
   isHashTagClicked: boolean;
   isLinkClicked: boolean;
   isBookmarked: boolean;
+  isPostLinkCopied: boolean;
+  isPostShared: boolean;
+  isPostSendInMessage: boolean;
+  isPostBookmarked: boolean;
 };
 
 export type PollOption = {
@@ -147,6 +151,10 @@ export type PostStatsBody = {
   isFollowedFromPost: boolean;
   isHashTagClicked: boolean;
   isLinkClicked: boolean;
+  isPostLinkCopied: boolean;
+  isPostShared: boolean;
+  isPostSendInMessage: boolean;
+  isPostBookmarked: boolean;
 };
 
 export type PostStats = {

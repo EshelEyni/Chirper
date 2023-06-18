@@ -55,12 +55,12 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
 
   const onNavigateToPostDetails = async () => {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
-    console.log("onNavigateToPostDetails");
+    navigate(`/post/${post.id}`);
   };
 
   const onNavigateToProfile = async (userId: string) => {
     if (!isProfileViewed) await postService.updatePostStats(post.id, { isProfileViewed: true });
-    console.log("onNavigateToProfile: ", userId);
+    navigate(`/profile/${userId}`);
   };
 
   const handleLinkClick = async (e: React.MouseEvent) => {
@@ -107,9 +107,16 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         </div>
       )}
       <div className={"post-preview-content-wrapper" + (post.repostedBy ? " with-repost" : "")}>
-        <UserImg imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()} />
+        <UserImg
+          imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
+          onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+        />
         <div className="post-preview-main-container">
-          <PostPreviewHeader post={post} />
+          <PostPreviewHeader
+            post={post}
+            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+            onNavigateToPostDetails={onNavigateToPostDetails}
+          />
           <main className="post-preview-body">
             {!isPostReplyFromPostOwner() &&
               post.repliedPostDetails &&

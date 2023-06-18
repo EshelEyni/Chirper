@@ -6,20 +6,19 @@ import {
   PostRepostResult,
   PostStatsBody,
 } from "../../../../shared/interfaces/post.interface";
-import { QueryString } from "../../services/util.service.js";
+import { APIFeatures, QueryString, queryEntityExists } from "../../services/util.service";
 import { PostModel } from "./post.model";
 import { RepostModel } from "./repost.model";
 import { PollResultModel } from "./poll.model";
-import { APIFeatures } from "../../services/util.service";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls.middleware";
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { AppError } from "../../services/error.service";
-import { Document } from "mongoose";
 import { logger } from "../../services/logger.service";
 import { PostLikeModel } from "./post-like.model";
 import { PostStatsModel } from "./post-stats.model";
 import { BookmarkedPostModel } from "./bookmark-post.model";
+import { ObjectId } from "mongodb";
 
 async function query(queryString: QueryString): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -348,7 +347,7 @@ async function getPostStats(postId: string): Promise<PostStatsBody> {
   const postStatsAggregation = await PostStatsModel.aggregate([
     {
       $match: {
-        postId: new mongoose.Types.ObjectId(postId),
+        postId: new ObjectId(postId),
       },
     },
     {
@@ -360,22 +359,21 @@ async function getPostStats(postId: string): Promise<PostStatsBody> {
         isFollowedFromPostCount: { $sum: { $cond: ["$isFollowedFromPost", 1, 0] } },
         isHashTagClickedCount: { $sum: { $cond: ["$isHashTagClicked", 1, 0] } },
         isLinkClickedCount: { $sum: { $cond: ["$isLinkClicked", 1, 0] } },
+        isPostLinkCopiedCount: { $sum: { $cond: ["$isPostLinkCopied", 1, 0] } },
+        isPostSharedCount: { $sum: { $cond: ["$isPostShared", 1, 0] } },
+        isPostSendInMessageCount: { $sum: { $cond: ["$isPostSendInMessage", 1, 0] } },
+        isPostBookmarkedCount: { $sum: { $cond: ["$isPostBookmarked", 1, 0] } },
       },
     },
   ]);
 
   const [postStats] = postStatsAggregation;
   delete postStats._id;
+  const postStatsSum = Object.values(postStats)
+    .filter((value): value is number => typeof value === "number")
+    .reduce((a: number, b: number): number => a + b, 0);
 
-  const engagementCount =
-    postStats.isDetailedViewedCount +
-    postStats.isProfileViewedCount +
-    postStats.isFollowedFromPostCount +
-    postStats.isHashTagClickedCount +
-    postStats.isLinkClickedCount +
-    likesCount +
-    repostCount +
-    repliesCount;
+  const engagementCount = postStatsSum + likesCount + repostCount + repliesCount;
 
   return {
     likesCount,
@@ -419,13 +417,14 @@ async function getBookmarkedPosts(loggedinUserId: string): Promise<Post[]> {
   const bookmarkedPostsDocs = await BookmarkedPostModel.find({
     bookmarkOwnerId: loggedinUserId,
   }).exec();
-  const bookmarkedPosts = bookmarkedPostsDocs.map(async doc => {
+  const prms = bookmarkedPostsDocs.map(async doc => {
     // TODO: defince type correctly
     const obj = doc.toObject() as unknown as { post: Post };
     const { post } = obj;
     await _setLoggedinUserActionState(post);
     return post;
   });
+  const bookmarkedPosts = await Promise.all(prms);
   return bookmarkedPosts as unknown as Post[];
 }
 
@@ -462,7 +461,7 @@ async function _populateUserPollVotes(...posts: Post[]) {
   if (!loggedinUserId || posts.some(post => post.poll)) return;
 
   const pollResults = await PollResultModel.find({
-    userId: new mongoose.Types.ObjectId(loggedinUserId),
+    userId: new ObjectId(loggedinUserId),
     postId: { $in: posts.map(post => post.id) },
   }).exec();
 
@@ -481,6 +480,7 @@ async function _populateUserPollVotes(...posts: Post[]) {
 async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {}) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
+
   post.loggedinUserActionState = {
     isLiked: false,
     isReposted: false,
@@ -491,38 +491,61 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
     isHashTagClicked: false,
     isLinkClicked: false,
     isBookmarked: false,
+    isPostLinkCopied: false,
+    isPostShared: false,
+    isPostSendInMessage: false,
+    isPostBookmarked: false,
   };
 
   if (isDefault) return;
 
   if (loggedinUserId) {
-    post.loggedinUserActionState.isReposted = !!(await RepostModel.exists({
-      postId: new mongoose.Types.ObjectId(post.id),
-      repostOwnerId: new mongoose.Types.ObjectId(loggedinUserId),
-    }));
+    const postId = new ObjectId(post.id);
+    const userId = new ObjectId(loggedinUserId);
 
-    post.loggedinUserActionState.isLiked = !!(await PostLikeModel.exists({
-      postId: new mongoose.Types.ObjectId(post.id),
-      userId: new mongoose.Types.ObjectId(loggedinUserId),
-    }));
+    const [isReposted, isLiked, isBookmarked] = await Promise.all([
+      queryEntityExists(RepostModel, { postId, repostOwnerId: userId }),
+      queryEntityExists(PostLikeModel, { postId, userId }),
+      queryEntityExists(BookmarkedPostModel, { postId, bookmarkOwnerId: userId }),
+    ]);
 
-    post.loggedinUserActionState.isBookmarked = !!(await BookmarkedPostModel.exists({
-      postId: new mongoose.Types.ObjectId(post.id),
-      bookmarkOwnerId: new mongoose.Types.ObjectId(loggedinUserId),
-    }));
+    Object.assign(post.loggedinUserActionState, {
+      isReposted,
+      isLiked,
+      isBookmarked,
+    });
 
     const postStats = (await PostStatsModel.findOne({
-      postId: new mongoose.Types.ObjectId(post.id),
-      userId: new mongoose.Types.ObjectId(loggedinUserId),
+      postId,
+      userId,
     })) as unknown as PostStatsBody;
 
     if (postStats) {
-      post.loggedinUserActionState.isViewed = postStats.isViewed;
-      post.loggedinUserActionState.isDetailedViewed = postStats.isDetailedViewed;
-      post.loggedinUserActionState.isProfileViewed = postStats.isProfileViewed;
-      post.loggedinUserActionState.isFollowedFromPost = postStats.isFollowedFromPost;
-      post.loggedinUserActionState.isHashTagClicked = postStats.isHashTagClicked;
-      post.loggedinUserActionState.isLinkClicked = postStats.isLinkClicked;
+      const {
+        isViewed,
+        isDetailedViewed,
+        isProfileViewed,
+        isFollowedFromPost,
+        isHashTagClicked,
+        isLinkClicked,
+        isPostLinkCopied,
+        isPostShared,
+        isPostSendInMessage,
+        isPostBookmarked,
+      } = postStats;
+
+      Object.assign(post.loggedinUserActionState, {
+        isViewed,
+        isDetailedViewed,
+        isProfileViewed,
+        isFollowedFromPost,
+        isHashTagClicked,
+        isLinkClicked,
+        isPostLinkCopied,
+        isPostShared,
+        isPostSendInMessage,
+        isPostBookmarked,
+      });
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-export const useModalPosition = (modalHeight: number) => {
+export const useModalPosition = ({ modalHeight }: { modalHeight: number }) => {
   const btnRef = useRef<HTMLButtonElement>(null);
   const [isModalAbove, setIsModalAbove] = useState(false);
 

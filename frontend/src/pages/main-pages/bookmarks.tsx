@@ -18,6 +18,7 @@ export const BookmarksPage = () => {
   return (
     <div>
       <h1>Bookmarks Page</h1>
+      <h4>Nums of Posts: {bookmarkedPosts.length}</h4>
       {bookmarkedPosts.length > 0 && (
         <div style={{ width: "600px", overflow: "hidden" }}>
           {bookmarkedPosts.map(post => (

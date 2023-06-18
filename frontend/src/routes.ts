@@ -14,6 +14,7 @@ import { SignupPage } from "./pages/main-pages/signup";
 import { PostLocation } from "./pages/secondary-pages/post-location";
 import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
 import { PostStatsPage } from "./pages/secondary-pages/post-stats";
+import { PostDetails } from "./pages/main-pages/post-details";
 
 interface Route {
   path: string;
@@ -25,6 +26,10 @@ const routes: Route[] = [
   {
     path: "",
     component: HomePage,
+  },
+  {
+    path: "post/:id",
+    component: PostDetails,
   },
   {
     path: "explore/:hashtag?",

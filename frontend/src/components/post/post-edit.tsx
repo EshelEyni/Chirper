@@ -38,6 +38,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { MiniPostPreview } from "./mini-post-preview/mini-post-preview";
 import { RepliedPostContent } from "./mini-post-preview/replied-post-content";
 import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
+import { setUserMsg } from "../../store/actions/system.actions";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -79,7 +80,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const location = useLocation();
 
   // Variables
-  const isBtnAdThreadDisabled = preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
+  const isAddingPostToThreadDisabled =
+    preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
   const isMultipePosts = preCurrNewPostList.length + postCurrNewPostList.length + 1 > 1;
 
   useEffect(() => {
@@ -297,12 +299,22 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      const newPost = { ...currNewPost, text: inputTextValue };
-      await dispatch(updateCurrNewPost(newPost, newPostType));
+      // const newPost = { ...currNewPost, text: inputTextValue };
+      // await dispatch(updateCurrNewPost(newPost, newPostType));
       setIsPickerShown(false);
       await dispatch(addNewPostToThread(newPostType));
       navigate("/compose");
     } else {
+      const isAddingPostToThreadDisabled =
+        preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 9;
+      if (isAddingPostToThreadDisabled) {
+        dispatch(
+          setUserMsg({
+            type: "info",
+            text: "You can add more Chirps to this thread after sending these.",
+          })
+        );
+      }
       await dispatch(addNewPostToThread(newPostType));
       textAreaRef.current?.focus();
     }
@@ -416,9 +428,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
                   <button
-                    className={"btn-add-thread" + (isBtnAdThreadDisabled ? " disabled" : "")}
+                    className={"btn-add-thread" + (isAddingPostToThreadDisabled ? " disabled" : "")}
                     onClick={onAddPostToThread}
-                    disabled={isBtnAdThreadDisabled}
+                    disabled={isAddingPostToThreadDisabled}
                   >
                     <AiOutlinePlus className="btn-add-thread-icon" />
                   </button>

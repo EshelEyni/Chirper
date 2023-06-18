@@ -35,7 +35,7 @@ export function setUserMsg(
       dispatch({ type: "SET_USER_MSG", userMsg });
       setTimeout(() => {
         dispatch({ type: "SET_USER_MSG", userMsg: null });
-      }, 2000);
+      }, 3000);
     } catch (err) {
       console.log("PostActions: err in getPosts", err);
     }

@@ -18,8 +18,9 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
   setIsPlaybackRaterPickerModalShown,
   isFullScreen,
 }) => {
-  const modalHeight = 200;
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
+  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+    modalHeight: 200,
+  });
 
   const onTogglePlaybackRatePickerModal = (e: React.MouseEvent) => {
     e.stopPropagation();

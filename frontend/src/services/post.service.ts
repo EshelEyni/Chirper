@@ -8,7 +8,7 @@ import {
   PostStatsBody,
 } from "../../../shared/interfaces/post.interface";
 import { utilService } from "./util.service/utils.service";
-import { JsendResponse } from "../../../shared/interfaces/system.interface";
+import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
 
 async function query(): Promise<Post[]> {
   try {
@@ -80,10 +80,10 @@ async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
   }
 }
 
-async function addQuote(post: NewPost): Promise<Post> {
+async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
   try {
     const res = await httpService.post("post/quote", post);
-    return utilService.handleServerResponse<Post>(res);
+    return utilService.handleServerResponse<Post | PostRepostResult>(res);
   } catch (err) {
     console.log("postService: Cannot add quote");
     throw err;
@@ -239,6 +239,28 @@ function formatPostText(text: string): string {
   return formmatedText;
 }
 
+const getAddPostMsg = ({ postId, date }: { postId?: string; date?: Date }): UserMsg => {
+  let text = "";
+
+  if (date) {
+    const dateStr = new Intl.DateTimeFormat("en-US", {
+      dateStyle: "full",
+      timeStyle: "short",
+      timeZone: "UTC",
+    }).format(date);
+
+    text = `Your Chirp will be sent on ${dateStr}`;
+  } else if (postId) {
+    text = `Your Chirp has been sent!`;
+  }
+
+  return {
+    type: "success",
+    text,
+    link: `/post/${postId}`,
+  };
+};
+
 export const postService = {
   query,
   getById,
@@ -259,4 +281,5 @@ export const postService = {
   getBookmarkedPosts,
   addBookmark,
   removeBookmark,
+  getAddPostMsg,
 };

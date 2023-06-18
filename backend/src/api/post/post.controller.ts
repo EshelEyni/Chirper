@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { QueryString } from "../../services/util.service";
-import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, PostRepostResult } from "../../../../shared/interfaces/post.interface";
 import postService from "./post.service";
 import {
   asyncErrorCatcher,
@@ -93,24 +93,22 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
   const { loggedinUserId } = req;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   const post = req.body as unknown as NewPost;
+  if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
   post.createdById = loggedinUserId;
 
-  let savedPost: Post | null = null;
+  let data: Post | PostRepostResult | null = null;
   const isRepost = !post.text && !post.imgs?.length && !post.gif && !post.video;
   if (isRepost) {
-    try {
-      if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
-      // savedPost = await postService.repost(post.quotedPostId, loggedinUserId);
-    } catch (error) {
-      savedPost = null;
-    }
+    const repostAndUpdatedPost = await postService.repost(post.quotedPostId, loggedinUserId);
+    data = repostAndUpdatedPost;
   } else {
-    savedPost = await postService.add(post);
+    const savedPost = await postService.add(post);
+    data = savedPost;
   }
 
   res.status(201).send({
     status: "success",
-    data: savedPost,
+    data,
   });
 });
 

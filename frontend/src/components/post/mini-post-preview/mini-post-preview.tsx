@@ -9,6 +9,7 @@ export interface MiniPostPreviewProps {
   post?: Post;
   quotedPost?: QuotedPost;
   type: MiniPostPreviewType;
+  // TODO: add children type
   children: (props: any) => JSX.Element;
 }
 

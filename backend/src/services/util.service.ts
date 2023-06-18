@@ -1,4 +1,4 @@
-import { Query } from "mongoose";
+import { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 import config from "../config/index";
 
@@ -101,4 +101,11 @@ const sendEmail = async (options: { email: string; subject: string; message: str
   await transporter.sendMail(mailOptions);
 };
 
-export { APIFeatures, sendEmail, filterObj };
+async function queryEntityExists<T extends Document>(
+  model: Model<T>,
+  query: FilterQuery<T>
+): Promise<boolean> {
+  return !!(await model.exists(query));
+}
+
+export { APIFeatures, sendEmail, filterObj, queryEntityExists };

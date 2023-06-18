@@ -13,50 +13,6 @@
     width: 100%;
     .post-preview-main-container {
       flex: 1;
-
-      .post-preview-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        .post-preview-header-main {
-          display: flex;
-          align-items: center;
-          gap: rem(5px);
-
-          .user-info {
-            display: flex;
-            align-items: center;
-            gap: rem(5px);
-            font-size: rem(14px);
-            font-weight: 700;
-
-            .post-preview-blue-check-mark {
-              width: rem(20px);
-              height: rem(20px);
-            }
-
-            .logo-container {
-              width: rem(18px);
-              height: rem(18px);
-              border-radius: 5px;
-              background-color: var(--color-primary);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: rem(3px);
-
-              svg {
-                stroke: white;
-              }
-            }
-          }
-
-          .post-time {
-            font-size: rem(12px);
-          }
-        }
-      }
     }
 
     .post-preview-body {

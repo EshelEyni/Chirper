@@ -14,8 +14,9 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   gif: { url, staticUrl, description },
   isAutoPlay = true,
 }) => {
-  const modalHeight = 364;
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition(modalHeight);
+  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+    modalHeight: 364,
+  });
   const [isPlaying, setIsPlaying] = useState<boolean>(isAutoPlay);
   const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
   const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);

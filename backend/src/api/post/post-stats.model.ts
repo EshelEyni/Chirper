@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType, Model } from "mongoose";
 
 const postStatsSchema = new mongoose.Schema(
   {
@@ -36,6 +36,22 @@ const postStatsSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPostLinkCopied: {
+      type: Boolean,
+      default: false,
+    },
+    isPostShared: {
+      type: Boolean,
+      default: false,
+    },
+    isPostSendInMessage: {
+      type: Boolean,
+      default: false,
+    },
+    isPostBookmarked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -45,6 +61,11 @@ const postStatsSchema = new mongoose.Schema(
 postStatsSchema.index({ postId: 1, userId: 1 }, { unique: true });
 postStatsSchema.index({ postId: 1 });
 
-const PostStatsModel = mongoose.model("PostStats", postStatsSchema, "post_stats");
+type IPostStats = InferSchemaType<typeof postStatsSchema>;
+const PostStatsModel: Model<IPostStats> = mongoose.model(
+  "PostStats",
+  postStatsSchema,
+  "post_stats"
+);
 
 export { PostStatsModel };

@@ -14,6 +14,7 @@ import { addLike, removeLike, removeRepost, repostPost } from "../../store/actio
 import { useState } from "react";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
 import { PostShareOptionsModal } from "../modals/post-share-options-modal";
+import { useModalPosition } from "../../hooks/useModalPosition";
 
 interface PostPreviewActionsProps {
   post: Post;
@@ -40,6 +41,10 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
+
+  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+    modalHeight: 175,
+  });
 
   const iconClassName = "icon";
   const btns: Btn[] = [
@@ -93,6 +98,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <FiUpload className={iconClassName} />,
       count: 0,
       onClickFunc: () => {
+        updateModalPosition();
         setIsShareModalOpen(prev => !prev);
       },
     },
@@ -127,6 +133,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
             <button
               className={"btn-action " + name + (btn.isClicked ? " clicked" : "")}
               onClick={onClickFunc}
+              ref={name === "share" ? btnRef : undefined}
             >
               <div className="icon-container">{icon}</div>
               {name != "share" && (
@@ -148,6 +155,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
               <PostShareOptionsModal
                 post={post}
                 onToggleModal={() => setIsShareModalOpen(prev => !prev)}
+                isModalAbove={isModalAbove}
               />
             )}
           </div>

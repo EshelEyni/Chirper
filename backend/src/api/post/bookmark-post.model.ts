@@ -1,4 +1,5 @@
-import mongoose, { Document } from "mongoose";
+import { ObjectId } from "mongodb";
+import mongoose, { Document, Model } from "mongoose";
 
 const bookmarkedPostSchema = new mongoose.Schema(
   {
@@ -42,7 +43,16 @@ bookmarkedPostSchema.post(/^find/, async function (docs: Document[]) {
   }
 });
 
-const BookmarkedPostModel = mongoose.model(
+interface IBookmarkedPostBase {
+  postId: ObjectId;
+  bookmarkOwnerId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface IBookmarkedPostDoc extends IBookmarkedPostBase, mongoose.Document {}
+
+const BookmarkedPostModel: Model<IBookmarkedPostDoc> = mongoose.model<IBookmarkedPostDoc>(
   "BookmarkedPost",
   bookmarkedPostSchema,
   "bookmarked_posts"

@@ -1,14 +1,13 @@
 .post-share-options-modal {
   position: absolute;
-  top: 0;
   left: 50%;
   transform: translateX(-50%);
+  width: max-content;
   background-color: var(--color-background);
   box-shadow: 0 0 10px 1px var(--color-border);
   z-index: 2000;
   border-radius: 25px;
   transition: all 0.1s linear;
-  width: max-content;
 
   > :first-child {
     border-radius: 25px 25px 0 0;

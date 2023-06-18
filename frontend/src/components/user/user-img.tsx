@@ -3,11 +3,12 @@ import { userService } from "../../services/user.service";
 interface UserImgProps {
   imgUrl: string | null;
   size?: number;
+  onNavigateToProfile?: () => void;
 }
 
-export const UserImg: React.FC<UserImgProps> = ({ imgUrl }) => {
+export const UserImg: React.FC<UserImgProps> = ({ imgUrl, onNavigateToProfile }) => {
   return (
-    <div className="user-img-container">
+    <div className="user-img-container" onClick={onNavigateToProfile}>
       <img
         className="user-img"
         src={imgUrl || userService.getDefaultUserImgUrl()}

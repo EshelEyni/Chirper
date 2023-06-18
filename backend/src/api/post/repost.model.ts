@@ -1,4 +1,5 @@
-import mongoose, { Document } from "mongoose";
+import { ObjectId } from "mongodb";
+import mongoose, { Document, Model } from "mongoose";
 
 const repostSchema = new mongoose.Schema(
   {
@@ -53,6 +54,15 @@ repostSchema.virtual("post", {
   justOne: true,
 });
 
-const RepostModel = mongoose.model("Repost", repostSchema);
+interface IRepostBase {
+  postId: ObjectId;
+  repostOwnerId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface IRepostDoc extends IRepostBase, Document {}
+
+const RepostModel: Model<IRepostDoc> = mongoose.model<IRepostDoc>("Repost", repostSchema);
 
 export { RepostModel };

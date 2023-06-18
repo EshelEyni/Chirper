@@ -3,7 +3,8 @@ import { AnyAction } from "redux";
 import { postService } from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-import { UserMsg } from "../../../../shared/interfaces/system.interface";
+import { setUserMsg } from "./system.actions";
+import { PostRepostResult } from "../../../../shared/interfaces/post.interface";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
@@ -46,6 +47,12 @@ export function removePost(
     try {
       await postService.remove(postId);
       dispatch({ type: "REMOVE_POST", postId });
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Your Chirp has been deleted",
+        })
+      );
     } catch (err) {
       console.log("PostActions: err in removePost", err);
     }
@@ -58,33 +65,20 @@ export function addPost(
   return async dispatch => {
     try {
       const addedPost = await postService.add(posts);
-      // const isPublished = !addedPost.schedule;
-      // if (!isPublished) {
-      //   const dateStr = new Intl.DateTimeFormat("en-US", {
-      //     dateStyle: "full",
-      //     timeStyle: "short",
-      //     timeZone: "UTC",
-      //   }).format(addedPost.schedule);
-
-      //   const msg: UserMsg = {
-      //     type: "info",
-      //     text: `Your Chirp will be sent on ${dateStr}`,
-      //   };
-      //   dispatch({ type: "SET_USER_MSG", userMsg: msg });
-      //   setTimeout(() => {
-      //     dispatch({ type: "SET_USER_MSG", userMsg: null });
-      //   }, 2000);
-      // }
       dispatch({ type: "ADD_POST", post: addedPost });
+
+      const msg = postService.getAddPostMsg({
+        postId: addedPost.id,
+        date: addedPost.schedule,
+      });
+      dispatch(setUserMsg(msg));
     } catch (err) {
-      const msg: UserMsg = {
-        type: "error",
-        text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      };
-      dispatch({ type: "SET_USER_MSG", userMsg: msg });
-      setTimeout(() => {
-        dispatch({ type: "SET_USER_MSG", userMsg: null });
-      }, 2000);
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in addPost", err);
     }
   };
@@ -110,6 +104,13 @@ export function addReply(
     try {
       const { updatedPost, reply } = await postService.addReply(post);
       dispatch({ type: "ADD_REPLY", post: updatedPost, reply });
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Your Chirp has been sent!",
+          link: `/post/${reply.id}`,
+        })
+      );
     } catch (err) {
       console.log("PostActions: err in addReply", err);
     }
@@ -134,11 +135,22 @@ export function addQuotePost(
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
-      const addedPost = await postService.addQuote(post);
-      if (addedPost?.repostedBy) {
-        dispatch({ type: "ADD_REPOST", post: addedPost });
-      } else if (addedPost) {
+      const data = await postService.addQuote(post);
+      const isRepost = "updatedPost" in data && "repost" in data;
+
+      if (isRepost) {
+        const { updatedPost, repost } = data as PostRepostResult;
+        dispatch({ type: "ADD_REPOST", post: updatedPost, repost });
+      } else {
+        const addedPost = data as Post;
         dispatch({ type: "ADD_POST", post: addedPost });
+        dispatch(
+          setUserMsg({
+            type: "info",
+            text: "Your Chirp has been sent!",
+            link: `/post/${addedPost.id}`,
+          })
+        );
       }
     } catch (err) {
       console.log("PostActions: err in quotePost", err);
@@ -193,6 +205,13 @@ export function addBookmark(
     try {
       const updatedPost = await postService.addBookmark(postId);
       dispatch({ type: "UPDATE_POST", updatedPost });
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Chirp added to your Bookmarks",
+          link: "/bookmarks",
+        })
+      );
     } catch (err) {
       console.log("PostActions: err in likePost", err);
     }
@@ -206,6 +225,13 @@ export function removeBookmark(
     try {
       const updatedPost = await postService.removeBookmark(postId);
       dispatch({ type: "UPDATE_POST", updatedPost });
+      dispatch(
+        setUserMsg({
+          type: "info",
+          text: "Chirp removed from your Bookmarks",
+          link: "/bookmarks",
+        })
+      );
     } catch (err) {
       console.log("PostActions: err in removeLike", err);
     }

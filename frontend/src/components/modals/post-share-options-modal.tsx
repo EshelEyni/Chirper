@@ -7,14 +7,18 @@ import { utilService } from "../../services/util.service/utils.service";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { addBookmark, removeBookmark } from "../../store/actions/post.actions";
+import { postService } from "../../services/post.service";
+import { setUserMsg } from "../../store/actions/system.actions";
 
 type PostShareOptionsModalProps = {
   post: Post;
+  isModalAbove: boolean;
   onToggleModal: () => void;
 };
 
 export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
   post,
+  isModalAbove,
   onToggleModal,
 }) => {
   const { isBookmarked } = post.loggedinUserActionState;
@@ -26,14 +30,22 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       text: "Copy link to Chirp",
       icon: <AiOutlineLink size={20} />,
       onClickFunc: () => {
+        postService.updatePostStats(post.id, { isPostLinkCopied: true });
         utilService.copyToClipboard(url);
         onToggleModal();
+        dispatch(
+          setUserMsg({
+            type: "info",
+            text: "Copied to clipboard",
+          })
+        );
       },
     },
     {
       text: "Share Chirp via...",
       icon: <FiUpload size={20} />,
       onClickFunc: () => {
+        postService.updatePostStats(post.id, { isPostShared: true });
         onToggleModal();
         navigator
           .share({ title: "Chirp", text: post.text, url })
@@ -44,6 +56,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
     {
       text: "Send via Direct Message",
       icon: <FaRegEnvelope size={20} />,
+      // TODO: add send via direct message functionality and update post stats
       onClickFunc: () => {
         console.log("send via direct message");
         // onToggleModal();
@@ -58,8 +71,10 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       ),
       onClickFunc: async () => {
         if (isBookmarked) {
+          postService.updatePostStats(post.id, { isPostBookmarked: false });
           dispatch(removeBookmark(post.id));
         } else {
+          postService.updatePostStats(post.id, { isPostBookmarked: true });
           dispatch(addBookmark(post.id));
         }
         onToggleModal();
@@ -67,10 +82,15 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
     },
   ];
 
+  console.log("isModalAbove", isModalAbove);
+
   return (
     <>
       <div className="main-screen" onClick={onToggleModal} />
-      <section className="post-share-options-modal">
+      <section
+        className="post-share-options-modal"
+        style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
+      >
         {btns.map((btn, i) => (
           <button className="btn-share-option" key={i} onClick={btn.onClickFunc}>
             {btn.icon} <span>{btn.text}</span>

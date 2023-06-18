@@ -1,10 +1,26 @@
-import { User } from "../../../../shared/interfaces/user.interface";
+import { FollowingResult, User } from "../../../../shared/interfaces/user.interface";
 import { UserModel } from "./user.model";
-import { APIFeatures, filterObj } from "../../services/util.service";
+import { FollowerModel } from "./followers.model";
+import { APIFeatures, QueryString, filterObj } from "../../services/util.service";
+import { Document, startSession } from "mongoose";
+import { asyncLocalStorage } from "../../services/als.service";
+import { alStoreType } from "../../middlewares/setupAls.middleware";
 
-async function query(): Promise<User[]> {
-  const features = new APIFeatures(UserModel.find(), {}).filter().sort().limitFields().paginate();
-  const users = await features.getQuery().exec();
+async function query(queryString: QueryString): Promise<User[]> {
+  const features = new APIFeatures(UserModel.find(), queryString)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+  const usersDocs = (await features.getQuery().exec()) as unknown as Document[];
+
+  const users = await Promise.all(
+    usersDocs.map(async userDoc => {
+      const user = userDoc.toObject();
+      await populateIsFollowing(user);
+      return user;
+    })
+  );
   return users as unknown as User[];
 }
 
@@ -46,6 +62,93 @@ async function removeAccount(userId: string): Promise<User> {
   return userRemoved as unknown as User;
 }
 
+async function populateIsFollowing(user: User): Promise<User> {
+  const store = asyncLocalStorage.getStore() as alStoreType;
+  const loggedinUserId = store?.loggedinUserId;
+  if (!loggedinUserId) {
+    user.isFollowing = false;
+    return user;
+  }
+
+  const isFollowing = await FollowerModel.exists({ fromUserId: loggedinUserId, toUserId: user.id });
+  user.isFollowing = !!isFollowing;
+  return user;
+}
+
+async function addFollowings(fromUserId: string, toUserId: string): Promise<FollowingResult> {
+  const session = await startSession();
+  session.startTransaction();
+  try {
+    const following = new FollowerModel({ fromUserId, toUserId });
+    await following.save({ session });
+
+    const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+      fromUserId,
+      { $inc: { followingCount: 1 } },
+      { session, new: true }
+    );
+    if (!updatedFollowerDoc) throw new Error("User not found");
+
+    const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followersCount: 1 } },
+      { session, new: true }
+    );
+    if (!updatedFollowingDoc) throw new Error("User not found");
+    await session.commitTransaction();
+    const updatedFollower = updatedFollowerDoc.toObject() as User;
+    updatedFollower.isFollowing = false;
+
+    const updatedFollowing = updatedFollowingDoc.toObject() as User;
+    updatedFollowing.isFollowing = true;
+
+    return { updatedFollower, updatedFollowing };
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw err;
+  } finally {
+    session.endSession();
+  }
+}
+
+async function removeFollowings(fromUserId: string, toUserId: string): Promise<FollowingResult> {
+  const session = await startSession();
+  session.startTransaction();
+  try {
+    const follower = await FollowerModel.findOneAndDelete({ fromUserId, toUserId }, { session });
+    if (!follower) throw new Error("Follower not found");
+
+    const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+      fromUserId,
+      { $inc: { followingCount: -1 } },
+      { session, new: true }
+    );
+    if (!updatedFollowerDoc) throw new Error("User not found");
+
+    const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followersCount: -1 } },
+      { session, new: true }
+    );
+    if (!updatedFollowingDoc) throw new Error("User not found");
+    await session.commitTransaction();
+
+    const updatedFollower = updatedFollowerDoc.toObject() as User;
+    updatedFollower.isFollowing = false;
+    const updatedFollowing = updatedFollowingDoc.toObject() as User;
+    updatedFollowing.isFollowing = false;
+
+    return { updatedFollower, updatedFollowing };
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw err;
+  } finally {
+    session.endSession();
+  }
+}
+
 export default {
   query,
   getById,
@@ -54,4 +157,7 @@ export default {
   update,
   remove,
   removeAccount,
+  addFollowings,
+  removeFollowings,
+  populateIsFollowing,
 };

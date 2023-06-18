@@ -132,9 +132,10 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       {btns.map((btn, idx) => {
         return (
           <PostPreviewActionBtn
+            key={idx}
             btn={btn}
             btnRef={btnRef}
-            key={idx}
+            post={post}
             isRepostModalOpen={isRepostModalOpen}
             setIsRepostModalOpen={setIsRepostModalOpen}
             isShareModalOpen={isShareModalOpen}
@@ -144,7 +145,6 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
             onQuotePost={onQuotePost}
             isReposted={isReposted}
             isModalAbove={isModalAbove}
-            post={post}
           />
         );
       })}

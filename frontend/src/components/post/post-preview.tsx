@@ -17,6 +17,8 @@ import { postService } from "../../services/post.service";
 import { useNavigate } from "react-router-dom";
 import { PostPreviewHeader } from "./post-preview-header";
 import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
+import { useCustomElementHover } from "../../hooks/useCustomElementHover";
+import { UserPreviewModal } from "../modals/user-preview-modal";
 
 interface PostPreviewProps {
   post: Post;
@@ -28,6 +30,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const isLoggedinUserPost = loggedinUser?.id === post.createdBy.id;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
+
+  const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
+    userImg: false,
+  });
+
   const {
     isViewed,
     isDetailedViewed,
@@ -83,7 +90,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     }
   };
 
-  const onToggleFollow = async () => {
+  const handleToggleFollow = async () => {
     if (!isFollowedFromPost)
       await postService.updatePostStats(post.id, { isFollowedFromPost: true });
     console.log("onToggleFollow");
@@ -107,15 +114,25 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         </div>
       )}
       <div className={"post-preview-content-wrapper" + (post.repostedBy ? " with-repost" : "")}>
-        <UserImg
-          imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
-          onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
-        />
+        <div
+          className="post-preview-content-wrapper-user-img-container"
+          onMouseEnter={() => handleMouseEnter("userImg")}
+          onMouseLeave={() => handleMouseLeave("userImg")}
+        >
+          <UserImg
+            imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
+            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+          />
+          {elementsHoverState.userImg && (
+            <UserPreviewModal user={post.createdBy} onToggleFollow={handleToggleFollow} />
+          )}
+        </div>
         <div className="post-preview-main-container">
           <PostPreviewHeader
             post={post}
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
             onNavigateToPostDetails={onNavigateToPostDetails}
+            onToggleFollow={handleToggleFollow}
           />
           <main className="post-preview-body">
             {!isPostReplyFromPostOwner() &&

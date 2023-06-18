@@ -16,7 +16,8 @@ interface IUser extends Document {
   isAdmin: boolean;
   isVerified: boolean;
   isApprovedLocation: boolean;
-  createdAt: number;
+  createdAt: Date;
+  updatedAt: Date;
   active: boolean;
   // eslint-disable-next-line no-unused-vars
   checkPassword: (candidatePassword: string, userPassword: string) => Promise<boolean>;
@@ -25,9 +26,12 @@ interface IUser extends Document {
   createPasswordResetToken: () => string;
   loginAttempts: number;
   lockedUntil: number;
+  bio: string;
+  followingCount: number;
+  followersCount: number;
 }
 
-const userSchema = new Schema(
+const userSchema: Schema<IUser> = new Schema(
   {
     username: {
       type: String,
@@ -84,10 +88,12 @@ const userSchema = new Schema(
     isAdmin: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     isApprovedLocation: { type: Boolean, default: false },
-    createdAt: { type: Number, default: Date.now },
     active: { type: Boolean, default: true },
     loginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Number, default: 0 },
+    bio: { type: String, default: "" },
+    followingCount: { type: Number, default: 0 },
+    followersCount: { type: Number, default: 0 },
   },
   {
     toObject: {

@@ -1,5 +1,5 @@
 import { Post } from "../../../../shared/interfaces/post.interface";
-import { useElementTitle } from "../../hooks/useElementTitle";
+import { useCustomElementHover } from "../../hooks/useCustomElementHover";
 import { utilService } from "../../services/util.service/utils.service";
 import { PostShareOptionsModal } from "../modals/post-share-options-modal";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
@@ -36,12 +36,14 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
   isModalAbove,
 }) => {
   const { name, title, isClicked, icon, count, onClickFunc } = btn;
-  const { isElementShown, handleMouseEnter, handleMouseLeave } = useElementTitle();
+  const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
+    btnActionContainer: false,
+  });
   return (
     <div
       className={`btn-action-container ${name}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => handleMouseEnter("btnActionContainer")}
+      onMouseLeave={() => handleMouseLeave("btnActionContainer")}
     >
       <button
         className={"btn-action " + (isClicked ? " clicked" : "")}
@@ -53,7 +55,7 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
           <span className="count">{count > 0 ? utilService.formatCount(count) : ""}</span>
         )}
       </button>
-      {isElementShown && (
+      {elementsHoverState?.btnActionContainer && (
         <ElementTitle
           title={title}
           customTop="35px"

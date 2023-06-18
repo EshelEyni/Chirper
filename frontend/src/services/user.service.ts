@@ -13,6 +13,12 @@ function getMiniUser(user: User): MiniUser {
     username: user.username,
     fullname: user.fullname,
     imgUrl: user.imgUrl,
+    isAdmin: user.isAdmin,
+    isVerified: user.isVerified,
+    bio: user.bio,
+    followersCount: user.followersCount,
+    followingCount: user.followingCount,
+    isFollowing: user.isFollowing,
   };
 
   return miniUser;

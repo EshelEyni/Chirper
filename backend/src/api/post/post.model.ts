@@ -200,6 +200,9 @@ function populateCreatedBy(doc: Document) {
     imgUrl: 1,
     isVerified: 1,
     isAdmin: 1,
+    bio: 1,
+    followersCount: 1,
+    followingCount: 1,
   });
 }
 

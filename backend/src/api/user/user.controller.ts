@@ -8,8 +8,21 @@ import {
 } from "../../services/error.service";
 import factory from "../../services/factory.service";
 import { UserModel } from "./user.model";
+import { User } from "../../../../shared/interfaces/user.interface";
+import { QueryString } from "../../services/util.service";
 
-const getUsers = factory.getAll(UserModel);
+const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const queryString = req.query;
+  const users = (await userService.query(queryString as QueryString)) as unknown as User[];
+
+  res.status(200).json({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    results: users.length,
+    data: users,
+  });
+});
+
 const getUserById = factory.getOne(UserModel);
 const addUser = factory.createOne(UserModel);
 const updateUser = factory.updateOne(UserModel, [
@@ -62,6 +75,40 @@ const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
   });
 });
 
+const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const toUserId = req.params.id;
+
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!toUserId) throw new AppError("No user id provided", 400);
+
+  const updatedUser = await userService.addFollowings(loggedinUserId, toUserId);
+
+  if (!updatedUser) throw new AppError("User not found", 404);
+
+  res.status(200).send({
+    status: "success",
+    data: updatedUser,
+  });
+});
+
+const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedinUserId } = req;
+  const toUserId = req.params.id;
+
+  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!toUserId) throw new AppError("No user id provided", 400);
+
+  const updatedUser = await userService.removeFollowings(loggedinUserId, toUserId);
+
+  if (!updatedUser) throw new AppError("User not found", 404);
+
+  res.status(200).send({
+    status: "success",
+    data: updatedUser,
+  });
+});
+
 export {
   getUsers,
   getUserById,
@@ -71,4 +118,6 @@ export {
   removeUser,
   updateLoggedInUser,
   removeLoggedInUser,
+  addFollowings,
+  removeFollowings,
 };

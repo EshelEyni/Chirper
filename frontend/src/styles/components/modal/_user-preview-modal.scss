@@ -1,0 +1,14 @@
+.user-preview-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  width: 600px;
+  height: 600px;
+
+  padding: rem(12px) rem(16px);
+  border-radius: 25px;
+  // TODO: Delete later
+  overflow: hidden;
+}

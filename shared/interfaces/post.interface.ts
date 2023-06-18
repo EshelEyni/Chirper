@@ -1,6 +1,7 @@
 import { Document } from "mongoose";
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
+import { MiniUser } from "./user.interface";
 
 export type PostDocument = Post & Document;
 
@@ -54,14 +55,7 @@ export interface QuotedPost extends BasicPost {
   id: string;
   createdAt: Date;
   imgs: PostImg[];
-  createdBy: {
-    id: string;
-    username: string;
-    fullname: string;
-    isAdmin?: boolean;
-    isVerified?: boolean;
-    imgUrl: string;
-  };
+  createdBy: MiniUser;
 }
 
 export interface NewPost extends BasicPost {
@@ -84,14 +78,7 @@ export interface Post extends BasicPost {
   viewsCount: number;
   imgs: PostImg[];
   quotedPost?: QuotedPost;
-  createdBy: {
-    id: string;
-    username: string;
-    fullname: string;
-    isAdmin?: boolean;
-    isVerified?: boolean;
-    imgUrl: string;
-  };
+  createdBy: MiniUser;
   repostedBy?: {
     id: string;
     username: string;

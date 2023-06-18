@@ -47,6 +47,7 @@
     }
 
     .post-time {
+      position: relative;
       font-size: rem(12px);
       &:hover {
         text-decoration: underline;

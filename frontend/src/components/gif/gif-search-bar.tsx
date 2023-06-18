@@ -32,6 +32,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
   };
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("handleChange");
     const inputValue = e.target.value;
     if (!inputValue) {
       setSearchTerm("");
@@ -61,7 +62,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
         type="text"
         placeholder="Search for GIFs"
         autoComplete="off"
-        onChange={utilService.debounce(handleChange, 1000)}
+        onChange={utilService.debounce(handleChange, 1000).debouncedFunc}
         onFocus={() => setIsSearchBarFocused(true)}
         onBlur={() => setIsSearchBarFocused(false)}
         ref={SearchBarInputRef}

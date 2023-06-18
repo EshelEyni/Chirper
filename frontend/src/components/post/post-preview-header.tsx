@@ -4,6 +4,7 @@ import { utilService } from "../../services/util.service/utils.service";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { Post, QuotedPost } from "../../../../shared/interfaces/post.interface";
 import { UserImg } from "../user/user-img";
+import { useElementTitle } from "../../hooks/useElementTitle";
 import { ElementTitle } from "../other/element-title";
 
 type PostPreviewHeaderProps = {
@@ -19,6 +20,8 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
   onNavigateToProfile,
   onNavigateToPostDetails,
 }) => {
+  const { isElementShown, handleMouseEnter, handleMouseLeave } = useElementTitle();
+
   return (
     <header className="post-preview-header">
       <div className="post-preview-header-main">
@@ -31,9 +34,15 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
         </div>
         <span>·</span>
         <div className="post-time">
-          <span onClick={onNavigateToPostDetails}>
-            {utilService.formatTime(post.createdAt)}
-            <ElementTitle title={new Date(post.createdAt).toISOString()} />
+          <span
+            onClick={onNavigateToPostDetails}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {utilService.formatDateToRelativeTime(post.createdAt)}
+            {isElementShown && (
+              <ElementTitle title={utilService.formatDateToCleanString(post.createdAt)} />
+            )}
           </span>
         </div>
       </div>

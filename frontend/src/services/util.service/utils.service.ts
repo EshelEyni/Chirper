@@ -1,7 +1,7 @@
 import { JsendResponse } from "../../../../shared/interfaces/system.interface";
 type AnyFunction = (...args: any[]) => any;
 
-function formatTime(currDate: Date): string {
+function formatDateToRelativeTime(currDate: Date): string {
   const timestamp = new Date(currDate).getTime();
   const now = Date.now();
   const difference = now - timestamp;
@@ -29,6 +29,37 @@ function formatTime(currDate: Date): string {
   }
 }
 
+function formatDateToCleanString(currDate: Date) {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const date = new Date(currDate);
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+
+  const strTime = hours + ":" + minutesStr + " " + ampm;
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${strTime} · ${month} ${day}, ${year}`;
+}
+
 function formatCount(count: number): string {
   if (count >= 10000) {
     const formattedCount = (count / 1000).toFixed(1);
@@ -47,12 +78,19 @@ function makeId(length = 12): string {
   return txt;
 }
 
-function debounce(func: AnyFunction, delay: number) {
+function debounce(
+  func: AnyFunction,
+  delay: number
+): { debouncedFunc: AnyFunction; cancel: () => void } {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: any[]) {
+  const debouncedFunc = function (this: any, ...args: any[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(this, args), delay);
   };
+  const cancel = () => {
+    clearTimeout(timeoutId);
+  };
+  return { debouncedFunc, cancel };
 }
 
 function getTimeZone(): string {
@@ -90,7 +128,7 @@ function copyToClipboard(text: string) {
 }
 
 export const utilService = {
-  formatTime,
+  formatDateToRelativeTime,
   formatCount,
   makeId,
   debounce,
@@ -98,4 +136,5 @@ export const utilService = {
   getDaysInMonth,
   handleServerResponse,
   copyToClipboard,
+  formatDateToCleanString,
 };

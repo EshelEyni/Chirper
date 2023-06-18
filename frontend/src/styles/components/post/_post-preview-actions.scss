@@ -33,6 +33,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
+      position: relative;
 
       .icon-container {
         display: flex;
@@ -65,21 +66,54 @@
         }
       }
 
-      span {
+      .count {
         color: var(--color-text-gray);
         font-size: rem(12px);
         font-weight: 400;
         font-family: var(--font-primary);
         margin: 0 rem(12px);
       }
+    }
 
-      &.reply,
-      &.view,
-      &.share {
+    &.reply,
+    &.rechirp {
+      .element-title-container {
+        left: 0;
+        transform: translateX(-15%);
+      }
+    }
+
+    &.like {
+      .element-title-container {
+        left: 0;
+        transform: translateX(5%);
+      }
+    }
+
+    &.view {
+      .element-title-container {
+        left: 0;
+        transform: translateX(-5%);
+      }
+    }
+
+    &.share {
+      .element-title-container {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    &.reply,
+    &.view,
+    &.share {
+      .btn-action {
         @include hover-effect(var(--color-info));
       }
+    }
 
-      &.rechirp {
+    &.rechirp {
+      .btn-action {
         @include hover-effect(var(--color-success));
 
         &.clicked {
@@ -95,8 +129,10 @@
           }
         }
       }
+    }
 
-      &.like {
+    &.like {
+      .btn-action {
         @include hover-effect(var(--color-like));
 
         &.clicked {

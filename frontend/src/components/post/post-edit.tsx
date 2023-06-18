@@ -192,6 +192,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const detectURL = useRef(
     utilService.debounce(async (currPost: NewPost, text: string, isVideoRemoved: boolean) => {
+      console.log("detectURL");
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = text.match(urlRegex);
       let youtubeURL = "";
@@ -216,7 +217,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         const newPost = { ...currPost, text, video: null };
         dispatch(updateCurrNewPost(newPost, newPostType));
       }
-    }, 500)
+    }, 500).debouncedFunc
   );
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

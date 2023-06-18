@@ -3,7 +3,6 @@ import { AiOutlineRetweet } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { utilService } from "../../services/util.service/utils.service";
 import { FaRegComment } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
@@ -12,18 +11,18 @@ import { setNewPostType, setNewPosts } from "../../store/actions/new-post.action
 import { RootState } from "../../store/store";
 import { addLike, removeLike, removeRepost, repostPost } from "../../store/actions/post.actions";
 import { useState } from "react";
-import { RepostOptionsModal } from "../modals/repost-options-modal";
-import { PostShareOptionsModal } from "../modals/post-share-options-modal";
 import { useModalPosition } from "../../hooks/useModalPosition";
+import { PostPreviewActionBtn } from "./post-preview-action-btn";
 
 interface PostPreviewActionsProps {
   post: Post;
 }
 
-type Btn = {
+export type PostPreviewActionBtn = {
   name: string;
+  title: string;
   icon: JSX.Element;
-  count: number;
+  count?: number;
   onClickFunc: () => void;
   isClicked?: boolean;
 };
@@ -47,9 +46,10 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   });
 
   const iconClassName = "icon";
-  const btns: Btn[] = [
+  const btns: PostPreviewActionBtn[] = [
     {
       name: "reply",
+      title: "Reply",
       icon: <FaRegComment className={iconClassName} />,
       count: post.repliesCount,
       onClickFunc: async () => {
@@ -61,6 +61,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "rechirp",
+      title: isReposted ? "Undo Rechirp" : "Rechirp",
       icon: <AiOutlineRetweet className={iconClassName} />,
       count: post.repostsCount,
       isClicked: isReposted,
@@ -70,6 +71,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "like",
+      title: isLiked ? "Unlike" : "Like",
       icon: isLiked ? (
         <FaHeart className={iconClassName} />
       ) : (
@@ -87,6 +89,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "view",
+      title: "View",
       icon: <RiBarChartGroupedFill className={iconClassName} />,
       count: post.viewsCount,
       onClickFunc: () => {
@@ -95,8 +98,8 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
     {
       name: "share",
+      title: "Share",
       icon: <FiUpload className={iconClassName} />,
-      count: 0,
       onClickFunc: () => {
         updateModalPosition();
         setIsShareModalOpen(prev => !prev);
@@ -127,38 +130,22 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   return (
     <div className="post-preview-action-btns">
       {btns.map((btn, idx) => {
-        const { name, icon, count, onClickFunc } = btn;
         return (
-          <div className="btn-action-container" key={idx}>
-            <button
-              className={"btn-action " + name + (btn.isClicked ? " clicked" : "")}
-              onClick={onClickFunc}
-              ref={name === "share" ? btnRef : undefined}
-            >
-              <div className="icon-container">{icon}</div>
-              {name != "share" && (
-                <span className="count">{count > 0 ? utilService.formatCount(count) : ""}</span>
-              )}
-            </button>
-
-            {name === "rechirp" && isRepostModalOpen && (
-              <RepostOptionsModal
-                onToggleModal={() => setIsRepostModalOpen(prev => !prev)}
-                onRepost={onRepost}
-                onRemoveRepost={onRemoveRepost}
-                onQuotePost={onQuotePost}
-                isReposted={isReposted}
-              />
-            )}
-
-            {name === "share" && isShareModalOpen && (
-              <PostShareOptionsModal
-                post={post}
-                onToggleModal={() => setIsShareModalOpen(prev => !prev)}
-                isModalAbove={isModalAbove}
-              />
-            )}
-          </div>
+          <PostPreviewActionBtn
+            btn={btn}
+            btnRef={btnRef}
+            key={idx}
+            isRepostModalOpen={isRepostModalOpen}
+            setIsRepostModalOpen={setIsRepostModalOpen}
+            isShareModalOpen={isShareModalOpen}
+            setIsShareModalOpen={setIsShareModalOpen}
+            onRepost={onRepost}
+            onRemoveRepost={onRemoveRepost}
+            onQuotePost={onQuotePost}
+            isReposted={isReposted}
+            isModalAbove={isModalAbove}
+            post={post}
+          />
         );
       })}
     </div>

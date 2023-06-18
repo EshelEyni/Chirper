@@ -72,7 +72,7 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
         className="location-search-bar-input"
         type="text"
         placeholder="Search locations"
-        onChange={utilService.debounce(handleChange, 1000)}
+        onChange={utilService.debounce(handleChange, 1000).debouncedFunc}
         onFocus={() => setIsSearchBarFocused(true)}
         onBlur={() => setIsSearchBarFocused(false)}
         ref={SearchBarInputRef}

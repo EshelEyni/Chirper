@@ -5,6 +5,9 @@ import { APIFeatures, QueryString, filterObj } from "../../services/util.service
 import { Document, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls.middleware";
+import { PostStatsModel } from "../post/post-stats.model";
+import postService from "../post/post.service";
+import { Post } from "../../../../shared/interfaces/post.interface";
 
 async function query(queryString: QueryString): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), queryString)
@@ -75,7 +78,11 @@ async function populateIsFollowing(user: User): Promise<User> {
   return user;
 }
 
-async function addFollowings(fromUserId: string, toUserId: string): Promise<FollowingResult> {
+async function addFollowings(
+  fromUserId: string,
+  toUserId: string,
+  postId?: string
+): Promise<FollowingResult | Post> {
   const session = await startSession();
   session.startTransaction();
   try {
@@ -95,7 +102,22 @@ async function addFollowings(fromUserId: string, toUserId: string): Promise<Foll
       { session, new: true }
     );
     if (!updatedFollowingDoc) throw new Error("User not found");
+
+    if (postId) {
+      await PostStatsModel.findOneAndUpdate(
+        { postId, userId: fromUserId },
+        { isFollowedFromPost: true },
+        { session }
+      );
+    }
+
     await session.commitTransaction();
+    if (postId) {
+      const updatedPost = await postService.getById(postId);
+      if (!updatedPost) throw new Error("Post not found");
+      return updatedPost;
+    }
+
     const updatedFollower = updatedFollowerDoc.toObject() as User;
     updatedFollower.isFollowing = false;
 
@@ -112,7 +134,11 @@ async function addFollowings(fromUserId: string, toUserId: string): Promise<Foll
   }
 }
 
-async function removeFollowings(fromUserId: string, toUserId: string): Promise<FollowingResult> {
+async function removeFollowings(
+  fromUserId: string,
+  toUserId: string,
+  postId?: string
+): Promise<FollowingResult | Post> {
   const session = await startSession();
   session.startTransaction();
   try {
@@ -132,7 +158,21 @@ async function removeFollowings(fromUserId: string, toUserId: string): Promise<F
       { session, new: true }
     );
     if (!updatedFollowingDoc) throw new Error("User not found");
+
+    if (postId) {
+      await PostStatsModel.findOneAndUpdate(
+        { postId, userId: fromUserId },
+        { isFollowedFromPost: false },
+        { session }
+      );
+    }
     await session.commitTransaction();
+
+    if (postId) {
+      const updatedPost = await postService.getById(postId);
+      if (!updatedPost) throw new Error("Post not found");
+      return updatedPost;
+    }
 
     const updatedFollower = updatedFollowerDoc.toObject() as User;
     updatedFollower.isFollowing = false;

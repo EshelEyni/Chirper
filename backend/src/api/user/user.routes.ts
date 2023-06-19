@@ -10,6 +10,8 @@ import {
   removeLoggedInUser,
   addFollowings,
   removeFollowings,
+  addFollowingsFromPost,
+  removeFollowingsFromPost,
 } from "./user.controller";
 import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware";
 
@@ -22,6 +24,8 @@ router.get("/username/:username", getUserByUsername);
 router.use(requireAuth);
 router.post("/:id/following", addFollowings);
 router.delete("/:id/following", removeFollowings);
+router.post("/:userId/following/:postId/fromPost", addFollowingsFromPost);
+router.delete("/:userId/following/:postId/fromPost", removeFollowingsFromPost);
 router.patch("/loggedinUser", updateLoggedInUser);
 router.delete("/loggedinUser", removeLoggedInUser);
 

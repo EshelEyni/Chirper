@@ -60,7 +60,7 @@ function formatDateToCleanString(currDate: Date) {
   return `${strTime} · ${month} ${day}, ${year}`;
 }
 
-function formatCount(count: number): string {
+function formatNumToK(count: number): string {
   if (count >= 10000) {
     const formattedCount = (count / 1000).toFixed(1);
     return `${formattedCount}k`;
@@ -129,7 +129,7 @@ function copyToClipboard(text: string) {
 
 export const utilService = {
   formatDateToRelativeTime,
-  formatCount,
+  formatNumToK,
   makeId,
   debounce,
   getTimeZone,

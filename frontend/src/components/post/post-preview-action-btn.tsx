@@ -52,7 +52,7 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
       >
         <div className="icon-container">{icon}</div>
         {count !== undefined && (
-          <span className="count">{count > 0 ? utilService.formatCount(count) : ""}</span>
+          <span className="count">{count > 0 ? utilService.formatNumToK(count) : ""}</span>
         )}
       </button>
       {elementsHoverState?.btnActionContainer && (

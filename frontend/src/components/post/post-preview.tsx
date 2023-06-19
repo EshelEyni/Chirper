@@ -6,7 +6,7 @@ import { GifDisplay } from "../gif/gif-display";
 import { userService } from "../../services/user.service";
 import { PollDisplay } from "../poll/poll-display";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { VideoPlayer } from "../video/video-player";
 import { PostRepliedToUsersList } from "./post-replied-to-users-list";
@@ -19,6 +19,8 @@ import { PostPreviewHeader } from "./post-preview-header";
 import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
 import { useCustomElementHover } from "../../hooks/useCustomElementHover";
 import { UserPreviewModal } from "../modals/user-preview-modal";
+import { AppDispatch } from "../../store/types";
+import { addFollowFromPost, removeFollowFromPost } from "../../store/actions/post.actions";
 
 interface PostPreviewProps {
   post: Post;
@@ -26,6 +28,7 @@ interface PostPreviewProps {
 
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const isLoggedinUserPost = loggedinUser?.id === post.createdBy.id;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
@@ -35,14 +38,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     userImg: false,
   });
 
-  const {
-    isViewed,
-    isDetailedViewed,
-    isFollowedFromPost,
-    isHashTagClicked,
-    isProfileViewed,
-    isLinkClicked,
-  } = post.loggedinUserActionState;
+  const { isViewed, isDetailedViewed, isHashTagClicked, isProfileViewed, isLinkClicked } =
+    post.loggedinUserActionState;
   const { ref, inView } = useInView({
     threshold: 0,
     triggerOnce: true,
@@ -90,10 +87,12 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     }
   };
 
-  const handleToggleFollow = async () => {
-    if (!isFollowedFromPost)
-      await postService.updatePostStats(post.id, { isFollowedFromPost: true });
-    console.log("onToggleFollow");
+  const handleToggleFollow = () => {
+    if (post.createdBy.isFollowing) {
+      dispatch(removeFollowFromPost(post.createdBy.id, post.id));
+    } else {
+      dispatch(addFollowFromPost(post.createdBy.id, post.id));
+    }
   };
 
   return (
@@ -124,7 +123,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
           />
           {elementsHoverState.userImg && (
-            <UserPreviewModal user={post.createdBy} onToggleFollow={handleToggleFollow} />
+            <UserPreviewModal
+              user={post.createdBy}
+              onToggleFollow={handleToggleFollow}
+              onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+            />
           )}
         </div>
         <div className="post-preview-main-container">

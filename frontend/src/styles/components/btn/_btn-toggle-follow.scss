@@ -1,0 +1,23 @@
+.btn-toggle-follow {
+  padding: rem(8px) rem(16px);
+  border-radius: 25px;
+  font-size: rem(15px);
+  font-weight: 700;
+  background-color: black;
+  color: white;
+
+  &.btn-toggle-follow-hover {
+    opacity: 0.8;
+  }
+
+  &.btn-toggle-follow-following {
+    background-color: white;
+    color: black;
+    border: 1px solid var(--color-border);
+    &.btn-toggle-follow-hover {
+      color: var(--color-danger);
+      background-color: var(--color-danger-light);
+      border: 1px solid var(--color-danger-light);
+    }
+  }
+}

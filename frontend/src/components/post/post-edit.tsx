@@ -192,7 +192,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   const detectURL = useRef(
     utilService.debounce(async (currPost: NewPost, text: string, isVideoRemoved: boolean) => {
-      console.log("detectURL");
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = text.match(urlRegex);
       let youtubeURL = "";
@@ -300,8 +299,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      // const newPost = { ...currNewPost, text: inputTextValue };
-      // await dispatch(updateCurrNewPost(newPost, newPostType));
+      const newPost = { ...currNewPost, text: inputTextValue };
+      await dispatch(updateCurrNewPost(newPost, newPostType));
       setIsPickerShown(false);
       await dispatch(addNewPostToThread(newPostType));
       navigate("/compose");

@@ -239,7 +239,7 @@ function formatPostText(text: string): string {
   return formmatedText;
 }
 
-const getAddPostMsg = ({ postId, date }: { postId?: string; date?: Date }): UserMsg => {
+const getPostAddedMsg = ({ postId, date }: { postId?: string; date?: Date }): UserMsg => {
   let text = "";
 
   if (date) {
@@ -255,7 +255,7 @@ const getAddPostMsg = ({ postId, date }: { postId?: string; date?: Date }): User
   }
 
   return {
-    type: "success",
+    type: "info",
     text,
     link: `/post/${postId}`,
   };
@@ -281,5 +281,5 @@ export const postService = {
   getBookmarkedPosts,
   addBookmark,
   removeBookmark,
-  getAddPostMsg,
+  getPostAddedMsg,
 };

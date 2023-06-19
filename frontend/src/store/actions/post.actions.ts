@@ -5,6 +5,7 @@ import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { setUserMsg } from "./system.actions";
 import { PostRepostResult } from "../../../../shared/interfaces/post.interface";
+import { userService } from "../../services/user.service";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
@@ -12,6 +13,12 @@ export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, Any
       const posts = await postService.query();
       dispatch({ type: "SET_POSTS", posts });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Cannot load posts, please try again later",
+        })
+      );
       console.log("PostActions: err in getPosts", err);
     }
   };
@@ -25,6 +32,12 @@ export function getPost(
       const post = await postService.getById(postId);
       dispatch({ type: "SET_POST", post });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Cannot load post, please try again later",
+        })
+      );
       console.log("PostActions: err in getPost", err);
     }
   };
@@ -54,6 +67,12 @@ export function removePost(
         })
       );
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in removePost", err);
     }
   };
@@ -67,7 +86,7 @@ export function addPost(
       const addedPost = await postService.add(posts);
       dispatch({ type: "ADD_POST", post: addedPost });
 
-      const msg = postService.getAddPostMsg({
+      const msg = postService.getPostAddedMsg({
         postId: addedPost.id,
         date: addedPost.schedule,
       });
@@ -92,6 +111,12 @@ export function updatePost(
       const updatedPost = await postService.update(post);
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in updatePost", err);
     }
   };
@@ -112,6 +137,12 @@ export function addReply(
         })
       );
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in addReply", err);
     }
   };
@@ -125,6 +156,12 @@ export function repostPost(
       const { updatedPost, repost } = await postService.addRepost(post);
       dispatch({ type: "ADD_REPOST", post: updatedPost, repost });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in repostPost", err);
     }
   };
@@ -153,6 +190,12 @@ export function addQuotePost(
         );
       }
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in quotePost", err);
     }
   };
@@ -167,6 +210,12 @@ export function removeRepost(
       const updatedPost = await postService.removeRepost(postId);
       dispatch({ type: "REMOVE_REPOST", post: updatedPost, loggedinUserId });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in removeRepost", err);
     }
   };
@@ -180,6 +229,12 @@ export function addLike(
       const updatedPost = await postService.addLike(postId);
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in likePost", err);
     }
   };
@@ -193,6 +248,12 @@ export function removeLike(
       const updatedPost = await postService.removeLike(postId);
       dispatch({ type: "UPDATE_POST", updatedPost });
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in removeLike", err);
     }
   };
@@ -213,6 +274,12 @@ export function addBookmark(
         })
       );
     } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
       console.log("PostActions: err in likePost", err);
     }
   };
@@ -233,7 +300,53 @@ export function removeBookmark(
         })
       );
     } catch (err) {
-      console.log("PostActions: err in removeLike", err);
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
+      console.log("PostActions: err in removeBookmark", err);
+    }
+  };
+}
+
+export function addFollowFromPost(
+  userId: string,
+  postId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await userService.followUser(userId, postId);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
+      console.log("PostActions: err in addFollowFromPost", err);
+    }
+  };
+}
+
+export function removeFollowFromPost(
+  userId: string,
+  postId: string
+): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      const updatedPost = await userService.unFollowUser(userId, postId);
+      dispatch({ type: "UPDATE_POST", updatedPost });
+    } catch (err) {
+      dispatch(
+        setUserMsg({
+          type: "error",
+          text: "Something went wrong, but don’t fret — let’s give it another shot.",
+        })
+      );
+      console.log("PostActions: err in removeFollowFromPost", err);
     }
   };
 }

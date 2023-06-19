@@ -57,6 +57,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
             {post.createdBy.fullname}
           </span>
           <span
+            className="post-preview-header-username"
             onMouseEnter={() => handleMouseEnterInUserInfo()}
             onMouseLeave={handleMouseLeaveInUserInfo}
           >

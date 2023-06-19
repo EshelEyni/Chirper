@@ -1,6 +1,6 @@
 import { GoGraph, GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
-import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../shared/interfaces/user.interface";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { GiFeather } from "react-icons/gi";
 import { FaAt } from "react-icons/fa";
 
 interface SideBarOptionsModalProps {
-  loggedinUser: MiniUser;
+  loggedinUser: User;
   toggleModal: () => void;
 }
 

@@ -12,7 +12,7 @@ export const useCustomElementHover = (initialElementsState: ElementsHoverState) 
     utilService.debounce((elementName: string) => {
       setElementsHoverState(prevState => ({
         ...prevState,
-        [elementName]: true,
+        [elementName]: !prevState[elementName],
       }));
     }, 500)
   );
@@ -29,6 +29,7 @@ export const useCustomElementHover = (initialElementsState: ElementsHoverState) 
 
   const handleMouseLeave = (elementName: string) => {
     debounced.current.cancel();
+    // if (!elementsHoverState[elementName]) return;
     setElementsHoverState(prevState => ({
       ...prevState,
       [elementName]: false,

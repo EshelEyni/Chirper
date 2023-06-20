@@ -14,7 +14,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   gif: { url, staticUrl, description },
   isAutoPlay = true,
 }) => {
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 364,
   });
   const [isPlaying, setIsPlaying] = useState<boolean>(isAutoPlay);
@@ -51,7 +51,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
         <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />
         <span className="gif-title">GIF</span>
         <div className="description-container">
-          <button className="btn-open-description" onClick={onToggleDescription} ref={btnRef}>
+          <button className="btn-open-description" onClick={onToggleDescription} ref={elementRef}>
             ALT
           </button>
           {isDescriptionShown && (

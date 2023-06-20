@@ -18,7 +18,7 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
   setIsPlaybackRaterPickerModalShown,
   isFullScreen,
 }) => {
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 200,
   });
 
@@ -43,7 +43,7 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
       <button
         className="btn-toggle-video-setting"
         onClick={onTogglePlaybackRatePickerModal}
-        ref={btnRef}
+        ref={elementRef}
       >
         <IoSettingsOutline size={20} color="white" />
       </button>

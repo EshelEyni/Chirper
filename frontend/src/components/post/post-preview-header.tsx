@@ -30,11 +30,15 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
     userInfo: false,
   });
 
-  const handleMouseEnterInUserInfo = () => {
+  const handleMouseEnterInUserInfo = (e: React.MouseEvent) => {
+    const { left, width, top } = e.currentTarget.getBoundingClientRect();
+    const modalWidth = 280;
+
     setUserPreviewModalPosition({
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
+      position: "fixed",
+      top: `${top + 30}px`,
+      left: `${left + width / 2 - modalWidth / 2}px`,
+      transform: "none",
     });
     handleMouseEnter("userInfo");
   };
@@ -47,29 +51,35 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
   return (
     <header className="post-preview-header">
       <div className="post-preview-header-main">
-        <div className="post-preview-header-user-info" onClick={onNavigateToProfile}>
+        <div
+          className="post-preview-header-user-info"
+          onClick={onNavigateToProfile}
+          onMouseEnter={handleMouseEnterInUserInfo}
+        >
           {isMiniPreview && <UserImg imgUrl={post.createdBy.imgUrl} />}
-          <span
-            className="post-preview-header-full-name"
-            onMouseEnter={() => handleMouseEnterInUserInfo()}
+          <div
+            className="post-preview-header-details-container"
             onMouseLeave={handleMouseLeaveInUserInfo}
           >
-            {post.createdBy.fullname}
-          </span>
+            <span className="post-preview-header-full-name">{post.createdBy.fullname}</span>
+            {post.createdBy.isVerified && (
+              <BlueCheckMark className="post-preview-blue-check-mark" />
+            )}
+            {post.createdBy.isAdmin && <Logo />}
+          </div>
           <span
             className="post-preview-header-username"
-            onMouseEnter={() => handleMouseEnterInUserInfo()}
+            // onMouseEnter={handleMouseEnterInUserInfo}
             onMouseLeave={handleMouseLeaveInUserInfo}
           >
             @{post.createdBy.username}
           </span>
-          {post.createdBy.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
-          {post.createdBy.isAdmin && <Logo />}
           {elementsHoverState?.userInfo && onToggleFollow && (
             <UserPreviewModal
               user={post.createdBy}
               userPreviewModalPosition={userPreviewModalPosition}
               onToggleFollow={onToggleFollow}
+              handleMouseLeave={handleMouseLeaveInUserInfo}
             />
           )}
         </div>

@@ -41,7 +41,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
 
-  const { btnRef, isModalAbove, updateModalPosition } = useModalPosition({
+  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 175,
   });
 
@@ -134,7 +134,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
           <PostPreviewActionBtn
             key={idx}
             btn={btn}
-            btnRef={btnRef}
+            btnRef={elementRef}
             post={post}
             isRepostModalOpen={isRepostModalOpen}
             setIsRepostModalOpen={setIsRepostModalOpen}

@@ -3,10 +3,11 @@
   flex-direction: column;
   gap: rem(5px);
   position: absolute;
-  top: 50%;
+  top: rem(55px);
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%);
   width: rem(280px);
+  height: max-content;
   background-color: white;
   padding: rem(12px) rem(16px);
   border-radius: 25px;
@@ -31,6 +32,7 @@
       span {
         font-size: rem(15px);
         font-weight: 600;
+        color: black;
 
         &:hover {
           text-decoration: underline;
@@ -66,6 +68,7 @@
     .post-preview-modal-user-info-bio {
       font-size: rem(15px);
       margin: rem(10px) 0;
+      color: black;
     }
   }
 
@@ -79,6 +82,7 @@
       .post-preview-modal-user-info-following-stats-item-count {
         font-weight: 600;
         margin-inline-end: rem(5px);
+        color: black;
       }
 
       .post-preview-modal-user-info-following-stats-item-title {

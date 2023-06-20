@@ -21,6 +21,7 @@ import { useCustomElementHover } from "../../hooks/useCustomElementHover";
 import { UserPreviewModal } from "../modals/user-preview-modal";
 import { AppDispatch } from "../../store/types";
 import { addFollowFromPost, removeFollowFromPost } from "../../store/actions/post.actions";
+import { useModalPosition } from "../../hooks/useModalPosition";
 
 interface PostPreviewProps {
   post: Post;
@@ -34,6 +35,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
+  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLDivElement>({
+    modalHeight: 300,
+  });
   const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
     userImg: false,
   });
@@ -87,12 +91,29 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     }
   };
 
+  const onHandleMouseEnter = () => {
+    updateModalPosition();
+    handleMouseEnter("userImg");
+  };
+
   const handleToggleFollow = () => {
     if (post.createdBy.isFollowing) {
       dispatch(removeFollowFromPost(post.createdBy.id, post.id));
     } else {
       dispatch(addFollowFromPost(post.createdBy.id, post.id));
     }
+  };
+
+  const getModalPosition = () => {
+    return isModalAbove
+      ? {
+          top: "unset",
+          bottom: "55px",
+        }
+      : {
+          bottom: "unset",
+          top: "55px",
+        };
   };
 
   return (
@@ -114,19 +135,26 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
       )}
       <div className={"post-preview-content-wrapper" + (post.repostedBy ? " with-repost" : "")}>
         <div
-          className="post-preview-content-wrapper-user-img-container"
-          onMouseEnter={() => handleMouseEnter("userImg")}
+          className={
+            "post-preview-content-wrapper-user-img-container" +
+            (isModalAbove ? " modal-above" : " modal-below")
+          }
+          onMouseEnter={() => onHandleMouseEnter()}
           onMouseLeave={() => handleMouseLeave("userImg")}
+          ref={elementRef}
         >
           <UserImg
             imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
           />
+
           {elementsHoverState.userImg && (
             <UserPreviewModal
               user={post.createdBy}
               onToggleFollow={handleToggleFollow}
               onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+              handleMouseLeave={() => handleMouseLeave("userImg")}
+              userPreviewModalPosition={getModalPosition()}
             />
           )}
         </div>

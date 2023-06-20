@@ -8,11 +8,17 @@ import { Logo } from "../other/logo";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { utilService } from "../../services/util.service/utils.service";
 
+export type userPreviewModalPosition = {
+  left?: number;
+  top?: number;
+};
+
 type UserPreviewModalProps = {
   user: MiniUser;
   userPreviewModalPosition?: any;
   onToggleFollow: () => void;
   onNavigateToProfile?: () => void;
+  handleMouseLeave: () => void;
 };
 
 export const UserPreviewModal: FC<UserPreviewModalProps> = ({
@@ -20,6 +26,7 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
   userPreviewModalPosition,
   onToggleFollow,
   onNavigateToProfile,
+  handleMouseLeave,
 }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
@@ -29,7 +36,11 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
   ];
 
   return (
-    <section className="user-preview-modal" style={userPreviewModalPosition}>
+    <section
+      className="user-preview-modal"
+      style={userPreviewModalPosition}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="user-preview-modal-header">
         <UserImg imgUrl={user.imgUrl} onNavigateToProfile={onNavigateToProfile} />
         {loggedinUser?.id !== user.id && (

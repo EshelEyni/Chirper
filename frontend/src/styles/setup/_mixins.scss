@@ -114,3 +114,37 @@
     }
   }
 }
+
+@mixin modal-hover-guard {
+  &.modal-above {
+    &:hover {
+      &::before {
+        content: "";
+        position: absolute;
+        top: rem(-20px);
+        left: 50%;
+        transform: translate(-50%);
+        width: 100%;
+        height: rem(20px);
+        // opacity: 0;
+        background-color: yellow;
+      }
+    }
+  }
+  
+  &.modal-below {
+    &:hover {
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: rem(-20px);
+        left: 50%;
+        transform: translate(-50%);
+        width: 100%;
+        height: rem(20px);
+        // opacity: 0;
+        background-color: yellow;
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { PostPreviewHeader } from "./post-preview-header";
 import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
 import { useCustomElementHover } from "../../hooks/useCustomElementHover";
-import { UserPreviewModal } from "../modals/user-preview-modal";
+import { UserPreviewModal, UserPreviewModalPosition } from "../modals/user-preview-modal";
 import { AppDispatch } from "../../store/types";
 import { addFollowFromPost, removeFollowFromPost } from "../../store/actions/post.actions";
 import { useModalPosition } from "../../hooks/useModalPosition";
@@ -66,9 +66,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     navigate(`/post/${post.id}`);
   };
 
-  const onNavigateToProfile = async (userId: string) => {
+  const onNavigateToProfile = async (username: string) => {
     if (!isProfileViewed) await postService.updatePostStats(post.id, { isProfileViewed: true });
-    navigate(`/profile/${userId}`);
+    navigate(`/profile/${username}`);
   };
 
   const handleLinkClick = async (e: React.MouseEvent) => {
@@ -104,7 +104,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     }
   };
 
-  const getModalPosition = () => {
+  const getModalPosition = (): UserPreviewModalPosition => {
     return isModalAbove
       ? {
           top: "unset",
@@ -125,7 +125,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           </div>
           <span
             className="post-preview-repost-user"
-            onClick={() => onNavigateToProfile(post.repostedBy!.id)}
+            onClick={() => onNavigateToProfile(post.repostedBy!.username)}
           >
             {`${
               post.repostedBy.id === loggedinUser?.id ? "You" : post.repostedBy.fullname
@@ -145,14 +145,14 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         >
           <UserImg
             imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
-            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
           />
 
           {elementsHoverState.userImg && (
             <UserPreviewModal
               user={post.createdBy}
               onToggleFollow={handleToggleFollow}
-              onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+              onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
               handleMouseLeave={() => handleMouseLeave("userImg")}
               userPreviewModalPosition={getModalPosition()}
             />
@@ -161,7 +161,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
         <div className="post-preview-main-container">
           <PostPreviewHeader
             post={post}
-            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.id)}
+            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
             onNavigateToPostDetails={onNavigateToPostDetails}
             onToggleFollow={handleToggleFollow}
           />

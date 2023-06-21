@@ -17,38 +17,7 @@
       width: rem(50px);
       height: rem(50px);
 
-      &.modal-above {
-        .user-img-container {
-          &:hover {
-            &::before {
-              content: "";
-              position: absolute;
-              top: rem(-20px);
-              left: 50%;
-              transform: translate(-50%);
-              width: 100%;
-              height: rem(20px);
-              opacity: 0;
-            }
-          }
-
-        }
-      }
-
-      &.modal-below {
-        &:hover {
-          &::after {
-            content: "";
-            position: absolute;
-            bottom: rem(-20px);
-            left: 50%;
-            transform: translate(-50%);
-            width: rem(50px);
-            height: rem(20px);
-            opacity: 0;
-          }
-        }
-      }
+      @include modal-hover-guard;
     }
     .post-preview-main-container {
       flex: 1;

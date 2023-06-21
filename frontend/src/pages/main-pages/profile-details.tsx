@@ -12,20 +12,22 @@ export const ProfileDetails = () => {
 
   useEffect(() => {
     getUser();
-    // document.title = `${loggedinUser?.fullname} (${loggedinUser?.username}) / Chirper`;
   }, []);
 
+  useEffect(() => {
+    document.title = `${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`;
+  }, [wachedUser]);
+
   const getUser = async () => {
-    const { id } = params;
-    if (!id) return;
-    if (loggedinUser?.id === id) {
+    const { username } = params;
+    if (!username) return;
+    if (loggedinUser?.username === username) {
       setWachedUser(loggedinUser);
       return;
     } else {
-      const user = await userService.getById(id);
+      const user = await userService.getByUsername(username);
       setWachedUser(user);
     }
-    document.title = `${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`;
   };
 
   return (

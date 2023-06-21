@@ -48,6 +48,16 @@ async function getById(userId: string): Promise<User> {
   }
 }
 
+async function getByUsername(username: string): Promise<User> {
+  try {
+    const respose = await httpService.get(`user/username/${username}`);
+    return utilService.handleServerResponse<User>(respose);
+  } catch (err) {
+    console.log("User service: err in getByUsername", err);
+    throw err;
+  }
+}
+
 async function followUser(userId: string, postId?: string): Promise<FollowingResult> {
   try {
     const endpoint = _getFollowingEndpoint(userId, postId);
@@ -77,6 +87,7 @@ function _getFollowingEndpoint(userId: string, postId?: string): string {
 export const userService = {
   query,
   getById,
+  getByUsername,
   getLoggedinUser,
   getMiniUser,
   getDefaultUserImgUrl,

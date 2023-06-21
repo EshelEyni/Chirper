@@ -52,7 +52,7 @@ const routes: Route[] = [
     component: NotificationsPage,
   },
   {
-    path: "profile/:id?",
+    path: "profile/:username?",
     component: ProfileDetails,
   },
   {

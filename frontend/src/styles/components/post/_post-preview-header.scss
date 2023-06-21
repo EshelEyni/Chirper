@@ -16,11 +16,14 @@
       gap: rem(5px);
       position: relative;
       font-size: rem(15px);
+      
 
       .post-preview-header-details-container {
+        position: relative;
         display: flex;
         align-items: center;
         gap: rem(3px);
+        @include modal-hover-guard;
 
         .post-preview-header-full-name {
           color: black;
@@ -52,7 +55,9 @@
       }
 
       .post-preview-header-username {
+        position: relative;
         font-size: rem(13px);
+        @include modal-hover-guard;
       }
     }
 

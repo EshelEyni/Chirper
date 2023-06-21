@@ -7,10 +7,12 @@ import { RootState } from "../../store/store";
 import { Logo } from "../other/logo";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { utilService } from "../../services/util.service/utils.service";
+import { Link } from "react-router-dom";
 
-export type userPreviewModalPosition = {
-  left?: number;
-  top?: number;
+export type UserPreviewModalPosition = {
+  top?: string;
+  bottom?: string;
+  left?: string;
 };
 
 type UserPreviewModalProps = {
@@ -31,8 +33,8 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const followingStats = [
-    { title: "Followers", count: user.followersCount },
-    { title: "Following", count: user.followingCount },
+    { title: "Followers", count: user.followersCount, link: `/profile/${user.username}/followers` },
+    { title: "Following", count: user.followingCount, link: `/profile/${user.username}/following` },
   ];
 
   return (
@@ -62,21 +64,14 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
 
       <div className="post-preview-modal-user-info-following-stats">
         {followingStats.map((stat, idx) => (
-          <div key={idx}>
-            <p className="post-preview-modal-user-info-following-stats-text">
-              <span className="post-preview-modal-user-info-following-stats-item-count ">
-                {utilService.formatNumToK(stat.count)}
-              </span>
-              <span className="post-preview-modal-user-info-following-stats-item-title">
-                {stat.title}
-              </span>
-            </p>
+          <div className="post-preview-modal-user-info-following-stats-item" key={idx}>
+            <Link to={stat.link}>{`${utilService.formatNumToK(stat.count)} ${stat.title}`}</Link>
           </div>
         ))}
       </div>
 
       <div style={{ backgroundColor: "yellow" }}>
-        {" TODO: add user's that loggedinUser follows that also follow this user"}
+        {" TODO: followers_you_follow link, and following/followers link"}
       </div>
     </section>
   );

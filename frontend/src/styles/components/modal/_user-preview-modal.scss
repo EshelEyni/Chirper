@@ -76,21 +76,18 @@
     display: flex;
     gap: rem(20px);
 
-    .post-preview-modal-user-info-following-stats-text {
+    .post-preview-modal-user-info-following-stats-item {
       font-size: rem(15px);
-
-      .post-preview-modal-user-info-following-stats-item-count {
+      color: var(--color-text-gray);
+      cursor: pointer;
+      
+      &::first-letter {
         font-weight: 600;
-        margin-inline-end: rem(5px);
         color: black;
       }
 
-      .post-preview-modal-user-info-following-stats-item-title {
-        color: var(--color-text-gray);
-      }
-
       &:hover {
-        text-decoration: underline;
+        text-decoration: underline black;
       }
     }
   }

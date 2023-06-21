@@ -6,7 +6,7 @@ import { Post, QuotedPost } from "../../../../shared/interfaces/post.interface";
 import { UserImg } from "../user/user-img";
 import { useCustomElementHover } from "../../hooks/useCustomElementHover";
 import { ElementTitle } from "../other/element-title";
-import { UserPreviewModal } from "../modals/user-preview-modal";
+import { UserPreviewModal, UserPreviewModalPosition } from "../modals/user-preview-modal";
 import { useState } from "react";
 
 type PostPreviewHeaderProps = {
@@ -24,41 +24,43 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
   onNavigateToPostDetails,
   onToggleFollow,
 }) => {
-  const [userPreviewModalPosition, setUserPreviewModalPosition] = useState({} as any);
+  const [userPreviewModalPosition, setUserPreviewModalPosition] =
+    useState<UserPreviewModalPosition>({});
+
   const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
     postTime: false,
     userInfo: false,
   });
 
   const handleMouseEnterInUserInfo = (e: React.MouseEvent) => {
-    const { left, width, top } = e.currentTarget.getBoundingClientRect();
-    const modalWidth = 280;
-
+    const container = e.currentTarget.closest(".post-preview-header-user-info");
+    const containerRect = container?.getBoundingClientRect();
+    const targetRect = e.currentTarget.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const isModalPositionUp = windowHeight - targetRect.top < 300;
+    e.currentTarget.classList.add(isModalPositionUp ? "modal-above" : "modal-below");
+    const leftPosition = targetRect.left - containerRect!.left + targetRect.width / 2;
     setUserPreviewModalPosition({
-      position: "fixed",
-      top: `${top + 30}px`,
-      left: `${left + width / 2 - modalWidth / 2}px`,
-      transform: "none",
+      top: isModalPositionUp ? "unset" : "24px",
+      bottom: isModalPositionUp ? "24px" : "unset",
+      left: `${leftPosition}px`,
     });
     handleMouseEnter("userInfo");
   };
 
   const handleMouseLeaveInUserInfo = () => {
-    setUserPreviewModalPosition({} as any);
+    setUserPreviewModalPosition({});
     handleMouseLeave("userInfo");
   };
 
   return (
     <header className="post-preview-header">
       <div className="post-preview-header-main">
-        <div
-          className="post-preview-header-user-info"
-          onClick={onNavigateToProfile}
-          onMouseEnter={handleMouseEnterInUserInfo}
-        >
+        <div className="post-preview-header-user-info" onClick={onNavigateToProfile}>
           {isMiniPreview && <UserImg imgUrl={post.createdBy.imgUrl} />}
           <div
             className="post-preview-header-details-container"
+            onMouseEnter={handleMouseEnterInUserInfo}
             onMouseLeave={handleMouseLeaveInUserInfo}
           >
             <span className="post-preview-header-full-name">{post.createdBy.fullname}</span>
@@ -69,7 +71,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
           </div>
           <span
             className="post-preview-header-username"
-            // onMouseEnter={handleMouseEnterInUserInfo}
+            onMouseEnter={handleMouseEnterInUserInfo}
             onMouseLeave={handleMouseLeaveInUserInfo}
           >
             @{post.createdBy.username}

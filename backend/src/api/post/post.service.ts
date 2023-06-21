@@ -495,12 +495,11 @@ async function _populateUserPollVotes(...posts: Post[]) {
     }
   }
 }
-
 async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {}) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
 
-  post.loggedinUserActionState = {
+  const defaultState = {
     isLiked: false,
     isReposted: false,
     isViewed: false,
@@ -516,57 +515,43 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
     isPostBookmarked: false,
   };
 
-  if (isDefault) return;
+  post.loggedinUserActionState = defaultState;
 
-  if (loggedinUserId) {
-    const postId = new ObjectId(post.id);
-    const userId = new ObjectId(loggedinUserId);
+  if (isDefault || !loggedinUserId) return;
 
-    const [isReposted, isLiked, isBookmarked] = await Promise.all([
-      queryEntityExists(RepostModel, { postId, repostOwnerId: userId }),
-      queryEntityExists(PostLikeModel, { postId, userId }),
-      queryEntityExists(BookmarkedPostModel, { postId, bookmarkOwnerId: userId }),
-    ]);
+  const postId = new ObjectId(post.id);
+  const userId = new ObjectId(loggedinUserId);
 
-    Object.assign(post.loggedinUserActionState, {
-      isReposted,
-      isLiked,
-      isBookmarked,
-    });
+  const [isReposted, isLiked, isBookmarked] = await Promise.all([
+    queryEntityExists(RepostModel, { postId, repostOwnerId: userId }),
+    queryEntityExists(PostLikeModel, { postId, userId }),
+    queryEntityExists(BookmarkedPostModel, { postId, bookmarkOwnerId: userId }),
+  ]);
 
-    const postStats = (await PostStatsModel.findOne({
-      postId,
-      userId,
-    })) as unknown as PostStatsBody;
+  const postStats = (await PostStatsModel.findOne({ postId, userId })) as unknown as PostStatsBody;
 
-    if (postStats) {
-      const {
-        isViewed,
-        isDetailedViewed,
-        isProfileViewed,
-        isFollowedFromPost,
-        isHashTagClicked,
-        isLinkClicked,
-        isPostLinkCopied,
-        isPostShared,
-        isPostSendInMessage,
-        isPostBookmarked,
-      } = postStats;
+  const additionalState = postStats
+    ? {
+        isViewed: postStats.isViewed,
+        isDetailedViewed: postStats.isDetailedViewed,
+        isProfileViewed: postStats.isProfileViewed,
+        isFollowedFromPost: postStats.isFollowedFromPost,
+        isHashTagClicked: postStats.isHashTagClicked,
+        isLinkClicked: postStats.isLinkClicked,
+        isPostLinkCopied: postStats.isPostLinkCopied,
+        isPostShared: postStats.isPostShared,
+        isPostSendInMessage: postStats.isPostSendInMessage,
+        isPostBookmarked: postStats.isPostBookmarked,
+      }
+    : {};
 
-      Object.assign(post.loggedinUserActionState, {
-        isViewed,
-        isDetailedViewed,
-        isProfileViewed,
-        isFollowedFromPost,
-        isHashTagClicked,
-        isLinkClicked,
-        isPostLinkCopied,
-        isPostShared,
-        isPostSendInMessage,
-        isPostBookmarked,
-      });
-    }
-  }
+  post.loggedinUserActionState = {
+    ...defaultState,
+    isReposted,
+    isLiked,
+    isBookmarked,
+    ...additionalState,
+  };
 }
 
 function _checkPollExperation(

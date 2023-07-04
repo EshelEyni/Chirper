@@ -239,6 +239,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       setPostSaveInProgress(true);
       const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
 
+      // TODO: extract to function
       for (const post of newPosts) {
         if (post.imgs.length > 0) {
           const prms = post.imgs.map(async (img, idx) => {
@@ -248,7 +249,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           const savedImgUrl = await Promise.all(prms);
           post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
         }
-
+        // TODO: extract to function
         if (post.video) {
           if (post.video.file) {
             const videoUrl = await uploadFileToCloudinary(post.video.file, "video");
@@ -259,6 +260,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           delete post.video;
         }
       }
+
+      // TODO: refactor to switch case
       if (newPostType === "quote") {
         const [post] = newPosts;
         await dispatch(addQuotePost(post));
@@ -269,9 +272,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         await dispatch(addPost(newPosts));
       }
 
+      // TODO: extract to function
       dispatch(setNewPostType("home-page"));
       dispatch(setNewPosts([], newPostType));
-
       setInputTextValue("");
       setIsPickerShown(false);
       setPostSaveInProgress(false);

@@ -231,10 +231,10 @@ function formatPostText(text: string): string {
     });
   }
 
-  const lineBreaks = formmatedText.match(/\n/g);
-  if (lineBreaks) {
-    formmatedText = formmatedText.replaceAll("\n", "<br />");
-  }
+  // const lineBreaks = formmatedText.match(/\n/g);
+  // if (lineBreaks) {
+  //   formmatedText = formmatedText.replaceAll("\n", "<br />");
+  // }
 
   return formmatedText;
 }

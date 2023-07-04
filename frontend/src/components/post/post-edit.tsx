@@ -372,7 +372,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {currNewPost?.schedule && isFirstPostInThread && (
             <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
           )}
-          {!isFirstPostInThread &&
+          {/* {!isFirstPostInThread &&
             !isHomePage &&
             (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
             !checkPostValidity(currNewPost) && (
@@ -383,7 +383,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                   onClick={() => dispatch(removeNewPostFromThread(newPostType))}
                 />
               </button>
-            )}
+            )} */}
           <textarea
             className={
               "post-edit-text-area" +

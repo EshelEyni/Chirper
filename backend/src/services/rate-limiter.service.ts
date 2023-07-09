@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 const getRequestLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -31,7 +31,7 @@ const authRequestLimiter = rateLimit({
   message: "Too many authentication requests, please try again later",
 });
 
-const requestLimiter = (req: Request, res: Response, next: any) => {
+const requestLimiter = (req: Request, res: Response, next: NextFunction) => {
   if (req.method === "GET") {
     getRequestLimiter(req, res, next);
   } else if (req.method === "POST") {

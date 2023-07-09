@@ -4,7 +4,6 @@ import { RootState } from "../../store/store";
 import { BtnCreatePost } from "../btns/btn-create-post";
 import { PostEditActions } from "./post-edit-actions";
 import { TextIndicator } from "../other/text-indicator";
-import { AiOutlinePlus } from "react-icons/ai";
 import {
   NewPost,
   NewPostImg,
@@ -14,7 +13,6 @@ import {
 import { AppDispatch } from "../../store/types";
 import {
   addNewPostToThread,
-  removeNewPostFromThread,
   setNewPostType,
   setNewPosts,
   updateCurrNewPost,
@@ -32,13 +30,14 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
-import { utilService } from "../../services/util.service/utils.service";
 import { PostList } from "./post-list";
-import { AiOutlineClose } from "react-icons/ai";
 import { MiniPostPreview } from "./mini-post-preview/mini-post-preview";
 import { RepliedPostContent } from "./mini-post-preview/replied-post-content";
 import { QuotedPostContent } from "./mini-post-preview/quoted-post-content";
 import { setUserMsg } from "../../store/actions/system.actions";
+import { PostTextInput } from "./post-text-input";
+import { BtnRemovePostFromThread } from "./btn-remove-post-from-thread";
+import { BtnAddThread } from "./btn-add-thread";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -62,7 +61,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
   const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
-
   // State - booleans
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [isPostsValid, setIsPostsValid] = useState<boolean>(false);
@@ -83,6 +81,162 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const isAddingPostToThreadDisabled =
     preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
   const isMultipePosts = preCurrNewPostList.length + postCurrNewPostList.length + 1 > 1;
+  const isBtnRemovePostFromThreadShown =
+    !isFirstPostInThread &&
+    !isHomePage &&
+    (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
+    !checkPostValidity(currNewPost);
+
+  const isPostDateTitleShown = currNewPost?.schedule && isFirstPostInThread;
+
+  function setBtnTitleText(): string {
+    const postType = newPostTypeRef.current;
+    if (currNewPost?.schedule) return "Schedule";
+    if (postType === "reply") return "Reply";
+    return isMultipePosts && !isHomePage ? "Chirp All" : "Chirp";
+  }
+
+  function checkPostValidity(post: NewPost | null): boolean {
+    if (!post) return false;
+
+    function checkPostTextValidity(post: NewPost): boolean {
+      let currPostText = "";
+      if (newPostType === "home-page") {
+        const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
+        currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
+      } else if (newPostType === "side-bar") {
+        const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
+        currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+      } else {
+        currPostText = inputTextValue;
+      }
+      return currPostText.length > 0 && currPostText.length <= 247;
+    }
+
+    if (post.poll) {
+      return (
+        post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity(post)
+      );
+    } else {
+      return (
+        checkPostTextValidity(post) ||
+        post.imgs.length > 0 ||
+        !!post.gif ||
+        !!post.video ||
+        !!post.quotedPostId
+      );
+    }
+  }
+
+  function checkPostArrayValidity(newPosts: NewPost[]): boolean {
+    return newPosts.every(post => checkPostValidity(post));
+  }
+
+  async function onAddPost() {
+    if (!currNewPost || !loggedinUser) return;
+    try {
+      setPostSaveInProgress(true);
+      const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
+      await uploadImagesAndSetToPost(newPosts);
+      await uploadVideoAndSetToPost(newPosts);
+      await dispatchPost(newPosts);
+      resetState();
+    } catch (err) {
+      setPostSaveInProgress(false);
+    }
+  }
+
+  async function uploadImagesAndSetToPost(newPosts: NewPost[]) {
+    for (const post of newPosts) {
+      if (!post.imgs.length) return;
+      const prms = post.imgs.map(async (img, idx) => {
+        const currImgUrl = await uploadFileToCloudinary(img.file, "image");
+        return { url: currImgUrl, sortOrder: idx };
+      });
+      const savedImgUrl = await Promise.all(prms);
+      post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
+    }
+  }
+
+  async function uploadVideoAndSetToPost(newPosts: NewPost[]) {
+    for (const post of newPosts) {
+      if (!post.video) return;
+      if (post.video.file) {
+        const videoUrl = await uploadFileToCloudinary(post.video.file, "video");
+        post.videoUrl = videoUrl;
+      } else {
+        post.videoUrl = post.video.url;
+      }
+      delete post.video;
+    }
+  }
+
+  async function dispatchPost(newPosts: NewPost[]) {
+    switch (newPostType) {
+      case "quote":
+        {
+          const [post] = newPosts;
+          await dispatch(addQuotePost(post));
+        }
+        break;
+      case "reply":
+        {
+          const [post] = newPosts;
+          await dispatch(addReply(post));
+        }
+        break;
+      default: {
+        await dispatch(addPost(newPosts));
+      }
+    }
+  }
+
+  function resetState() {
+    dispatch(setNewPostType("home-page"));
+    dispatch(setNewPosts([], newPostType));
+    setInputTextValue("");
+    setIsPickerShown(false);
+    setPostSaveInProgress(false);
+    setIsPostsValid(false);
+    if (textAreaRef.current) textAreaRef.current.style.height = "auto";
+    if (location.pathname === "/compose") navigate("/");
+  }
+
+  function openPicker() {
+    if (!isHomePage && isPickerShown) return;
+    setIsPickerShown(true);
+    textAreaRef.current?.focus();
+  }
+
+  function onGoToLocationPage() {
+    if (!isPickerShown) return;
+    navigate("/post-location");
+  }
+
+  async function onAddPostToThread() {
+    if (!isPickerShown) return;
+    if (isHomePage) {
+      if (!currNewPost) return;
+      const newPost = { ...currNewPost, text: inputTextValue };
+      await dispatch(updateCurrNewPost(newPost, newPostType));
+      setIsPickerShown(false);
+      await dispatch(addNewPostToThread(newPostType));
+      navigate("/compose");
+    } else {
+      const isAddingPostToThreadDisabled =
+        preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 9;
+      if (isAddingPostToThreadDisabled) {
+        dispatch(
+          setUserMsg({
+            type: "info",
+            text: "You can add more Chirps to this thread after sending these.",
+          })
+        );
+      }
+      await dispatch(addNewPostToThread(newPostType));
+      textAreaRef.current?.focus();
+    }
+  }
 
   useEffect(() => {
     const isValid = checkPostArrayValidity(
@@ -146,210 +300,6 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     location.pathname,
   ]);
 
-  const setBtnTitleText = (): string => {
-    const postType = newPostTypeRef.current;
-    if (currNewPost?.schedule) return "Schedule";
-    if (postType === "reply") return "Reply";
-    return isMultipePosts && !isHomePage ? "Chirp All" : "Chirp";
-  };
-
-  const checkPostValidity = (post: NewPost | null): boolean => {
-    if (!post) return false;
-
-    const checkPostTextValidity = (post: NewPost): boolean => {
-      let currPostText = "";
-      if (newPostType === "home-page") {
-        const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
-        currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
-      } else if (newPostType === "side-bar") {
-        const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
-        currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
-      } else {
-        currPostText = inputTextValue;
-      }
-
-      return currPostText.length > 0 && currPostText.length <= 247;
-    };
-
-    if (post.poll) {
-      return (
-        post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity(post)
-      );
-    } else {
-      return (
-        checkPostTextValidity(post) ||
-        post.imgs.length > 0 ||
-        !!post.gif ||
-        !!post.video ||
-        !!post.quotedPostId
-      );
-    }
-  };
-
-  const checkPostArrayValidity = (newPosts: NewPost[]): boolean => {
-    return newPosts.every(post => checkPostValidity(post));
-  };
-
-  const detectURL = useRef(
-    utilService.debounce(async (currPost: NewPost, text: string, isVideoRemoved: boolean) => {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const urls = text.match(urlRegex);
-      let youtubeURL = "";
-      if (urls) {
-        for (let i = urls.length - 1; i >= 0; i--) {
-          if (urls[i].includes("https://www.youtube.com/watch")) {
-            youtubeURL = urls[i];
-            break;
-          }
-        }
-      }
-
-      if (youtubeURL && youtubeURL !== currPost.video?.url && !isVideoRemoved) {
-        const newPost = {
-          ...currPost,
-          text,
-          video: { url: youtubeURL, isLoading: false, file: null },
-        };
-
-        dispatch(updateCurrNewPost(newPost, newPostType));
-      } else if (currPost.video) {
-        const newPost = { ...currPost, text, video: null };
-        dispatch(updateCurrNewPost(newPost, newPostType));
-      }
-    }, 500).debouncedFunc
-  );
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setInputTextValue(value);
-    detectURL.current(currNewPost, value, isVideoRemoved);
-    e.target.style.height = "auto";
-    e.target.style.height = e.target.scrollHeight + "px";
-  };
-
-  const handleTextBlur = async () => {
-    if (!currNewPost) return;
-    const newPost = { ...currNewPost, text: inputTextValue };
-    await dispatch(updateCurrNewPost(newPost, newPostType));
-  };
-
-  const onAddPost = async () => {
-    if (!currNewPost || !loggedinUser) return;
-    try {
-      setPostSaveInProgress(true);
-      const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
-
-      // TODO: extract to function
-      for (const post of newPosts) {
-        if (post.imgs.length > 0) {
-          const prms = post.imgs.map(async (img, idx) => {
-            const currImgUrl = await uploadFileToCloudinary(img.file, "image");
-            return { url: currImgUrl, sortOrder: idx };
-          });
-          const savedImgUrl = await Promise.all(prms);
-          post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
-        }
-        // TODO: extract to function
-        if (post.video) {
-          if (post.video.file) {
-            const videoUrl = await uploadFileToCloudinary(post.video.file, "video");
-            post.videoUrl = videoUrl;
-          } else {
-            post.videoUrl = post.video.url;
-          }
-          delete post.video;
-        }
-      }
-
-      // TODO: refactor to switch case
-      if (newPostType === "quote") {
-        const [post] = newPosts;
-        await dispatch(addQuotePost(post));
-      } else if (newPostType === "reply") {
-        const [post] = newPosts;
-        await dispatch(addReply(post));
-      } else {
-        await dispatch(addPost(newPosts));
-      }
-
-      // TODO: extract to function
-      dispatch(setNewPostType("home-page"));
-      dispatch(setNewPosts([], newPostType));
-      setInputTextValue("");
-      setIsPickerShown(false);
-      setPostSaveInProgress(false);
-      setIsPostsValid(false);
-      if (textAreaRef.current) textAreaRef.current.style.height = "auto";
-      if (location.pathname === "/compose") navigate("/");
-    } catch (err) {
-      setPostSaveInProgress(false);
-    }
-  };
-
-  const openPicker = () => {
-    if (isHomePage && !isPickerShown) {
-      setIsPickerShown(true);
-      textAreaRef.current?.focus();
-    }
-  };
-
-  const onGoToLocationPage = () => {
-    if (!isPickerShown) return;
-    navigate("/post-location");
-  };
-
-  const onAddPostToThread = async () => {
-    if (!isPickerShown) return;
-    if (isHomePage) {
-      if (!currNewPost) return;
-      const newPost = { ...currNewPost, text: inputTextValue };
-      await dispatch(updateCurrNewPost(newPost, newPostType));
-      setIsPickerShown(false);
-      await dispatch(addNewPostToThread(newPostType));
-      navigate("/compose");
-    } else {
-      const isAddingPostToThreadDisabled =
-        preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 9;
-      if (isAddingPostToThreadDisabled) {
-        dispatch(
-          setUserMsg({
-            type: "info",
-            text: "You can add more Chirps to this thread after sending these.",
-          })
-        );
-      }
-      await dispatch(addNewPostToThread(newPostType));
-      textAreaRef.current?.focus();
-    }
-  };
-
-  const setTextPlaceholder = () => {
-    const { current: postType } = newPostTypeRef;
-    switch (postType) {
-      case "reply": {
-        if (currNewPost?.poll) return "Ask a question...";
-        const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.createdBy.id;
-        if (isLoggedinUserPost) return "Add another Chirp!";
-        return "Chirp your reply...";
-      }
-      case "quote": {
-        return "Add a comment!";
-      }
-      case "side-bar": {
-        if (currNewPost?.poll) return "Ask a question...";
-        if (isFirstPostInThread) return "What's happening?";
-        else return "Add another Chirp!";
-      }
-      case "home-page": {
-        if (currNewPost?.poll) return "Ask a question...";
-        return "What's happening?";
-      }
-      default: {
-        return "What's happening?";
-      }
-    }
-  };
-
   return (
     <section
       className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
@@ -369,33 +319,22 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           {isPickerShown && currNewPost && isFirstPostInThread && (
             <BtnToggleAudience currNewPost={currNewPost} />
           )}
-          {currNewPost?.schedule && isFirstPostInThread && (
-            <PostDateTitle date={currNewPost.schedule} isLink={isPickerShown} />
+          {isPostDateTitleShown && (
+            <PostDateTitle date={currNewPost.schedule!} isLink={isPickerShown} />
           )}
-          {/* {!isFirstPostInThread &&
-            !isHomePage &&
-            (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
-            !checkPostValidity(currNewPost) && (
-              <button className="btn-remove-post-from-thread">
-                <AiOutlineClose
-                  color="var(--color-primary)"
-                  size={15}
-                  onClick={() => dispatch(removeNewPostFromThread(newPostType))}
-                />
-              </button>
-            )} */}
-          <textarea
-            className={
-              "post-edit-text-area" +
-              (isHomePage ? " home-page-height" : "") +
-              (isHomePage && !isPickerShown ? " pt-10" : "") +
-              (!isFirstPostInThread ? " not-first-post" : "")
-            }
-            placeholder={setTextPlaceholder()}
-            value={inputTextValue}
-            onChange={handleTextChange}
-            onBlur={handleTextBlur}
-            ref={textAreaRef}
+          {isBtnRemovePostFromThreadShown && <BtnRemovePostFromThread newPostType={newPostType} />}
+
+          <PostTextInput
+            isHomePage={isHomePage}
+            isPickerShown={isPickerShown}
+            isFirstPostInThread={isFirstPostInThread}
+            inputTextValue={inputTextValue}
+            textAreaRef={textAreaRef}
+            postType={newPostTypeRef.current}
+            currNewPost={currNewPost}
+            replyToPost={replyToPost}
+            isVideoRemoved={isVideoRemoved}
+            setInputTextValue={setInputTextValue}
           />
           {currNewPost && currNewPost.imgs.length > 0 && <PostEditImg currNewPost={currNewPost} />}
           {currNewPost?.video && (
@@ -430,13 +369,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
-                  <button
-                    className={"btn-add-thread" + (isAddingPostToThreadDisabled ? " disabled" : "")}
-                    onClick={onAddPostToThread}
-                    disabled={isAddingPostToThreadDisabled}
-                  >
-                    <AiOutlinePlus className="btn-add-thread-icon" />
-                  </button>
+                  <BtnAddThread
+                    isDisabled={isAddingPostToThreadDisabled}
+                    onAddPostToThread={onAddPostToThread}
+                  />
                 </div>
               )}
               <BtnCreatePost

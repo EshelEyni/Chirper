@@ -96,4 +96,5 @@ const deleteOne = (Model: ModelType<any>) =>
       data: null,
     });
   });
+
 export default { getAll, getOne, createOne, updateOne, deleteOne };

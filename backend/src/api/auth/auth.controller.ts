@@ -5,13 +5,8 @@ import { AppError, asyncErrorCatcher } from "../../services/error.service";
 
 const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { username, password } = req.body;
-
-  if (!username || !password) {
-    throw new AppError("Username and password are required", 400);
-  }
-
+  if (!username || !password) throw new AppError("Username and password are required", 400);
   const { user, token } = await authService.login(username, password);
-
   _sendUserTokenSuccessResponse(res, token, user, 200);
 });
 

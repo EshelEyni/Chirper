@@ -32,7 +32,6 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
   };
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("handleChange");
     const inputValue = e.target.value;
     if (!inputValue) {
       setSearchTerm("");

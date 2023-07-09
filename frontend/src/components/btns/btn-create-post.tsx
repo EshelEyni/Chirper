@@ -12,28 +12,28 @@ interface BtnCreatePostProps {
 
 export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   isSideBarBtn,
-  isDisabled,
+  isDisabled = false,
   onAddPost = null,
   btnText = "Chirp",
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const onClickBtn = async () => {
+  async function onClickBtn() {
     if (isSideBarBtn) {
       await dispatch(setNewPostType("side-bar"));
       const currPathName = location.pathname === "/" ? "" : location.pathname;
       navigate(`${currPathName}/compose`);
     } else {
-      if (isDisabled) return;
       onAddPost && onAddPost();
     }
-  };
+  }
 
   return (
     <button
       className={"btn-create-post" + (!isSideBarBtn && isDisabled ? " disabled" : "")}
       onClick={onClickBtn}
+      disabled={isDisabled}
     >
       {btnText}
     </button>

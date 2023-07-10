@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { APIFeatures, QueryString } from "./util.service";
-import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "./error.service";
+import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "./error/error.service";
 import { Model as ModelType } from "mongoose";
 import { logger } from "./logger.service";
 

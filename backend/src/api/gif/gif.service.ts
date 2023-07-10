@@ -3,7 +3,7 @@ import config from "../../config";
 import fetch from "cross-fetch";
 import { GifModel, GifCategoryModel } from "./gif.model";
 import { APIFeatures } from "../../services/util.service";
-import { AppError } from "../../services/error.service";
+import { AppError } from "../../services/error/error.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

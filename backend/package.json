@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "prod": "set NODE_ENV=production&& nodemon",
     "debug": "ndb --experimental-specifier-resolution=node --loader ts-node src/server.ts",
-    "test": "jest --config=jest.config.mjs"
+    "test": "jest --config=jest.config.mjs --watch --verbose --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -30,7 +30,7 @@
     "mongodb": "^5.3.0",
     "mongoose": "^7.1.0",
     "nodemailer": "^6.9.2",
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.0.1",
     "sanitize-html": "^2.10.0"
   },
   "devDependencies": {
@@ -53,10 +53,13 @@
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "jest": "^29.5.0",
+    "jest": "^29.6.1",
     "prettier": "^2.8.8",
-    "ts-jest": "^29.1.0",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
+  },
+  "overrides": {
+    "semver": "^7.5.3"
   }
 }

@@ -8,7 +8,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { requestLogger } from "./middlewares/logger.middleware";
-import { AppError, errorHandler } from "./services/error.service";
+import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls.middleware";
 import userRoutes from "./api/user/user.routes";
 import postRoutes from "./api/post/post.routes";

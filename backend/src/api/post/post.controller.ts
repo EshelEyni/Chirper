@@ -6,7 +6,7 @@ import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../services/error.service";
+} from "../../services/error/error.service";
 import factory from "../../services/factory.service";
 import { PostModel } from "./post.model";
 

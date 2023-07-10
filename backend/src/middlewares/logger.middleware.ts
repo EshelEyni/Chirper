@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncErrorCatcher } from "../services/error.service";
+import { asyncErrorCatcher } from "../services/error/error.service";
 import { logger } from "../services/logger.service";
 
 export const requestLogger = asyncErrorCatcher(

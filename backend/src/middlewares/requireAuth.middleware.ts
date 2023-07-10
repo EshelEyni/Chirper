@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError, asyncErrorCatcher } from "../services/error.service";
+import { AppError, asyncErrorCatcher } from "../services/error/error.service";
 import { UserModel } from "../api/user/user.model";
 import tokenService from "../services/token.service";
 

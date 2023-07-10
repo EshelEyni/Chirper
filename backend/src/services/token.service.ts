@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AppError } from "./error.service";
+import { AppError } from "./error/error.service";
 import config from "../config/index";
 import jwt from "jsonwebtoken";
 

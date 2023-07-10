@@ -5,7 +5,7 @@ import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../services/error.service";
+} from "../../services/error/error.service";
 import factory from "../../services/factory.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../shared/interfaces/user.interface";

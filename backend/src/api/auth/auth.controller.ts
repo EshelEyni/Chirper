@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../../../../shared/interfaces/user.interface";
 import authService from "./auth.service";
-import { AppError, asyncErrorCatcher } from "../../services/error.service";
+import { AppError, asyncErrorCatcher } from "../../services/error/error.service";
 
 const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { username, password } = req.body;

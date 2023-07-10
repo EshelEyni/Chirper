@@ -8,7 +8,7 @@ process.on("uncaughtException", (err: Error) => {
 import config from "./config";
 import mongoose from "mongoose";
 import app from "./app";
-import { AppError } from "./services/error.service";
+import { AppError } from "./services/error/error.service";
 
 const DB = config.dbURL;
 if (!DB) throw new AppError("DB URL is not defined.", 500);

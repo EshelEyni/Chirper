@@ -5,6 +5,7 @@ import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
 import { utilService } from "../../services/util.service/utils.service";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 import { AppDispatch } from "../../store/types";
+import { NewPostType as typeofPostType } from "../../store//reducers/new-post.reducer";
 
 type PostTextInputProps = {
   currNewPost: NewPost | null;
@@ -12,7 +13,7 @@ type PostTextInputProps = {
   setInputTextValue: React.Dispatch<React.SetStateAction<string>>;
   inputTextValue: string;
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
-  postType: "reply" | "quote" | "side-bar" | "home-page";
+  postType: typeofPostType;
   isHomePage: boolean;
   isPickerShown: boolean;
   isFirstPostInThread: boolean;

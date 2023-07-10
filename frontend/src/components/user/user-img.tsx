@@ -1,7 +1,7 @@
 import { userService } from "../../services/user.service";
 
 interface UserImgProps {
-  imgUrl: string | null;
+  imgUrl: string | null | undefined;
   size?: number;
   onNavigateToProfile?: () => void;
 }

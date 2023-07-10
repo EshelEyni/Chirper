@@ -58,7 +58,7 @@ export const ComposePage = () => {
   return (
     <main className="compose">
       <div className="main-screen dark-light" style={{ zIndex: 2000 }} onClick={onOpenModal} />
-      <PostEdit onClickBtnClose={onOpenModal} />
+      <PostEdit onClickBtnClose={onOpenModal} isHomePage={false} />
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal
           onCloseModal={onCloseModal}

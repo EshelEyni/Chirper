@@ -26,7 +26,6 @@ import { BtnToggleAudience } from "../btns/btn-toggle-audience";
 import { BtnToggleRepliers } from "../btns/btn-toggle-repliers";
 import { PollEdit } from "../poll/poll-edit";
 import { PostDateTitle } from "../other/post-date-title";
-import { IoLocationSharp } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { uploadFileToCloudinary } from "../../services/upload.service";
 import { PostEditVideo } from "./post-edit-video";
@@ -38,6 +37,7 @@ import { setUserMsg } from "../../store/actions/system.actions";
 import { PostTextInput } from "./post-text-input";
 import { BtnRemovePostFromThread } from "./btn-remove-post-from-thread";
 import { BtnAddThread } from "./btn-add-thread";
+import { PostEditTitleLocation } from "./post-edit-title-location";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -77,7 +77,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Variables
+  // Constants
   const isAddingPostToThreadDisabled =
     preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
   const isMultipePosts = preCurrNewPostList.length + postCurrNewPostList.length + 1 > 1;
@@ -86,8 +86,20 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     !isHomePage &&
     (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
     !checkPostValidity(currNewPost);
-
   const isPostDateTitleShown = currNewPost?.schedule && isFirstPostInThread;
+  const isBtnCloseShown = !!onClickBtnClose;
+  const isPreCurrNewPostList = !isHomePage && preCurrNewPostList.length > 0;
+  const isReplyPostShown = !isHomePage && !!replyToPost;
+  const isBtnToggleAudienceShown = isPickerShown && currNewPost && isFirstPostInThread;
+  const isPostEditImgShown = currNewPost && currNewPost.imgs.length > 0;
+  const isPostEditVideoShown = !!currNewPost?.video;
+  const isPostEditGifShown = !!currNewPost?.gif;
+  const isPostEditPollShown = !!currNewPost?.poll;
+  const isBtnToggleRepliersShown = isPickerShown && currNewPost;
+  const isPostLocationTitleShown = !!currNewPost?.location;
+  const isQuotedPostShown = !!quotedPost;
+  const isIndicatorAndThreadBtnShown = checkPostValidity(currNewPost) || inputTextValue.length > 0;
+  const isPostCurrNewPostListShown = !isHomePage && postCurrNewPostList.length > 0;
 
   function setBtnTitleText(): string {
     const postType = newPostTypeRef.current;
@@ -203,7 +215,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   }
 
   function openPicker() {
-    if (!isHomePage && isPickerShown) return;
+    if (isPickerShown) return;
     setIsPickerShown(true);
     textAreaRef.current?.focus();
   }
@@ -239,16 +251,9 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   }
 
   useEffect(() => {
-    const isValid = checkPostArrayValidity(
-      preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList)
-    );
-    if (isValid !== isPostsValid) {
-      setIsPostsValid(isValid);
-    }
-
-    if (isPickerShown && !isHomePage) {
-      textAreaRef.current?.focus();
-    }
+    const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
+    const isValid = checkPostArrayValidity(postArray);
+    if (isValid !== isPostsValid) setIsPostsValid(isValid);
   }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
 
   useEffect(() => {
@@ -300,25 +305,27 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     location.pathname,
   ]);
 
+  useEffect(() => {
+    if (!isHomePage) textAreaRef.current?.focus();
+  }, [homePage.currPostIdx, sideBar.currPostIdx, isHomePage]);
+
   return (
     <section
       className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
       onClick={openPicker}
     >
-      {onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
+      {isBtnCloseShown && <BtnClose onClickBtn={onClickBtnClose} />}
       {postSaveInProgress && <span className="progress-bar"></span>}
-      {!isHomePage && preCurrNewPostList.length > 0 && <PostList newPosts={preCurrNewPostList} />}
-      {!isHomePage && replyToPost && (
+      {isPreCurrNewPostList && <PostList newPosts={preCurrNewPostList} />}
+      {isReplyPostShown && (
         <MiniPostPreview post={replyToPost} type={"replied-post"}>
           {({ post }: { post: Post }) => <RepliedPostContent post={post} />}
         </MiniPostPreview>
       )}
       <div className="content-container">
-        {loggedinUser && <UserImg imgUrl={loggedinUser?.imgUrl} />}
+        <UserImg imgUrl={loggedinUser?.imgUrl} />
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isPickerShown && currNewPost && isFirstPostInThread && (
-            <BtnToggleAudience currNewPost={currNewPost} />
-          )}
+          {isBtnToggleAudienceShown && <BtnToggleAudience currNewPost={currNewPost} />}
           {isPostDateTitleShown && (
             <PostDateTitle date={currNewPost.schedule!} isLink={isPickerShown} />
           )}
@@ -336,21 +343,22 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             isVideoRemoved={isVideoRemoved}
             setInputTextValue={setInputTextValue}
           />
-          {currNewPost && currNewPost.imgs.length > 0 && <PostEditImg currNewPost={currNewPost} />}
-          {currNewPost?.video && (
+          {isPostEditImgShown && <PostEditImg currNewPost={currNewPost} />}
+          {isPostEditVideoShown && (
             <PostEditVideo currNewPost={currNewPost} setIsVideoRemoved={setIsVideoRemoved} />
           )}
-          {currNewPost?.gif && <GifEdit currNewPost={currNewPost} />}
-          {currNewPost?.poll && <PollEdit currNewPost={currNewPost} />}
-          <div className="btn-replires-location-container">
-            {isPickerShown && currNewPost && <BtnToggleRepliers currNewPost={currNewPost} />}
-            {currNewPost?.location && (
-              <div className="post-edit-location-title" onClick={onGoToLocationPage}>
-                <IoLocationSharp /> {currNewPost.location.name}
-              </div>
+          {isPostEditGifShown && <GifEdit currNewPost={currNewPost} />}
+          {isPostEditPollShown && <PollEdit currNewPost={currNewPost} />}
+          <div className="btn-replries-location-container">
+            {isBtnToggleRepliersShown && <BtnToggleRepliers currNewPost={currNewPost} />}
+            {isPostLocationTitleShown && (
+              <PostEditTitleLocation
+                title={currNewPost.location!.name}
+                onGoToLocationPage={onGoToLocationPage}
+              />
             )}
           </div>
-          {quotedPost && (
+          {isQuotedPostShown && (
             <MiniPostPreview quotedPost={quotedPost} type={"quoted-post"}>
               {({ quotedPost }: { quotedPost: QuotedPost }) => (
                 <QuotedPostContent quotedPost={quotedPost} />
@@ -365,7 +373,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               setInputTextValue={setInputTextValue}
             />
             <div className="secondary-action-container">
-              {(checkPostValidity(currNewPost) || inputTextValue.length > 0) && (
+              {isIndicatorAndThreadBtnShown && (
                 <div className="indicator-thread-btn-container">
                   <TextIndicator textLength={inputTextValue.length} />
                   <hr className="vertical" />
@@ -385,7 +393,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           </div>
         </main>
       </div>
-      {!isHomePage && postCurrNewPostList.length > 0 && <PostList newPosts={postCurrNewPostList} />}
+      {isPostCurrNewPostListShown && <PostList newPosts={postCurrNewPostList} />}
     </section>
   );
 };

@@ -47,12 +47,6 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
 
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!currNewPost) return;
-    if (currNewPost.imgs.length < 3) setIsMultiple(true);
-    else setIsMultiple(false);
-  }, [currNewPost?.imgs]);
-
   const btns: {
     name: string;
     icon: JSX.Element;
@@ -294,6 +288,12 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     if (!isPickerShown) return;
     navigate("/post-location");
   };
+
+  useEffect(() => {
+    if (!currNewPost) return;
+    if (currNewPost.imgs.length < 3) setIsMultiple(true);
+    else setIsMultiple(false);
+  }, [currNewPost?.imgs]);
 
   return (
     <>

@@ -3,9 +3,10 @@ import { AiOutlineClose } from "react-icons/ai";
 import { AppDispatch } from "../../store/types";
 import { useDispatch } from "react-redux";
 import { removeNewPostFromThread } from "../../store/actions/new-post.actions";
+import { NewPostType as typeofPostType } from "../../store//reducers/new-post.reducer";
 
 type BtnRemovePostFromThreadProps = {
-  newPostType: "reply" | "quote" | "side-bar" | "home-page";
+  newPostType: typeofPostType;
 };
 
 export const BtnRemovePostFromThread: FC<BtnRemovePostFromThreadProps> = ({ newPostType }) => {

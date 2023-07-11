@@ -3,10 +3,18 @@ import { logger } from "../logger.service";
 
 type AsyncExpressMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
-interface CustomError extends Error {
+enum ErrorType {
+  ValidationError = "ValidationError",
+  TokenExpiredError = "TokenExpiredError",
+  CastError = "CastError",
+  JsonWebTokenError = "JsonWebTokenError",
+}
+
+export interface CustomError extends Error {
   path?: string;
   value?: string;
-  keyValue?: [string, string];
+  keyValue?: { [key: string]: string };
+  statusCode?: number;
 }
 
 class AppError extends Error {
@@ -30,32 +38,27 @@ class AppError extends Error {
 function errorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   const isDev = process.env.NODE_ENV !== "production";
-  if (isDev) {
-    _sendErrorDev(err, res);
-  } else {
-    const error = _setError(err);
-    _sendErrorProd(error, res);
-  }
-
+  if (isDev) _sendErrorDev(err, res);
+  else _sendErrorProd(_refineErrorForProd(err), res);
   logger.error(err.message);
 }
 
-function _setError(err: any) {
+function _refineErrorForProd(err: any) {
   let error = { ...err, message: err.message, name: err.name };
   const { name } = error;
+
   switch (name) {
-    case "CastError":
+    case ErrorType.CastError:
       error = _handleCastErrorDB(error);
       break;
-    case "ValidationError":
+    case ErrorType.ValidationError:
       error = _handleValidationErrorDB(error);
       break;
-    case "JsonWebTokenError":
+    case ErrorType.JsonWebTokenError:
       error = _handleJWTError();
       break;
-    case "TokenExpiredError":
+    case ErrorType.TokenExpiredError:
       error = _handleJWTExpiredError();
       break;
     default:
@@ -63,23 +66,12 @@ function _setError(err: any) {
   }
 
   if (error.code === 11000) error = _handleDuplicateFieldsDB(error);
-
   return error;
 }
 
 function _handleCastErrorDB(err: CustomError): AppError {
   const dbProperty = err.path === "_id" ? "id" : (err.path as string);
   const message = `Invalid ${dbProperty}: ${err.value}.`;
-  return new AppError(message, 400);
-}
-
-function _handleDuplicateFieldsDB(err: CustomError): AppError {
-  const { keyValue } = err;
-  if (!keyValue || Object.keys(keyValue).length === 0)
-    return new AppError("Duplicate field error without specific field information", 400);
-
-  const [key, value] = Object.entries(keyValue)[0];
-  const message = `Duplicate ${key} value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 }
 
@@ -94,6 +86,16 @@ function _handleJWTError() {
 
 function _handleJWTExpiredError() {
   return new AppError("Your token has expired! Please log in again.", 401);
+}
+
+function _handleDuplicateFieldsDB(err: CustomError): AppError {
+  const { keyValue } = err;
+  if (!keyValue)
+    return new AppError("Duplicate field error without specific field information", 400);
+
+  const [key, value] = Object.entries(keyValue)[0];
+  const message = `Duplicate ${key} value: ${value}. Please use another value!`;
+  return new AppError(message, 400);
 }
 
 function _sendErrorDev(err: AppError, res: Response): void {
@@ -114,7 +116,7 @@ function _sendErrorProd(err: AppError, res: Response): void {
   } else {
     res.status(500).send({
       status: "error",
-      message: "Something went very wrong!",
+      message: "Something went wrong!",
     });
   }
 }

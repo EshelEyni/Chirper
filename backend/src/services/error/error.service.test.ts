@@ -1,7 +1,14 @@
 // src/__tests__/appError.test.ts
-import { AppError, errorHandler } from "./error.service";
+import {
+  AppError,
+  asyncErrorCatcher,
+  errorHandler,
+  validatePatchRequestBody,
+} from "./error.service";
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../logger.service";
+import { CustomError } from "./error.service";
+
 jest.mock("../logger.service");
 
 describe("Error Service", () => {
@@ -51,7 +58,11 @@ describe("Error Service", () => {
       };
     });
 
-    it("should respond with 500 status and error message in development environment", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should handle errors correctly in development environment", () => {
       process.env.NODE_ENV = "development";
 
       const error = new Error("Some error");
@@ -67,8 +78,42 @@ describe("Error Service", () => {
       expect(logger.error).toHaveBeenCalledWith(error.message);
     });
 
-    it("should CastError correctly", () => {
+    it("should handle operational errors correctly in development environment", () => {
       process.env.NODE_ENV = "development";
+
+      const error = new AppError("Some error", 401);
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(error.statusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: "fail",
+        error: error,
+        message: error.message,
+        stack: error.stack,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should respond with 500 status and error message in production environment", () => {
+      process.env.NODE_ENV = "production";
+
+      const error = new Error("Some error");
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      const expectedStatusCode = 500;
+      const expectedStatus = "error";
+      const expectedMessage = "Something went wrong!";
+
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: expectedStatus,
+        message: expectedMessage,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should handle CastError correctly in production environment", () => {
+      process.env.NODE_ENV = "production";
 
       const error = {
         message: "Invalid id: 123123.",
@@ -77,17 +122,162 @@ describe("Error Service", () => {
         value: "id123123",
         status: "error",
         statusCode: 500,
-      } as any;
+      } as CustomError;
+
+      Error.captureStackTrace(error);
       errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      const expectedStatusCode = 400;
+      const dbProperty = error.path === "_id" ? "id" : (error.path as string);
+      const expectedMessage = `Invalid ${dbProperty}: ${error.value}.`;
+      const expectedStatus = "fail";
+
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(mockResponse.send).toHaveBeenCalledWith({
-        status: "error",
-        error: error,
-        message: "Invalid id: 123123.",
-        stack: error.stack,
+        status: expectedStatus,
+        message: expectedMessage,
       });
       expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should handle ValidationError correctly in production environment", () => {
+      process.env.NODE_ENV = "production";
+
+      const error = {
+        message: "Validation failed: name: Please provide a name.",
+        name: "ValidationError",
+        status: "error",
+        statusCode: 500,
+      } as CustomError;
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      const expectedStatusCode = 400;
+      const expectedStatus = "fail";
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: expectedStatus,
+        message: error.message,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should handle JsonWebTokenError correctly in production environment", () => {
+      process.env.NODE_ENV = "production";
+
+      const error = {
+        message: "error message",
+        name: "JsonWebTokenError",
+        status: "error",
+        statusCode: 500,
+      } as CustomError;
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      const expectedStatusCode = 401;
+      const expectedStatus = "fail";
+      const expectedMessage = "Invalid token. Please log in again!";
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: expectedStatus,
+        message: expectedMessage,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should handle TokenExpiredError correctly in production environment", () => {
+      process.env.NODE_ENV = "production";
+
+      const error = {
+        message: "error message",
+        name: "TokenExpiredError",
+        status: "error",
+        statusCode: 500,
+      } as CustomError;
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      const expectedStatusCode = 401;
+      const expectedStatus = "fail";
+      const expectedMessage = "Your token has expired! Please log in again.";
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: expectedStatus,
+        message: expectedMessage,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+
+    it("should handle duplicate key error correctly in production environment", () => {
+      process.env.NODE_ENV = "production";
+
+      const error = {
+        message: "error message",
+        name: "MongoError",
+        status: "error",
+        statusCode: 500,
+        code: 11000,
+        keyValue: { fieldKey: "fieldValue" },
+      } as CustomError;
+      errorHandler(error, mockRequest as Request, mockResponse as Response, nextFunction);
+
+      const expectedStatusCode = 400;
+      const expectedStatus = "fail";
+      const [key, value] = Object.entries(error.keyValue!)[0];
+      const expectedMessage = `Duplicate ${key} value: ${value}. Please use another value!`;
+      expect(mockResponse.status).toHaveBeenCalledWith(expectedStatusCode);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        status: expectedStatus,
+        message: expectedMessage,
+      });
+      expect(logger.error).toHaveBeenCalledWith(error.message);
+    });
+  });
+
+  describe("asyncErrorCatcher", () => {
+    let mockRequest: Request;
+    let mockResponse: Response;
+
+    beforeEach(() => {
+      mockRequest = {} as Request;
+      mockResponse = {} as Response;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should catch and forward errors from async middleware", done => {
+      const middlewareThatThrows = async (_req: Request, _res: Response, _next: NextFunction) => {
+        throw new Error("test error");
+      };
+      const wrappedMiddleware = asyncErrorCatcher(middlewareThatThrows);
+
+      wrappedMiddleware(mockRequest, mockResponse, err => {
+        try {
+          expect(err).toBeInstanceOf(Error);
+          expect(err).toHaveProperty("message", "test error");
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe("validatePatchRequestBody", () => {
+    it("should throw an error if body object is empty", () => {
+      const resultFn = () => validatePatchRequestBody({});
+
+      expect(resultFn).toThrow();
+      expect(resultFn).toThrowError(
+        new AppError(
+          "No data received in the request. Please provide some properties to update.",
+          400
+        )
+      );
+    });
+
+    it("should not throw an error if body object is not empty", () => {
+      const resultFn = () => validatePatchRequestBody({ key: "value" });
+      expect(resultFn).not.toThrow();
     });
   });
 });

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import userService from "./user.service";
-import { logger } from "../../services/logger.service";
+import { logger } from "../../services/logger/logger.service";
 import {
   asyncErrorCatcher,
   AppError,

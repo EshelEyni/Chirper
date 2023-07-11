@@ -1,33 +1,25 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import { asyncLocalStorage } from "./als.service";
+import { asyncLocalStorage } from "../als.service";
 import ansiColors from "ansi-colors";
-import { alStoreType } from "../middlewares/setupAls.middleware";
+import { alStoreType } from "../../middlewares/setupAls.middleware";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
-//define the time format
-function getTime(): string {
-  const now = new Date();
-  return now.toLocaleString("he");
-}
-
-function isError(e: any): boolean {
-  return e instanceof Error && !!e.stack && !!e.message;
-}
-
-function doLog(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
-  const strs = args.map(arg =>
-    typeof arg === "string" || isError(arg) ? arg : JSON.stringify(arg)
-  );
+function _formatAndLog(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
+  const strs = args.map(arg => {
+    const _isError = (e: any): boolean => e instanceof Error && !!e.stack && !!e.message;
+    return typeof arg === "string" || _isError(arg) ? arg : JSON.stringify(arg);
+  });
 
   let line = strs.join(" | ");
   const store = asyncLocalStorage.getStore() as alStoreType;
   const userId = store?.loggedinUserId;
   const str = userId ? `(userId: ${userId})` : "";
-  line = `${getTime()} - ${level} - ${line} ${str}\n`;
+  const currTime = new Date().toLocaleString("he");
+  line = `${currTime} - ${level} - ${line} ${str}\n`;
   switch (level) {
     case "DEBUG":
       line = ansiColors.bgMagenta(line);
@@ -53,23 +45,23 @@ function doLog(level: string, ...args: (string | Error | Record<string, unknown>
 
 function debug(...args: string[]) {
   if (process.env.NODE_NEV === "production") return;
-  doLog("DEBUG", ...args);
+  _formatAndLog("DEBUG", ...args);
 }
 
 function info(...args: any[]) {
-  doLog("INFO", ...args);
+  _formatAndLog("INFO", ...args);
 }
 
 function success(...args: any[]) {
-  doLog("SUCCESS", ...args);
+  _formatAndLog("SUCCESS", ...args);
 }
 
 function warn(...args: any[]) {
-  doLog("WARN", ...args);
+  _formatAndLog("WARN", ...args);
 }
 
 function error(...args: Array<string | Error>) {
-  doLog("ERROR", ...args);
+  _formatAndLog("ERROR", ...args);
 }
 
 export const logger = {

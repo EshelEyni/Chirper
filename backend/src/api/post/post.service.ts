@@ -14,7 +14,7 @@ import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls.middleware";
 import mongoose, { Document } from "mongoose";
 import { AppError } from "../../services/error/error.service";
-import { logger } from "../../services/logger.service";
+import { logger } from "../../services/logger/logger.service";
 import { PostLikeModel } from "./post-like.model";
 import { PostStatsModel } from "./post-stats.model";
 import { BookmarkedPostModel } from "./bookmark-post.model";

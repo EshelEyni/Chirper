@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { APIFeatures, QueryObj } from "./util/util.service";
 import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "./error/error.service";
 import { Model as ModelType } from "mongoose";
-import { logger } from "./logger.service";
+import { logger } from "./logger/logger.service";
 
 const getAll = (Model: ModelType<any>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {

@@ -1,4 +1,4 @@
-import { logger } from "./services/logger.service";
+import { logger } from "./services/logger/logger.service";
 
 process.on("uncaughtException", (err: Error) => {
   logger.error("Uncaught exception:", err.name, err.message);

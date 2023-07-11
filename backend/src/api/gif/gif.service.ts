@@ -2,7 +2,7 @@ import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 import config from "../../config";
 import fetch from "cross-fetch";
 import { GifModel, GifCategoryModel } from "./gif.model";
-import { APIFeatures } from "../../services/util.service";
+import { APIFeatures } from "../../services/util/util.service";
 import { AppError } from "../../services/error/error.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 

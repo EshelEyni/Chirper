@@ -6,7 +6,7 @@ import {
   PostRepostResult,
   PostStatsBody,
 } from "../../../../shared/interfaces/post.interface";
-import { APIFeatures, QueryString, queryEntityExists } from "../../services/util.service";
+import { APIFeatures, QueryObj, queryEntityExists } from "../../services/util/util.service";
 import { PostModel } from "./post.model";
 import { RepostModel } from "./repost.model";
 import { PollResultModel } from "./poll.model";
@@ -22,7 +22,7 @@ import { ObjectId } from "mongodb";
 import userService from "../user/user.service";
 import { User } from "../../../../shared/interfaces/user.interface";
 
-async function query(queryString: QueryString): Promise<Post[]> {
+async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
     .filter()
     .sort()

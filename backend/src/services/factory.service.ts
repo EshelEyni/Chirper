@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { APIFeatures, QueryString } from "./util.service";
+import { APIFeatures, QueryObj } from "./util/util.service";
 import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "./error/error.service";
 import { Model as ModelType } from "mongoose";
 import { logger } from "./logger.service";
 
 const getAll = (Model: ModelType<any>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const features = new APIFeatures(Model.find(), req.query as QueryString)
+    const features = new APIFeatures(Model.find(), req.query as QueryObj)
       .filter()
       .sort()
       .limitFields()

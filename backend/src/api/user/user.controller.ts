@@ -9,11 +9,11 @@ import {
 import factory from "../../services/factory.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../shared/interfaces/user.interface";
-import { QueryString } from "../../services/util.service";
+import { QueryObj } from "../../services/util/util.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
-  const users = (await userService.query(queryString as QueryString)) as unknown as User[];
+  const users = (await userService.query(queryString as QueryObj)) as unknown as User[];
 
   res.status(200).json({
     status: "success",

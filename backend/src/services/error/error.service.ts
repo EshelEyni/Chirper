@@ -10,7 +10,7 @@ enum ErrorType {
   JsonWebTokenError = "JsonWebTokenError",
 }
 
-export interface CustomError extends Error {
+interface CustomError extends Error {
   path?: string;
   value?: string;
   keyValue?: { [key: string]: string };
@@ -136,4 +136,4 @@ function validatePatchRequestBody(body: object) {
   }
 }
 
-export { AppError, errorHandler, asyncErrorCatcher, validatePatchRequestBody };
+export { CustomError, AppError, errorHandler, asyncErrorCatcher, validatePatchRequestBody };

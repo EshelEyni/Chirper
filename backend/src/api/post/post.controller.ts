@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { QueryString } from "../../services/util.service";
+import { QueryObj } from "../../services/util/util.service";
 import { NewPost, Post, PostRepostResult } from "../../../../shared/interfaces/post.interface";
 import postService from "./post.service";
 import {
@@ -12,7 +12,7 @@ import { PostModel } from "./post.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
-  const posts = (await postService.query(queryString as QueryString)) as unknown as Post[];
+  const posts = (await postService.query(queryString as QueryObj)) as unknown as Post[];
 
   res.status(200).send({
     status: "success",

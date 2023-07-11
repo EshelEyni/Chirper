@@ -6,9 +6,7 @@ import ansiColors from "ansi-colors";
 import { alStoreType } from "../middlewares/setupAls.middleware";
 
 const logsDir = "./logs";
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir);
-}
+if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
 //define the time format
 function getTime(): string {

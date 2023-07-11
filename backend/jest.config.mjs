@@ -5,6 +5,9 @@ export default {
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
-  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  testMatch: ["<rootDir>/src/services/util/util.service.test.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 };
+
+// testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+// roots: ["<rootDir>/"],

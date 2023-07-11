@@ -1,7 +1,7 @@
 import { User } from "../../../../shared/interfaces/user.interface";
 import { UserModel } from "../user/user.model";
 import { AppError } from "../../services/error/error.service";
-import { sendEmail } from "../../services/util.service";
+import { sendEmail } from "../../services/util/util.service";
 import crypto from "crypto";
 import tokenService from "../../services/token.service";
 

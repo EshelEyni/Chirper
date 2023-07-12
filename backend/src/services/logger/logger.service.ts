@@ -8,60 +8,77 @@ import { alStoreType } from "../../middlewares/setupAls.middleware";
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
-function _formatAndLog(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
-  const strs = args.map(arg => {
-    const _isError = (e: any): boolean => e instanceof Error && !!e.stack && !!e.message;
-    return typeof arg === "string" || _isError(arg) ? arg : JSON.stringify(arg);
-  });
+function _handleLogMessage(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
+  const message = _formatLogMessage(level, ...args);
+  _writeToLogFile(message);
+  _logMessage(level, message);
+}
 
-  let line = strs.join(" | ");
+function _formatLogMessage(
+  level: string,
+  ...args: (string | Error | Record<string, unknown>)[]
+): string {
+  const text = args
+    .map(arg => {
+      const _isError = (e: any): boolean => e instanceof Error && !!e.stack && !!e.message;
+      return typeof arg === "string" || _isError(arg) ? arg : JSON.stringify(arg);
+    })
+    .join(" | ");
+
   const store = asyncLocalStorage.getStore() as alStoreType;
   const userId = store?.loggedinUserId;
-  const str = userId ? `(userId: ${userId})` : "";
+  const userStr = userId ? `(userId: ${userId})` : "";
   const currTime = new Date().toLocaleString("he");
-  line = `${currTime} - ${level} - ${line} ${str}\n`;
-  switch (level) {
-    case "DEBUG":
-      line = ansiColors.bgMagenta(line);
-      break;
-    case "INFO":
-      line = ansiColors.bgGreen(line);
-      break;
-    case "SUCCESS":
-      line = ansiColors.bgBlue(line);
-      break;
-    case "WARN":
-      line = ansiColors.bgYellow(line);
-      break;
-    case "ERROR":
-      line = ansiColors.bgRed(line);
-      break;
-  }
-  console.log(line);
-  fs.appendFile("./logs/backend.log", line, (err: any) => {
+  return `${currTime} - ${level} - ${text} ${userStr}\n`;
+}
+
+function _writeToLogFile(message: string) {
+  fs.appendFile("./logs/backend.log", message, (err: any) => {
     if (err) console.log(ansiColors.red("FATAL: cannot write to log file"));
   });
 }
 
-function debug(...args: string[]) {
+function _logMessage(level: string, message: string) {
+  let log = message;
+  switch (level) {
+    case "DEBUG":
+      log = ansiColors.bgMagenta(message);
+      break;
+    case "INFO":
+      log = ansiColors.bgGreen(message);
+      break;
+    case "SUCCESS":
+      log = ansiColors.bgBlue(message);
+      break;
+    case "WARN":
+      log = ansiColors.bgYellow(message);
+      break;
+    case "ERROR":
+      log = ansiColors.bgRed(message);
+      break;
+  }
+  console.log(log);
+}
+
+function debug(...args: any[]) {
   if (process.env.NODE_NEV === "production") return;
-  _formatAndLog("DEBUG", ...args);
+  _handleLogMessage("DEBUG", ...args);
 }
 
-function info(...args: any[]) {
-  _formatAndLog("INFO", ...args);
+function info(...args: string[]) {
+  _handleLogMessage("INFO", ...args);
 }
 
-function success(...args: any[]) {
-  _formatAndLog("SUCCESS", ...args);
+function success(...args: string[]) {
+  _handleLogMessage("SUCCESS", ...args);
 }
 
-function warn(...args: any[]) {
-  _formatAndLog("WARN", ...args);
+function warn(...args: string[]) {
+  _handleLogMessage("WARN", ...args);
 }
 
 function error(...args: Array<string | Error>) {
-  _formatAndLog("ERROR", ...args);
+  _handleLogMessage("ERROR", ...args);
 }
 
 export const logger = {

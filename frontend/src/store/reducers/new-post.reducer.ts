@@ -1,5 +1,5 @@
 import { NewPost, Post, repliedPostDetails } from "../../../../shared/interfaces/post.interface";
-import { utilService } from "../../services/util.service/utils.service";
+import { makeId } from "../../services/util.service/utils.service";
 
 export type NewPostState = {
   homePage: {
@@ -28,7 +28,7 @@ const getDefaultNewPost = (
   quotedPostId?: string
 ): NewPost => {
   return {
-    tempId: utilService.makeId(),
+    tempId: makeId(),
     text: "",
     audience: "everyone",
     repliersType: "everyone",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { utilService } from "../../services/util.service/utils.service";
+import { debounce } from "../../services/util.service/utils.service";
 import { locationService } from "../../services/location.service";
 import { FC } from "react";
 import { Location } from "../../../../shared/interfaces/location.interface";
@@ -72,7 +72,7 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
         className="location-search-bar-input"
         type="text"
         placeholder="Search locations"
-        onChange={utilService.debounce(handleChange, 1000).debouncedFunc}
+        onChange={debounce(handleChange, 1000).debouncedFunc}
         onFocus={() => setIsSearchBarFocused(true)}
         onBlur={() => setIsSearchBarFocused(false)}
         ref={SearchBarInputRef}

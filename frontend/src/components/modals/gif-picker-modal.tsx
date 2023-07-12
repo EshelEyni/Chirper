@@ -6,7 +6,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import { GifSearchBar } from "../gif/gif-search-bar";
 import { ContentLoader } from "../loaders/content-loader";
-import { UIElement } from "../post/post-edit-actions";
+import { UIElement } from "../post/post-edit-actions/post-edit-actions";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 
 interface GifPickerProps {

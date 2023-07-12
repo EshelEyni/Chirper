@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { ContentLoader } from "../loaders/content-loader";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
 import Switch from "@mui/material/Switch";
-import { UIElement } from "../post/post-edit-actions";
+import { UIElement } from "../post/post-edit-actions/post-edit-actions";
 import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";

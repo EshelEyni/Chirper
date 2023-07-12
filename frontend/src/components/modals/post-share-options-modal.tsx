@@ -3,7 +3,7 @@ import { Post } from "../../../../shared/interfaces/post.interface";
 import { FiUpload } from "react-icons/fi";
 import { FaRegEnvelope } from "react-icons/fa";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
-import { utilService } from "../../services/util.service/utils.service";
+import { copyToClipboard } from "../../services/util.service/utils.service";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { addBookmark, removeBookmark } from "../../store/actions/post.actions";
@@ -31,7 +31,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       icon: <AiOutlineLink size={20} />,
       onClickFunc: () => {
         postService.updatePostStats(post.id, { isPostLinkCopied: true });
-        utilService.copyToClipboard(url);
+        copyToClipboard(url);
         onToggleModal();
         dispatch(
           setUserMsg({

@@ -6,8 +6,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { Logo } from "../other/logo";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
-import { utilService } from "../../services/util.service/utils.service";
 import { Link } from "react-router-dom";
+import { formatNumToK } from "../../services/util.service/utils.service";
 
 export type UserPreviewModalPosition = {
   top?: string;
@@ -65,7 +65,7 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
       <div className="post-preview-modal-user-info-following-stats">
         {followingStats.map((stat, idx) => (
           <div className="post-preview-modal-user-info-following-stats-item" key={idx}>
-            <Link to={stat.link}>{`${utilService.formatNumToK(stat.count)} ${stat.title}`}</Link>
+            <Link to={stat.link}>{`${formatNumToK(stat.count)} ${stat.title}`}</Link>
           </div>
         ))}
       </div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { utilService } from "../services/util.service/utils.service";
+import { debounce } from "../services/util.service/utils.service";
 
 type ElementsHoverState = {
   [elementName: string]: boolean;
@@ -9,7 +9,7 @@ export const useCustomElementHover = (initialElementsState: ElementsHoverState) 
   const [elementsHoverState, setElementsHoverState] = useState(initialElementsState);
 
   const debounced = useRef(
-    utilService.debounce((elementName: string) => {
+    debounce((elementName: string) => {
       setElementsHoverState(prevState => ({
         ...prevState,
         [elementName]: !prevState[elementName],

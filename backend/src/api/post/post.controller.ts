@@ -7,7 +7,7 @@ import {
   AppError,
   validatePatchRequestBody,
 } from "../../services/error/error.service";
-import factory from "../../services/factory.service";
+import { deleteOne } from "../../services/factory/factory.service";
 import { PostModel } from "./post.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
@@ -124,7 +124,7 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   });
 });
 
-const removePost = factory.deleteOne(PostModel);
+const removePost = deleteOne(PostModel);
 
 const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedinUserId } = req;

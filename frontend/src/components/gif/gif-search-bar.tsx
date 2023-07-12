@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Gif } from "../../../../shared/interfaces/gif.interface";
-import { utilService } from "../../services/util.service/utils.service";
+import { debounce } from "../../services/util.service/utils.service";
 import { SlMagnifier } from "react-icons/sl";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { gifService } from "../../services/gif.service";
@@ -61,7 +61,7 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
         type="text"
         placeholder="Search for GIFs"
         autoComplete="off"
-        onChange={utilService.debounce(handleChange, 1000).debouncedFunc}
+        onChange={debounce(handleChange, 1000).debouncedFunc}
         onFocus={() => setIsSearchBarFocused(true)}
         onBlur={() => setIsSearchBarFocused(false)}
         ref={SearchBarInputRef}

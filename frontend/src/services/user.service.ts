@@ -1,7 +1,7 @@
 import { MiniUser, User, FollowingResult } from "../../../shared/interfaces/user.interface";
 import { httpService } from "./http.service";
 import { storageService } from "./storage.service";
-import { utilService } from "./util.service/utils.service";
+import { handleServerResponse } from "./util.service/utils.service";
 
 function getLoggedinUser(): User | null {
   return storageService.get("loggedinUser");
@@ -31,7 +31,7 @@ function getDefaultUserImgUrl(): string {
 async function query(): Promise<User[]> {
   try {
     const respose = await httpService.get(`user`);
-    return utilService.handleServerResponse<User[]>(respose);
+    return handleServerResponse<User[]>(respose);
   } catch (err) {
     console.log("User service: err in query", err);
     throw err;
@@ -41,7 +41,7 @@ async function query(): Promise<User[]> {
 async function getById(userId: string): Promise<User> {
   try {
     const respose = await httpService.get(`user/${userId}`);
-    return utilService.handleServerResponse<User>(respose);
+    return handleServerResponse<User>(respose);
   } catch (err) {
     console.log("User service: err in getById", err);
     throw err;
@@ -51,7 +51,7 @@ async function getById(userId: string): Promise<User> {
 async function getByUsername(username: string): Promise<User> {
   try {
     const respose = await httpService.get(`user/username/${username}`);
-    return utilService.handleServerResponse<User>(respose);
+    return handleServerResponse<User>(respose);
   } catch (err) {
     console.log("User service: err in getByUsername", err);
     throw err;
@@ -62,7 +62,7 @@ async function followUser(userId: string, postId?: string): Promise<FollowingRes
   try {
     const endpoint = _getFollowingEndpoint(userId, postId);
     const respose = await httpService.post(endpoint);
-    return utilService.handleServerResponse<FollowingResult>(respose);
+    return handleServerResponse<FollowingResult>(respose);
   } catch (err) {
     console.log("User service: err in addFollowiing", err);
     throw err;
@@ -73,7 +73,7 @@ async function unFollowUser(userId: string, postId?: string): Promise<FollowingR
   try {
     const endpoint = _getFollowingEndpoint(userId, postId);
     const respose = await httpService.delete(endpoint);
-    return utilService.handleServerResponse<FollowingResult>(respose);
+    return handleServerResponse<FollowingResult>(respose);
   } catch (err) {
     console.log("User service: err in removeFollowiing", err);
     throw err;

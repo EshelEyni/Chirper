@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { utilService } from "../../services/util.service/utils.service";
 import { ContentLoader } from "../loaders/content-loader";
 import { BtnRemoveContent } from "../btns/btn-remove-content";
 import { AppDispatch } from "../../store/types";
@@ -7,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
+import { makeId } from "../../services/util.service/utils.service";
 
 type PostEditImgProps = {
   currNewPost: NewPost;
@@ -32,7 +32,7 @@ export const PostEditImg: FC<PostEditImgProps> = ({ currNewPost }) => {
       }
     >
       {currNewPost.imgs.map((img, idx) => (
-        <div className={"post-edit-img-container" + ` img-${idx + 1}`} key={utilService.makeId()}>
+        <div className={"post-edit-img-container" + ` img-${idx + 1}`} key={makeId()}>
           <BtnRemoveContent onRemoveContent={() => onRemoveImg(idx)} />
           {img.isLoading ? (
             <ContentLoader />

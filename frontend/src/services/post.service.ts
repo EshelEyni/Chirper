@@ -7,15 +7,15 @@ import {
   PostStats,
   PostStatsBody,
 } from "../../../shared/interfaces/post.interface";
-import { utilService } from "./util.service/utils.service";
 import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
+import { handleServerResponse } from "./util.service/utils.service";
 
 async function query(): Promise<Post[]> {
   try {
     const response = await httpService.get(
       "post?sort=-createdAt&previousThreadPostId[exists]=false"
     );
-    return utilService.handleServerResponse<Post[]>(response);
+    return handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");
     throw err;
@@ -25,7 +25,7 @@ async function query(): Promise<Post[]> {
 async function getById(postId: string): Promise<Post> {
   try {
     const response = await httpService.get(`post/${postId}`);
-    return utilService.handleServerResponse<Post>(response);
+    return handleServerResponse<Post>(response);
   } catch (err) {
     console.log("postService: Cannot get post");
     throw err;
@@ -53,7 +53,7 @@ async function add(posts: NewPost[]): Promise<Post> {
       }
     }
     if (!res) throw new Error("postService: Cannot add post");
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add post");
     throw err;
@@ -63,7 +63,7 @@ async function add(posts: NewPost[]): Promise<Post> {
 async function addReply(reply: NewPost): Promise<PostReplyResult> {
   try {
     const res = await httpService.post("post/reply", reply);
-    return utilService.handleServerResponse<PostReplyResult>(res);
+    return handleServerResponse<PostReplyResult>(res);
   } catch (err) {
     console.log("postService: Cannot add reply");
     throw err;
@@ -73,7 +73,7 @@ async function addReply(reply: NewPost): Promise<PostReplyResult> {
 async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
   try {
     const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
-    return utilService.handleServerResponse<PostRepostResult>(res);
+    return handleServerResponse<PostRepostResult>(res);
   } catch (err) {
     console.log("postService: Cannot add repost");
     throw err;
@@ -83,7 +83,7 @@ async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
 async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
   try {
     const res = await httpService.post("post/quote", post);
-    return utilService.handleServerResponse<Post | PostRepostResult>(res);
+    return handleServerResponse<Post | PostRepostResult>(res);
   } catch (err) {
     console.log("postService: Cannot add quote");
     throw err;
@@ -93,7 +93,7 @@ async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
 async function removeRepost(repostedPostId: string): Promise<Post> {
   try {
     const res = await httpService.delete(`post/repost?postId=${repostedPostId}`);
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot remove repost");
     throw err;
@@ -121,7 +121,7 @@ async function savePollVote(postId: string, optionIdx: number) {
 async function addLike(postId: string): Promise<Post> {
   try {
     const res = await httpService.post(`post/${postId}/like`);
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add like", err);
     throw err;
@@ -131,7 +131,7 @@ async function addLike(postId: string): Promise<Post> {
 async function removeLike(postId: string): Promise<Post> {
   try {
     const res = await httpService.delete(`post/${postId}/like`);
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot remove like", err);
     throw err;
@@ -141,7 +141,7 @@ async function removeLike(postId: string): Promise<Post> {
 async function getPostStats(postId: string): Promise<PostStats> {
   try {
     const res = await httpService.get(`post/${postId}/stats`);
-    return utilService.handleServerResponse<PostStats>(res);
+    return handleServerResponse<PostStats>(res);
   } catch (err) {
     console.log("postService: Cannot get post stats", err);
     throw err;
@@ -169,7 +169,7 @@ async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
 async function getBookmarkedPosts(): Promise<Post[]> {
   try {
     const res = await httpService.get("post/bookmark");
-    return utilService.handleServerResponse<Post[]>(res);
+    return handleServerResponse<Post[]>(res);
   } catch (err) {
     console.log("postService: Cannot get bookmarked posts", err);
     throw err;
@@ -179,7 +179,7 @@ async function getBookmarkedPosts(): Promise<Post[]> {
 async function addBookmark(postId: string): Promise<Post> {
   try {
     const res = await httpService.post(`post/${postId}/bookmark`);
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot add bookmarked post", err);
     throw err;
@@ -189,7 +189,7 @@ async function addBookmark(postId: string): Promise<Post> {
 async function removeBookmark(postId: string): Promise<Post> {
   try {
     const res = await httpService.delete(`post/${postId}/bookmark`);
-    return utilService.handleServerResponse<Post>(res);
+    return handleServerResponse<Post>(res);
   } catch (err) {
     console.log("postService: Cannot remove bookmarked post", err);
     throw err;

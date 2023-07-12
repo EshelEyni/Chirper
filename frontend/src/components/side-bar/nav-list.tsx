@@ -64,7 +64,7 @@ export const NavList = () => {
       isShown: !!loggedinUser,
     },
     {
-      path: `/profile/${loggedinUser?.id}`,
+      path: `/profile/${loggedinUser?.username}`,
       title: "Profile",
       iconActive: <FaUser className="active-icon" />,
       iconUnActive: <FaRegUser className="unactive-icon" />,
@@ -73,22 +73,18 @@ export const NavList = () => {
   ];
 
   return (
-    <ul className="nav-list">
+    <section className="nav-list">
       {links.map((link, index) => {
         if (link.isShown) {
           return (
-            <li key={index}>
-              <div className="link-container">
-                <NavLink to={link.path}>
-                  {link.iconActive}
-                  {link.iconUnActive}
-                  <span>{link.title}</span>
-                </NavLink>
-              </div>
-            </li>
+            <NavLink to={link.path} key={index}>
+              {link.iconActive}
+              {link.iconUnActive}
+              <span>{link.title}</span>
+            </NavLink>
           );
         }
       })}
-    </ul>
+    </section>
   );
 };

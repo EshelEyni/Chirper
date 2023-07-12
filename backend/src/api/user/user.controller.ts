@@ -6,7 +6,7 @@ import {
   AppError,
   validatePatchRequestBody,
 } from "../../services/error/error.service";
-import factory from "../../services/factory.service";
+import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/factory.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../shared/interfaces/user.interface";
 import { QueryObj } from "../../services/util/util.service";
@@ -23,9 +23,9 @@ const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
-const getUserById = factory.getOne(UserModel);
-const addUser = factory.createOne(UserModel);
-const updateUser = factory.updateOne(UserModel, [
+const getUserById = getOne(UserModel);
+const addUser = createOne(UserModel);
+const updateUser = updateOne(UserModel, [
   "username",
   "email",
   "fullname",
@@ -33,7 +33,7 @@ const updateUser = factory.updateOne(UserModel, [
   "email",
   "isApprovedLocation",
 ]);
-const removeUser = factory.deleteOne(UserModel);
+const removeUser = deleteOne(UserModel);
 
 const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { username } = req.params;

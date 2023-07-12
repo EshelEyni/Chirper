@@ -5,7 +5,7 @@ export default {
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
-  testMatch: ["<rootDir>/src/services/logger/logger.service.test.ts"],
+  testMatch: ["<rootDir>/src/services/factory/factory.service.test.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
 };
 

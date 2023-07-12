@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
-import { utilService } from "../../services/util.service/utils.service";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
+import { getDaysInMonth, getTimeZone } from "../../services/util.service/utils.service";
 
 type SetterFunctions = {
   month: (date: Date) => Date;
@@ -75,9 +75,9 @@ export const PostSchedule = () => {
   }>({ status: false, location: "" });
 
   const daysInSelectedMonth = useMemo(() => {
-    return [
-      ...Array(utilService.getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys(),
-    ].map(day => day + 1);
+    return [...Array(getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys()].map(
+      day => day + 1
+    );
   }, [schedule]);
 
   const getErrorLocation = (newDate: Date): "time" | "date" => {
@@ -116,7 +116,7 @@ export const PostSchedule = () => {
 
       const setterFunctions = {
         month: (date: Date) => {
-          const daysInMonth = utilService.getDaysInMonth(date.getFullYear(), monthIdx);
+          const daysInMonth = getDaysInMonth(date.getFullYear(), monthIdx);
           if (date.getDate() > daysInMonth) {
             date.setDate(daysInMonth);
           }
@@ -124,7 +124,7 @@ export const PostSchedule = () => {
         },
         day: (date: Date) => new Date(date.setDate(value as number)),
         year: (date: Date) => {
-          const daysInMonth = utilService.getDaysInMonth(value as number, date.getMonth());
+          const daysInMonth = getDaysInMonth(value as number, date.getMonth());
           if (date.getDate() > daysInMonth) {
             date.setDate(daysInMonth);
           }
@@ -223,9 +223,7 @@ export const PostSchedule = () => {
           return {
             ...input,
             selectValues: [
-              ...Array(
-                utilService.getDaysInMonth(schedule.getFullYear(), schedule.getMonth())
-              ).keys(),
+              ...Array(getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys(),
             ].map(day => day + 1),
           };
         }
@@ -337,7 +335,7 @@ export const PostSchedule = () => {
           <div className="time-zone">
             <h3 className="time-zone-title">Time Zone</h3>
             <div className="time-zone-container">
-              <p className="time-zone-value">{utilService.getTimeZone()}</p>
+              <p className="time-zone-value">{getTimeZone()}</p>
             </div>
           </div>
         </main>

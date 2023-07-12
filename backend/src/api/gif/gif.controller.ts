@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import gifService from "./gif.service";
 import { asyncErrorCatcher, AppError } from "../../services/error/error.service";
-import factory from "../../services/factory.service";
+import { getAll } from "../../services/factory/factory.service";
 import { GifCategoryModel, GifModel } from "./gif.model";
 
-const getGifCategories = factory.getAll(GifCategoryModel);
-const getGifByCategory = factory.getAll(GifModel);
+const getGifCategories = getAll(GifCategoryModel);
+const getGifByCategory = getAll(GifModel);
 
 const getGifsBySearchTerm = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {

@@ -127,7 +127,21 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
-export const utilService = {
+function readAsDataURL(file: File): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result && typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to read file."));
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export {
   formatDateToRelativeTime,
   formatNumToK,
   makeId,
@@ -137,4 +151,5 @@ export const utilService = {
   handleServerResponse,
   copyToClipboard,
   formatDateToCleanString,
+  readAsDataURL,
 };

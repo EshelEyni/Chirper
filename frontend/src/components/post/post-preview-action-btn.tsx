@@ -1,6 +1,6 @@
 import { Post } from "../../../../shared/interfaces/post.interface";
 import { useCustomElementHover } from "../../hooks/useCustomElementHover";
-import { utilService } from "../../services/util.service/utils.service";
+import { formatNumToK } from "../../services/util.service/utils.service";
 import { PostShareOptionsModal } from "../modals/post-share-options-modal";
 import { RepostOptionsModal } from "../modals/repost-options-modal";
 import { ElementTitle } from "../other/element-title";
@@ -52,7 +52,7 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
       >
         <div className="icon-container">{icon}</div>
         {count !== undefined && (
-          <span className="count">{count > 0 ? utilService.formatNumToK(count) : ""}</span>
+          <span className="count">{count > 0 ? formatNumToK(count) : ""}</span>
         )}
       </button>
       {elementsHoverState?.btnActionContainer && (

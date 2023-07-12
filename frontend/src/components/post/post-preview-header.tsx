@@ -1,6 +1,5 @@
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { Logo } from "../other/logo";
-import { utilService } from "../../services/util.service/utils.service";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 import { Post, QuotedPost } from "../../../../shared/interfaces/post.interface";
 import { UserImg } from "../user/user-img";
@@ -8,6 +7,10 @@ import { useCustomElementHover } from "../../hooks/useCustomElementHover";
 import { ElementTitle } from "../other/element-title";
 import { UserPreviewModal, UserPreviewModalPosition } from "../modals/user-preview-modal";
 import { useState } from "react";
+import {
+  formatDateToCleanString,
+  formatDateToRelativeTime,
+} from "../../services/util.service/utils.service";
 
 type PostPreviewHeaderProps = {
   post: Post | QuotedPost;
@@ -92,9 +95,9 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
             onMouseEnter={() => handleMouseEnter("postTime")}
             onMouseLeave={() => handleMouseLeave("postTime")}
           >
-            {utilService.formatDateToRelativeTime(post.createdAt)}
+            {formatDateToRelativeTime(post.createdAt)}
             {elementsHoverState?.postTime && (
-              <ElementTitle title={utilService.formatDateToCleanString(post.createdAt)} />
+              <ElementTitle title={formatDateToCleanString(post.createdAt)} />
             )}
           </span>
         </div>

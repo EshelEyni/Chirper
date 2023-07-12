@@ -2,10 +2,10 @@ import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-import { utilService } from "../../services/util.service/utils.service";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
 import { AppDispatch } from "../../store/types";
 import { NewPostType as typeofPostType } from "../../store//reducers/new-post.reducer";
+import { debounce } from "../../services/util.service/utils.service";
 
 type PostTextInputProps = {
   currNewPost: NewPost | null;
@@ -38,7 +38,7 @@ export const PostTextInput: FC<PostTextInputProps> = ({
   const dispatch: AppDispatch = useDispatch();
 
   const detectURL = useRef(
-    utilService.debounce(async (currPost: NewPost, text: string, isVideoRemoved: boolean) => {
+    debounce(async (currPost: NewPost, text: string, isVideoRemoved: boolean) => {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = text.match(urlRegex);
       let youtubeURL = "";

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { BtnCreatePost } from "../btns/btn-create-post";
-import { PostEditActions } from "./post-edit-actions";
+import { PostEditActions } from "./post-edit-actions/post-edit-actions";
 import { TextIndicator } from "../other/text-indicator";
 import {
   NewPost,

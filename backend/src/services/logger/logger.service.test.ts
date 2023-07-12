@@ -12,7 +12,7 @@ jest.spyOn(console, "log").mockImplementation(() => {
   return;
 });
 
-describe("Logger", () => {
+describe("Logger Service", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

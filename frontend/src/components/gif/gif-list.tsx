@@ -22,15 +22,15 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
-  const handleGifClick = (gif: Gif) => {
+  function handleGifClick(gif: Gif) {
     const newPost = { ...currNewPost, gif };
     dispatch(updateCurrNewPost(newPost, newPostType));
     onToggleElementVisibility("gifPicker");
-  };
+  }
 
-  const handleChange = () => {
-    setIsPlaying(!isPlaying);
-  };
+  function handleChange() {
+    setIsPlaying(prevState => !prevState);
+  }
 
   return (
     <div className="gif-list">
@@ -55,14 +55,14 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
           }}
         />
       </div>
-      <div className="gif-list-main-container">
+      <ul className="gif-list-main-container">
         {gifs.length === 0 && <ContentLoader />}
         {gifs.length > 0 &&
           gifs.map((gif, idx) => {
             const ratio = gif.size.width / gif.size.height;
             const width = 120 * ratio + "px";
             return (
-              <div
+              <li
                 className="gif-list-item"
                 key={gif.id}
                 onClick={() => handleGifClick(gif)}
@@ -76,10 +76,10 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
                   alt={gif.description}
                   loading="lazy"
                 />
-              </div>
+              </li>
             );
           })}
-      </div>
+      </ul>
     </div>
   );
 };

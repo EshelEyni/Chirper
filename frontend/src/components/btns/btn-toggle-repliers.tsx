@@ -9,21 +9,29 @@ type BtnToggleRepliersProps = {
 
 export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) => {
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
-  const toggleModal = () => {
-    setIsRepliersOpen(!isRepliersOpen);
-  };
+  const title = getTitle(currNewPost.repliersType);
+  function toggleModal() {
+    setIsRepliersOpen(prevState => !prevState);
+  }
 
-  const setTitle = (value: string) => {
-    if (value === "everyone") return "Everyone";
-    if (value === "followed") return "Only people you follow";
-    if (value === "mentioned") return "Only people you mentioned";
-  };
+  function getTitle(value: string) {
+    switch (value) {
+      case "everyone":
+        return "Everyone";
+      case "followed":
+        return "Only people you follow";
+      case "mentioned":
+        return "Only people you mentioned";
+      default:
+        return "Everyone";
+    }
+  }
 
   return (
     <div className="btn-toggle-repliers-container">
       <button className="btn-toggle-repliers" onClick={() => toggleModal()}>
         <FaGlobeAmericas />
-        <span>{setTitle(currNewPost.repliersType)}</span>
+        <span>{title}</span>
         can reply
       </button>
       {isRepliersOpen && (

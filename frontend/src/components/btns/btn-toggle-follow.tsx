@@ -8,19 +8,20 @@ type BtnToggleFollowProps = {
 
 export const BtnToggleFollow: FC<BtnToggleFollowProps> = ({ user, onToggleFollow }) => {
   const [isHoverBtn, setIsHoverBtn] = useState(false);
-
+  const { isFollowing } = user;
+  const btnText = isFollowing ? (isHoverBtn ? "Unfollow" : "Following") : "Follow";
   return (
     <button
       className={
         "btn-toggle-follow" +
-        (user.isFollowing ? " btn-toggle-follow-following" : "") +
+        (isFollowing ? " btn-toggle-follow-following" : "") +
         (isHoverBtn ? " btn-toggle-follow-hover" : "")
       }
       onClick={onToggleFollow}
       onMouseEnter={() => setIsHoverBtn(true)}
       onMouseLeave={() => setIsHoverBtn(false)}
     >
-      {user.isFollowing ? (isHoverBtn ? "Unfollow" : "Following") : "Follow"}
+      {btnText}
     </button>
   );
 };

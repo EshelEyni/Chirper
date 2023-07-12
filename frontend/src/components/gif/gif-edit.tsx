@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewPost } from "../../../../shared/interfaces/post.interface";
 import { RootState } from "../../store/store";
 import { updateCurrNewPost } from "../../store/actions/new-post.actions";
+import { BtnPlay } from "../btns/btn-play";
 
 type GifEditProps = {
   currNewPost: NewPost;
@@ -18,14 +19,14 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const onTogglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+  function onTogglePlay() {
+    setIsPlaying(prevState => !prevState);
+  }
 
-  const onRemoveGif = () => {
+  function onRemoveGif() {
     const newPost = { ...currNewPost, gif: null };
     dispatch(updateCurrNewPost(newPost, newPostType));
-  };
+  }
 
   return (
     <>
@@ -35,17 +36,11 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
         <img
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           src={isPlaying ? currNewPost.gif!.url : currNewPost.gif!.staticUrl}
-          alt="gif"
+          alt={currNewPost.gif!.description}
           onClick={onTogglePlay}
           onLoad={() => setIsLoading(false)}
         />
-        {!isPlaying && (
-          <button className="btn-play" onClick={onTogglePlay}>
-            <div className="btn-play-icon-container">
-              <FaPlay className="play-icon" />
-            </div>
-          </button>
-        )}
+        {!isPlaying && <BtnPlay onTogglePlay={onTogglePlay} />}
         <span className="gif-title">GIF</span>
       </div>
     </>

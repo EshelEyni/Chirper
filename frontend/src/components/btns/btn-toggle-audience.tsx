@@ -9,20 +9,26 @@ type BtnToggleAudienceProps = {
 
 export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) => {
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
-
-  const toggleModal = () => {
+  const title = getTitle(currNewPost.audience);
+  function toggleModal() {
     setIsAudienceOpen(!isAudienceOpen);
-  };
+  }
 
-  const setTitle = (value: string) => {
-    if (value === "everyone") return "Everyone";
-    if (value === "chirper-circle") return "Chirper Circle";
-  };
+  function getTitle(value: string) {
+    switch (value) {
+      case "everyone":
+        return "Everyone";
+      case "chirper-circle":
+        return "Chirper Circle";
+      default:
+        return "Everyone";
+    }
+  }
 
   return (
     <div className="btn-toggle-audience-cotnainer">
       <button className="btn-toggle-audience" onClick={() => toggleModal()}>
-        <span>{setTitle(currNewPost.audience)}</span>
+        <span>{title}</span>
         <IoChevronDownOutline />
       </button>
       {isAudienceOpen && (

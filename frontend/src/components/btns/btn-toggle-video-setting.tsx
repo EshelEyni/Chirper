@@ -22,11 +22,11 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
     modalHeight: 200,
   });
 
-  const onTogglePlaybackRatePickerModal = (e: React.MouseEvent) => {
+  function onTogglePlaybackRatePickerModal(e: React.MouseEvent) {
     e.stopPropagation();
     updateModalPosition();
     setIsPlaybackRaterPickerModalShown(!isPlaybackRatePickerModalShown);
-  };
+  }
 
   return (
     <div className="btn-toggle-video-setting-container" onClick={e => e.stopPropagation()}>

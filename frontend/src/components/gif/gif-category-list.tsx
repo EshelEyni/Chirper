@@ -3,11 +3,11 @@ import { ContentLoader } from "../loaders/content-loader";
 import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
 import { gifService } from "../../services/gif.service";
 
-interface GifEditProps {
+type GifEditProps = {
   currCategory: string;
   setCurrCategory: (category: string) => void;
   setGifs: (gifs: Gif[]) => void;
-}
+};
 
 export const GifCategoryList: React.FC<GifEditProps> = ({
   currCategory,
@@ -16,29 +16,30 @@ export const GifCategoryList: React.FC<GifEditProps> = ({
 }) => {
   const [gifCategories, setGifCategories] = useState<GifCategory[]>([]);
 
+  async function getGifCategories() {
+    const gifs = await gifService.getGifCategroies();
+    setGifCategories(gifs);
+  }
+
+  async function handleCategoryClick(category: string) {
+    setCurrCategory(category);
+    const gifs = await gifService.getGifByCategory(category);
+    setGifs(gifs);
+  }
+
   useEffect(() => {
     getGifCategories();
   }, []);
 
-  const getGifCategories = async () => {
-    const gifs = await gifService.getGifCategroies();
-    setGifCategories(gifs);
-  };
-
-  const handleCategoryClick = async (category: string) => {
-    setCurrCategory(category);
-    const gifs = await gifService.getGifByCategory(category);
-    setGifs(gifs);
-  };
-
   return (
     <div className="gif-category-list">
-      {gifCategories.length === 0 && !currCategory && <ContentLoader />}
+      {!gifCategories.length && !currCategory && <ContentLoader />}
       {gifCategories.length > 0 &&
         gifCategories.map((gifCategory, idx) => {
+          const isLast = idx === gifCategories.length - 1;
           return (
             <div
-              className={"gif-category-preview" + (idx === gifCategories.length - 1 ? " last" : "")}
+              className={"gif-category-preview" + (isLast ? " last" : "")}
               key={gifCategory.id}
               onClick={() => handleCategoryClick(gifCategory.name)}
             >

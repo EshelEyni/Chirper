@@ -11,9 +11,9 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
   onToggleDescription,
   isModalAbove,
 }) => {
-  const handleClick = (e: React.MouseEvent) => {
+  function handleClick(e: React.MouseEvent) {
     e.stopPropagation();
-  };
+  }
 
   return (
     <>

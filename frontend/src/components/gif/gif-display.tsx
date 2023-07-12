@@ -24,27 +24,27 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
     threshold: 0.5,
   });
 
-  useEffect(() => {
-    setIsPlaying(inView);
-  }, [inView]);
-
-  const onTogglePlay = () => {
+  function onTogglePlay() {
     setIsPlaying(prevState => !prevState);
     setIsUserPaused(prevState => !prevState);
-  };
+  }
 
-  const onToggleDescription = (e: React.MouseEvent) => {
+  function onToggleDescription(e: React.MouseEvent) {
     e.stopPropagation();
     updateModalPosition();
     setIsDescriptionShown(!isDescriptionShown);
-  };
+  }
+
+  useEffect(() => {
+    setIsPlaying(inView);
+  }, [inView]);
 
   return (
     <article className="gif-display" onClick={onTogglePlay}>
       <img
         src={isPlaying ? url : staticUrl}
         ref={isUserPaused || !isAutoPlay ? undefined : ref}
-        alt="gif"
+        alt={description}
         loading="lazy"
       />
       <div className="gif-display-content-container">

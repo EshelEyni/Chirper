@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useRef } from "react";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
 import { VideoVolumeSlider } from "../video/video-volume-slider";
 import { storageService } from "../../services/storage.service";
@@ -22,29 +22,24 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({
   isVolumeHover,
   setIsVolumeHover,
 }) => {
-  const [isBtnClicked, setIsBtnClicked] = useState(false);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
 
-  const onToggleMute = (e: React.MouseEvent) => {
+  function onToggleMute(e: React.MouseEvent) {
     e.stopPropagation();
     setIsMuted(!isMuted);
-    if (isMuted) {
-      setVolume(Number(storageService.get("volume") || 0.5));
-    }
-    setIsBtnClicked(true);
-    setTimeout(() => {
-      setIsBtnClicked(false);
-    }, 100);
-  };
+    if (isMuted) setVolume(Number(storageService.get("volume") || 0.5));
+  }
 
-  const onToggleVolumeHover = (e: React.MouseEvent, isEntering: boolean) => {
+  function onToggleVolumeHover(e: React.MouseEvent, isHover: boolean) {
+    console.log("onToggleVolumeHover", e.relatedTarget);
     e.stopPropagation();
-
-    if (isEntering) {
-      setIsVolumeHover(true);
-    } else if (!isBtnClicked) {
-      setIsVolumeHover(false);
-    }
-  };
+    const isExternalClick =
+      btnRef.current &&
+      e.relatedTarget instanceof Node &&
+      !btnRef.current.contains(e.relatedTarget);
+    if (isHover) setIsVolumeHover(true);
+    else if (isExternalClick) setIsVolumeHover(false);
+  }
 
   return (
     <div
@@ -59,7 +54,7 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({
         setVolume={setVolume}
         isVolumeHover={isVolumeHover}
       />
-      <button className="btn-toggle-volume" onClick={e => onToggleMute(e)}>
+      <button className="btn-toggle-volume" onClick={e => onToggleMute(e)} ref={btnRef}>
         {isMuted ? <HiVolumeOff size={size} /> : <HiVolumeUp size={size} />}
       </button>
     </div>

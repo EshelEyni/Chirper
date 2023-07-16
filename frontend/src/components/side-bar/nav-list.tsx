@@ -1,17 +1,6 @@
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { CiHashtag } from "react-icons/ci";
-import {
-  FaHashtag,
-  FaRegEnvelope,
-  FaEnvelope,
-  FaRegBookmark,
-  FaBookmark,
-  FaRegUser,
-  FaUser,
-} from "react-icons/fa";
-import { MdListAlt } from "react-icons/md";
-import { IoMdListBox } from "react-icons/io";
-import { BsBell, BsFillBellFill } from "react-icons/bs";
+import { FaHashtag, FaRegBookmark, FaBookmark, FaRegUser, FaUser } from "react-icons/fa";
 import { NavLink as NavLinkType } from "../../types/elements.interface";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -34,27 +23,6 @@ export const NavList = () => {
       iconActive: <FaHashtag className="active-icon" />,
       iconUnActive: <CiHashtag className="unactive-icon" />,
       isShown: true,
-    },
-    {
-      path: "/notifications",
-      title: "Notifications",
-      iconActive: <BsFillBellFill className="active-icon" />,
-      iconUnActive: <BsBell className="unactive-icon" />,
-      isShown: !!loggedinUser,
-    },
-    {
-      path: "/messages",
-      title: "Messages",
-      iconActive: <FaEnvelope className="active-icon" />,
-      iconUnActive: <FaRegEnvelope className="unactive-icon" />,
-      isShown: !!loggedinUser,
-    },
-    {
-      path: "/lists",
-      title: "Lists",
-      iconActive: <IoMdListBox className="active-icon" />,
-      iconUnActive: <MdListAlt className="unactive-icon" />,
-      isShown: !!loggedinUser,
     },
     {
       path: "/bookmarks",

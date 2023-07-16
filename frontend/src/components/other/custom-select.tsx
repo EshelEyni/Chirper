@@ -53,11 +53,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       </div>
       {input.isDropdownOpen && (
         <div className="custom-select-dropdown">
-          {input.selectValues.map((value) => (
+          {input.selectValues.map(value => (
             <div
               className="custom-select-dropdown-item"
               key={value}
-              onClick={(e) => {
+              onClick={e => {
                 onSelected(e, value, input.type);
               }}
             >

@@ -5,10 +5,7 @@ import { ComposePage } from "./pages/secondary-pages/compose";
 import { DisplayPage } from "./pages/secondary-pages/display";
 import { ExplorePage } from "./pages/main-pages/explore";
 import { HomePage } from "./pages/main-pages/home";
-import { MessagesPage } from "./pages/main-pages/messages";
-import { NotificationsPage } from "./pages/main-pages/notifications";
 import { ProfileDetails } from "./pages/main-pages/profile-details";
-import { ListsPage } from "./pages/main-pages/lists-page";
 import { LoginPage } from "./pages/main-pages/login";
 import { SignupPage } from "./pages/main-pages/signup";
 import { PostLocation } from "./pages/secondary-pages/post-location";
@@ -38,18 +35,6 @@ const routes: Route[] = [
   {
     path: "bookmarks",
     component: BookmarksPage,
-  },
-  {
-    path: "messages",
-    component: MessagesPage,
-  },
-  {
-    path: "lists",
-    component: ListsPage,
-  },
-  {
-    path: "notifications",
-    component: NotificationsPage,
   },
   {
     path: "profile/:username?",

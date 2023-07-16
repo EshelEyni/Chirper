@@ -18,7 +18,7 @@ export const useCustomSelect = (
 
   const onFocused = (type: string) => {
     setInputs(
-      inputs.map((input) => {
+      inputs.map(input => {
         if (input.type === type) {
           return { ...input, isFocused: true };
         }
@@ -29,7 +29,7 @@ export const useCustomSelect = (
 
   const onBlurred = (type: string) => {
     setInputs(
-      inputs.map((input) => {
+      inputs.map(input => {
         if (input.type === type) {
           return { ...input, isFocused: false, isDropdownOpen: false };
         }
@@ -40,7 +40,7 @@ export const useCustomSelect = (
 
   const onToggleDropdown = (type: string) => {
     setInputs(
-      inputs.map((input) => {
+      inputs.map(input => {
         if (input.type === type) {
           return { ...input, isDropdownOpen: !input.isDropdownOpen };
         }
@@ -49,15 +49,11 @@ export const useCustomSelect = (
     );
   };
 
-  const onSelected = async (
-    e: MouseEvent,
-    value: string | number,
-    type: string
-  ) => {
+  const onSelected = async (e: MouseEvent, value: string | number, type: string) => {
     e.stopPropagation();
     onValueChange(type, value);
     setInputs(
-      inputs.map((input) => {
+      inputs.map(input => {
         if (input.type === type) {
           return { ...input, isDropdownOpen: false, value };
         }

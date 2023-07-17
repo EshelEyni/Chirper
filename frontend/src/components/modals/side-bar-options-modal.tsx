@@ -1,4 +1,4 @@
-import { GoGraph, GoTriangleDown } from "react-icons/go";
+import { GoTriangleDown } from "react-icons/go";
 import { IoIosBrush } from "react-icons/io";
 import { User } from "../../../../shared/interfaces/user.interface";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
@@ -24,10 +24,6 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
 
   const navigateTo = (path: string) => {
     toggleModal();
-    if (path === "/analytics") {
-      window.open(path, "_blank");
-      return;
-    }
     navigate(path);
   };
 
@@ -52,11 +48,6 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
       icon: <ChirperCircleIcon className="icon" />,
       text: "Chirper Circle",
       onClick: () => navigateTo("/chirper-circle"),
-    },
-    {
-      icon: <GoGraph className="icon" />,
-      text: "Analytics",
-      onClick: () => navigateTo("/analytics"),
     },
     {
       icon: <IoIosBrush className="icon display" />,

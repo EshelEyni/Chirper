@@ -1,4 +1,3 @@
-import { AnalyticsPage } from "./pages/main-pages/analytics";
 import { BookmarksPage } from "./pages/main-pages/bookmarks";
 import { ChirperCirclePage } from "./pages/secondary-pages/chirper-circle";
 import { ComposePage } from "./pages/secondary-pages/compose";
@@ -39,10 +38,6 @@ const routes: Route[] = [
   {
     path: "profile/:username?",
     component: ProfileDetails,
-  },
-  {
-    path: "analytics",
-    component: AnalyticsPage,
   },
   {
     path: "login",

@@ -1,0 +1,66 @@
+@keyframes fly {
+  0% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes rotateMouthTop {
+  0% {
+    top: 34.875%;
+    left: 65.875%;
+  }
+  50% {
+    top: 37.875%;
+    left: 66.25%;
+  }
+  100% {
+    top: 34.875%;
+    left: 65.875%;
+  }
+}
+
+@keyframes rotateMouthBottom {
+  0% {
+    top: 20.75%;
+  }
+  50% {
+    top: 20%;
+  }
+  100% {
+    top: 20.75%;
+  }
+}
+
+@keyframes flip {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(-0.5);
+  }
+}
+
+@keyframes notes {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5) translate(50%, -50%);
+  }
+  80% {
+    opacity: 0;
+    transform: scale(1.5) translate(100%, -100%);
+  }
+  100% {
+    transform: scale(1.5) translate(100%, -100%);
+    opacity: 0;
+  }
+}

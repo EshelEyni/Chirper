@@ -5,7 +5,7 @@ export const PageLoader = () => {
     <div className="page-loader">
       <span className="progress-bar"></span>
 
-      <Logo />
+      <Logo options={{ autoAnimate: true, height: 450, width: 450 }} />
     </div>
   );
 };

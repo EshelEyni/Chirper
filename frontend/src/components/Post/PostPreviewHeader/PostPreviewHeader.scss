@@ -1,0 +1,74 @@
+@import "../../../styles/setup/mixins";
+@import "../../../styles/setup/functions";
+
+.post-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .post-preview-header-main {
+    display: flex;
+    align-items: center;
+    gap: rem(5px);
+    color: var(--color-text-gray);
+    cursor: pointer;
+
+    .post-preview-header-user-info {
+      display: flex;
+      align-items: center;
+      gap: rem(5px);
+      position: relative;
+      font-size: rem(15px);
+
+      .post-preview-header-details-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: rem(3px);
+        @include modal-hover-guard;
+
+        .post-preview-header-full-name {
+          color: black;
+          font-weight: 600;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+        .post-preview-blue-check-mark {
+          width: rem(20px);
+          height: rem(20px);
+        }
+
+        .logo-container {
+          width: rem(18px);
+          height: rem(18px);
+          border-radius: 5px;
+          background-color: var(--color-primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: rem(3px);
+
+          svg {
+            stroke: white;
+          }
+        }
+      }
+
+      .post-preview-header-username {
+        position: relative;
+        font-size: rem(13px);
+        @include modal-hover-guard;
+      }
+    }
+
+    .post-time {
+      position: relative;
+      font-size: rem(12px);
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

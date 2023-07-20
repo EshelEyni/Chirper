@@ -1,0 +1,26 @@
+@import "../../../styles/setup/functions";
+
+.poll-length {
+  padding: rem(12px);
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+
+  .poll-length-title {
+    font-size: rem(15px);
+    font-weight: normal;
+  }
+
+  .poll-length-inputs-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+
+    .custom-select-container {
+      width: 30%;
+    }
+  }
+}

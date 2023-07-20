@@ -9,16 +9,4 @@
 @import "basics/layout";
 @import "basics/base";
 
-@import "pages/index";
-@import "components/user/index";
-@import "components/side-bar/index";
-@import "components/post/index";
-@import "components/poll/index";
-@import "components/other/index";
-@import "components/modal/index";
-@import "components/location/index";
-@import "components/loader/index";
-@import "components/gif/index";
-@import "components/btn/index";
-@import "components/msg/index";
-@import "components/video/index";
+@import "./app-styles/index";

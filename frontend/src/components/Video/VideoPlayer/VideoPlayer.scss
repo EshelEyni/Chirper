@@ -1,0 +1,35 @@
+@import "../../../styles/setup/functions";
+
+.react-player-wrapper {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+
+  .react-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 15px;
+  }
+
+  iframe {
+    border-radius: 15px;
+    height: rem(500px) !important;
+  }
+
+  video {
+    border-radius: 15px;
+  }
+
+  &:hover {
+    .video-custom-controls-main-container {
+      display: flex;
+    }
+
+    .count-down-timer-container {
+      display: none;
+    }
+  }
+}

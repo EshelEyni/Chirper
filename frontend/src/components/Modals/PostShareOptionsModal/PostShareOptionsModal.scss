@@ -1,0 +1,44 @@
+@import "../../../styles/setup/functions";
+
+.post-share-options-modal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  background-color: var(--color-background);
+  box-shadow: 0 0 10px 1px var(--color-border);
+  z-index: 2000;
+  border-radius: 25px;
+  transition: all 0.1s linear;
+
+  > :first-child {
+    border-radius: 25px 25px 0 0;
+  }
+
+  > :last-child {
+    border-radius: 0 0 25px 25px;
+  }
+
+  .btn-share-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: rem(8px);
+    width: 100%;
+    padding: rem(12px) rem(16px);
+    transition: all 0.1s ease-in-out;
+
+    > * {
+      color: var(--color-text);
+    }
+
+    span {
+      font-size: rem(15px);
+      font-weight: 600;
+    }
+
+    &:hover {
+      background-color: var(--color-hover);
+    }
+  }
+}

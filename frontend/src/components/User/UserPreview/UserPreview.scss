@@ -1,0 +1,35 @@
+@import "../../../styles/setup/functions";
+
+.user-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .user-preview-main-container {
+    display: flex;
+    flex-direction: row;
+    gap: rem(6px);
+
+    .user-preview-img {
+      width: rem(40px);
+      height: rem(40px);
+      border-radius: 50%;
+    }
+
+    .user-preview-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      h3 {
+        font-size: rem(14px);
+        font-weight: 600;
+      }
+
+      p {
+        font-size: rem(14px);
+        font-weight: 400;
+      }
+    }
+  }
+}

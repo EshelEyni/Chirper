@@ -1,0 +1,28 @@
+@import "../../../styles/setup/functions";
+
+.btn-remove-content {
+  position: absolute;
+  height: rem(30px);
+  width: rem(30px);
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  padding: rem(8px);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: rgb(63, 64, 60);
+  color: white;
+  margin: rem(8px);
+  &:hover {
+    filter: brightness(1.2);
+  }
+
+  .remove-content-icon {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: rem(18px);
+    height: rem(18px);
+  }
+}

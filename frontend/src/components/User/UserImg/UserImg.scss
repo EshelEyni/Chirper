@@ -1,0 +1,24 @@
+@import "../../../styles/setup/functions";
+
+.user-img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: rem(50px);
+  height: rem(50px);
+  cursor: pointer;
+
+  img {
+    border-radius: 50%;
+    transition: filter 0.3s ease-in-out;
+  }
+}
+
+.post-edit .content-container,
+.post-preview {
+  .user-img-container {
+    img:hover {
+      filter: brightness(85%);
+    }
+  }
+}

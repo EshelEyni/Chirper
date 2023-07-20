@@ -1,16 +1,16 @@
-import { BookmarksPage } from "./pages/main-pages/bookmarks";
-import { ChirperCirclePage } from "./pages/secondary-pages/chirper-circle";
-import { ComposePage } from "./pages/secondary-pages/compose";
-import { DisplayPage } from "./pages/secondary-pages/display";
-import { ExplorePage } from "./pages/main-pages/explore";
-import { HomePage } from "./pages/main-pages/home";
-import { ProfileDetails } from "./pages/main-pages/profile-details";
-import { LoginPage } from "./pages/main-pages/login";
-import { SignupPage } from "./pages/main-pages/signup";
-import { PostLocation } from "./pages/secondary-pages/post-location";
-import { PostSchedule } from "./pages/secondary-pages/post-scheduler";
-import { PostStatsPage } from "./pages/secondary-pages/post-stats";
-import { PostDetails } from "./pages/main-pages/post-details";
+import { BookmarksPage } from "./pages/MainPages/Bookmarks/Bookmarks";
+import { ExplorePage } from "./pages/MainPages/Explore/Explore";
+import { HomePage } from "./pages/MainPages/Home/Home";
+import { LoginPage } from "./pages/MainPages/Login/Login";
+import { PostDetails } from "./pages/MainPages/PostDetails/PostDetails";
+import { ProfileDetails } from "./pages/MainPages/ProfileDetails/ProfileDetails";
+import { SignupPage } from "./pages/MainPages/Signup/Signup";
+import { ChirperCirclePage } from "./pages/NestedPages/ChirperCircle/ChirperCircle";
+import { ComposePage } from "./pages/NestedPages/Compose/Compose";
+import { DisplayPage } from "./pages/NestedPages/Display/Display";
+import { PostLocation } from "./pages/NestedPages/PostLocation/PostLocation";
+import { PostSchedule } from "./pages/NestedPages/PostScheduler/PostSchedule";
+import { PostStatsPage } from "./pages/NestedPages/PostStats/PostStats";
 
 interface Route {
   path: string;

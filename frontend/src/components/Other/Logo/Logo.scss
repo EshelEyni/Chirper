@@ -1,0 +1,227 @@
+@import "../../../styles/setup/functions";
+@import "./LogoAnimations.scss";
+
+.logo-container {
+  display: flex;
+  width: rem(65px);
+  height: rem(65px);
+  position: relative;
+
+  .logo {
+    width: rem(330px);
+    height: rem(330px);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    color: var(--color-primary);
+  }
+
+  .logo-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .bird {
+      width: 100%;
+      height: 100%;
+      position: relative;
+
+      > div {
+        width: 17.5%;
+        height: 17.5%;
+        background: var(--color-primary);
+        border-radius: 100%;
+        position: absolute;
+      }
+
+      .body-top-cut-left {
+        background: var(--color-background);
+        top: 30.25%;
+        left: 28.75%;
+      }
+
+      .tail-cut,
+      .feather-bottom-cut,
+      .feather-middle-cut,
+      .body-top-cut-right,
+      .mouth-bottom-cut,
+      .mouth-top-cut {
+        background: var(--color-background);
+      }
+      .body {
+        width: 48.75%;
+        height: 48.75%;
+        top: 30%;
+        left: 30%;
+        position: relative;
+      }
+
+      .tail-cut {
+        width: 35.625%;
+        height: 35.625%;
+        left: 24.75%;
+        top: 39.375%;
+
+        height: 36.25%;
+        left: 26.375%;
+      }
+      .feather-bottom {
+        left: 45.75%;
+        top: 53.75%;
+      }
+      .feather-bottom-cut {
+        left: 38.75%;
+        top: 48%;
+      }
+      .feather-middle {
+        left: 43%;
+        top: 47.75%;
+      }
+      .feather-middle-cut {
+        left: 37.5%;
+        top: 40%;
+      }
+      .feather-top {
+        top: 41.875%;
+        left: 43.125%;
+        width: 24.375%;
+      }
+      .body-top-cut-right {
+        width: 48.75%;
+        height: 48.75%;
+        top: 6.5%;
+        left: 40%;
+      }
+      .mouth-bottom {
+        width: 16.25%;
+        height: 16.25%;
+        top: 37.75%;
+        left: 67%;
+      }
+      .mouth-bottom-cut {
+        width: 29.375%;
+        height: 29.375%;
+        top: 20.75%;
+        left: 61.875%;
+      }
+      .mouth-top {
+        width: 16.25%;
+        height: 16.25%;
+        top: 34.875%;
+        left: 65.875%;
+      }
+      .mouth-top-cut {
+        width: 29.375%;
+        height: 29.375%;
+        top: 18.375%;
+        left: 59%;
+      }
+      .head {
+        width: 16.875%;
+        height: 16.875%;
+        top: 44.75%;
+        left: 61.5%;
+      }
+    }
+    .muzieknootjes {
+      display: flex;
+      position: relative;
+      width: 10%;
+      height: 10%;
+      background-color: var(--color-background);
+      color: var(--color-primary);
+      left: -15%;
+      top: -5%;
+      visibility: hidden;
+      .noot-1,
+      .noot-2,
+      .noot-3,
+      .noot-4 {
+        position: absolute;
+        animation: notes 2s infinite linear;
+        font-size: 11%;
+        opacity: 0;
+      }
+
+      .noot-1 {
+        top: 50%;
+        left: 0;
+        animation-delay: 0.3s;
+      }
+
+      .noot-2 {
+        top: 26.67%;
+        left: 0%;
+        animation-delay: 0.6s;
+      }
+
+      .noot-3 {
+        top: 13.34%;
+        left: 20%;
+        animation-delay: .9s;
+      }
+
+      .noot-4 {
+        top: 20%;
+        left: 10%;
+        animation-delay: 1.2s;
+      }
+    }
+
+    &:hover {
+      .muzieknootjes {
+        visibility: visible;
+      }
+
+      .feather-bottom,
+      .feather-middle,
+      .feather-top {
+        transform-origin: 100% 25%;
+        animation: flip 0.2s infinite linear;
+      }
+
+      .bird {
+        animation: fly 0.5s infinite ease-in-out;
+      }
+
+      .bird .mouth-bottom-cut {
+        animation: rotateMouthBottom 0.2s infinite ease-in-out;
+      }
+
+      .bird .mouth-top {
+        animation: rotateMouthTop 0.2s infinite ease-in-out;
+      }
+    }
+  }
+
+  &.auto-animation {
+    .muzieknootjes {
+      visibility: visible;
+    }
+
+    .feather-bottom,
+    .feather-middle,
+    .feather-top {
+      transform-origin: 100% 25%;
+      animation: flip 0.2s infinite linear;
+    }
+
+    .bird {
+      animation: fly 0.5s infinite ease-in-out;
+    }
+
+    .bird .mouth-bottom-cut {
+      animation: rotateMouthBottom 0.2s infinite ease-in-out;
+    }
+
+    .bird .mouth-top {
+      animation: rotateMouthTop 0.2s infinite ease-in-out;
+    }
+  }
+}

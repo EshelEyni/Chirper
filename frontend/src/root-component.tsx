@@ -1,13 +1,13 @@
-import { SideBar } from "./components/side-bar/side-bar";
 import { Routes, Route } from "react-router-dom";
-import { routes, nestedRoutes } from "./routes";
-import "./styles/main.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./store/store";
-import { UserMsg } from "./components/msg/user-msg";
-import { LoginSignupMsg } from "./components/msg/login-signup-msg";
+import { routes, nestedRoutes } from "./routes";
 import { AppDispatch } from "./store/types";
+import "./styles/main.scss";
 import { autoLogin } from "./store/actions/auth.actions";
+import { RootState } from "./store/store";
+import { SideBar } from "./components/SideBar/SideBar";
+import { UserMsg } from "../src/components/Msg/UserMsg/UserMsg";
+import { LoginSignupMsg } from "../src/components/Msg/LoginSignupMsg/LoginSignupMsg";
 
 function RootComponent() {
   const dispatch: AppDispatch = useDispatch();

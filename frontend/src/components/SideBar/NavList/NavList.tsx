@@ -12,7 +12,7 @@ export const NavList = () => {
 
   const links: NavLinkType[] = [
     {
-      path: "/",
+      path: "/home",
       title: "Home",
       iconActive: <AiFillHome className="active-icon" />,
       iconUnActive: <AiOutlineHome className="unactive-icon" />,

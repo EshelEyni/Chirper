@@ -34,17 +34,17 @@ export const PostLocation = () => {
   }, [currNewPost]);
 
   const onGoBack = () => {
-    navigate(-1);
+    navigate("/home");
   };
 
   const onConfirmLocation = () => {
-    navigate(-1);
+    navigate("/home");
     if (!selectedLocation || !currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, location: selectedLocation }, newPostType));
   };
 
   const onClearLocation = () => {
-    navigate(-1);
+    navigate("/home");
     if (!currNewPost) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { location, ...postWithOutLocation } = currNewPost;

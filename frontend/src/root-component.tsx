@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
 import { AppDispatch } from "./store/types";
@@ -8,37 +8,40 @@ import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
 import { UserMsg } from "../src/components/Msg/UserMsg/UserMsg";
 import { LoginSignupMsg } from "../src/components/Msg/LoginSignupMsg/LoginSignupMsg";
+import { Route as TypeOfRoute } from "./routes";
+import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 
 function RootComponent() {
   const dispatch: AppDispatch = useDispatch();
   const { isSideBarShown, userMsg } = useSelector((state: RootState) => state.systemModule);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-
   if (!loggedinUser) dispatch(autoLogin());
+
+  function getRoutes() {
+    return routes.map(route => (
+      <Route key={route.path} path={route.path} element={<route.component />}>
+        {getNestedRoutes(route)}
+      </Route>
+    ));
+  }
+
+  function getNestedRoutes(route: TypeOfRoute) {
+    return nestedRoutes
+      .map((nestedRoute, index) => {
+        if (nestedRoute.onlyHomePage && route.path !== "home") return null;
+        return <Route key={index} path={nestedRoute.path} element={<nestedRoute.component />} />;
+      })
+      .filter(_ => _ !== null);
+  }
 
   return (
     <div className="app">
       <div className="app-content">
         {isSideBarShown && <SideBar />}
         <Routes>
-          {routes.map((route, index) => (
-            <Route key={index} path={route.path} element={<route.component />}>
-              {nestedRoutes
-                .map((nestedRoute, index) => {
-                  if (nestedRoute.onlyHomePage && route.path !== "") {
-                    return null;
-                  }
-                  return (
-                    <Route
-                      key={index}
-                      path={nestedRoute.path}
-                      element={<nestedRoute.component />}
-                    />
-                  );
-                })
-                .filter(_ => _ !== null)}
-            </Route>
-          ))}
+          <Route index element={<Navigate replace to="/home" />} />
+          {getRoutes()}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
         {!loggedinUser && <LoginSignupMsg />}
         {userMsg && <UserMsg />}

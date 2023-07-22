@@ -12,7 +12,7 @@ import { PostLocation } from "./pages/NestedPages/PostLocation/PostLocation";
 import { PostSchedule } from "./pages/NestedPages/PostScheduler/PostSchedule";
 import { PostStatsPage } from "./pages/NestedPages/PostStats/PostStats";
 
-interface Route {
+export interface Route {
   path: string;
   component: () => JSX.Element;
   onlyHomePage?: boolean;
@@ -20,7 +20,7 @@ interface Route {
 
 const routes: Route[] = [
   {
-    path: "",
+    path: "home",
     component: HomePage,
   },
   {

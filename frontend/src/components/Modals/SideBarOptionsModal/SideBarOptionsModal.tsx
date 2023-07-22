@@ -39,11 +39,13 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
     {
       icon: <FaAt className="icon" />,
       text: "Connect",
+      // eslint-disable-next-line no-console
       onClick: () => console.log("connect"),
     },
     {
       icon: <GiFeather className="icon" />,
       text: "Drafts",
+      // eslint-disable-next-line no-console
       onClick: () => console.log("drafts"),
     },
     {

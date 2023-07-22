@@ -144,13 +144,13 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
 
   function handleBtnScheduleClick() {
     if (!isPickerShown) return;
-    navigate("/post-schedule");
+    navigate("post-schedule", { relative: "path" });
   }
 
   function handleBtnLocationClick() {
     if (!isPickerShown) return;
     if (loggedinUser?.isApprovedLocation) {
-      navigate("/post-location");
+      navigate("post-location", { relative: "path" });
       return;
     }
     const msg = "Please set your location in your profile first.";

@@ -4,7 +4,7 @@ import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
@@ -39,7 +39,6 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
 
   // Hooks
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
@@ -56,8 +55,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       onClickFunc: async () => {
         await dispatch(setNewPostType("reply"));
         await dispatch(setNewPosts([], "reply", post));
-        const currPathName = location.pathname === "/" ? "" : location.pathname;
-        navigate(`${currPathName}/compose`);
+        navigate("compose", { relative: "path" });
       },
     },
     {
@@ -94,7 +92,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <RiBarChartGroupedFill className={iconClassName} />,
       count: post.viewsCount,
       onClickFunc: () => {
-        navigate(`/post-stats/${post.id}`);
+        navigate(`post-stats/${post.id}`, { relative: "path" });
       },
     },
     {
@@ -124,8 +122,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     setIsRepostModalOpen(prev => !prev);
     await dispatch(setNewPostType("quote"));
     await dispatch(setNewPosts([], "quote", post));
-    const currPathName = location.pathname === "/" ? "" : location.pathname;
-    navigate(`${currPathName}/compose`);
+    navigate("compose", { relative: "path" });
   };
 
   return (

@@ -26,7 +26,7 @@ export const SignupPage = () => {
 
   const onSignup = async () => {
     await dispatch(signup(user));
-    navigate("/");
+    navigate("/home");
   };
 
   return (

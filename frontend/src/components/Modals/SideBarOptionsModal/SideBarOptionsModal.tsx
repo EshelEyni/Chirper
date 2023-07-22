@@ -24,9 +24,9 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
-  const navigateTo = (path: string) => {
+  const handleLinkClick = (path: string) => {
     toggleModal();
-    navigate(path);
+    navigate(path, { relative: "path" });
   };
 
   const onLogout = async () => {
@@ -51,12 +51,12 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
     {
       icon: <ChirperCircleIcon className="icon" />,
       text: "Chirper Circle",
-      onClick: () => navigateTo("/chirper-circle"),
+      onClick: () => handleLinkClick("chirper-circle"),
     },
     {
       icon: <IoIosBrush className="icon display" />,
       text: "Display",
-      onClick: () => navigateTo("/display"),
+      onClick: () => handleLinkClick("display"),
     },
     {
       text: `Logout @${loggedinUser.username}`,

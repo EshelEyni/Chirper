@@ -212,7 +212,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     setPostSaveInProgress(false);
     setIsPostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
-    if (location.pathname === "/compose") navigate("/");
+    const { pathname } = location;
+    if (pathname === "/compose") navigate("/home");
   }
 
   function openPicker() {
@@ -223,7 +224,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   function onGoToLocationPage() {
     if (!isPickerShown) return;
-    navigate("/post-location");
+    navigate("post-location", { relative: "path" });
   }
 
   async function onAddPostToThread() {
@@ -234,7 +235,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       await dispatch(updateCurrNewPost(newPost, newPostType));
       setIsPickerShown(false);
       await dispatch(addNewPostToThread(newPostType));
-      navigate("/compose");
+      navigate("compose", { relative: "path" });
     } else {
       const isAddingPostToThreadDisabled =
         preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 9;

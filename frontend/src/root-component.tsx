@@ -26,12 +26,17 @@ function RootComponent() {
   }
 
   function getNestedRoutes(route: TypeOfRoute) {
-    return nestedRoutes
-      .map((nestedRoute, index) => {
-        if (nestedRoute.onlyHomePage && route.path !== "home") return null;
-        return <Route key={index} path={nestedRoute.path} element={<nestedRoute.component />} />;
-      })
-      .filter(_ => _ !== null);
+    const isHomePage = route.path === "home";
+    const filteredNestedRoutes = nestedRoutes.filter(route => isHomePage && route.onlyHomePage);
+
+    if (isHomePage)
+      return nestedRoutes.map(route => (
+        <Route key={route.path} path={route.path} element={<route.component />} />
+      ));
+
+    return filteredNestedRoutes.map(route => (
+      <Route key={route.path} path={route.path} element={<route.component />} />
+    ));
   }
 
   return (

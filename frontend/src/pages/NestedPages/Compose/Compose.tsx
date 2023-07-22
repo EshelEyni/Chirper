@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
@@ -10,9 +10,11 @@ import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModa
 import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";
 import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
+import { getBasePathName } from "../../../services/util.service/utils.service";
 
 export const ComposePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
   const [isSavePostDraftModalOpen, setIsSavePostDraftModalOpen] = useState(false);
@@ -26,7 +28,8 @@ export const ComposePage = () => {
       await dispatch(setNewPosts([], "home-page"));
       await dispatch(setNewPostType("home-page"));
     }
-    navigate(-1);
+    const basePath = getBasePathName(location.pathname);
+    navigate(basePath);
   };
 
   const onSavePostDraft = async () => {

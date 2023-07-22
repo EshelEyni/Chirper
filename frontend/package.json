@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "jest --config=jest.config.mjs",
+    "test": "jest --config=jest.config.mjs --watch --verbose --runInBand",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"

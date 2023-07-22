@@ -30,7 +30,7 @@ export const PostDateTitle: FC<PostDateTitleProps> = ({ date, isLink = false }) 
 
   const onGoToPostScheduler = () => {
     if (!isLink) return;
-    navigate("/post-schedule");
+    navigate("post-schedule", { relative: "path" });
   };
 
   return (

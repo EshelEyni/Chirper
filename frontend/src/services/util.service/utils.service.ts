@@ -141,6 +141,11 @@ function readAsDataURL(file: File): Promise<string> {
   });
 }
 
+function getBasePathName(path: string): string {
+  const basePath = path.split("/").filter(p => p && p !== "/")[0];
+  return `/${basePath}`;
+}
+
 export {
   formatDateToRelativeTime,
   formatNumToK,
@@ -152,4 +157,5 @@ export {
   copyToClipboard,
   formatDateToCleanString,
   readAsDataURL,
+  getBasePathName,
 };

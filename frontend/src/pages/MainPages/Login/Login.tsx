@@ -24,7 +24,7 @@ export const LoginPage = () => {
   const onLogin = async () => {
     const { username, password } = user;
     await dispatch(login(username, password));
-    navigate("/");
+    navigate("/home");
   };
 
   return (

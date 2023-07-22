@@ -18,13 +18,12 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   btnText = "Chirp",
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
+
   async function onClickBtn() {
     if (isSideBarBtn) {
       await dispatch(setNewPostType("side-bar"));
-      const currPathName = location.pathname === "/" ? "" : location.pathname;
-      navigate(`${currPathName}/compose`);
+      navigate("compose", { relative: "path" });
     } else {
       onAddPost && onAddPost();
     }

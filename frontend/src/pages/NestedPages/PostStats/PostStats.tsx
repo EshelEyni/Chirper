@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Post, PostStats } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
@@ -16,6 +16,7 @@ import { PostStatsPreviewContent } from "../../../components/Post/MiniPostPrevie
 import { MiniPostPreview } from "../../../components/Post/MiniPostPreview/MiniPostPreview/MiniPostPreview";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
+import { getBasePathName } from "../../../services/util.service/utils.service";
 
 export const PostStatsPage = () => {
   // State
@@ -26,6 +27,7 @@ export const PostStatsPage = () => {
   const [openedModal, setOpenedModal] = useState<string>("");
 
   // Hooks
+  const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
   const dispatch: AppDispatch = useDispatch();
@@ -99,7 +101,8 @@ export const PostStatsPage = () => {
 
   const onGoBack = () => {
     dispatch(clearPost());
-    navigate("/");
+    const basePath = getBasePathName(location.pathname);
+    navigate(basePath);
   };
 
   const onOpenModal = (name: string) => {

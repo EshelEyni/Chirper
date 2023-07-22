@@ -1,5 +1,6 @@
 import { FC } from "react";
 import "./ConfirmDeletePostDraftModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type ConfirmDeleteModalProps = {
   onCloseModal: () => void;
@@ -12,7 +13,7 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
 }) => {
   return (
     <>
-      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
+      <MainScreen onClickFn={onCloseModal} mode="dark" zIndex={3000} />
       <section className="confirm-delete-post-draft-modal">
         <div className="confirm-delete-post-draft-modal-header">
           <span className="confirm-delete-post-draft-title">Discard thread?</span>

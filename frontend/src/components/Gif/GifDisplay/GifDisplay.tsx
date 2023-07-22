@@ -5,6 +5,7 @@ import { GifDescriptionModal } from "../../Modals/GifDescriptionModal/GifDescrip
 import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
 import { useModalPosition } from "../../../hooks/useModalPosition";
 import "./GifDisplay.scss";
+import { gifPlaceholderBcg } from "../../../services/gif.service";
 
 interface GifDisplayProps {
   gif: Gif;
@@ -12,7 +13,7 @@ interface GifDisplayProps {
 }
 
 export const GifDisplay: React.FC<GifDisplayProps> = ({
-  gif: { url, staticUrl, description },
+  gif: { url, staticUrl, description, size },
   isAutoPlay = true,
 }) => {
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
@@ -47,6 +48,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
         ref={isUserPaused || !isAutoPlay ? undefined : ref}
         alt={description}
         loading="lazy"
+        style={{ height: size.height, width: size.width, backgroundColor: gifPlaceholderBcg[0] }}
       />
       <div className="gif-display-content-container">
         <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />

@@ -1,5 +1,6 @@
 import { FC } from "react";
 import "./SavePostDraftModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type SavePostDraftModalProps = {
   onCloseModal: () => void;
@@ -14,7 +15,7 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
 }) => {
   return (
     <>
-      <div className="main-screen dark" onClick={onCloseModal} style={{ zIndex: 3000 }} />
+      <MainScreen onClickFn={onCloseModal} mode="dark" zIndex={3000} />
       <section className="save-post-draft-modal">
         <div className="save-post-draft-modal-header">
           <span className="save-post-draft-title">Save Chirp?</span>

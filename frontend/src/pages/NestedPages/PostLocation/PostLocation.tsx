@@ -11,6 +11,7 @@ import { LocationList } from "../../../components/Location/LocationList/Location
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
 import { LocationSearchBar } from "../../../components/Location/LocationSearchBar/LocationSearchBar";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
+import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 
 export const PostLocation = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -71,7 +72,7 @@ export const PostLocation = () => {
 
   return (
     <>
-      <div className="main-screen dark-light" onClick={onGoBack} />
+      <MainScreen onClickFn={onGoBack} mode="dark-light" />
       <section className="post-location">
         <header className="post-location-header">
           <div className="post-location-header-close-btn-title-container">

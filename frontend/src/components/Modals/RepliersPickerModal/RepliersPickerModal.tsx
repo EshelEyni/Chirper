@@ -6,6 +6,7 @@ import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 interface RepliersPickerModalProps {
   currNewPost: NewPost;
@@ -47,7 +48,7 @@ export const RepliersPickerModal: FC<RepliersPickerModalProps> = ({ currNewPost,
 
   return (
     <>
-      <div className="main-screen" onClick={() => toggleModal("repliers")} />
+      <MainScreen onClickFn={() => toggleModal("repliers")} />
       <section className="picker-modal repliers">
         <h1 className="picker-modal-title">Choose who can reply</h1>
         <div className="picker-modal-options">

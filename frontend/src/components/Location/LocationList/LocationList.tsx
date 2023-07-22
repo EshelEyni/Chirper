@@ -26,11 +26,11 @@ export const LocationList: FC<LocationListProps> = ({
   const navigate = useNavigate();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
-  const onClickLocation = (location: Location) => {
+  function onClickLocation(location: Location) {
     setSelectedLocation(location);
     dispatch(updateCurrNewPost({ ...currNewPost, location }, newPostType));
     navigate(-1);
-  };
+  }
 
   return (
     <ul className="location-list">

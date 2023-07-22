@@ -1,3 +1,4 @@
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 import "./PostStatsInfoModal.scss";
 
 type PostStatsInfoModalProps = {
@@ -13,7 +14,7 @@ export const PostStatsInfoModal: React.FC<PostStatsInfoModalProps> = ({
 }) => {
   return (
     <>
-      <div className="main-screen" onClick={onCloseModal} />
+      <MainScreen onClickFn={onCloseModal} />
       <div className="post-stats-info-modal">
         <div className="post-stats-info-modal-text">
           <h1>{name}</h1>

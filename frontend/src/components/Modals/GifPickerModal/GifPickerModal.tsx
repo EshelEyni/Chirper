@@ -9,6 +9,7 @@ import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 interface GifPickerProps {
   currNewPost: NewPost;
@@ -36,7 +37,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
   return (
     <>
-      <div className="main-screen dark" onClick={() => onToggleElementVisibility("gifPicker")} />
+      <MainScreen onClickFn={() => onToggleElementVisibility("gifPicker")} mode="dark" />
       <div className="gif-picker">
         <header className="gif-picker-header">
           <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>

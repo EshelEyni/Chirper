@@ -7,6 +7,7 @@ import {
   PostEditActionBtn,
   UIElement,
 } from "../PostEditActions/PostEditActions";
+import { MainScreen } from "../../../App/MainScreen/MainScreen";
 
 type PostEditBtnEmojiProps = {
   btn: PostEditActionBtn;
@@ -32,7 +33,7 @@ export const PostEditBtnEmoji: FC<PostEditBtnEmojiProps> = ({
       </button>
       {elementVisibility.emojiPicker && (
         <div className="emoji-picker-container">
-          <div className="main-screen" onClick={() => onToggleElementVisibility("emojiPicker")} />
+          <MainScreen onClickFn={() => onToggleElementVisibility("emojiPicker")} />
           <div className="emoji-picker-modal-container">
             <Picker data={data} onEmojiSelect={onEmojiPicked} />
           </div>

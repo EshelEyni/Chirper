@@ -1,5 +1,6 @@
 import { FC } from "react";
 import "./GifDescriptionModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type GifDescriptionModalProps = {
   description: string;
@@ -18,7 +19,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
 
   return (
     <>
-      <div className="main-screen" onClick={onToggleDescription} />
+      <MainScreen onClickFn={onToggleDescription as () => void} />
       <section
         className="gif-description-modal"
         style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}

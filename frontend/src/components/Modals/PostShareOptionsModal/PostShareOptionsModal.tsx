@@ -10,6 +10,7 @@ import { addBookmark, removeBookmark } from "../../../store/actions/post.actions
 import { postService } from "../../../services/post.service";
 import { setUserMsg } from "../../../store/actions/system.actions";
 import "./PostShareOptionsModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type PostShareOptionsModalProps = {
   post: Post;
@@ -83,11 +84,9 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
     },
   ];
 
-  console.log("isModalAbove", isModalAbove);
-
   return (
     <>
-      <div className="main-screen" onClick={onToggleModal} />
+      <MainScreen onClickFn={onToggleModal} />
       <section
         className="post-share-options-modal"
         style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}

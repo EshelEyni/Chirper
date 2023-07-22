@@ -7,9 +7,10 @@ import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { getDaysInMonth, getTimeZone } from "../../../services/util.service/utils.service";
 import "./PostSchedule.scss";
-import { CustomSelect } from "../../../components/Other/CustomSelect/CustomSelect";
+import { CustomSelect } from "../../../components/App/CustomSelect/CustomSelect";
 import { PostDateTitle } from "../../../components/Post/PostDateTitle/PostDateTitle";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
+import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 
 type SetterFunctions = {
   month: (date: Date) => Date;
@@ -256,7 +257,7 @@ export const PostSchedule = () => {
 
   return (
     <>
-      <div className="main-screen dark-light" onClick={onGoBack} />
+      <MainScreen onClickFn={onGoBack} mode="dark-light" />
       <section className="post-schedule">
         <header className="post-schedule-header">
           <div className="post-schedule-header-close-btn-title-container">

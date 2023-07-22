@@ -2,6 +2,7 @@ import { FC } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import "./RepostOptionsModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type RepostOptionsModalProps = {
   onToggleModal: () => void;
@@ -32,7 +33,7 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
   ];
   return (
     <>
-      <div className="main-screen" onClick={onToggleModal} />
+      <MainScreen onClickFn={onToggleModal} />
       <section className="repost-options-modal">
         {btns.map((btn, i) => (
           <button className="btn-repost-option" key={i} onClick={btn.onClickFunc}>

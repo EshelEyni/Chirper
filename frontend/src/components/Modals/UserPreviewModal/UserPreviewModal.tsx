@@ -8,7 +8,7 @@ import { RootState } from "../../../store/store";
 import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
 import { BtnToggleFollow } from "../../Btns/BtnToggleFollow/BtnToggleFollow";
 import { UserImg } from "../../User/UserImg/UserImg";
-import { Logo } from "../../Other/Logo/Logo";
+import { Logo } from "../../App/Logo/Logo";
 
 export type UserPreviewModalPosition = {
   top?: string;

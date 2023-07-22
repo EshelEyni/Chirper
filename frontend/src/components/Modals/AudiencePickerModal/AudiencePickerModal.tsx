@@ -7,6 +7,7 @@ import { AppDispatch } from "../../../store/types";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 interface AudiencePickerModalProps {
   currNewPost: NewPost;
@@ -39,7 +40,7 @@ export const AudiencePickerModal: FC<AudiencePickerModalProps> = ({ currNewPost,
 
   return (
     <>
-      <div className="main-screen" onClick={() => toggleModal("audience")} />
+      <MainScreen onClickFn={() => toggleModal("audience")} />
       <section className="picker-modal">
         <h1 className="picker-modal-title">Choose audience</h1>
         <div className="picker-modal-options">

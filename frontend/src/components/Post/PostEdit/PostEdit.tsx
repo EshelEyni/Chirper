@@ -36,7 +36,7 @@ import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleReplier
 import { PostEditTitleLocation } from "../PostEditTitleLocation/PostEditTitleLocation";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostEditActions } from "../PostEditActions/PostEditActions/PostEditActions";
-import { TextIndicator } from "../../Other/TextIndicator/TextIndicator";
+import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../BtnAddThread/BtnAddThread";
 import { BtnCreatePost } from "../../Btns/BtnCreatePost/BtnCreatePost";
 

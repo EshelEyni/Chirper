@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { Logo } from "../Other/Logo/Logo";
+import { Logo } from "../App/Logo/Logo";
 import { NavList } from "./NavList/NavList";
 import { BtnCreatePost } from "../Btns/BtnCreatePost/BtnCreatePost";
 import { UserPreview } from "../User/UserPreview/UserPreview";

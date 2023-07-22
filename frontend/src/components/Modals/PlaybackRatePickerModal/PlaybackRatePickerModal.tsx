@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import "./PlaybackRatePickerModal.scss";
+import { MainScreen } from "../../App/MainScreen/MainScreen";
 
 type PlaybackRatePickerModalProps = {
   playbackRate: number;
@@ -27,7 +28,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
 
   return (
     <>
-      <div className="main-screen" onClick={() => onToggleModal(false)} />
+      <MainScreen onClickFn={() => onToggleModal(false)} />
       <div
         className={
           "playback-rate-picker-modal" +

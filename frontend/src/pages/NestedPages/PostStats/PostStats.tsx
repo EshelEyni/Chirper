@@ -15,6 +15,7 @@ import { PostStatsInfoModal } from "../../../components/Modals/PostStatInfoModal
 import { PostStatsPreviewContent } from "../../../components/Post/MiniPostPreview/PostStatsPreviewContent/PostStatsPreviewContent";
 import { MiniPostPreview } from "../../../components/Post/MiniPostPreview/MiniPostPreview/MiniPostPreview";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
+import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 
 export const PostStatsPage = () => {
   // State
@@ -111,7 +112,7 @@ export const PostStatsPage = () => {
 
   return (
     <section className="post-stats">
-      <div className="main-screen dark" onClick={onGoBack} />
+      <MainScreen onClickFn={onGoBack} mode="dark" />
       <main className="post-stats-body">
         <BtnClose onClickBtn={onGoBack} />
         <div className="post-stats-main-container">

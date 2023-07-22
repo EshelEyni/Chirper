@@ -12,8 +12,8 @@ import {
   UserPreviewModalPosition,
 } from "../../Modals/UserPreviewModal/UserPreviewModal";
 import { UserImg } from "../../User/UserImg/UserImg";
-import { Logo } from "../../Other/Logo/Logo";
-import { ElementTitle } from "../../Other/ElementTitle/ElementTitle";
+import { Logo } from "../../App/Logo/Logo";
+import { ElementTitle } from "../../App/ElementTitle/ElementTitle";
 import "./PostPreviewHeader.scss";
 
 type PostPreviewHeaderProps = {

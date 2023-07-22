@@ -5,7 +5,7 @@ import { useCustomSelect } from "../../../hooks/useCustomSelect";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { CustomSelect } from "../../Other/CustomSelect/CustomSelect";
+import { CustomSelect } from "../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
 
 type PollLengthInputsProps = {

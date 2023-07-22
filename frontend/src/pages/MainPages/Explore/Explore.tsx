@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
-import { Logo } from "../../../components/Other/Logo/Logo";
+import { Logo } from "../../../components/App/Logo/Logo";
 
 export const ExplorePage = () => {
   const params = useParams();

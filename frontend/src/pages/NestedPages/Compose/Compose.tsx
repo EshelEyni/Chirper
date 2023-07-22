@@ -9,6 +9,7 @@ import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModal/SavePostDraftModal";
 import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";
 import "./Compose.scss";
+import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 
 export const ComposePage = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export const ComposePage = () => {
 
   return (
     <main className="compose">
-      <div className="main-screen dark-light" style={{ zIndex: 2000 }} onClick={onOpenModal} />
+      <MainScreen onClickFn={onOpenModal} mode="dark-light" zIndex={2000} />
       <PostEdit onClickBtnClose={onOpenModal} isHomePage={false} />
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal

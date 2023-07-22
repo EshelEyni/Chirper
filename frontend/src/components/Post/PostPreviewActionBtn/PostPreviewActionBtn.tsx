@@ -3,7 +3,7 @@ import { useCustomElementHover } from "../../../hooks/useCustomElementHover";
 import { formatNumToK } from "../../../services/util.service/utils.service";
 import { PostShareOptionsModal } from "../../Modals/PostShareOptionsModal/PostShareOptionsModal";
 import { RepostOptionsModal } from "../../Modals/RepostOptionsModal/RepostOptionsModal";
-import { ElementTitle } from "../../Other/ElementTitle/ElementTitle";
+import { ElementTitle } from "../../App/ElementTitle/ElementTitle";
 import { PostPreviewActionBtn as PostPreviewActionBtnType } from "../PostPreviewActions/PostPreviewActions";
 
 type PostPreviewActionBtnProps = {

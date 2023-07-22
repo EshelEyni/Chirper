@@ -21,18 +21,12 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
 }) => {
   const [isSearchBarFocused, setIsSearchBarFocused] = useState<boolean>(false);
 
-  useEffect(() => {
-    SearchBarInputRef.current!.value = searchTerm;
-    SearchBarInputRef.current!.focus();
-    setIsSearchBarFocused(true);
-  }, [searchTerm]);
-
-  const getgifsBySearchTerm = async (searchTerm: string): Promise<Gif[]> => {
+  async function getgifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
     const gifs = await gifService.getGifsBySearchTerm(searchTerm);
     return gifs as Gif[];
-  };
+  }
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const inputValue = e.target.value;
     if (!inputValue) {
       setSearchTerm("");
@@ -43,13 +37,19 @@ export const GifSearchBar: React.FC<GifSearchBarProps> = ({
     const gifs = await getgifsBySearchTerm(inputValue);
     setGifs(gifs);
     setSearchTerm(inputValue);
-  };
+  }
 
-  const onClearSearch = () => {
+  function onClearSearch() {
     setSearchTerm("");
     setGifs([]);
     SearchBarInputRef.current!.value = "";
-  };
+  }
+
+  useEffect(() => {
+    SearchBarInputRef.current!.value = searchTerm;
+    SearchBarInputRef.current!.focus();
+    setIsSearchBarFocused(true);
+  }, [searchTerm]);
 
   return (
     <div className={"gif-search-bar" + (isSearchBarFocused ? " focused" : "")}>

@@ -1,3 +1,5 @@
+@import "../../../styles/setup/functions";
+
 .gif-category-list {
   flex: 1;
   width: 100%;
@@ -6,28 +8,6 @@
   grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: minmax(rem(150px), auto);
   gap: rem(4px);
-
-  
-  .gif-category-preview {
-    position: relative;
-    width: rem(298px);
-    height: rem(150px);
-    cursor: pointer;
-
-    img {
-      object-fit: fill;
-    }
-
-    .gif-category-preview-title {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      color: white;
-      font-size: rem(20px);
-      font-weight: 700;
-      margin: rem(8px);
-    }
-  }
 
   .last {
     display: flex;

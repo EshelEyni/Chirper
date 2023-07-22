@@ -32,7 +32,13 @@ export const LoginPage = () => {
       <div>
         <h1>login</h1>
         <div>username</div>
-        <input type="text" name="username" onChange={handleChange} autoComplete="off" />
+        <input
+          type="text"
+          name="username"
+          onChange={handleChange}
+          autoComplete="off"
+          value={user.username}
+        />
         <div>password</div>
         <input
           type="password"

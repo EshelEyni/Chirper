@@ -3,6 +3,7 @@ import { Gif, GifCategory } from "../../../../../shared/interfaces/gif.interface
 import { gifService } from "../../../services/gif.service";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import "./GifCategoryList.scss";
+import { GifCategoryPreview } from "../GifCategoryPreview/GifCategoryPreview";
 
 type GifEditProps = {
   currCategory: string;
@@ -39,14 +40,12 @@ export const GifCategoryList: React.FC<GifEditProps> = ({
         gifCategories.map((gifCategory, idx) => {
           const isLast = idx === gifCategories.length - 1;
           return (
-            <div
-              className={"gif-category-preview" + (isLast ? " last" : "")}
+            <GifCategoryPreview
               key={gifCategory.id}
-              onClick={() => handleCategoryClick(gifCategory.name)}
-            >
-              <img src={gifCategory.imgUrl} alt="gif-category" loading="lazy" />
-              <h5 className="gif-category-preview-title">{gifCategory.name}</h5>
-            </div>
+              gifCategory={gifCategory}
+              isLast={isLast}
+              handleCategoryClick={handleCategoryClick}
+            />
           );
         })}
     </div>

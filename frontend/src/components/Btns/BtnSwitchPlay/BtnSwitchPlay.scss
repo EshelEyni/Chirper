@@ -1,0 +1,13 @@
+@import "../../../styles/setup/functions";
+
+.btn-switch-play {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: rem(10px);
+
+  span {
+    color: var(--color-text-gray);
+  }
+}

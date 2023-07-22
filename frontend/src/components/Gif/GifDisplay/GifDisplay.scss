@@ -1,3 +1,5 @@
+@import "../../../styles/setup/functions";
+
 .gif-display {
   position: relative;
   cursor: pointer;
@@ -22,7 +24,7 @@
       justify-content: center;
       height: rem(20px);
       padding: rem(2px) rem(4px);
-      background-color: rgb(47, 24, 14);
+      background-color: var(--color-text);
       color: white;
       font-size: rem(12px);
       font-weight: 600;

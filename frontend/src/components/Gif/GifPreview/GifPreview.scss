@@ -1,0 +1,12 @@
+@import "../../../styles/setup/functions";
+
+.gif-preview {
+  height: rem(120px);
+  flex-grow: 1;
+  position: relative;
+  cursor: pointer;
+
+  img {
+    object-fit: fill;
+  }
+}

@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { gifPlaceholderBcg } from "../../../services/gif.service";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { AppDispatch } from "../../../store/types";
 import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
-import Switch from "@mui/material/Switch";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
+import { GifPreview } from "../GifPreview/GifPreview";
 import "./GifList.scss";
 
 interface GifListProps {
@@ -35,27 +35,7 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
 
   return (
     <div className="gif-list">
-      <div className="play-btn-container">
-        <span>Auto-play GIFs</span>
-        <Switch
-          checked={isPlaying}
-          onChange={handleChange}
-          sx={{
-            "&.MuiSwitch-root .MuiSwitch-thumb": {
-              backgroundColor: isPlaying ? "var(--color-primary)" : "white",
-            },
-            "&.MuiSwitch-root .Mui-checked + .MuiSwitch-track": {
-              backgroundColor: "var(--color-primary-light)",
-            },
-            "& .MuiSwitch-track": {
-              width: "40px",
-            },
-            "& .MuiSwitch-switchBase.Mui-checked": {
-              transform: "translateX(24px)",
-            },
-          }}
-        />
-      </div>
+      <BtnSwitchPlay isPlaying={isPlaying} handleChange={handleChange} />
       <ul className="gif-list-main-container">
         {gifs.length === 0 && <ContentLoader />}
         {gifs.length > 0 &&
@@ -63,21 +43,14 @@ export const GifList: FC<GifListProps> = ({ currNewPost, gifs, onToggleElementVi
             const ratio = gif.size.width / gif.size.height;
             const width = 120 * ratio + "px";
             return (
-              <li
-                className="gif-list-item"
+              <GifPreview
                 key={gif.id}
-                onClick={() => handleGifClick(gif)}
-                style={{
-                  backgroundColor: gifPlaceholderBcg[idx % gifPlaceholderBcg.length],
-                  width: width,
-                }}
-              >
-                <img
-                  src={isPlaying ? gif.placeholderUrl : gif.staticPlaceholderUrl}
-                  alt={gif.description}
-                  loading="lazy"
-                />
-              </li>
+                gif={gif}
+                idx={idx}
+                width={width}
+                isPlaying={isPlaying}
+                handleGifClick={handleGifClick}
+              />
             );
           })}
       </ul>

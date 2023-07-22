@@ -36,6 +36,7 @@ export const GifEdit: FC<GifEditProps> = ({ currNewPost }) => {
         <img
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           src={isPlaying ? currNewPost.gif!.url : currNewPost.gif!.staticUrl}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           alt={currNewPost.gif!.description}
           onClick={onTogglePlay}
           onLoad={() => setIsLoading(false)}

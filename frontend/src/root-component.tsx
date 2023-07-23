@@ -27,13 +27,12 @@ function RootComponent() {
 
   function getNestedRoutes(route: TypeOfRoute) {
     const isHomePage = route.path === "home";
-    const filteredNestedRoutes = nestedRoutes.filter(route => isHomePage && route.onlyHomePage);
-
     if (isHomePage)
       return nestedRoutes.map(route => (
         <Route key={route.path} path={route.path} element={<route.component />} />
       ));
 
+    const filteredNestedRoutes = nestedRoutes.filter(route => isHomePage && route.onlyHomePage);
     return filteredNestedRoutes.map(route => (
       <Route key={route.path} path={route.path} element={<route.component />} />
     ));

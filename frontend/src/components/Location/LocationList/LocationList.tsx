@@ -8,6 +8,7 @@ import { AppDispatch } from "../../../store/types";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import "./LocationList.scss";
+import { LocationPreview } from "../LocationPreview/LocationPreview";
 
 interface LocationListProps {
   currNewPost: NewPost;
@@ -36,12 +37,12 @@ export const LocationList: FC<LocationListProps> = ({
     <ul className="location-list">
       {locations.map((location, idx) => {
         return (
-          <li key={idx} className="location-preview" onClick={() => onClickLocation(location)}>
-            <span className="location-name">{location.name}</span>
-            {selectedLocation?.placeId === location.placeId && (
-              <AiOutlineCheck className="check-icon" />
-            )}
-          </li>
+          <LocationPreview
+            key={idx}
+            location={location}
+            selectedLocation={selectedLocation}
+            onClickLocation={onClickLocation}
+          />
         );
       })}
     </ul>

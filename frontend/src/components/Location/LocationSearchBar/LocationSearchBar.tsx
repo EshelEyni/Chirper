@@ -11,7 +11,6 @@ interface locationSearchBarProps {
   fetchLocations: () => Promise<void>;
   isNoResults: boolean;
   setisNoResults: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -20,21 +19,13 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
   fetchLocations,
   isNoResults,
   setisNoResults,
-  isLoading,
   setIsLoading,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchBarFocused, setIsSearchBarFocused] = useState<boolean>(false);
   const SearchBarInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetchLocations();
-    return () => {
-      setLocations([]);
-    };
-  }, []);
-
-  const handleChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
     try {
       if (isNoResults) setisNoResults(false);
       const { value } = ev.target;
@@ -54,13 +45,20 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 
-  const onClearSearch = () => {
+  function onClearSearch() {
     setSearchTerm("");
     fetchLocations();
     SearchBarInputRef.current!.value = "";
-  };
+  }
+
+  useEffect(() => {
+    fetchLocations();
+    return () => {
+      setLocations([]);
+    };
+  }, []);
 
   return (
     <div className={"location-search-bar" + (isSearchBarFocused ? " focused" : "")}>
@@ -77,7 +75,6 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
         onBlur={() => setIsSearchBarFocused(false)}
         ref={SearchBarInputRef}
       />
-
       {searchTerm && (
         <AiFillCloseCircle className="close-icon" onMouseDown={() => onClearSearch()} />
       )}

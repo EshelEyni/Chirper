@@ -1,13 +1,12 @@
 import { FC } from "react";
+import "./LocationList.scss";
 import { Location } from "../../../../../shared/interfaces/location.interface";
-import { AiOutlineCheck } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import "./LocationList.scss";
 import { LocationPreview } from "../LocationPreview/LocationPreview";
 
 interface LocationListProps {

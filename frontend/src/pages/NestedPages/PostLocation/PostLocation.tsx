@@ -24,14 +24,8 @@ export const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  // TODO: Check if isNoResults is needed. can be replaced with locations.length === 0
   const [isNoResults, setisNoResults] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!currNewPost) return;
-    if (currNewPost) {
-      fetchLocations();
-    }
-  }, [currNewPost]);
 
   const onGoBack = () => {
     navigate("/home");
@@ -70,6 +64,13 @@ export const PostLocation = () => {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (!currNewPost) return;
+    if (currNewPost) {
+      fetchLocations();
+    }
+  }, [currNewPost]);
+
   return (
     <>
       <MainScreen onClickFn={onGoBack} mode="dark-light" />
@@ -95,7 +96,6 @@ export const PostLocation = () => {
         <LocationSearchBar
           setLocations={setLocations}
           fetchLocations={fetchLocations}
-          isLoading={isLoading}
           setIsLoading={setIsLoading}
           isNoResults={isNoResults}
           setisNoResults={setisNoResults}

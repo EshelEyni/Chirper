@@ -21,7 +21,7 @@ export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) =
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
   const title = getTitle(currNewPost.audience);
 
-  const audinceOptions: PostEditOption[] = [
+  const options: PostEditOption[] = [
     {
       title: "Everyone",
       icon: <GoGlobe />,
@@ -63,13 +63,12 @@ export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) =
         <IoChevronDownOutline />
       </button>
       {isAudienceOpen && (
-        <Modal onClickMainScreen={toggleModal}>
-          <PostEditOptionModal
-            title="Choose audience"
-            options={audinceOptions}
-            onOptionClick={onOptionClick}
-          />
-        </Modal>
+        <PostEditOptionModal
+          title="Choose audience"
+          options={options}
+          onOptionClick={onOptionClick}
+          toggleModal={toggleModal}
+        />
       )}
     </div>
   );

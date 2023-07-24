@@ -1,67 +1,49 @@
 @import "../../../styles/setup/functions";
 
-.picker-modal {
-  width: rem(260px);
-  background-color: white;
-  border-radius: 25px;
-  position: absolute;
-  top: 100%;
-  left: -10%;
-  margin-top: rem(8px);
-  padding: rem(18px) 0;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-  z-index: 300;
+.picker-modal-title {
+  padding: rem(4px) rem(12px);
+}
 
-  &.repliers {
-    width: rem(300px);
-    left: -5%;
+.picker-modal-option {
+  display: flex;
+  justify-content: space-between;
+  height: rem(65px);
+  align-items: center;
+  padding: rem(12px) rem(16px);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-hover-light);
   }
 
-  .picker-modal-title {
-    padding: rem(4px) rem(12px);
-  }
-
-  .picker-modal-option {
+  .picker-modal-option-main-content {
     display: flex;
-    justify-content: space-between;
-    height: rem(65px);
     align-items: center;
-    padding: rem(12px) rem(16px);
-    cursor: pointer;
+    gap: rem(8px);
 
-    &:hover {
-      background-color: var(--color-hover-light);
-    }
-
-    .picker-modal-option-main-content {
+    .picker-modal-option-icon-container {
       display: flex;
       align-items: center;
-      gap: rem(8px);
+      justify-content: center;
+      background-color: var(--color-primary);
+      border-radius: 50%;
+      width: rem(40px);
+      height: rem(40px);
 
-      .picker-modal-option-icon-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--color-primary);
-        border-radius: 50%;
-        width: rem(40px);
-        height: rem(40px);
-
-        svg {
-          width: rem(20px);
-          height: rem(20px);
-          color: white;
-          fill: white;
-        }
+      svg {
+        width: rem(20px);
+        height: rem(20px);
+        color: white;
+        fill: white;
       }
+    }
 
-      .picker-modal-option-text {
-        font-size: rem(15px);
-        font-weight: 700;
+    .picker-modal-option-text {
+      font-size: rem(15px);
+      font-weight: 700;
 
-        &.repliers {
-          font-size: rem(12px);
-        }
+      &.repliers {
+        font-size: rem(12px);
       }
     }
   }

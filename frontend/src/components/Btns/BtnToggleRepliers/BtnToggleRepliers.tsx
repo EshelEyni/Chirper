@@ -20,7 +20,7 @@ export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) =
 
   const title = getTitle(currNewPost.repliersType);
 
-  const replierOptions: PostEditOption[] = [
+  const options: PostEditOption[] = [
     {
       title: "Everyone",
       icon: <FaGlobeAmericas />,
@@ -71,14 +71,13 @@ export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) =
         can reply
       </button>
       {isRepliersOpen && (
-        <Modal onClickMainScreen={toggleModal}>
-          <PostEditOptionModal
-            title="Choose who can reply"
-            options={replierOptions}
-            onOptionClick={onOptionClick}
-            className="repliers"
-          />
-        </Modal>
+        <PostEditOptionModal
+          title="Choose who can reply"
+          options={options}
+          onOptionClick={onOptionClick}
+          toggleModal={toggleModal}
+          className="repliers"
+        />
       )}
     </div>
   );

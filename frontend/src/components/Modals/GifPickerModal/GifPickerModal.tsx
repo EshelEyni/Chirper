@@ -9,7 +9,7 @@ import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { Modal } from "../Modal/Modal";
 
 interface GifPickerProps {
   currNewPost: NewPost;
@@ -36,39 +36,40 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
   };
 
   return (
-    <>
-      <MainScreen onClickFn={() => onToggleElementVisibility("gifPicker")} mode="dark" />
-      <div className="gif-picker">
-        <header className="gif-picker-header">
-          <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>
-            {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
-          </button>
-          <GifSearchBar
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            setGifs={setGifs}
-            SearchBarInputRef={SearchBarInputRef}
-          />
-        </header>
+    <Modal
+      className="gif-picker-modal"
+      mainScreenMode="dark"
+      onClickMainScreen={() => onToggleElementVisibility("gifPicker")}
+    >
+      <header className="gif-picker-header">
+        <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>
+          {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
+        </button>
+        <GifSearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setGifs={setGifs}
+          SearchBarInputRef={SearchBarInputRef}
+        />
+      </header>
 
-        {gifs.length > 0 ? (
-          <GifList
-            currNewPost={currNewPost}
-            onToggleElementVisibility={onToggleElementVisibility}
-            gifs={gifs}
-          />
-        ) : (
-          <ContentLoader />
-        )}
+      {gifs.length > 0 ? (
+        <GifList
+          currNewPost={currNewPost}
+          onToggleElementVisibility={onToggleElementVisibility}
+          gifs={gifs}
+        />
+      ) : (
+        <ContentLoader />
+      )}
 
-        {!searchTerm && (
-          <GifCategoryList
-            currCategory={searchTerm}
-            setCurrCategory={setSearchTerm}
-            setGifs={setGifs}
-          />
-        )}
-      </div>
-    </>
+      {!searchTerm && (
+        <GifCategoryList
+          currCategory={searchTerm}
+          setCurrCategory={setSearchTerm}
+          setGifs={setGifs}
+        />
+      )}
+    </Modal>
   );
 };

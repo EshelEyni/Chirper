@@ -73,7 +73,7 @@ export const PostLocation = () => {
 
   return (
     <>
-      <MainScreen onClickFn={onGoBack} mode="dark-light" />
+      <MainScreen onClickFn={onGoBack} mode="light" />
       <section className="post-location">
         <header className="post-location-header">
           <div className="post-location-header-close-btn-title-container">

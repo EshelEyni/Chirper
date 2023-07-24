@@ -257,7 +257,7 @@ export const PostSchedule = () => {
 
   return (
     <>
-      <MainScreen onClickFn={onGoBack} mode="dark-light" />
+      <MainScreen onClickFn={onGoBack} mode="light" />
       <section className="post-schedule">
         <header className="post-schedule-header">
           <div className="post-schedule-header-close-btn-title-container">

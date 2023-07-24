@@ -3,7 +3,7 @@ import "./MainScreen.scss";
 
 type MainScreenProps = {
   onClickFn: () => void;
-  mode?: "dark-light" | "dark";
+  mode?: "light" | "dark";
   zIndex?: number;
 };
 

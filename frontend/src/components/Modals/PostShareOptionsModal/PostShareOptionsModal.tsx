@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import { AiOutlineLink } from "react-icons/ai";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { FiUpload } from "react-icons/fi";
-import { FaRegEnvelope } from "react-icons/fa";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../services/util.service/utils.service";
 import { AppDispatch } from "../../../store/types";
@@ -10,7 +9,7 @@ import { addBookmark, removeBookmark } from "../../../store/actions/post.actions
 import { postService } from "../../../services/post.service";
 import { setUserMsg } from "../../../store/actions/system.actions";
 import "./PostShareOptionsModal.scss";
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { Modal } from "../Modal/Modal";
 
 type PostShareOptionsModalProps = {
   post: Post;
@@ -56,15 +55,6 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       },
     },
     {
-      text: "Send via Direct Message",
-      icon: <FaRegEnvelope size={20} />,
-      // TODO: add send via direct message functionality and update post stats
-      onClickFunc: () => {
-        console.log("send via direct message");
-        // onToggleModal();
-      },
-    },
-    {
       text: isBookmarked ? "Remove Chirp from Bookmarks" : "Bookmark",
       icon: isBookmarked ? (
         <MdOutlineBookmarkRemove size={20} />
@@ -85,18 +75,16 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
   ];
 
   return (
-    <>
-      <MainScreen onClickFn={onToggleModal} />
-      <section
-        className="post-share-options-modal"
-        style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
-      >
-        {btns.map((btn, i) => (
-          <button className="btn-share-option" key={i} onClick={btn.onClickFunc}>
-            {btn.icon} <span>{btn.text}</span>
-          </button>
-        ))}
-      </section>
-    </>
+    <Modal
+      className="post-share-options-modal"
+      onClickMainScreen={onToggleModal}
+      style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
+    >
+      {btns.map((btn, i) => (
+        <button className="btn-share-option" key={i} onClick={btn.onClickFunc}>
+          {btn.icon} <span>{btn.text}</span>
+        </button>
+      ))}
+    </Modal>
   );
 };

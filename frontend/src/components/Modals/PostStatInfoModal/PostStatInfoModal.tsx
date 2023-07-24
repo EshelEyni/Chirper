@@ -1,4 +1,4 @@
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { Modal } from "../Modal/Modal";
 import "./PostStatsInfoModal.scss";
 
 type PostStatsInfoModalProps = {
@@ -13,18 +13,15 @@ export const PostStatsInfoModal: React.FC<PostStatsInfoModalProps> = ({
   onCloseModal,
 }) => {
   return (
-    <>
-      <MainScreen onClickFn={onCloseModal} />
-      <div className="post-stats-info-modal">
-        <div className="post-stats-info-modal-text">
-          <h1>{name}</h1>
-          <p>{desc}</p>
-        </div>
-        <button className="btn-go-back" onClick={onCloseModal}>
-          <span>OK</span>
-        </button>
-        <div className="tippy down" />
+    <Modal className="post-stats-info-modal" onClickMainScreen={onCloseModal}>
+      <div className="post-stats-info-modal-text">
+        <h1>{name}</h1>
+        <p>{desc}</p>
       </div>
-    </>
+      <button className="btn-go-back" onClick={onCloseModal}>
+        <span>OK</span>
+      </button>
+      <div className="tippy down" />
+    </Modal>
   );
 };

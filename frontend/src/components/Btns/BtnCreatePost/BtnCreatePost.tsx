@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../store/types";
 import { setNewPostType } from "../../../store/actions/new-post.actions";
 import "./BtnCreatePost.scss";

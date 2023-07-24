@@ -1,48 +1,31 @@
 @import "../../../styles/setup/functions";
 
-.post-stats-info-modal {
+.post-stats-info-modal-text {
   display: flex;
   flex-direction: column;
-  gap: rem(20px);
-  position: absolute;
-  bottom: rem(30px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;
-  cursor: default;
-  width: rem(320px);
-  background-color: var(--color-background);
-  border-radius: 15px;
-  padding: rem(20px);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  gap: rem(10px);
 
-  .post-stats-info-modal-text {
-    display: flex;
-    flex-direction: column;
-    gap: rem(10px);
-
-    h1 {
-      color: black;
-    }
-
-    p {
-      font-size: rem(15px);
-    }
+  h1 {
+    color: black;
   }
 
-  .btn-go-back {
-    border: 1px solid var(--color-border);
-    border-radius: 25px;
-    height: rem(35px);
+  p {
+    font-size: rem(15px);
+  }
+}
 
-    span {
-      color: black;
-      font-size: rem(15px);
-      font-weight: 700;
-    }
+.btn-go-back {
+  border: 1px solid var(--color-border);
+  border-radius: 25px;
+  height: rem(35px);
 
-    &:hover {
-      background-color: var(--color-hover-light);
-    }
+  span {
+    color: black;
+    font-size: rem(15px);
+    font-weight: 700;
+  }
+
+  &:hover {
+    background-color: var(--color-hover-light);
   }
 }

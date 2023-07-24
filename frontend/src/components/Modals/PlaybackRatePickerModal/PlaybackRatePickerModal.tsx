@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import "./PlaybackRatePickerModal.scss";
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { Modal } from "../Modal/Modal";
 
 type PlaybackRatePickerModalProps = {
   playbackRate: number;
@@ -27,45 +27,43 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
   };
 
   return (
-    <>
-      <MainScreen onClickFn={() => onToggleModal(false)} />
+    <Modal
+      className={
+        "playback-rate-picker-modal" +
+        (isModalAbove ? " modal-above" : "") +
+        (isFullScreen ? " full-screen" : "")
+      }
+      onClickMainScreen={() => onToggleModal(false)}
+    >
       <div
         className={
-          "playback-rate-picker-modal" +
-          (isModalAbove ? " modal-above" : "") +
-          (isFullScreen ? " full-screen" : "")
+          "tippy" + (isModalAbove ? " down" : " up") + (isFullScreen ? " full-screen" : "")
         }
-      >
-        <div
-          className={
-            "tippy" + (isModalAbove ? " down" : " up") + (isFullScreen ? " full-screen" : "")
-          }
-        ></div>
-        <div className="playback-rate-picker-modal-main-container">
-          <h1>Playback speed</h1>
-          <ul className="playback-rate-picker-modal-list">
-            {playbackRates.map(rate => (
-              <li
-                key={rate}
-                className="playback-rate-picker-modal-list-item"
-                onClick={e => onSetPlaybackRate(e, rate)}
+      ></div>
+      <div className="playback-rate-picker-modal-main-container">
+        <h1>Playback speed</h1>
+        <ul className="playback-rate-picker-modal-list">
+          {playbackRates.map(rate => (
+            <li
+              key={rate}
+              className="playback-rate-picker-modal-list-item"
+              onClick={e => onSetPlaybackRate(e, rate)}
+            >
+              <span className="playback-rate-picker-modal-list-item-label">{rate}x</span>
+              <div
+                className={
+                  "playback-rate-picker-modal-list-item-check-box" +
+                  (playbackRate === rate ? " checked" : " unchecked")
+                }
               >
-                <span className="playback-rate-picker-modal-list-item-label">{rate}x</span>
-                <div
-                  className={
-                    "playback-rate-picker-modal-list-item-check-box" +
-                    (playbackRate === rate ? " checked" : " unchecked")
-                  }
-                >
-                  {playbackRate === rate && (
-                    <AiFillCheckCircle size={24} color="var(--color-primary)" />
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+                {playbackRate === rate && (
+                  <AiFillCheckCircle size={24} color="var(--color-primary)" />
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
-    </>
+    </Modal>
   );
 };

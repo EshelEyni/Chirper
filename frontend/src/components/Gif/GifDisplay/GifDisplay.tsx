@@ -42,13 +42,14 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   }, [inView]);
 
   return (
-    <article className="gif-display" onClick={onTogglePlay}>
+    <article className="gif-display">
       <img
         src={isPlaying ? url : staticUrl}
         ref={isUserPaused || !isAutoPlay ? undefined : ref}
         alt={description}
         loading="lazy"
         style={{ height: size.height, width: size.width, backgroundColor: gifPlaceholderBcg[0] }}
+        onClick={onTogglePlay}
       />
       <div className="gif-display-content-container">
         <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />

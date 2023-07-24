@@ -11,6 +11,7 @@ import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmD
 import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util.service/utils.service";
+import { Modal } from "../../../components/Modals/Modal/Modal";
 
 export const ComposePage = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ export const ComposePage = () => {
 
   return (
     <main className="compose">
-      <MainScreen onClickFn={onOpenModal} mode="dark-light" zIndex={2000} />
+      <MainScreen onClickFn={onOpenModal} mode="light" zIndex={2000} />
       <PostEdit onClickBtnClose={onOpenModal} isHomePage={false} />
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal

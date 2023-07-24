@@ -10,7 +10,7 @@ import { logout } from "../../../store/actions/auth.actions";
 import { GiFeather } from "react-icons/gi";
 import { FaAt } from "react-icons/fa";
 import "./SideBarOptionsModal.scss";
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { Modal } from "../Modal/Modal";
 
 interface SideBarOptionsModalProps {
   loggedinUser: User;
@@ -65,18 +65,14 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   ];
 
   return (
-    <>
-      <MainScreen onClickFn={toggleModal} />
-      <section className="side-bar-options-modal">
-        {btns.map((btn, index) => (
-          <button key={index} className="side-bar-options-modal-btn" onClick={btn.onClick}>
-            {btn.icon}
-            <span>{btn.text}</span>
-          </button>
-        ))}
-
-        <GoTriangleDown className="side-bar-options-modal-arrow" />
-      </section>
-    </>
+    <Modal className="side-bar-options-modal" onClickMainScreen={toggleModal}>
+      {btns.map((btn, index) => (
+        <button key={index} className="side-bar-options-modal-btn" onClick={btn.onClick}>
+          {btn.icon}
+          <span>{btn.text}</span>
+        </button>
+      ))}
+      <GoTriangleDown className="side-bar-options-modal-arrow" />
+    </Modal>
   );
 };

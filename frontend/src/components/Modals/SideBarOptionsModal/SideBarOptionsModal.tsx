@@ -65,14 +65,14 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   ];
 
   return (
-    <Modal className="side-bar-options-modal" onClickMainScreen={toggleModal}>
+    <Modal className="side-bar-options" onClickMainScreen={toggleModal}>
       {btns.map((btn, index) => (
-        <button key={index} className="side-bar-options-modal-btn" onClick={btn.onClick}>
+        <button key={index} className="side-bar-options-btn" onClick={btn.onClick}>
           {btn.icon}
           <span>{btn.text}</span>
         </button>
       ))}
-      <GoTriangleDown className="side-bar-options-modal-arrow" />
+      <GoTriangleDown className="side-bar-options-arrow" />
     </Modal>
   );
 };

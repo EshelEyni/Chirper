@@ -1,6 +1,6 @@
 @import "../../../styles/setup/functions";
 
-.side-bar-options-modal-btn {
+.side-bar-options-btn {
   display: flex;
   align-items: center;
   gap: rem(10px);
@@ -27,7 +27,7 @@
   }
 }
 
-.side-bar-options-modal-arrow {
+.side-bar-options-arrow {
   position: absolute;
   bottom: rem(-16px);
   left: 50%;

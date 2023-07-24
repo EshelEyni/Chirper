@@ -37,7 +37,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 
   return (
     <Modal
-      className="gif-picker-modal"
+      className="gif-picker"
       mainScreenMode="dark"
       onClickMainScreen={() => onToggleElementVisibility("gifPicker")}
     >

@@ -1,6 +1,6 @@
 @import "../../../styles/setup/functions";
 
-.confirm-delete-post-draft-modal-header {
+.confirm-delete-post-draft-header {
   display: flex;
   flex-direction: column;
 
@@ -18,7 +18,7 @@
   }
 }
 
-.confirm-delete-post-draft-modal-btns-container {
+.confirm-delete-post-draft-btns-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

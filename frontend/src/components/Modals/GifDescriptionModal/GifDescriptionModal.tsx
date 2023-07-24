@@ -15,7 +15,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
 }) => {
   return (
     <Modal
-      className="gif-description-modal"
+      className="gif-description"
       onClickMainScreen={onToggleDescription as () => void}
       style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
     >

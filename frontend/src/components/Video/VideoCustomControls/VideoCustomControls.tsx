@@ -50,7 +50,7 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
       className={
         "video-cutom-controls" +
         (isFullScreen ? " full-screen" : "") +
-        (isPlaybackRatePickerModalShown ? " playback-rate-picker-modal-shown" : "")
+        (isPlaybackRatePickerModalShown ? " playback-rate-picker-shown" : "")
       }
     >
       <div className="video-custom-controls-main-container" onClick={e => e.stopPropagation()}>

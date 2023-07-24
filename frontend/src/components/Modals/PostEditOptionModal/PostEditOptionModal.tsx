@@ -20,18 +20,18 @@ export const PostEditOptionModal: FC<PostEditOptionModalProps> = ({
   className,
 }) => {
   return (
-    <Modal className={`picker-modal ${className}`} onClickMainScreen={toggleModal}>
-      <h1 className="picker-modal-title">{title}</h1>
-      <div className="picker-modal-options">
+    <Modal className={`post-edit-option ${className}`} onClickMainScreen={toggleModal}>
+      <h1 className="post-edit-option-title">{title}</h1>
+      <div className="post-edit-option-options">
         {options.map(option => (
           <div
             key={option.title}
-            className="picker-modal-option"
+            className="post-edit-option-option"
             onClick={() => onOptionClick(option.value)}
           >
-            <div className="picker-modal-option-main-content">
-              <div className="picker-modal-option-icon-container">{option.icon}</div>
-              <div className="picker-modal-option-text">{option.title}</div>
+            <div className="post-edit-option-option-main-content">
+              <div className="post-edit-option-option-icon-container">{option.icon}</div>
+              <div className="post-edit-option-option-text">{option.title}</div>
             </div>
             {option.isSelected && <AiOutlineCheck className="check-icon" />}
           </div>

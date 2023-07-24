@@ -1,10 +1,10 @@
 @import "../../../styles/setup/functions";
 
-.picker-modal-title {
+.post-edit-option-title {
   padding: rem(4px) rem(12px);
 }
 
-.picker-modal-option {
+.post-edit-option-option {
   display: flex;
   justify-content: space-between;
   height: rem(65px);
@@ -16,12 +16,12 @@
     background-color: var(--color-hover-light);
   }
 
-  .picker-modal-option-main-content {
+  .post-edit-option-option-main-content {
     display: flex;
     align-items: center;
     gap: rem(8px);
 
-    .picker-modal-option-icon-container {
+    .post-edit-option-option-icon-container {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -38,7 +38,7 @@
       }
     }
 
-    .picker-modal-option-text {
+    .post-edit-option-option-text {
       font-size: rem(15px);
       font-weight: 700;
 

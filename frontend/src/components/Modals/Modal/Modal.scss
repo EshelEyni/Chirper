@@ -13,12 +13,12 @@
   z-index: 200;
   transform: translateX(-50%);
 
-  &.confirm-delete-post-draft-modal,
-  &.save-post-draft-modal {
+  &.confirm-delete-post-draft,
+  &.save-post-draft {
     top: 50%;
     position: fixed;
     transform: translate(-50%, -50%);
-    // TODO: check if this is needed in .save-post-draft-modal
+    // TODO: check if this is needed in .save-post-draft
     justify-content: space-between;
     width: rem(320px);
     height: rem(260px);
@@ -26,7 +26,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
-  &.gif-description-modal {
+  &.gif-description {
     align-items: center;
     justify-content: space-between;
     height: rem(200px);
@@ -36,7 +36,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
-  &.gif-picker-modal {
+  &.gif-picker {
     position: fixed;
     top: 10%;
     z-index: 500;
@@ -48,7 +48,7 @@
     @include scrollbar-hidden;
   }
 
-  &.playback-rate-picker-modal {
+  &.playback-rate-picker {
     height: rem(300px);
     width: rem(260px);
     top: rem(40px);
@@ -69,7 +69,7 @@
     }
   }
 
-  &.picker-modal {
+  &.post-edit-option {
     border-radius: 25px;
     width: rem(260px);
     top: 100%;
@@ -84,8 +84,8 @@
     }
   }
 
-  &.post-share-options-modal,
-  &.repost-options-modal {
+  &.post-share-options,
+  &.repost-options {
     top: 0;
     width: max-content;
     box-shadow: 0 0 10px 1px var(--color-border);
@@ -102,7 +102,7 @@
     }
   }
 
-  &.post-stats-info-modal {
+  &.post-stats-info {
     gap: rem(20px);
     bottom: rem(30px);
     z-index: 200;
@@ -111,7 +111,7 @@
     padding: rem(20px);
   }
 
-  &.side-bar-options-modal {
+  &.side-bar-options {
     top: rem(-275px);
     width: rem(300px);
     height: fit-content;

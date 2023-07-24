@@ -1,6 +1,6 @@
 @import "../../../styles/setup/functions";
 
-.save-post-draft-modal-header {
+.save-post-draft-header {
   display: flex;
   flex-direction: column;
 
@@ -18,7 +18,7 @@
   }
 }
 
-.save-post-draft-modal-btns-container {
+.save-post-draft-btns-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

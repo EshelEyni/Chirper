@@ -34,7 +34,7 @@ export const PostEditBtnEmoji: FC<PostEditBtnEmojiProps> = ({
       {elementVisibility.emojiPicker && (
         <div className="emoji-picker-container">
           <MainScreen onClickFn={() => onToggleElementVisibility("emojiPicker")} />
-          <div className="emoji-picker-modal-container">
+          <div className="emoji-post-edit-option-container">
             <Picker data={data} onEmojiSelect={onEmojiPicked} />
           </div>
         </div>

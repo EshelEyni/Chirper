@@ -32,7 +32,7 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
     },
   ];
   return (
-    <Modal className="repost-options-modal" onClickMainScreen={onToggleModal}>
+    <Modal className="repost-options" onClickMainScreen={onToggleModal}>
       {btns.map((btn, i) => (
         <button className="btn-repost-option" key={i} onClick={btn.onClickFunc}>
           {btn.icon}

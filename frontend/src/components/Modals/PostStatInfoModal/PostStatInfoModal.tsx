@@ -13,8 +13,8 @@ export const PostStatsInfoModal: React.FC<PostStatsInfoModalProps> = ({
   onCloseModal,
 }) => {
   return (
-    <Modal className="post-stats-info-modal" onClickMainScreen={onCloseModal}>
-      <div className="post-stats-info-modal-text">
+    <Modal className="post-stats-info" onClickMainScreen={onCloseModal}>
+      <div className="post-stats-info-text">
         <h1>{name}</h1>
         <p>{desc}</p>
       </div>

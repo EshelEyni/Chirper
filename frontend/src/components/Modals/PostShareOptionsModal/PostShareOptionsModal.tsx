@@ -76,7 +76,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
 
   return (
     <Modal
-      className="post-share-options-modal"
+      className="post-share-options"
       onClickMainScreen={onToggleModal}
       style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
     >

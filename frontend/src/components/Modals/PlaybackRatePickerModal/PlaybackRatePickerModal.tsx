@@ -29,7 +29,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
   return (
     <Modal
       className={
-        "playback-rate-picker-modal" +
+        "playback-rate-picker" +
         (isModalAbove ? " modal-above" : "") +
         (isFullScreen ? " full-screen" : "")
       }
@@ -40,19 +40,19 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
           "tippy" + (isModalAbove ? " down" : " up") + (isFullScreen ? " full-screen" : "")
         }
       ></div>
-      <div className="playback-rate-picker-modal-main-container">
+      <div className="playback-rate-picker-main-container">
         <h1>Playback speed</h1>
-        <ul className="playback-rate-picker-modal-list">
+        <ul className="playback-rate-picker-list">
           {playbackRates.map(rate => (
             <li
               key={rate}
-              className="playback-rate-picker-modal-list-item"
+              className="playback-rate-picker-list-item"
               onClick={e => onSetPlaybackRate(e, rate)}
             >
-              <span className="playback-rate-picker-modal-list-item-label">{rate}x</span>
+              <span className="playback-rate-picker-list-item-label">{rate}x</span>
               <div
                 className={
-                  "playback-rate-picker-modal-list-item-check-box" +
+                  "playback-rate-picker-list-item-check-box" +
                   (playbackRate === rate ? " checked" : " unchecked")
                 }
               >

@@ -10,7 +10,7 @@ import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModa
 import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";
 import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
-import { getBasePathName } from "../../../services/util.service/utils.service";
+import { getBasePathName } from "../../../services/util/utils.service";
 import { Modal } from "../../../components/Modals/Modal/Modal";
 
 export const ComposePage = () => {

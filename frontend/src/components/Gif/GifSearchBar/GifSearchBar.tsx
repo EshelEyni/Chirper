@@ -3,7 +3,7 @@ import { SlMagnifier } from "react-icons/sl";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { gifService } from "../../../services/gif.service";
-import { debounce } from "../../../services/util.service/utils.service";
+import { debounce } from "../../../services/util/utils.service";
 import "./GifSearchBar.scss";
 
 interface GifSearchBarProps {

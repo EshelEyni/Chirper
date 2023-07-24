@@ -1,5 +1,5 @@
 import { NewPost, Post, repliedPostDetails } from "../../../../shared/interfaces/post.interface";
-import { makeId } from "../../services/util.service/utils.service";
+import { makeId } from "../../services/util/utils.service";
 
 export type NewPostState = {
   homePage: {

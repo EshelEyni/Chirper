@@ -5,7 +5,7 @@ import { useCustomSelect } from "../../../hooks/useCustomSelect";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { getDaysInMonth, getTimeZone } from "../../../services/util.service/utils.service";
+import { getDaysInMonth, getTimeZone } from "../../../services/util/utils.service";
 import "./PostSchedule.scss";
 import { CustomSelect } from "../../../components/App/CustomSelect/CustomSelect";
 import { PostDateTitle } from "../../../components/Post/PostDateTitle/PostDateTitle";

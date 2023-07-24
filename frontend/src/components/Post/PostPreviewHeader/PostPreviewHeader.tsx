@@ -6,7 +6,7 @@ import { useState } from "react";
 import {
   formatDateToCleanString,
   formatDateToRelativeTime,
-} from "../../../services/util.service/utils.service";
+} from "../../../services/util/utils.service";
 import {
   UserPreviewModal,
   UserPreviewModalPosition,

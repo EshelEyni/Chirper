@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./UserPreviewModal.scss";
 import { useSelector } from "react-redux";
 import { MiniUser } from "../../../../../shared/interfaces/user.interface";
-import { formatNumToK } from "../../../services/util.service/utils.service";
+import { formatNumToK } from "../../../services/util/utils.service";
 import { RootState } from "../../../store/store";
 import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
 import { BtnToggleFollow } from "../../Btns/BtnToggleFollow/BtnToggleFollow";

@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../store/types";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { makeId } from "../../../services/util.service/utils.service";
+import { makeId } from "../../../services/util/utils.service";
 import "./PostEditImg.scss";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";

@@ -3,7 +3,7 @@ import { AiOutlineLink } from "react-icons/ai";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
-import { copyToClipboard } from "../../../services/util.service/utils.service";
+import { copyToClipboard } from "../../../services/util/utils.service";
 import { AppDispatch } from "../../../store/types";
 import { addBookmark, removeBookmark } from "../../../store/actions/post.actions";
 import { postService } from "../../../services/post.service";

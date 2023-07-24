@@ -8,7 +8,7 @@ import {
   PostStatsBody,
 } from "../../../shared/interfaces/post.interface";
 import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
-import { handleServerResponse } from "./util.service/utils.service";
+import { handleServerResponse } from "./util/utils.service";
 
 async function query(): Promise<Post[]> {
   try {

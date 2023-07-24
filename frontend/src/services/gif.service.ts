@@ -2,7 +2,7 @@ import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
 import { httpService } from "./http.service";
 import queryString from "query-string";
-import { handleServerResponse } from "./util.service/utils.service";
+import { handleServerResponse } from "./util/utils.service";
 
 export const gifService = {
   getGifsBySearchTerm,

@@ -16,7 +16,7 @@ import { PostStatsPreviewContent } from "../../../components/Post/MiniPostPrevie
 import { MiniPostPreview } from "../../../components/Post/MiniPostPreview/MiniPostPreview/MiniPostPreview";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
-import { getBasePathName } from "../../../services/util.service/utils.service";
+import { getBasePathName } from "../../../services/util/utils.service";
 
 export const PostStatsPage = () => {
   // State

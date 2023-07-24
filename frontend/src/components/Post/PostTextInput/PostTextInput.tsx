@@ -5,7 +5,7 @@ import { NewPost, Post } from "../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { AppDispatch } from "../../../store/types";
 import { NewPostType as typeofPostType } from "../../../store//reducers/new-post.reducer";
-import { debounce } from "../../../services/util.service/utils.service";
+import { debounce } from "../../../services/util/utils.service";
 
 type PostTextInputProps = {
   currNewPost: NewPost | null;

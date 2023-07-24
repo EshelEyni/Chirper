@@ -3,7 +3,7 @@ import { JsendResponse } from "../../../shared/interfaces/system.interface";
 import { cacheService } from "./cache.service";
 import { httpService } from "./http.service";
 import queryString from "query-string";
-import { handleServerResponse } from "./util.service/utils.service";
+import { handleServerResponse } from "./util/utils.service";
 
 export const locationService = {
   getUserDefaultLocations,

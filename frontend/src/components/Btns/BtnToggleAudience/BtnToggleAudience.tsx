@@ -1,15 +1,41 @@
 import { FC, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
-import { AudiencePickerModal } from "../../Modals/AudiencePickerModal/AudiencePickerModal";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
+import { GoGlobe } from "react-icons/go";
+import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper-circle-solid.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
+import { AppDispatch } from "../../../store/types";
+import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
+import { Modal } from "../../Modals/Modal/Modal";
+import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
+import { PostEditOption } from "../../../types/app.types";
 
 type BtnToggleAudienceProps = {
   currNewPost: NewPost;
 };
 
 export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) => {
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const dispatch: AppDispatch = useDispatch();
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
   const title = getTitle(currNewPost.audience);
+
+  const audinceOptions: PostEditOption[] = [
+    {
+      title: "Everyone",
+      icon: <GoGlobe />,
+      value: "everyone",
+      isSelected: currNewPost.audience === "everyone",
+    },
+    {
+      title: "Chirper Circle",
+      icon: <ChirperCircleIcon />,
+      value: "chirper-circle",
+      isSelected: currNewPost.audience === "chirper-circle",
+    },
+  ];
+
   function toggleModal() {
     setIsAudienceOpen(!isAudienceOpen);
   }
@@ -25,6 +51,11 @@ export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) =
     }
   }
 
+  function onOptionClick(option: string) {
+    dispatch(updateCurrNewPost({ ...currNewPost, audience: option }, newPostType));
+    toggleModal();
+  }
+
   return (
     <div className="btn-toggle-audience-cotnainer">
       <button className="btn-toggle-audience" onClick={() => toggleModal()}>
@@ -32,7 +63,13 @@ export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) =
         <IoChevronDownOutline />
       </button>
       {isAudienceOpen && (
-        <AudiencePickerModal currNewPost={currNewPost} toggleModal={toggleModal} />
+        <Modal onClickMainScreen={toggleModal}>
+          <PostEditOptionModal
+            title="Choose audience"
+            options={audinceOptions}
+            onOptionClick={onOptionClick}
+          />
+        </Modal>
       )}
     </div>
   );

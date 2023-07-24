@@ -1,3 +1,5 @@
+@import "../../../styles/setup/functions";
+
 .picker-modal {
   width: rem(260px);
   background-color: white;
@@ -10,7 +12,7 @@
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   z-index: 300;
 
-  &.repliers{
+  &.repliers {
     width: rem(300px);
     left: -5%;
   }
@@ -45,7 +47,7 @@
         width: rem(40px);
         height: rem(40px);
 
-        .picker-modal-option-icon {
+        svg {
           width: rem(20px);
           height: rem(20px);
           color: white;
@@ -62,7 +64,5 @@
         }
       }
     }
-    
-    
   }
 }

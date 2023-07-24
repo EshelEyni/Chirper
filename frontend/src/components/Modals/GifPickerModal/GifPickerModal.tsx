@@ -1,15 +1,12 @@
 import { useState, useRef } from "react";
-import { AiOutlineClose } from "react-icons/ai";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
-import { IoArrowBackSharp } from "react-icons/io5";
-import "./GifPickerModal.scss";
-import { GifSearchBar } from "../../Gif/GifSearchBar/GifSearchBar";
 import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
 import { Modal } from "../Modal/Modal";
+import { GifPickerModalHeader } from "./GifPickerModalHeader/GifPickerModalHeader";
 
 interface GifPickerProps {
   currNewPost: NewPost;
@@ -22,10 +19,9 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
 }) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
   const SearchBarInputRef = useRef<HTMLInputElement>(null);
 
-  const handleHeaderBtnClick = () => {
+  function handleHeaderBtnClick() {
     if (!gifs.length) {
       onToggleElementVisibility("gifPicker");
     } else {
@@ -33,7 +29,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
       setSearchTerm("");
       SearchBarInputRef.current!.value = "";
     }
-  };
+  }
 
   return (
     <Modal
@@ -41,17 +37,14 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
       mainScreenMode="dark"
       onClickMainScreen={() => onToggleElementVisibility("gifPicker")}
     >
-      <header className="gif-picker-header">
-        <button className="gif-picker-header-btn" onClick={handleHeaderBtnClick}>
-          {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
-        </button>
-        <GifSearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          setGifs={setGifs}
-          SearchBarInputRef={SearchBarInputRef}
-        />
-      </header>
+      <GifPickerModalHeader
+        gifs={gifs}
+        setGifs={setGifs}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        SearchBarInputRef={SearchBarInputRef}
+        handleHeaderBtnClick={handleHeaderBtnClick}
+      />
 
       {gifs.length > 0 ? (
         <GifList

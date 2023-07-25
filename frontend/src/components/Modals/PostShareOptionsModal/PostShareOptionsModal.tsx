@@ -28,7 +28,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
   const url = `${location.origin}/post/${post.id}`;
   const btns = [
     {
-      text: "Copy link to Chirp",
+      title: "Copy link to Chirp",
       icon: <AiOutlineLink size={20} />,
       onClickFunc: () => {
         postService.updatePostStats(post.id, { isPostLinkCopied: true });
@@ -43,7 +43,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       },
     },
     {
-      text: "Share Chirp via...",
+      title: "Share Chirp via...",
       icon: <FiUpload size={20} />,
       onClickFunc: () => {
         postService.updatePostStats(post.id, { isPostShared: true });
@@ -55,7 +55,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       },
     },
     {
-      text: isBookmarked ? "Remove Chirp from Bookmarks" : "Bookmark",
+      title: isBookmarked ? "Remove Chirp from Bookmarks" : "Bookmark",
       icon: isBookmarked ? (
         <MdOutlineBookmarkRemove size={20} />
       ) : (
@@ -80,9 +80,9 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       onClickMainScreen={onToggleModal}
       style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
     >
-      {btns.map((btn, i) => (
-        <button className="btn-share-option" key={i} onClick={btn.onClickFunc}>
-          {btn.icon} <span>{btn.text}</span>
+      {btns.map(btn => (
+        <button className="btn-share-option" key={btn.title} onClick={btn.onClickFunc}>
+          {btn.icon} <span>{btn.title}</span>
         </button>
       ))}
     </Modal>

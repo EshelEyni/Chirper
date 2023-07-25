@@ -21,22 +21,21 @@ export const RepostOptionsModal: FC<RepostOptionsModalProps> = ({
 }) => {
   const btns = [
     {
-      text: isReposted ? "undo rechirp" : "rechirp",
+      title: isReposted ? "undo rechirp" : "rechirp",
       icon: <AiOutlineRetweet size={20} />,
       onClickFunc: isReposted ? onRemoveRepost : onRepost,
     },
     {
-      text: "quote rechirp",
+      title: "quote rechirp",
       icon: <HiOutlinePencilAlt size={20} />,
       onClickFunc: () => onQuotePost(),
     },
   ];
   return (
     <Modal className="repost-options" onClickMainScreen={onToggleModal}>
-      {btns.map((btn, i) => (
-        <button className="btn-repost-option" key={i} onClick={btn.onClickFunc}>
-          {btn.icon}
-          <span>{btn.text}</span>
+      {btns.map(btn => (
+        <button className="btn-repost-option" key={btn.title} onClick={btn.onClickFunc}>
+          {btn.icon} <span>{btn.title}</span>
         </button>
       ))}
     </Modal>

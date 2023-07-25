@@ -11,6 +11,19 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
   onCloseModal,
   discardPostThread,
 }) => {
+  const btns = [
+    {
+      title: "Discard",
+      className: "btn-discard-post-draft",
+      onClick: discardPostThread,
+    },
+    {
+      title: "Cancel",
+      className: "btn-close-modal",
+      onClick: onCloseModal,
+    },
+  ];
+
   return (
     <Modal
       className="confirm-delete-post-draft"
@@ -26,12 +39,11 @@ export const ConfirmDeletePostDraftModal: FC<ConfirmDeleteModalProps> = ({
       </div>
 
       <div className="confirm-delete-post-draft-btns-container">
-        <button className="btn-discard-post-draft" onClick={discardPostThread}>
-          <span>Discard</span>
-        </button>
-        <button className="btn-close-modal" onClick={onCloseModal}>
-          <span>Cancel</span>
-        </button>
+        {btns.map(btn => (
+          <button key={btn.title} className={btn.className} onClick={btn.onClick}>
+            <span>{btn.title}</span>
+          </button>
+        ))}
       </div>
     </Modal>
   );

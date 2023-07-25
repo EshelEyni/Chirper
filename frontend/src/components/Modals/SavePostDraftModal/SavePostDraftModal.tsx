@@ -13,6 +13,19 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
   onSavePostDraft,
   discardPostThread,
 }) => {
+  const btns = [
+    {
+      title: "Save",
+      className: "btn-save-post-draft",
+      onClick: onSavePostDraft,
+    },
+    {
+      title: "Discard",
+      className: "btn-discard-post-draft",
+      onClick: discardPostThread,
+    },
+  ];
+
   return (
     <Modal
       className="save-post-draft"
@@ -28,12 +41,11 @@ export const SavePostDraftModal: FC<SavePostDraftModalProps> = ({
       </div>
 
       <div className="save-post-draft-btns-container">
-        <button className="btn-save-post-draft" onClick={onSavePostDraft}>
-          <span>Save</span>
-        </button>
-        <button className="btn-discard-post-draft" onClick={discardPostThread}>
-          <span>Discard</span>
-        </button>
+        {btns.map(btn => (
+          <button key={btn.title} className={btn.className} onClick={btn.onClick}>
+            <span>{btn.title}</span>
+          </button>
+        ))}
       </div>
     </Modal>
   );

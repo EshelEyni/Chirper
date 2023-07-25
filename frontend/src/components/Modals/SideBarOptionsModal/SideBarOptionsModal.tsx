@@ -38,38 +38,37 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   const btns = [
     {
       icon: <FaAt className="icon" />,
-      text: "Connect",
+      title: "Connect",
       // eslint-disable-next-line no-console
       onClick: () => console.log("connect"),
     },
     {
       icon: <GiFeather className="icon" />,
-      text: "Drafts",
+      title: "Drafts",
       // eslint-disable-next-line no-console
       onClick: () => console.log("drafts"),
     },
     {
       icon: <ChirperCircleIcon className="icon" />,
-      text: "Chirper Circle",
+      title: "Chirper Circle",
       onClick: () => handleLinkClick("chirper-circle"),
     },
     {
       icon: <IoIosBrush className="icon display" />,
-      text: "Display",
+      title: "Display",
       onClick: () => handleLinkClick("display"),
     },
     {
-      text: `Logout @${loggedinUser.username}`,
+      title: `Logout @${loggedinUser.username}`,
       onClick: onLogout,
     },
   ];
 
   return (
     <Modal className="side-bar-options" onClickMainScreen={toggleModal}>
-      {btns.map((btn, index) => (
-        <button key={index} className="side-bar-options-btn" onClick={btn.onClick}>
-          {btn.icon}
-          <span>{btn.text}</span>
+      {btns.map(btn => (
+        <button key={btn.title} className="side-bar-options-btn" onClick={btn.onClick}>
+          {btn.icon} <span>{btn.title}</span>
         </button>
       ))}
       <GoTriangleDown className="side-bar-options-arrow" />

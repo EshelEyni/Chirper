@@ -1,6 +1,7 @@
 import { FC } from "react";
 import "./GifDescriptionModal.scss";
 import { Modal } from "../Modal/Modal";
+import { Tippy } from "../../App/Tippy/Tippy";
 
 type GifDescriptionModalProps = {
   description: string;
@@ -19,7 +20,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
       onClickMainScreen={onToggleDescription as () => void}
       style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
     >
-      <div className={"tippy" + (isModalAbove ? " down" : " up")}></div>
+      <Tippy isModalAbove={isModalAbove} />
       <div className="gif-description-title-text-container">
         <h1>Image description</h1>
         <p>{description}</p>

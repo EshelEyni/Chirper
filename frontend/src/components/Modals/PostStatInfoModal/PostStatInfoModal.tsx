@@ -1,3 +1,4 @@
+import { Tippy } from "../../App/Tippy/Tippy";
 import { Modal } from "../Modal/Modal";
 import "./PostStatsInfoModal.scss";
 
@@ -21,7 +22,7 @@ export const PostStatsInfoModal: React.FC<PostStatsInfoModalProps> = ({
       <button className="btn-go-back" onClick={onCloseModal}>
         <span>OK</span>
       </button>
-      <div className="tippy down" />
+      <Tippy isModalAbove={true} />
     </Modal>
   );
 };

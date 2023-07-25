@@ -1,0 +1,46 @@
+@import "../../../../styles/setup/functions";
+
+.post-edit-option-preview {
+  display: flex;
+  justify-content: space-between;
+  height: rem(65px);
+  align-items: center;
+  padding: rem(12px) rem(16px);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-hover-light);
+  }
+
+  .post-edit-option-main-content {
+    display: flex;
+    align-items: center;
+    gap: rem(8px);
+
+    .post-edit-option-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--color-primary);
+      border-radius: 50%;
+      width: rem(40px);
+      height: rem(40px);
+
+      svg {
+        width: rem(20px);
+        height: rem(20px);
+        color: white;
+        fill: white;
+      }
+    }
+
+    .post-edit-option-text {
+      font-size: rem(15px);
+      font-weight: 700;
+
+      &.repliers {
+        font-size: rem(12px);
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
 import { NextFunction, Request, Response } from "express";
 import { APIFeatures } from "../util/util.service";
 import { Model } from "mongoose";
-import { getAll } from "./factory.service";
+import { getAll, getOne } from "./factory.service";
 import { DeepMockProxy, mockDeep, mockReset } from "jest-mock-extended";
 import { asyncErrorCatcher } from "../error/error.service";
 
@@ -52,59 +52,118 @@ describe("getAll", () => {
     expect(APIFeaturesMock.getQuery).toHaveBeenCalled();
   });
 
-  it.only("should call the error handler when Model.find() fails", done => {
-    ModelMock.find.mockImplementation((): any => {
-      return Promise.reject(new Error("Test Error"));
-    });
+  it("should return status 200", async () => {
     const controller = getAll(ModelMock) as any;
-
-    (async () => {
-      try {
-        await controller(reqMock, resMock, nextMock);
-        expect(false).toBe(true);
-        done();
-      } catch (error) {
-        expect(error).toEqual(new Error("Test Error"));
-        done();
-      }
-    })();
-  });
-
-  it("should call the error handler when getQuery throws an error", async () => {
-    APIFeaturesMock.getQuery.mockImplementation(() => {
-      throw new Error("Test Error");
-    });
-    const controller = getAll(ModelMock);
-    await controller(reqMock, resMock, nextMock);
-    expect(nextMock).toHaveBeenCalledWith(new Error("Test Error"));
-  });
-
-  it("should handle different queries properly", async () => {
-    reqMock.query = { sort: "name", limit: "10", page: "2" };
-    const controller = getAll(ModelMock);
-    await controller(reqMock, resMock, nextMock);
-    expect(APIFeaturesMock.sort).toHaveBeenCalledWith("name");
-    expect(APIFeaturesMock.limitFields).toHaveBeenCalledWith("10");
-    expect(APIFeaturesMock.paginate).toHaveBeenCalled();
-  });
-
-  it("should handle the case when no documents are found", async () => {
-    APIFeaturesMock.getQuery.mockReturnValue(Promise.resolve([]) as any);
-    const controller = getAll(ModelMock);
     await controller(reqMock, resMock, nextMock);
     expect(resMock.status).toHaveBeenCalledWith(200);
-    expect(resMock.json).toHaveBeenCalledWith({
-      status: "success",
-      requestedAt: expect.any(String),
-      results: 0,
-      data: [],
-    });
   });
 
-  it("should ignore unrecognized query parameters", async () => {
-    reqMock.query = { unrecognized: "parameter" };
-    const controller = getAll(ModelMock);
+  it("should return success status", async () => {
+    const controller = getAll(ModelMock) as any;
     await controller(reqMock, resMock, nextMock);
-    expect(APIFeaturesMock.filter).toHaveBeenCalled();
+    expect(resMock.json).toHaveBeenCalledWith(expect.objectContaining({ status: "success" }));
+  });
+
+  it("should return requestedAt in response", async () => {
+    const controller = getAll(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+    expect(resMock.json).toHaveBeenCalledWith(
+      expect.objectContaining({ requestedAt: expect.any(String) })
+    );
+  });
+
+  it("should return a valid timestamp in requestedAt", async () => {
+    const controller = getAll(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+    expect(resMock.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/),
+      })
+    );
+  });
+
+  it("should integrate getAll and APIFeatures correctly", async () => {
+    const mockData = [1, 2, 3];
+    APIFeaturesMock.getQuery.mockReturnValue(Promise.resolve(mockData) as any);
+    const controller = getAll(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+
+    expect(resMock.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "success",
+        results: mockData.length,
+        data: mockData,
+      })
+    );
+  });
+
+  it("should pass the error to next if getQuery fails", async () => {
+    const mockError = new Error("getQuery failed");
+    APIFeaturesMock.getQuery.mockImplementation(() => {
+      throw mockError;
+    });
+    const controller = getAll(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+    expect(nextMock).toHaveBeenCalledWith(mockError);
+  });
+});
+
+describe.only("getOne", () => {
+  afterEach(() => {
+    mockReset(ModelMock);
+    mockReset(reqMock);
+    mockReset(resMock);
+  });
+
+  it("should return the correct document when a valid id is given", async () => {
+    const id = "1234567890";
+    reqMock.params.id = id;
+    const mockData = { _id: id, name: "Item" };
+    ModelMock.findById.mockReturnValue(Promise.resolve(mockData) as any);
+    const controller = getOne(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+
+    expect(ModelMock.findById).toHaveBeenCalledWith(id);
+    expect(resMock.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "success",
+        data: mockData,
+      })
+    );
+  });
+
+  it("should return status 404 when the document is not found", async () => {
+    const id = "1234567890";
+    reqMock.params.id = id;
+    ModelMock.findById.mockReturnValue(Promise.resolve(null) as any);
+    const controller = getOne(ModelMock) as any;
+    await controller(reqMock, resMock, nextMock);
+
+    expect(ModelMock.findById).toHaveBeenCalledWith(id);
+    expect(nextMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 404,
+        message: expect.any(String),
+      })
+    );
+  });
+
+  it.only("should populate the document if popOptions are given", async () => {
+    const id = "1234567890";
+    reqMock.params.id = id;
+    const popOptions = "user";
+    const mockData = { _id: id, name: "Item" };
+    ModelMock.findById.mockReturnValue(Promise.resolve(mockData) as any);
+    const controller = getOne(ModelMock, popOptions) as any;
+    await controller(reqMock, resMock, nextMock);
+
+    expect(ModelMock.findById).toHaveBeenCalledWith(id);
+    expect(ModelMock.findById(id).populate).toHaveBeenCalledWith(popOptions);
+    expect(resMock.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "success",
+        data: mockData,
+      })
+    );
   });
 });

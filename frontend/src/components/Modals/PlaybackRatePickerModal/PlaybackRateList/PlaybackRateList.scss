@@ -1,0 +1,26 @@
+@import "../../../../styles/setup/functions";
+
+.playback-rate-list {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .playback-rate-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      .playback-rate-list-item-check-box.unchecked {
+        box-shadow: 0 0 0 7.5px var(--color-text-light);
+      }
+    }
+
+    .playback-rate-list-item-label {
+      font-size: rem(15px);
+      letter-spacing: 0.5px;
+    }
+  }
+}

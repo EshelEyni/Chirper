@@ -1,0 +1,28 @@
+@import "../../../styles/setup/functions";
+
+.checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: rem(20px);
+  height: rem(20px);
+  border-radius: 50%;
+  border: 2px solid var(--color-text-gray);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+  position: relative;
+
+  &.checked {
+    width: rem(24px);
+    height: rem(24px);
+    border: none;
+
+    svg {
+      transform: translateX(2.5px);
+    }
+  }
+}

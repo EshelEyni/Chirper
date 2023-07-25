@@ -31,6 +31,13 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
 
   return (
     <div className="btn-toggle-video-setting-container" onClick={e => e.stopPropagation()}>
+      <button
+        className="btn-toggle-video-setting"
+        onClick={onTogglePlaybackRatePickerModal}
+        ref={elementRef}
+      >
+        <IoSettingsOutline size={20} color="white" />
+      </button>
       {isPlaybackRatePickerModalShown && (
         <PlaybackRatePickerModal
           playbackRate={playbackRate}
@@ -40,14 +47,6 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
           isFullScreen={isFullScreen}
         />
       )}
-
-      <button
-        className="btn-toggle-video-setting"
-        onClick={onTogglePlaybackRatePickerModal}
-        ref={elementRef}
-      >
-        <IoSettingsOutline size={20} color="white" />
-      </button>
     </div>
   );
 };

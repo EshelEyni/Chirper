@@ -9,14 +9,14 @@ export const useModalPosition = <T extends HTMLElement>({
 
   const [isModalAbove, setIsModalAbove] = useState(false);
 
-  const updateModalPosition = () => {
+  function updateModalPosition() {
     if (elementRef.current) {
       const { top } = elementRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const isModalPositionUp = windowHeight - top < modalHeight;
       setIsModalAbove(isModalPositionUp);
     }
-  };
+  }
 
   return { elementRef, isModalAbove, updateModalPosition };
 };

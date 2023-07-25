@@ -5,16 +5,15 @@ import { AppDispatch } from "../../../store/types";
 import "./UserMsg.scss";
 
 export const UserMsg = () => {
-  // State
   const { userMsg } = useSelector((state: RootState) => state.systemModule);
-
-  // Hooks
   const dispatch: AppDispatch = useDispatch();
+
   if (!userMsg) return null;
   const { text, type, link } = userMsg;
-  const handleLinkClick = () => {
+
+  function handleLinkClick() {
     dispatch({ type: "SET_USER_MSG", userMsg: null });
-  };
+  }
   return (
     <div className={"user-msg " + type}>
       <p>{text}</p>

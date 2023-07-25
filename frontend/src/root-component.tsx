@@ -13,7 +13,6 @@ import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 
 function RootComponent() {
   const dispatch: AppDispatch = useDispatch();
-  const { isSideBarShown, userMsg } = useSelector((state: RootState) => state.systemModule);
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   if (!loggedinUser) dispatch(autoLogin());
 
@@ -41,14 +40,14 @@ function RootComponent() {
   return (
     <div className="app">
       <div className="app-content">
-        {isSideBarShown && <SideBar />}
+        <SideBar />
         <Routes>
           <Route index element={<Navigate replace to="/home" />} />
           {getRoutes()}
           <Route path="*" element={<PageNotFound />} />
         </Routes>
         {!loggedinUser && <LoginSignupMsg />}
-        {userMsg && <UserMsg />}
+        <UserMsg />
       </div>
     </div>
   );

@@ -4,9 +4,18 @@ import "./LoginSignupMsg.scss";
 export const LoginSignupMsg = () => {
   const navigate = useNavigate();
 
-  const goToPage = (path: string) => {
-    navigate(path);
-  };
+  const btns = [
+    {
+      title: "Log in",
+      className: "btn-login",
+      path: "/login",
+    },
+    {
+      title: "Sign up",
+      className: "btn-signup",
+      path: "/signup",
+    },
+  ];
 
   return (
     <div className="login-signup-msg">
@@ -15,22 +24,17 @@ export const LoginSignupMsg = () => {
         <p>People on Chirper are the first to know</p>
       </div>
       <div className="login-signup-msg-btn-container">
-        <button
-          className="btn-login"
-          onClick={() => {
-            goToPage("/login");
-          }}
-        >
-          Log in
-        </button>
-        <button
-          className="btn-signup"
-          onClick={() => {
-            goToPage("/signup");
-          }}
-        >
-          Sign up
-        </button>
+        {btns.map(btn => (
+          <button
+            key={btn.title}
+            className={btn.className}
+            onClick={() => {
+              navigate(btn.path);
+            }}
+          >
+            {btn.title}
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -15,18 +15,6 @@ export function setIsPageLoading(
   };
 }
 
-export function setIsSideBarShown(
-  isSideBarShown: boolean
-): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
-  return async dispatch => {
-    try {
-      dispatch({ type: "SET_IS_SIDEBAR_SHOWN", isSideBarShown });
-    } catch (err) {
-      console.log("PostActions: err in getPosts", err);
-    }
-  };
-}
-
 export function setUserMsg(
   userMsg: UserMsg
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {

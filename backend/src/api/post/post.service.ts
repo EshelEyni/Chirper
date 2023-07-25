@@ -68,7 +68,7 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   await Promise.all(setIsFollowingPrms);
 
   if (posts.length > 0) {
-    await _populateUserPollVotes(...(posts as unknown as Post[]));
+    await _getLoggedinUserPollDetails(...(posts as unknown as Post[]));
   }
   return posts as unknown as Post[];
 }
@@ -77,7 +77,7 @@ async function getById(postId: string): Promise<Post | null> {
   const postDoc = await PostModel.findById(postId).exec();
   if (!postDoc) return null;
   const post = postDoc.toObject() as unknown as Post;
-  await _populateUserPollVotes(post);
+  await _getLoggedinUserPollDetails(post);
   await _setLoggedinUserActionState(post);
   await userService.populateIsFollowing(post.createdBy as unknown as User);
   return post;
@@ -210,7 +210,7 @@ async function update(id: string, post: Post): Promise<Post> {
 
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
-  await _populateUserPollVotes(updatedPost);
+  await _getLoggedinUserPollDetails(updatedPost);
   await _setLoggedinUserActionState(updatedPost);
   await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
   return updatedPost;
@@ -474,25 +474,28 @@ async function removeBookmarkedPost(postId: string, loggedinUserId: string): Pro
   return updatedPost;
 }
 
-async function _populateUserPollVotes(...posts: Post[]) {
+async function _getLoggedinUserPollDetails(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
-  if (!loggedinUserId || posts.some(post => post.poll)) return;
+  const isNoPolls = posts.every(post => !post.poll);
+  if (!loggedinUserId || isNoPolls) return;
 
   const pollResults = await PollResultModel.find({
     userId: new ObjectId(loggedinUserId),
     postId: { $in: posts.map(post => post.id) },
   }).exec();
 
-  if (!pollResults.length) return;
-
+  // if (!pollResults.length) return;
   const pollResultsMap = new Map(pollResults.map(result => [result.postId.toString(), result]));
 
   for (const post of posts) {
-    if (post.poll) {
-      const pollResult = pollResultsMap.get(post.id.toString());
-      if (pollResult) post.poll.options[pollResult.optionIdx].isLoggedinUserVoted = true;
-    }
+    if (!post.poll) continue;
+    const isLoggedinUserPoll = post.createdBy.id === loggedinUserId;
+    if (isLoggedinUserPoll) post.poll.isVotingOff = true;
+    const pollResult = pollResultsMap.get(post.id.toString());
+    if (!pollResult) continue;
+    post.poll.options[pollResult.optionIdx].isLoggedinUserVoted = true;
+    post.poll.isVotingOff = true;
   }
 }
 async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {}) {

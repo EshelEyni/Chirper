@@ -185,7 +185,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             {post.gif && <GifDisplay gif={post.gif} />}
             {poll && (
               <PollDisplay
-                isLoggedinUserPost={isLoggedinUserPost}
                 postId={post.id}
                 postStartDate={postStartDate}
                 poll={poll}

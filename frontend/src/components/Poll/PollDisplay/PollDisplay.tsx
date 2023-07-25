@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Poll } from "../../../../../shared/interfaces/post.interface";
 import { postService } from "../../../services/post.service";
 import { PollDisplayOption } from "../PollDisplayOption/PollDisplayOption";
@@ -6,38 +6,14 @@ import { PollDisplayOptionResult } from "../PollDisplayResult/PollDisplayResult"
 import "./PollDisplay.scss";
 
 type PollDisplayProps = {
-  isLoggedinUserPost: boolean;
   postStartDate: Date;
   postId: string;
   poll: Poll;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
 };
 
-export const PollDisplay: FC<PollDisplayProps> = ({
-  isLoggedinUserPost,
-  postStartDate,
-  postId,
-  poll,
-  setPoll,
-}) => {
-  useEffect(() => {
-    setIsVotingOff();
-  }, []);
-
-  const setIsVotingOff = () => {
-    const isVotingOff =
-      isLoggedinUserPost || poll.options.some(option => option.isLoggedinUserVoted);
-
-    if (isVotingOff) {
-      const updatedPoll = {
-        ...poll,
-        isVotingOff: isVotingOff,
-      };
-      setPoll(updatedPoll);
-    }
-  };
-
-  const onVote = async (idx: number) => {
+export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate, postId, poll, setPoll }) => {
+  async function onVote(idx: number) {
     if (poll.isVotingOff) return;
     const { data: savedOption } = await postService.savePollVote(postId, idx);
     const updatedPoll = {
@@ -46,11 +22,11 @@ export const PollDisplay: FC<PollDisplayProps> = ({
       isVotingOff: true,
     };
     setPoll(updatedPoll);
-  };
+  }
 
   const pollVoteCount = poll.options.reduce((acc, option) => acc + option.voteCount, 0) || 0;
 
-  const setPollTimeCount = () => {
+  function setPollTimeCount() {
     const postStartTimestamp = new Date(postStartDate).getTime();
     const nowTimestamp = new Date().getTime();
     const { days, hours, minutes } = poll.length;
@@ -64,19 +40,11 @@ export const PollDisplay: FC<PollDisplayProps> = ({
     const hoursLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / (1000 * 60 * 60)) % 24);
     const minutesLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / (1000 * 60)) % 60);
 
-    if (daysLeft > 0) {
-      return `${daysLeft}d`;
-    }
-    if (hoursLeft > 0) {
-      return `${hoursLeft}h`;
-    }
-    if (minutesLeft > 0) {
-      return `${minutesLeft}m`;
-    }
-    if (nowTimestamp > pollEndTimestamp) {
-      return `Final results`;
-    }
-  };
+    if (daysLeft > 0) return `${daysLeft}d`;
+    if (hoursLeft > 0) return `${hoursLeft}h`;
+    if (minutesLeft > 0) return `${minutesLeft}m`;
+    if (nowTimestamp > pollEndTimestamp) return `Final results`;
+  }
 
   return (
     <section className="poll-display">

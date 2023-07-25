@@ -1,9 +1,6 @@
-import { Document } from "mongoose";
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
 import { MiniUser } from "./user.interface";
-
-export type PostDocument = Post & Document;
 
 export type PostReplyResult = {
   updatedPost: Post;

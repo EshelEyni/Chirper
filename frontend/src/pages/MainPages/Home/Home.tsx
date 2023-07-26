@@ -20,7 +20,6 @@ export const HomePage = () => {
     document.title = "Home / Chirper";
     if (!posts.length) dispatch(getPosts());
     else dispatch(setIsPageLoading(false));
-    // dispatch(setIsPageLoading(false));
   }, [posts]);
 
   return (

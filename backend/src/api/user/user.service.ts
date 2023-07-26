@@ -2,7 +2,7 @@ import { FollowingResult, User } from "../../../../shared/interfaces/user.interf
 import { UserModel } from "./user.model";
 import { FollowerModel } from "./followers.model";
 import { APIFeatures, QueryObj, filterObj } from "../../services/util/util.service";
-import { Document, startSession } from "mongoose";
+import mongoose, { Document, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls.middleware";
 import { PostStatsModel } from "../post/post-stats.model";
@@ -68,7 +68,8 @@ async function removeAccount(userId: string): Promise<User> {
 async function populateIsFollowing(user: User): Promise<User> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
-  if (!loggedinUserId) {
+  const isValidId = mongoose.Types.ObjectId.isValid(loggedinUserId);
+  if (!isValidId) {
     user.isFollowing = false;
     return user;
   }

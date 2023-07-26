@@ -6,15 +6,15 @@ import "./styles/main.scss";
 import { autoLogin } from "./store/actions/auth.actions";
 import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
-import { UserMsg } from "../src/components/Msg/UserMsg/UserMsg";
-import { LoginSignupMsg } from "../src/components/Msg/LoginSignupMsg/LoginSignupMsg";
+import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
+import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
 import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 
-function RootComponent() {
+function App() {
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  if (!loggedinUser) dispatch(autoLogin());
+  // if (!loggedinUser) dispatch(autoLogin());
 
   function getRoutes() {
     return routes.map(route => (
@@ -53,4 +53,4 @@ function RootComponent() {
   );
 }
 
-export default RootComponent;
+export default App;

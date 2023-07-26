@@ -478,7 +478,8 @@ async function _getLoggedinUserPollDetails(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
   const isNoPolls = posts.every(post => !post.poll);
-  if (!loggedinUserId || isNoPolls) return;
+  const isValidId = mongoose.Types.ObjectId.isValid(loggedinUserId);
+  if (!isValidId || isNoPolls) return;
 
   const pollResults = await PollResultModel.find({
     userId: new ObjectId(loggedinUserId),
@@ -520,7 +521,8 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
 
   post.loggedinUserActionState = defaultState;
 
-  if (isDefault || !loggedinUserId) return;
+  const isValidId = mongoose.Types.ObjectId.isValid(loggedinUserId);
+  if (isDefault || !isValidId) return;
 
   const postId = new ObjectId(post.id);
   const userId = new ObjectId(loggedinUserId);

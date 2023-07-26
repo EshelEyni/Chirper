@@ -52,7 +52,7 @@ describe("Util Service", () => {
     let mockQuery: Query<any[], any>;
     let mockQueryObj: QueryObj;
 
-    function beforeEachFunc() {
+    function setMocks() {
       mockQuery = {
         find: jest.fn().mockReturnThis(),
         sort: jest.fn().mockReturnThis(),
@@ -73,7 +73,7 @@ describe("Util Service", () => {
     }
 
     describe("constructor", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should create an instance of APIFeatures", () => {
         expect(apiFeatures).toBeInstanceOf(APIFeatures);
@@ -81,7 +81,7 @@ describe("Util Service", () => {
     });
 
     describe("filter", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should filter query based on queryString and return updated APIFeatures instance", () => {
         const apiFeaturesFiltered = apiFeatures.filter();
@@ -105,7 +105,7 @@ describe("Util Service", () => {
     });
 
     describe("sort", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should sort query based on queryString and return updated APIFeatures instance", () => {
         const apiFeaturesSorted = apiFeatures.sort();
@@ -128,7 +128,7 @@ describe("Util Service", () => {
     });
 
     describe("limitFields", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should limit fields based on queryString and return updated APIFeatures instance", () => {
         const apiFeaturesLimited = apiFeatures.limitFields();
@@ -151,7 +151,7 @@ describe("Util Service", () => {
     });
 
     describe("paginate", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should paginate based on queryString and return updated APIFeatures instance", () => {
         const apiFeaturesPaginated = apiFeatures.paginate();
@@ -185,7 +185,7 @@ describe("Util Service", () => {
     });
 
     describe("getQuery", () => {
-      beforeEach(beforeEachFunc);
+      beforeEach(setMocks);
 
       it("should return the query", () => {
         const result = apiFeatures.getQuery();

@@ -28,7 +28,7 @@ const getOne = (Model: ModelType<any>, popOptions?: string) =>
     const { id } = req.params;
     const query = Model.findById(id);
     if (popOptions) query.populate(popOptions);
-    const doc = await query;
+    const doc = await query.exec();
     if (!doc)
       throw new AppError(
         `No ${dataName.slice(0, dataName.length - 1)} was found with the id: ${id}`,
@@ -83,6 +83,7 @@ const deleteOne = (Model: ModelType<any>) =>
     const dataName = Model.collection.collectionName;
     const { id } = req.params;
     const doc = await Model.findByIdAndDelete(id);
+
     if (!doc)
       throw new AppError(
         `No ${dataName.slice(0, dataName.length - 1)} was found with the id: ${id}`,

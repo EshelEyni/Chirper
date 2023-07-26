@@ -32,6 +32,7 @@ const authRequestLimiter = rateLimit({
 });
 
 const requestLimiter = (req: Request, res: Response, next: NextFunction) => {
+  // TODO: Refactor this to use a switch statement
   if (req.method === "GET") {
     getRequestLimiter(req, res, next);
   } else if (req.method === "POST") {

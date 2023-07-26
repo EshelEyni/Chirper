@@ -15,7 +15,7 @@ import postRoutes from "./api/post/post.routes";
 import gifRoutes from "./api/gif/gif.routes";
 import locationRoutes from "./api/location/location.routes";
 import authRoutes from "./api/auth/auth.routes";
-import { requestLimiter } from "./services/rate-limiter.service";
+import { requestLimiter } from "./services/rate-limiter/rate-limiter.service";
 // import { setupSocketAPI } from "./services/socket.service";
 
 const app = express();

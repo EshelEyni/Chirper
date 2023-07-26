@@ -9,7 +9,7 @@ import {
   updatePassword,
 } from "./auth.controller";
 import { requireAuth } from "../../middlewares/requireAuth.middleware";
-import { authRequestLimiter } from "../../services/rate-limiter.service";
+import { authRequestLimiter } from "../../services/rate-limiter/rate-limiter.service";
 
 const router = express.Router();
 

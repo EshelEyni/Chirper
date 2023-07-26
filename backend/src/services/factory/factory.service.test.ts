@@ -340,7 +340,9 @@ describe("Factory Service", () => {
       mockData = { _id: reqMock.params.id };
       reqMock.params.id = "1234567890";
       ModelMock.collection.collectionName = "testItems";
-      jest.spyOn(logger, "warn");
+      jest.spyOn(logger, "warn").mockImplementation(() => {
+        return;
+      });
     });
 
     afterEach(() => {

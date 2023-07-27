@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
   verbose: true,
   collectCoverage: true,
   // collectCoverageFrom: [`${baseDir}/**/*.ts`],
-  collectCoverageFrom: ["<rootDir>/src//middlewares/html-sanitizer/html-sanitizer.middleware.ts"],
+  collectCoverageFrom: ["<rootDir>/src/middlewares/html-sanitizer/html-sanitizer.middleware.ts"],
   roots: [baseDir],
   testMatch: [`${baseDir}/**/*test.ts`],
 };

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import express from "express";
 import helmet from "helmet";
 import ExpressMongoSanitize from "express-mongo-sanitize";
-import requestSanitizer from "./middlewares/html-sanitizer.middleware";
+import requestSanitizer from "./middlewares/html-sanitizer/html-sanitizer.middleware";
 import hpp from "hpp";
 import path from "path";
 import cookieParser from "cookie-parser";

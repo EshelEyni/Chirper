@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError, asyncErrorCatcher } from "../services/error/error.service";
 import { UserModel } from "../api/user/user.model";
-import tokenService from "../services/token.service";
+import tokenService from "../services/token/token.service";
 
 const requireAuth = asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
   const token = tokenService.getTokenFromRequest(req);

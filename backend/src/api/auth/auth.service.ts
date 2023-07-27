@@ -3,7 +3,7 @@ import { UserModel } from "../user/user.model";
 import { AppError } from "../../services/error/error.service";
 import { sendEmail } from "../../services/util/util.service";
 import crypto from "crypto";
-import tokenService from "../../services/token.service";
+import tokenService from "../../services/token/token.service";
 
 async function login(username: string, password: string): Promise<{ user: User; token: string }> {
   const user = await UserModel.findOne({ username }).select("+password");

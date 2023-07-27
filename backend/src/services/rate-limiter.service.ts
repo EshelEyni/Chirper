@@ -19,6 +19,12 @@ const patchRequestLimiter = rateLimit({
   message: "Too many PATCH requests, please try again later",
 });
 
+const putRequestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  message: "Too many PATCH requests, please try again later",
+});
+
 const deleteRequestLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -32,18 +38,31 @@ const authRequestLimiter = rateLimit({
 });
 
 const requestLimiter = (req: Request, res: Response, next: NextFunction) => {
-  // TODO: Refactor this to use a switch statement
-  if (req.method === "GET") {
-    getRequestLimiter(req, res, next);
-  } else if (req.method === "POST") {
-    postRequestLimiter(req, res, next);
-  } else if (req.method === "PATCH") {
-    patchRequestLimiter(req, res, next);
-  } else if (req.method === "DELETE") {
-    deleteRequestLimiter(req, res, next);
-  } else {
-    next();
+  switch (req.method) {
+    case "GET":
+      getRequestLimiter(req, res, next);
+      break;
+    case "POST":
+      postRequestLimiter(req, res, next);
+      break;
+    case "PATCH":
+      patchRequestLimiter(req, res, next);
+      break;
+    case "PUT":
+      putRequestLimiter(req, res, next);
+      break;
+    case "DELETE":
+      deleteRequestLimiter(req, res, next);
+      break;
+    default:
+      next();
   }
 };
 
 export { authRequestLimiter, requestLimiter };
+
+/*
+Notes:
+- This file is used to limit the number of requests a user can make to the server.
+- No Test Cases needed. This is just a Wrapper for express-rate-limit.
+*/

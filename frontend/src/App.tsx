@@ -14,7 +14,7 @@ import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 function App() {
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  // if (!loggedinUser) dispatch(autoLogin());
+  if (!loggedinUser) dispatch(autoLogin());
 
   function getRoutes() {
     return routes.map(route => (

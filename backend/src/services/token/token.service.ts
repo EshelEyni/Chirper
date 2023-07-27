@@ -1,15 +1,14 @@
 import { Request } from "express";
-import { AppError } from "./error/error.service";
-import config from "../config/index";
+import { AppError } from "../error/error.service";
+import config from "../../config/index";
 import jwt from "jsonwebtoken";
 
 function getTokenFromRequest(req: Request) {
   const { cookies } = req;
-  let tokenFromHeaders;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    tokenFromHeaders = req.headers.authorization.split(" ")[1];
-  }
-
+  const isTokenInHeaders =
+    req.headers.authorization && req.headers.authorization.startsWith("Bearer");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const tokenFromHeaders = isTokenInHeaders ? req.headers.authorization!.split(" ")[1] : null;
   const token = cookies.loginToken || tokenFromHeaders;
   return token;
 }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncLocalStorage } from "../services/als.service";
 import { asyncErrorCatcher } from "../services/error/error.service";
-import tokenService from "../services/token.service";
+import tokenService from "../services/token/token.service";
 
 export type alStoreType = Record<string, string>;
 

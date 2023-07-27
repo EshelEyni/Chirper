@@ -7,7 +7,7 @@ import hpp from "hpp";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { requestLogger } from "./middlewares/logger.middleware";
+import { requestLogger } from "./middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls.middleware";
 import userRoutes from "./api/user/user.routes";
@@ -17,6 +17,7 @@ import locationRoutes from "./api/location/location.routes";
 import authRoutes from "./api/auth/auth.routes";
 import { requestLimiter } from "./services/rate-limiter.service";
 // import { setupSocketAPI } from "./services/socket.service";
+const isProdEnv = process.env.NODE_ENV === "production";
 
 const app = express();
 
@@ -38,7 +39,7 @@ app.use(
 );
 
 // cors
-if (process.env.NODE_ENV === "production") {
+if (isProdEnv) {
   app.use(express.static(path.resolve(__dirname, "public")));
 } else {
   const corsOptions = {
@@ -54,9 +55,12 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.all("*", setupAsyncLocalStorage);
-app.use((req: Request, res: Response, next: NextFunction) => {
-  requestLogger(req, res, next);
-});
+
+if (!isProdEnv) {
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    requestLogger(req, res, next);
+  });
+}
 
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);

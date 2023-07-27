@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncErrorCatcher } from "../services/error/error.service";
-import { logger } from "../services/logger/logger.service";
+import { asyncErrorCatcher } from "../../services/error/error.service";
+import { logger } from "../../services/logger/logger.service";
 
 export const requestLogger = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -10,10 +10,7 @@ export const requestLogger = asyncErrorCatcher(
     logger.info(str);
 
     res.on("finish", () => {
-      if (res.statusCode >= 400) {
-        return;
-      }
-
+      if (res.statusCode >= 400) return;
       const duration = Date.now() - start;
       const str = `${method} ${originalUrl} ${res.statusCode} ${duration}ms`;
       logger.success(str);

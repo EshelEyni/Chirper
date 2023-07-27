@@ -1,6 +1,6 @@
 import type { Config } from "@jest/types";
 
-const currPath = "/middlewares/html-sanitizer";
+const currPath = "/middlewares/logger";
 const baseDir = `<rootDir>/src/${currPath}`;
 // const baseDir = `<rootDir>`;
 
@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
   verbose: true,
   collectCoverage: true,
   // collectCoverageFrom: [`${baseDir}/**/*.ts`],
-  collectCoverageFrom: ["<rootDir>/src/middlewares/html-sanitizer/html-sanitizer.middleware.ts"],
+  collectCoverageFrom: ["<rootDir>/src/middlewares/logger/logger.middleware.ts"],
   roots: [baseDir],
   testMatch: [`${baseDir}/**/*test.ts`],
 };

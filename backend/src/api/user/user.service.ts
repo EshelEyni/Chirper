@@ -4,7 +4,7 @@ import { FollowerModel } from "./followers.model";
 import { APIFeatures, QueryObj, filterObj } from "../../services/util/util.service";
 import mongoose, { Document, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../services/als.service";
-import { alStoreType } from "../../middlewares/setupAls.middleware";
+import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../post/post-stats.model";
 import postService from "../post/post.service";
 import { Post } from "../../../../shared/interfaces/post.interface";

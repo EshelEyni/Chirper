@@ -1,0 +1,8 @@
+@import "../../../../styles/setup/functions";
+
+.poll-display-options-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: rem(8px);
+  gap: rem(5px);
+}

@@ -7,6 +7,7 @@ jest.mock("../../api/user/user.model");
 jest.mock("../../services/token/token.service");
 
 const validMongoId = "5f8d0a6f9d6d7d2f3c0d7d2f";
+const token = "some-token";
 
 describe("Auth Gaurds Middleware", () => {
   describe("checkUserAuthentication", () => {
@@ -15,7 +16,10 @@ describe("Auth Gaurds Middleware", () => {
     const nextMock: NextFunction = jest.fn();
 
     beforeEach(() => {
-      reqMock = {};
+      reqMock = {
+        cookies: { loginToken: token },
+        loggedinUserId: null,
+      } as any as Partial<Request>;
       resMock = {
         json: jest.fn(),
       };
@@ -26,10 +30,8 @@ describe("Auth Gaurds Middleware", () => {
     });
 
     it("Should successfully authenticate user", async () => {
-      reqMock.cookies = {
-        loginToken: "some-token",
-      };
-      (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("some-token");
+      reqMock.cookies = { loginToken: token };
+      (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue(token);
       (tokenService.verifyToken as jest.Mock).mockResolvedValue({
         id: validMongoId,
         timeStamp: 123456,
@@ -42,9 +44,9 @@ describe("Auth Gaurds Middleware", () => {
       });
 
       await checkUserAuthentication(reqMock as any, resMock as any, nextMock);
-      expect(tokenService.getTokenFromRequest).toHaveBeenCalled();
-      expect(tokenService.verifyToken).toHaveBeenCalled();
-      expect(UserModel.findById).toHaveBeenCalled();
+      expect(tokenService.getTokenFromRequest).toHaveBeenCalledWith(reqMock as any);
+      expect(tokenService.verifyToken).toHaveBeenCalledWith(token);
+      expect(UserModel.findById).toHaveBeenCalledWith(validMongoId);
 
       expect(reqMock.loggedinUserId).toEqual(validMongoId);
       expect(nextMock).toHaveBeenCalled();

@@ -3,7 +3,7 @@
 import fs from "fs";
 import { asyncLocalStorage } from "../als.service";
 import ansiColors from "ansi-colors";
-import { alStoreType } from "../../middlewares/setupAls.middleware";
+import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);

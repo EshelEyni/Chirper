@@ -1,0 +1,10 @@
+@import "../../../../styles/setup/functions";
+
+.poll-display-details {
+  display: flex;
+  align-items: center;
+  gap: rem(5px);
+  margin-top: rem(5px);
+  font-size: rem(15px);
+  color: var(--color-text-gray);
+}

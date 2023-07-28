@@ -11,7 +11,7 @@ import { PostModel } from "./post.model";
 import { RepostModel } from "./repost.model";
 import { PollResultModel } from "./poll.model";
 import { asyncLocalStorage } from "../../services/als.service";
-import { alStoreType } from "../../middlewares/setupAls.middleware";
+import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
 import mongoose, { Document } from "mongoose";
 import { AppError } from "../../services/error/error.service";
 import { logger } from "../../services/logger/logger.service";

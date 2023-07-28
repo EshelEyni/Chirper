@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
@@ -16,7 +17,7 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ currNewPost }) => 
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
-  const handleValueChange = (inputType: string, value: number | string) => {
+  function handleValueChange(inputType: string, value: number | string) {
     const setPollLength = (inputType: string, value: number | string) => {
       if (inputType === "days" && value === 7) {
         return {
@@ -39,22 +40,7 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ currNewPost }) => 
       },
     };
     dispatch(updateCurrNewPost(newPost, newPostType));
-  };
-
-  useEffect(() => {
-    setInputs(prevInputs => {
-      return prevInputs.map(input => {
-        if (input.type === "hours" || input.type === "minutes") {
-          return {
-            ...input,
-            isDisabled: currNewPost.poll!.length.days === 7,
-            value: currNewPost.poll!.length.days === 7 ? 0 : input.value,
-          };
-        }
-        return input;
-      });
-    });
-  }, [currNewPost.poll!.length.days]);
+  }
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(
     [
@@ -88,6 +74,21 @@ export const PollLengthInputs: FC<PollLengthInputsProps> = ({ currNewPost }) => 
     ],
     handleValueChange
   );
+
+  useEffect(() => {
+    setInputs(prevInputs => {
+      return prevInputs.map(input => {
+        if (input.type === "hours" || input.type === "minutes") {
+          return {
+            ...input,
+            isDisabled: currNewPost.poll!.length.days === 7,
+            value: currNewPost.poll!.length.days === 7 ? 0 : input.value,
+          };
+        }
+        return input;
+      });
+    });
+  }, [currNewPost.poll!.length.days]);
 
   return (
     <section className="poll-length">

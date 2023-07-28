@@ -16,7 +16,7 @@ const mockResponse = () => {
 
 const mockNext = jest.fn() as NextFunction;
 
-describe("requestSanitizer", () => {
+describe("requestSanitizer Middleware", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

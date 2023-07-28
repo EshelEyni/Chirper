@@ -13,7 +13,10 @@ import {
   addFollowingsFromPost,
   removeFollowingsFromPost,
 } from "./user.controller";
-import { requireAuth, requireAdmin } from "../../middlewares/requireAuth.middleware";
+import {
+  checkUserAuthentication,
+  checkAdminAuthorization,
+} from "../../middlewares/authGuards/authGuards.middleware";
 
 const router = express.Router();
 
@@ -21,7 +24,7 @@ router.get("/", getUsers);
 router.get("/:id", getUserById);
 router.get("/username/:username", getUserByUsername);
 
-router.use(requireAuth);
+router.use(checkUserAuthentication);
 router.post("/:id/following", addFollowings);
 router.delete("/:id/following", removeFollowings);
 router.post("/:userId/following/:postId/fromPost", addFollowingsFromPost);
@@ -29,7 +32,7 @@ router.delete("/:userId/following/:postId/fromPost", removeFollowingsFromPost);
 router.patch("/loggedinUser", updateLoggedInUser);
 router.delete("/loggedinUser", removeLoggedInUser);
 
-router.use(requireAdmin);
+router.use(checkAdminAuthorization);
 router.post("/", addUser);
 router.patch("/:id", updateUser);
 router.delete("/:id", removeUser);

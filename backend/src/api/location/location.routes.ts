@@ -1,10 +1,10 @@
 import express from "express";
 import { getUserDefaultLocations, getLocationsBySearchTerm } from "./location.controller";
-import { requireAuth } from "../../middlewares/requireAuth.middleware";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuards.middleware";
 
 const router = express.Router();
 
-router.use(requireAuth);
+router.use(checkUserAuthentication);
 router.get("/", getUserDefaultLocations);
 router.get("/search", getLocationsBySearchTerm);
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAuth } from "../../middlewares/requireAuth.middleware";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuards.middleware";
 import {
   getPosts,
   getPostById,
@@ -26,7 +26,7 @@ const router = express.Router();
 
 router.get("/", getPosts);
 router.get("/:id([a-fA-F0-9]{24})", getPostById);
-router.use(requireAuth);
+router.use(checkUserAuthentication);
 
 router.get("/:id/stats", getPostStats);
 router.post("/:id/stats", createPostStatsWithView);

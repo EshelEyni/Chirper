@@ -1,6 +1,6 @@
 import type { Config } from "@jest/types";
 
-const currPath = "/middlewares/logger";
+const currPath = "/middlewares/authGuards";
 const baseDir = `<rootDir>/src/${currPath}`;
 // const baseDir = `<rootDir>`;
 
@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
   verbose: true,
   collectCoverage: true,
   // collectCoverageFrom: [`${baseDir}/**/*.ts`],
-  collectCoverageFrom: ["<rootDir>/src/middlewares/logger/logger.middleware.ts"],
+  collectCoverageFrom: ["<rootDir>/src/middlewares/authGuards/authGuards.middleware.ts"],
   roots: [baseDir],
   testMatch: [`${baseDir}/**/*test.ts`],
 };

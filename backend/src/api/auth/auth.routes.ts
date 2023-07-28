@@ -8,7 +8,7 @@ import {
   resetPassword,
   updatePassword,
 } from "./auth.controller";
-import { requireAuth } from "../../middlewares/requireAuth.middleware";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuards.middleware";
 import { authRequestLimiter } from "../../services/rate-limiter.service";
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.use(authRequestLimiter);
 router.post("/login", login);
 router.post("/signup", signup);
 router.post("/logout", logout);
-router.patch("/updatePassword", requireAuth, updatePassword);
+router.patch("/updatePassword", checkUserAuthentication, updatePassword);
 router.post("/forgotPassword", sendPasswordResetEmail);
 router.patch("/resetPassword/:token", resetPassword);
 

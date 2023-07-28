@@ -10,15 +10,11 @@ const setupAsyncLocalStorage = asyncErrorCatcher(
     const storage = {};
     asyncLocalStorage.run(storage, async () => {
       const token = tokenService.getTokenFromRequest(req);
-      if (!token) {
-        return next();
-      }
+      if (!token) return next();
       const verifiedToken = await tokenService.verifyToken(token);
-
-      if (verifiedToken) {
-        const alsStore = asyncLocalStorage.getStore() as alStoreType;
-        alsStore.loggedinUserId = verifiedToken.id;
-      }
+      if (!verifiedToken) return next();
+      const alsStore = asyncLocalStorage.getStore() as alStoreType;
+      alsStore.loggedinUserId = verifiedToken.id;
       next();
     });
   }

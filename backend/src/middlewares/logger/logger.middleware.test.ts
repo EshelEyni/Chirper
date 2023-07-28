@@ -6,7 +6,7 @@ import { NextFunction, Request, Response } from "express";
 
 const mockedLogger = logger as jest.Mocked<typeof logger>;
 
-describe("requestLogger", () => {
+describe("requestLogger Middleware", () => {
   const mockRequest = {
     method: "GET",
     originalUrl: "/test",

@@ -26,20 +26,20 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
     threshold: 0.5,
   });
 
+  function onHandlePlayerClick() {
+    if (!isCustomControls) return;
+    if (isMuted) {
+      setIsMuted(!isMuted);
+      setVolume(Number(storageService.get("volume")) || 0.5);
+      return;
+    }
+    setIsPlaying(!isPlaying);
+  }
+
   useEffect(() => {
     setIsPlaying(inView);
   }, [inView]);
 
-  const onHandlePlayerClick = () => {
-    if (isCustomControls) {
-      if (isMuted) {
-        setIsMuted(!isMuted);
-        setVolume(Number(storageService.get("volume")) || 0.5);
-        return;
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
   return (
     <div className="video-player-container" ref={ref}>
       <div className="react-player-wrapper" onClick={onHandlePlayerClick} ref={playerWrapperRef}>

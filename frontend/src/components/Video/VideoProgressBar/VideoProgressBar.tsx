@@ -15,12 +15,12 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({
   videoPlayerRef,
   isVolumeHover,
 }) => {
-  const handleChange = (e: Event, newValue: number) => {
+  function handleChange(e: Event, newValue: number) {
     e.stopPropagation();
     if (!videoPlayerRef.current) return;
     videoPlayerRef.current.seekTo((newValue * videoPlayerRef.current.getDuration()) / 100);
     setProgress(newValue as number);
-  };
+  }
 
   return (
     <Slider

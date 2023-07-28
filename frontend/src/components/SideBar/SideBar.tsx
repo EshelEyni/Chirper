@@ -12,9 +12,9 @@ export const SideBar = () => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
+  function toggleModal() {
+    setIsModalOpen((prevState: boolean): boolean => !prevState);
+  }
 
   return (
     <div className="side-bar">

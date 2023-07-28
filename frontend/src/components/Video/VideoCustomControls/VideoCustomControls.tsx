@@ -64,7 +64,7 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
           <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={20} />
 
           <div className="video-custom-controls-actions-main-container">
-            <VideoTimer playedSeconds={playedSeconds} duration={duration} />
+            <VideoTimer playedSeconds={playedSeconds} duration={duration} isCountDown={false} />
             <BtnToggleVolume
               isMuted={isMuted}
               setIsMuted={setIsMuted}

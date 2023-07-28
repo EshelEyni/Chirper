@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import "./VideoTimer.scss";
 
 type VideoTimerProps = {
@@ -7,47 +7,57 @@ type VideoTimerProps = {
   isCountDown?: boolean;
 };
 
+type TimeUnits = {
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
 export const VideoTimer: FC<VideoTimerProps> = ({ playedSeconds, duration, isCountDown }) => {
-  const setCountDownTimer = (playedSeconds: number, duration: number) => {
-    const countDownTimer = Math.round(duration - playedSeconds);
-    const hours = Math.floor(countDownTimer / 3600);
-    const minutes = Math.floor((countDownTimer - hours * 3600) / 60);
-    const seconds = countDownTimer - hours * 3600 - minutes * 60;
+  const [timeStr, setTimeStr] = useState("");
 
-    const formmatNumber = (number: number) => {
-      return number < 10 ? `0${number}` : number;
-    };
+  function extractTimeUnits(secs: number) {
+    const hours = Math.floor(secs / 3600);
+    const minutes = Math.floor((secs - hours * 3600) / 60);
+    const seconds = Math.floor(secs - hours * 3600 - minutes * 60);
+    return { hours, minutes, seconds };
+  }
 
-    if (hours > 0) {
-      return `${formmatNumber(hours)}:${formmatNumber(minutes)}:${formmatNumber(seconds)}`;
+  const getTimeDisplayString = useCallback(({ hours, minutes, seconds }: TimeUnits): string => {
+    const formatNumber = (number: number) => (number < 10 ? `0${number}` : number);
+    if (hours > 0)
+      return `${formatNumber(hours)}:${formatNumber(minutes)}:${formatNumber(seconds)}`;
+    return `${minutes}:${formatNumber(seconds)}`;
+  }, []);
+
+  const getTimeStr = useCallback(
+    (timeStamp: number): string => {
+      const timeUnits = extractTimeUnits(timeStamp);
+      return getTimeDisplayString(timeUnits);
+    },
+    [getTimeDisplayString]
+  );
+
+  useEffect(() => {
+    let str;
+    if (isCountDown) {
+      const countDownTimer = Math.round(duration - playedSeconds);
+      str = getTimeStr(countDownTimer);
+    } else {
+      str = getTimeStr(playedSeconds);
     }
-    return `${minutes}:${formmatNumber(seconds)}`;
-  };
-
-  const setDefaultTimer = (playedSeconds: number, duration: number) => {
-    const hours = Math.floor(playedSeconds / 3600);
-    const minutes = Math.floor((playedSeconds - hours * 3600) / 60);
-    const seconds = Math.floor(playedSeconds - hours * 3600 - minutes * 60);
-
-    const formmatNumber = (number: number) => {
-      return number < 10 ? `0${number}` : number;
-    };
-
-    if (hours > 0) {
-      return `${formmatNumber(hours)}:${formmatNumber(minutes)}:${formmatNumber(seconds)}`;
-    }
-    return `${minutes}:${formmatNumber(seconds)}`;
-  };
+    setTimeStr(str);
+  }, [playedSeconds, duration, isCountDown, getTimeStr]);
 
   return (
     <section className="video-timer">
       {isCountDown ? (
-        <span className="count-down-timer">{setCountDownTimer(playedSeconds, duration)}</span>
+        <span className="count-down-timer">{timeStr}</span>
       ) : (
         <div className="default-timer">
-          <span>{setDefaultTimer(playedSeconds, duration)}</span>
+          <span>{timeStr}</span>
           <span>/</span>
-          <span>{setDefaultTimer(duration, duration)}</span>
+          <span>{getTimeStr(duration)}</span>
         </div>
       )}
     </section>

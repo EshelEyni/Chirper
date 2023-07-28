@@ -1,8 +1,8 @@
-import { QuotedPost } from "../../../../../../shared/interfaces/post.interface";
-import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
-import { VideoPlayer } from "../../../Video/VideoPlayer/VideoPlayer";
-import { PostImg } from "../../PostImg/PostImg";
-import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
+import { QuotedPost } from "../../../../../../../shared/interfaces/post.interface";
+import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
+import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
+import { PostImg } from "../../../PostImg/PostImg";
+import { PostPreviewHeader } from "../../../PostPreviewHeader/PostPreviewHeader";
 
 type QuotedPostContentProps = {
   quotedPost: QuotedPost;

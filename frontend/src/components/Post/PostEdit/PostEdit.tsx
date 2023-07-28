@@ -21,8 +21,8 @@ import { uploadFileToCloudinary } from "../../../services/upload.service";
 import { setUserMsg } from "../../../store/actions/system.actions";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { PostList } from "../PostList/PostList";
-import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview/MiniPostPreview";
-import { RepliedPostContent } from "../MiniPostPreview/RepliedPostContent/RepliedPostContent";
+import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostContent/RepliedPostContent";
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
 import { BtnRemovePostFromThread } from "../BtnRemovePostFromThread/BtnRemovePostFromThread";
@@ -34,7 +34,7 @@ import { GifEdit } from "../../Gif/GifEdit/GifEdit";
 import { PollEdit } from "../../Poll/PollEdit/PollEdit";
 import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleRepliers";
 import { PostEditTitleLocation } from "../PostEditTitleLocation/PostEditTitleLocation";
-import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
+import { QuotedPostContent } from "../PostPreview/MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostEditActions } from "../PostEditActions/PostEditActions/PostEditActions";
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../BtnAddThread/BtnAddThread";
@@ -321,7 +321,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       {isPreCurrNewPostList && <PostList newPosts={preCurrNewPostList} />}
       {isReplyPostShown && (
         <MiniPostPreview post={replyToPost} type={"replied-post"}>
-          {({ post }: { post: Post }) => <RepliedPostContent post={post} />}
+          <RepliedPostContent post={replyToPost} />
         </MiniPostPreview>
       )}
       <div className="content-container">
@@ -362,9 +362,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
           </div>
           {isQuotedPostShown && (
             <MiniPostPreview quotedPost={quotedPost} type={"quoted-post"}>
-              {({ quotedPost }: { quotedPost: QuotedPost }) => (
-                <QuotedPostContent quotedPost={quotedPost} />
-              )}
+              <QuotedPostContent quotedPost={quotedPost} />
             </MiniPostPreview>
           )}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>

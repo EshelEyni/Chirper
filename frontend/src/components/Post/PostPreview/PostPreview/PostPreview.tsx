@@ -1,30 +1,30 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Post, QuotedPost } from "../../../../../shared/interfaces/post.interface";
-import { AppDispatch } from "../../../store/types";
-import { addFollowFromPost, removeFollowFromPost } from "../../../store/actions/post.actions";
-import { useModalPosition } from "../../../hooks/useModalPosition";
-import { userService } from "../../../services/user.service";
-import { postService } from "../../../services/post.service";
-import { RootState } from "../../../store/store";
-import { useCustomElementHover } from "../../../hooks/useCustomElementHover";
+import { Post, QuotedPost } from "../../../../../../shared/interfaces/post.interface";
+import { AppDispatch } from "../../../../store/types";
+import { addFollowFromPost, removeFollowFromPost } from "../../../../store/actions/post.actions";
+import { useModalPosition } from "../../../../hooks/useModalPosition";
+import { userService } from "../../../../services/user.service";
+import { postService } from "../../../../services/post.service";
+import { RootState } from "../../../../store/store";
+import { useCustomElementHover } from "../../../../hooks/useCustomElementHover";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { useInView } from "react-intersection-observer";
-import { UserImg } from "../../User/UserImg/UserImg";
+import { UserImg } from "../../../User/UserImg/UserImg";
 import {
   UserPreviewModal,
   UserPreviewModalPosition,
-} from "../../Modals/UserPreviewModal/UserPreviewModal";
-import { PostPreviewHeader } from "../PostPreviewHeader/PostPreviewHeader";
-import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
-import { PostImg } from "../PostImg/PostImg";
-import { PostRepliedToUsersList } from "../PostRepliedToUsersList/PostRepliedToUsersList";
-import { GifDisplay } from "../../Gif/GifDisplay/GifDisplay";
-import { PollDisplay } from "../../Poll/PollDisplay/PollDisplay";
+} from "../../../Modals/UserPreviewModal/UserPreviewModal";
+import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
+import { VideoPlayer } from "../../../Video/VideoPlayer/VideoPlayer";
+import { PostImg } from "../../PostImg/PostImg";
+import { PostRepliedToUsersList } from "../../PostRepliedToUsersList/PostRepliedToUsersList";
+import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
+import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";
 import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview/MiniPostPreview";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
-import { PostPreviewActions } from "../PostPreviewActions/PostPreviewActions";
+import { PostPreviewActions } from "../../PostPreviewActions/PostPreviewActions";
 import "./PostPreview.scss";
 
 interface PostPreviewProps {
@@ -193,9 +193,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             )}
             {post.quotedPost && (
               <MiniPostPreview quotedPost={post.quotedPost} type={"quoted-post"}>
-                {({ quotedPost }: { quotedPost: QuotedPost }) => (
-                  <QuotedPostContent quotedPost={quotedPost} />
-                )}
+                <QuotedPostContent quotedPost={post.quotedPost} />
               </MiniPostPreview>
             )}
           </main>

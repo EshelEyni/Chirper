@@ -12,8 +12,8 @@ import { GoInfo } from "react-icons/go";
 import "./PostStats.scss";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
 import { PostStatsInfoModal } from "../../../components/Modals/PostStatInfoModal/PostStatInfoModal";
-import { PostStatsPreviewContent } from "../../../components/Post/MiniPostPreview/PostStatsPreviewContent/PostStatsPreviewContent";
-import { MiniPostPreview } from "../../../components/Post/MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { PostStatsPreviewContent } from "../../../components/Post/PostPreview/MiniPostPreview/PostStatsPreviewContent/PostStatsPreviewContent";
+import { MiniPostPreview } from "../../../components/Post/PostPreview/MiniPostPreview/MiniPostPreview/MiniPostPreview";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
@@ -134,7 +134,7 @@ export const PostStatsPage = () => {
           ) : (
             <div className="post-stats-content">
               <MiniPostPreview post={post!} type="post-stats-preview">
-                {({ post }: { post: Post }) => <PostStatsPreviewContent post={post} />}
+                <PostStatsPreviewContent post={post} />
               </MiniPostPreview>
               {postStats ? (
                 <>

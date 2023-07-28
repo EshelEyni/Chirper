@@ -1,7 +1,7 @@
 import { NewPost, Post } from "../../../../../shared/interfaces/post.interface";
-import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview/MiniPostPreview";
-import { NewPostContent } from "../MiniPostPreview/NewPostContent/NewPostContent";
-import { PostPreview } from "../PostPreview/PostPreview";
+import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
+import { PostPreview } from "../PostPreview/PostPreview/PostPreview";
 import "./PostList.scss";
 
 interface PostListProps {
@@ -16,7 +16,7 @@ export const PostList: React.FC<PostListProps> = ({ posts, newPosts }) => {
       {newPosts &&
         newPosts.map(newPost => (
           <MiniPostPreview key={newPost.tempId} newPost={newPost} type={"new-post"}>
-            {({ newPost }: { newPost: NewPost }) => <NewPostContent newPost={newPost} />}
+            <NewPostContent newPost={newPost} />
           </MiniPostPreview>
         ))}
     </section>

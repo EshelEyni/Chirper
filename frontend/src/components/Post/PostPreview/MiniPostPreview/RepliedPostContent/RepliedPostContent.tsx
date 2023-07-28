@@ -1,6 +1,6 @@
-import { Post } from "../../../../../../shared/interfaces/post.interface";
-import { UserImg } from "../../../User/UserImg/UserImg";
-import { PostRepliedToUsersList } from "../../PostRepliedToUsersList/PostRepliedToUsersList";
+import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import { UserImg } from "../../../../User/UserImg/UserImg";
+import { PostRepliedToUsersList } from "../../../PostRepliedToUsersList/PostRepliedToUsersList";
 
 type RepliedPostContentProps = {
   post: Post;

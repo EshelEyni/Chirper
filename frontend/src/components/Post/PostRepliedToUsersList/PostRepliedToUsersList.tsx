@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { repliedPostDetails } from "../../../../../shared/interfaces/post.interface";
+import "./PostRepliedToUsersList.scss";
 
 type PostRepliedToUsersListProps = {
   repliedPostDetails: repliedPostDetails[];

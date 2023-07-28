@@ -1,0 +1,13 @@
+@import "../../.././/styles/setup/functions";
+
+.replying-to-list-container {
+  display: flex;
+  align-items: flex-start;
+  gap: rem(5px);
+  height: rem(20px);
+  color: var(--color-text-gray);
+
+  .reply-to-user-link {
+    color: var(--color-primary);
+  }
+}

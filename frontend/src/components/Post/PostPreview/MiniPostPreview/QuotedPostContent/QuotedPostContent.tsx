@@ -6,6 +6,7 @@ import { PostPreviewHeader } from "../../../PostPreviewHeader/PostPreviewHeader"
 import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
 import { PostPreviewText } from "../../Text/PostPreviewText";
+import "./QuotedPostContent.scss";
 
 type QuotedPostContentProps = {
   quotedPost: QuotedPost;

@@ -13,7 +13,7 @@ import { PostImg } from "../../PostImg/PostImg";
 import { PostRepliedToUsersList } from "../../PostRepliedToUsersList/PostRepliedToUsersList";
 import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
 import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";
-import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostPreviewActions } from "../../PostPreviewActions/PostPreviewActions";
 import "./PostPreview.scss";
@@ -31,13 +31,14 @@ interface PostPreviewProps {
 }
 
 export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
+  const { isViewed, isDetailedViewed, isProfileViewed } = post.loggedinUserActionState;
+  const postStartDate = post.schedule ? post.schedule : post.createdAt;
+
+  const [poll, setPoll] = useState(post.poll || null);
+
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { isViewed, isDetailedViewed, isProfileViewed } = post.loggedinUserActionState;
-  const postStartDate = post.schedule ? post.schedule : post.createdAt;
-  const [poll, setPoll] = useState(post.poll || null);
-
   const isPostReplyFromPostOwner =
     post?.repliedPostDetails &&
     post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser?.id;

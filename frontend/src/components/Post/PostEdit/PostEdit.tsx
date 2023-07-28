@@ -16,7 +16,7 @@ import { uploadFileToCloudinary } from "../../../services/upload.service";
 import { setUserMsg } from "../../../store/actions/system.actions";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { PostList } from "../PostList/PostList";
-import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostContent/RepliedPostContent";
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";

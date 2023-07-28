@@ -1,5 +1,5 @@
 import { NewPost, Post } from "../../../../../shared/interfaces/post.interface";
-import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview/MiniPostPreview";
+import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 import { PostPreview } from "../PostPreview/PostPreview/PostPreview";
 import "./PostList.scss";

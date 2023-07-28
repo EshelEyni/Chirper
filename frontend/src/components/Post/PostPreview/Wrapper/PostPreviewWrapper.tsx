@@ -1,4 +1,5 @@
 import { FC } from "react";
+import "./PostPreviewWrapper.scss";
 
 type PostPreviewWrapperProps = {
   className: string;

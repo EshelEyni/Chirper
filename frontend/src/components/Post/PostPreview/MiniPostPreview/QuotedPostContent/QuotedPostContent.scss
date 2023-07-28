@@ -1,0 +1,26 @@
+@import "../../../../../styles/setup/functions";
+
+.post-preview-main-container {
+  .post-preview-header {
+    .post-preview-header-main {
+      .user-info {
+        .user-img-container {
+          min-width: rem(20px);
+          height: rem(20px);
+          width: rem(20px);
+
+          .user-img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .post-preview-body {
+    .link-to-poll {
+      color: var(--color-primary);
+    }
+  }
+}

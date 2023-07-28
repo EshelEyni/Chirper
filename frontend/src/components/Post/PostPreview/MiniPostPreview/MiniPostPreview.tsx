@@ -1,8 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { NewPost, Post, QuotedPost } from "../../../../../../../shared/interfaces/post.interface";
-import { RootState } from "../../../../../store/store";
-import { AppDispatch } from "../../../../../store/types";
-import { setNewPost } from "../../../../../store/actions/new-post.actions";
+import { NewPost, Post, QuotedPost } from "../../../../../../shared/interfaces/post.interface";
+import { RootState } from "../../../../store/store";
+import { AppDispatch } from "../../../../store/types";
+import { setNewPost } from "../../../../store/actions/new-post.actions";
+import "./MiniPostPreview.scss";
+import { PostPreviewWrapper } from "../Wrapper/PostPreviewWrapper";
 
 export interface MiniPostPreviewProps {
   post?: Post;
@@ -32,7 +34,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({ newPost, type,
       className={`mini-post-preview ${type}`}
       onClick={type === "new-post" ? () => onSetCurrPost(newPost) : undefined}
     >
-      <div className="post-preview-wrapper"> {children}</div>
+      <PostPreviewWrapper className="post-preview-wrapper">{children}</PostPreviewWrapper>
     </article>
   );
 };

@@ -1,0 +1,31 @@
+@import "../../../../styles/setup/functions";
+
+.post-preview-text {
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: rem(14px);
+  gap: rem(5px);
+
+  br {
+    display: block;
+    content: "";
+    width: 100%;
+    margin-top: rem(8px);
+  }
+
+  a {
+    display: inline-block;
+    color: var(--color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: rem(200px);
+    line-height: 1;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

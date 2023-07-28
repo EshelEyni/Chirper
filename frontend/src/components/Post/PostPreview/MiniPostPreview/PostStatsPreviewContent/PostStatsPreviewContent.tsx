@@ -12,17 +12,14 @@ type PostStatsPreviewContentProps = {
 };
 
 export const PostStatsPreviewContent: React.FC<PostStatsPreviewContentProps> = ({ post }) => {
+  const isImgShown = post.imgs && post.imgs.length > 0;
   return (
     <PostPreviewMainContainer>
       <PostPreviewHeader post={post} isMiniPreview={true} />
       <PostPreviewBody>
         <PostPreviewText text={post.text} isPlainText={true} />
-        {post.imgs && post.imgs.length > 0 && (
-          <PostImg
-            imgs={post.imgs.map((img, idx) => {
-              return { url: img.url, sortOrder: idx };
-            })}
-          />
+        {isImgShown && (
+          <PostImg imgs={post.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
         )}
         {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
         {post.gif && <GifDisplay gif={post.gif} isAutoPlay={false} />}

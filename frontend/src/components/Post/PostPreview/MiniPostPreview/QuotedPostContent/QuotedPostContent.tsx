@@ -12,17 +12,14 @@ type QuotedPostContentProps = {
 };
 
 export const QuotedPostContent: React.FC<QuotedPostContentProps> = ({ quotedPost }) => {
+  const isImgShown = quotedPost.imgs && quotedPost.imgs.length > 0;
   return (
     <PostPreviewMainContainer>
       <PostPreviewHeader post={quotedPost} isMiniPreview={true} />
       <PostPreviewBody>
         <PostPreviewText text={quotedPost.text} isPlainText={true} />
-        {quotedPost.imgs && quotedPost.imgs.length > 0 && (
-          <PostImg
-            imgs={quotedPost.imgs.map((img, idx) => {
-              return { url: img.url, sortOrder: idx };
-            })}
-          />
+        {isImgShown && (
+          <PostImg imgs={quotedPost.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
         )}
         {quotedPost.videoUrl && (
           <VideoPlayer videoUrl={quotedPost.videoUrl} isCustomControls={true} />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Post, QuotedPost } from "../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { addFollowFromPost, removeFollowFromPost } from "../../../../store/actions/post.actions";
 import { useModalPosition } from "../../../../hooks/useModalPosition";
@@ -29,6 +29,7 @@ import "./PostPreview.scss";
 import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContainer";
 import { PostPreviewBody } from "../Body/PostPreviewBody";
 import { PostPreviewText } from "../Text/PostPreviewText";
+import { Footer } from "../../../App/Footer/Footer";
 
 interface PostPreviewProps {
   post: Post;
@@ -38,6 +39,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { isViewed, isDetailedViewed, isProfileViewed } = post.loggedinUserActionState;
   const isLoggedinUserPost = loggedinUser?.id === post.createdBy.id;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
@@ -49,47 +51,38 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     userImg: false,
   });
 
-  const { isViewed, isDetailedViewed, isHashTagClicked, isProfileViewed, isLinkClicked } =
-    post.loggedinUserActionState;
   const { ref, inView } = useInView({
     threshold: 0,
     triggerOnce: true,
   });
 
-  useEffect(() => {
-    if (inView) postService.addImpression(post.id);
-  }, [inView]);
-
-  const isPostReplyFromPostOwner = () => {
+  function isPostReplyFromPostOwner() {
     if (!post || !loggedinUser) return false;
     return (
       post?.repliedPostDetails &&
       post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser.id
     );
-  };
+  }
 
-  const onNavigateToPostDetails = async () => {
+  async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
     navigate(`/post/${post.id}`);
-  };
+  }
 
-  const onNavigateToProfile = async (username: string) => {
+  async function onNavigateToProfile(username: string) {
     if (!isProfileViewed) await postService.updatePostStats(post.id, { isProfileViewed: true });
     navigate(`/profile/${username}`);
-  };
+  }
 
-  const onHandleMouseEnter = () => {
+  function onHandleMouseEnter() {
     updateModalPosition();
     handleMouseEnter("userImg");
-  };
+  }
 
-  const handleToggleFollow = () => {
-    if (post.createdBy.isFollowing) {
-      dispatch(removeFollowFromPost(post.createdBy.id, post.id));
-    } else {
-      dispatch(addFollowFromPost(post.createdBy.id, post.id));
-    }
-  };
+  function handleToggleFollow() {
+    if (post.createdBy.isFollowing) dispatch(removeFollowFromPost(post.createdBy.id, post.id));
+    else dispatch(addFollowFromPost(post.createdBy.id, post.id));
+  }
 
   const getModalPosition = (): UserPreviewModalPosition => {
     return isModalAbove
@@ -102,6 +95,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           top: "55px",
         };
   };
+
+  useEffect(() => {
+    if (inView) postService.addImpression(post.id);
+  }, [inView, post.id]);
 
   return (
     <article className="post-preview" ref={isViewed ? undefined : ref}>
@@ -181,9 +178,9 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
               </MiniPostPreview>
             )}
           </PostPreviewBody>
-          <footer className="flex">
+          <Footer>
             <PostPreviewActions post={post} />
-          </footer>
+          </Footer>
         </PostPreviewMainContainer>
       </div>
       {isPostReplyFromPostOwner() && (

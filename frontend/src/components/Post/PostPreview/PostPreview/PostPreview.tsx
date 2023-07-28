@@ -9,7 +9,7 @@ import { RootState } from "../../../../store/store";
 import { useInView } from "react-intersection-observer";
 import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
 import { VideoPlayer } from "../../../Video/VideoPlayer/VideoPlayer";
-import { PostImg } from "../../PostImg/PostImg";
+import { PostImg } from "../../PostImgList/PostImgList";
 import { PostRepliedToUsersList } from "../../PostRepliedToUsersList/PostRepliedToUsersList";
 import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
 import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";

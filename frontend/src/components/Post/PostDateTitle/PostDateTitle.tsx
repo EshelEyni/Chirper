@@ -1,5 +1,5 @@
 import { AiOutlineSchedule } from "react-icons/ai";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./PostDateTitle.scss";
 
@@ -10,10 +10,9 @@ interface PostDateTitleProps {
 
 export const PostDateTitle: FC<PostDateTitleProps> = ({ date, isLink = false }) => {
   const navigate = useNavigate();
-  const formatDate = (date: Date) => {
-    const dayOfWeek = new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-    }).format(date);
+
+  const formattedDate = useMemo(() => {
+    const dayOfWeek = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
     const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
     const day = date.getDate();
     const year = date.getFullYear();
@@ -26,12 +25,12 @@ export const PostDateTitle: FC<PostDateTitleProps> = ({ date, isLink = false }) 
     const time = new Intl.DateTimeFormat("en-US", timeOptions).format(date);
 
     return `Will send on ${dayOfWeek}, ${month} ${day}, ${year} at ${time}`;
-  };
+  }, [date]);
 
-  const onGoToPostScheduler = () => {
+  function onGoToPostScheduler() {
     if (!isLink) return;
     navigate("post-schedule", { relative: "path" });
-  };
+  }
 
   return (
     <div
@@ -39,7 +38,7 @@ export const PostDateTitle: FC<PostDateTitleProps> = ({ date, isLink = false }) 
       onClick={onGoToPostScheduler}
     >
       <AiOutlineSchedule className="post-schedule-date-icon" />
-      <div className="post-schedule-date-title">{formatDate(date)}</div>
+      <div className="post-schedule-date-title">{formattedDate}</div>
     </div>
   );
 };

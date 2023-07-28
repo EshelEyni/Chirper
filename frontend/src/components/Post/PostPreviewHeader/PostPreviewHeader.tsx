@@ -39,7 +39,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
     userInfo: false,
   });
 
-  const handleMouseEnterInUserInfo = (e: React.MouseEvent) => {
+  function handleMouseEnterInUserInfo(e: React.MouseEvent) {
     const container = e.currentTarget.closest(".post-preview-header-user-info");
     const containerRect = container?.getBoundingClientRect();
     const targetRect = e.currentTarget.getBoundingClientRect();
@@ -53,12 +53,12 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
       left: `${leftPosition}px`,
     });
     handleMouseEnter("userInfo");
-  };
+  }
 
-  const handleMouseLeaveInUserInfo = () => {
+  function handleMouseLeaveInUserInfo() {
     setUserPreviewModalPosition({});
     handleMouseLeave("userInfo");
-  };
+  }
 
   return (
     <header className="post-preview-header">

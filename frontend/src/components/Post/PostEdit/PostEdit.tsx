@@ -21,9 +21,9 @@ import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostCo
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
 import { BtnRemovePostFromThread } from "../../Btns/BtnRemovePostFromThread/BtnRemovePostFromThread";
-import { PostTextInput } from "../PostTextInput/PostTextInput";
+import { PostTextInput } from "./PostTextInput/PostTextInput";
 import { UserImg } from "../../User/UserImg/UserImg";
-import { PostEditImg } from "../PostEditImg/PostEditImg";
+import { PostEditImgList } from "../PostEditImgList/PostEditImgList";
 import { PostEditVideo } from "../PostEditVideo/PostEditVideo";
 import { GifEdit } from "../../Gif/GifEdit/GifEdit";
 import { PollEdit } from "../../Poll/PollEdit/PollEdit";
@@ -340,7 +340,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             isVideoRemoved={isVideoRemoved}
             setInputTextValue={setInputTextValue}
           />
-          {isPostEditImgShown && <PostEditImg currNewPost={currNewPost} />}
+          {isPostEditImgShown && <PostEditImgList currNewPost={currNewPost} />}
           {isPostEditVideoShown && (
             <PostEditVideo currNewPost={currNewPost} setIsVideoRemoved={setIsVideoRemoved} />
           )}

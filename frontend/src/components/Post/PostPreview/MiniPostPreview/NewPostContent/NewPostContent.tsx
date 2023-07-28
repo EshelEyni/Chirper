@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { NewPost } from "../../../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../../../store/store";
-import { PostImg } from "../../../PostImg/PostImg";
+import { PostImg } from "../../../PostImgList/PostImgList";
 import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
 import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
 import { PollEdit } from "../../../../Poll/PollEdit/PollEdit";

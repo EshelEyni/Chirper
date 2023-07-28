@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { repliedPostDetails } from "../../../../../shared/interfaces/post.interface";
 import "./PostRepliedToUsersList.scss";
+import { useMemo } from "react";
 
 type PostRepliedToUsersListProps = {
   repliedPostDetails: repliedPostDetails[];
@@ -9,14 +10,14 @@ type PostRepliedToUsersListProps = {
 export const PostRepliedToUsersList: React.FC<PostRepliedToUsersListProps> = ({
   repliedPostDetails,
 }) => {
-  const usernames = new Set();
-  const uniqueRepliedPostDetails = repliedPostDetails.filter(item => {
-    if (!usernames.has(item.postOwner.username)) {
+  const uniqueRepliedPostDetails = useMemo(() => {
+    const usernames = new Set();
+    return repliedPostDetails.filter(item => {
+      if (usernames.has(item.postOwner.username)) return false;
       usernames.add(item.postOwner.username);
       return true;
-    }
-    return false;
-  });
+    });
+  }, [repliedPostDetails]);
 
   return (
     <div className="replying-to-list-container">

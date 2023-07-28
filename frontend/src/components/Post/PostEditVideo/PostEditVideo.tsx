@@ -15,14 +15,13 @@ type PostEditVideoProps = {
 };
 
 export const PostEditVideo: FC<PostEditVideoProps> = ({ currNewPost, setIsVideoRemoved }) => {
+  const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
-  const dispatch: AppDispatch = useDispatch();
-
-  const onRemoveVideo = () => {
+  function onRemoveVideo() {
     dispatch(updateCurrNewPost({ ...currNewPost, video: null }, newPostType));
     setIsVideoRemoved(true);
-  };
+  }
 
   return (
     <section className="post-edit-video">

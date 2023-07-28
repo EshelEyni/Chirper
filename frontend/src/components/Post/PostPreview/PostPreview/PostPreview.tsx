@@ -26,6 +26,9 @@ import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview/MiniPostPrev
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostPreviewActions } from "../../PostPreviewActions/PostPreviewActions";
 import "./PostPreview.scss";
+import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContainer";
+import { PostPreviewBody } from "../Body/PostPreviewBody";
+import { PostPreviewText } from "../Text/PostPreviewText";
 
 interface PostPreviewProps {
   post: Post;
@@ -73,26 +76,6 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const onNavigateToProfile = async (username: string) => {
     if (!isProfileViewed) await postService.updatePostStats(post.id, { isProfileViewed: true });
     navigate(`/profile/${username}`);
-  };
-
-  const handleLinkClick = async (e: React.MouseEvent) => {
-    if (e.target instanceof HTMLAnchorElement) {
-      e.preventDefault();
-      const type = e.target.dataset.type;
-      if (type === "hashtag") {
-        if (!isHashTagClicked)
-          await postService.updatePostStats(post.id, { isHashTagClicked: true });
-        const url = e.target.dataset.url;
-        navigate(`/explore/${url}`);
-      } else if (type === "profile-link") {
-        const url = e.target.href;
-        const username = url.slice(url.lastIndexOf("/") + 1);
-        navigate(`/profile/${username}`);
-      } else if (type === "external-link") {
-        if (!isLinkClicked) await postService.updatePostStats(post.id, { isLinkClicked: true });
-        window.open(e.target.href, "_blank");
-      }
-    }
   };
 
   const onHandleMouseEnter = () => {
@@ -162,24 +145,25 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             />
           )}
         </div>
-        <div className="post-preview-main-container">
+        <PostPreviewMainContainer>
           <PostPreviewHeader
             post={post}
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
             onNavigateToPostDetails={onNavigateToPostDetails}
             onToggleFollow={handleToggleFollow}
           />
-          <main className="post-preview-body">
+          <PostPreviewBody>
             {!isPostReplyFromPostOwner() &&
               post.repliedPostDetails &&
               post.repliedPostDetails.length > 0 && (
                 <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
               )}
-            <p
-              className="post-preview-text"
-              dangerouslySetInnerHTML={{ __html: postService.formatPostText(post.text) }}
-              onClick={handleLinkClick}
-            ></p>
+            <PostPreviewText
+              text={post.text}
+              isPlainText={false}
+              postId={post.id}
+              loggedinUserActionState={post.loggedinUserActionState}
+            />
             {post.imgs && post.imgs.length > 0 && <PostImg imgs={post.imgs} />}
             {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
             {post.gif && <GifDisplay gif={post.gif} />}
@@ -196,11 +180,11 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
                 <QuotedPostContent quotedPost={post.quotedPost} />
               </MiniPostPreview>
             )}
-          </main>
+          </PostPreviewBody>
           <footer className="flex">
             <PostPreviewActions post={post} />
           </footer>
-        </div>
+        </PostPreviewMainContainer>
       </div>
       {isPostReplyFromPostOwner() && (
         <button className="btn-show-thread" onClick={onNavigateToPostDetails}>

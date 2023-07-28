@@ -3,6 +3,9 @@ import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
 import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../../PostImg/PostImg";
 import { PostPreviewHeader } from "../../../PostPreviewHeader/PostPreviewHeader";
+import { PostPreviewBody } from "../../Body/PostPreviewBody";
+import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
+import { PostPreviewText } from "../../Text/PostPreviewText";
 
 type PostStatsPreviewContentProps = {
   post: Post;
@@ -10,10 +13,10 @@ type PostStatsPreviewContentProps = {
 
 export const PostStatsPreviewContent: React.FC<PostStatsPreviewContentProps> = ({ post }) => {
   return (
-    <div className="post-preview-main-container">
+    <PostPreviewMainContainer>
       <PostPreviewHeader post={post} isMiniPreview={true} />
-      <div className="post-preview-body">
-        <p className="post-preview-text">{post.text}</p>
+      <PostPreviewBody>
+        <PostPreviewText text={post.text} isPlainText={true} />
         {post.imgs && post.imgs.length > 0 && (
           <PostImg
             imgs={post.imgs.map((img, idx) => {
@@ -24,7 +27,7 @@ export const PostStatsPreviewContent: React.FC<PostStatsPreviewContentProps> = (
         {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
         {post.gif && <GifDisplay gif={post.gif} isAutoPlay={false} />}
         {post.poll && <span className="link-to-poll">Show this poll</span>}
-      </div>
-    </div>
+      </PostPreviewBody>
+    </PostPreviewMainContainer>
   );
 };

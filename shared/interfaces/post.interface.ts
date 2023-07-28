@@ -81,10 +81,10 @@ export interface Post extends BasicPost {
     username: string;
     fullname: string;
   };
-  loggedinUserActionState: loggedinUserActionState;
+  loggedinUserActionState: LoggedinUserActionState;
 }
 
-export type loggedinUserActionState = {
+export type LoggedinUserActionState = {
   isLiked: boolean;
   isReposted: boolean;
   isViewed: boolean;

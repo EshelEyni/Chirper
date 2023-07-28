@@ -1,6 +1,9 @@
 import { Post } from "../../../../../../../shared/interfaces/post.interface";
 import { UserImg } from "../../../../User/UserImg/UserImg";
 import { PostRepliedToUsersList } from "../../../PostRepliedToUsersList/PostRepliedToUsersList";
+import { PostPreviewBody } from "../../Body/PostPreviewBody";
+import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
+import { PostPreviewText } from "../../Text/PostPreviewText";
 
 type RepliedPostContentProps = {
   post: Post;
@@ -13,14 +16,14 @@ export const RepliedPostContent: React.FC<RepliedPostContentProps> = ({ post }) 
         <UserImg imgUrl={post.createdBy.imgUrl} />
         <div className="post-line"></div>
       </div>
-      <div className="post-preview-main-container">
-        <div className="post-preview-body">
-          <p className="post-preview-text">{post.text}</p>
-        </div>
+      <PostPreviewMainContainer>
+        <PostPreviewBody>
+          <PostPreviewText text={post.text} isPlainText={true} />
+        </PostPreviewBody>
         {post?.repliedPostDetails && post.repliedPostDetails.length > 0 && (
           <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
         )}
-      </div>
+      </PostPreviewMainContainer>
     </>
   );
 };

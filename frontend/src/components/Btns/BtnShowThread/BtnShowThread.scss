@@ -1,0 +1,11 @@
+@import "../../../styles/setup/functions";
+
+.btn-show-thread {
+  display: flex;
+  align-items: center;
+  height: rem(50px);
+  width: 100%;
+  color: var(--color-primary);
+  padding-left: rem(66px);
+  transition: all 0.1s ease-in-out;
+}

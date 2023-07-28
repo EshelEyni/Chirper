@@ -4,18 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { addFollowFromPost, removeFollowFromPost } from "../../../../store/actions/post.actions";
-import { useModalPosition } from "../../../../hooks/useModalPosition";
-import { userService } from "../../../../services/user.service";
 import { postService } from "../../../../services/post.service";
 import { RootState } from "../../../../store/store";
-import { useCustomElementHover } from "../../../../hooks/useCustomElementHover";
-import { AiOutlineRetweet } from "react-icons/ai";
 import { useInView } from "react-intersection-observer";
-import { UserImg } from "../../../User/UserImg/UserImg";
-import {
-  UserPreviewModal,
-  UserPreviewModalPosition,
-} from "../../../Modals/UserPreviewModal/UserPreviewModal";
 import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
 import { VideoPlayer } from "../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../PostImg/PostImg";
@@ -30,6 +21,10 @@ import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContai
 import { PostPreviewBody } from "../Body/PostPreviewBody";
 import { PostPreviewText } from "../Text/PostPreviewText";
 import { Footer } from "../../../App/Footer/Footer";
+import { RepostDisplay } from "./RepostDisplay/RepostDisplay";
+import { PostPreviewWrapper } from "../Wrapper/PostPreviewWrapper";
+import { PostPreviewAside } from "./Aside/PostPreviewAside";
+import { BtnShowThread } from "../../../Btns/BtnShowThread/BtnShowThread";
 
 interface PostPreviewProps {
   post: Post;
@@ -40,29 +35,17 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { isViewed, isDetailedViewed, isProfileViewed } = post.loggedinUserActionState;
-  const isLoggedinUserPost = loggedinUser?.id === post.createdBy.id;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const [poll, setPoll] = useState(post.poll || null);
 
-  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLDivElement>({
-    modalHeight: 300,
-  });
-  const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
-    userImg: false,
-  });
+  const isPostReplyFromPostOwner =
+    post?.repliedPostDetails &&
+    post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser?.id;
 
   const { ref, inView } = useInView({
     threshold: 0,
     triggerOnce: true,
   });
-
-  function isPostReplyFromPostOwner() {
-    if (!post || !loggedinUser) return false;
-    return (
-      post?.repliedPostDetails &&
-      post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser.id
-    );
-  }
 
   async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
@@ -74,27 +57,10 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
     navigate(`/profile/${username}`);
   }
 
-  function onHandleMouseEnter() {
-    updateModalPosition();
-    handleMouseEnter("userImg");
-  }
-
-  function handleToggleFollow() {
+  function onToggleFollow() {
     if (post.createdBy.isFollowing) dispatch(removeFollowFromPost(post.createdBy.id, post.id));
     else dispatch(addFollowFromPost(post.createdBy.id, post.id));
   }
-
-  const getModalPosition = (): UserPreviewModalPosition => {
-    return isModalAbove
-      ? {
-          top: "unset",
-          bottom: "55px",
-        }
-      : {
-          bottom: "unset",
-          top: "55px",
-        };
-  };
 
   useEffect(() => {
     if (inView) postService.addImpression(post.id);
@@ -103,54 +69,29 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
   return (
     <article className="post-preview" ref={isViewed ? undefined : ref}>
       {post.repostedBy && (
-        <div className="post-preview-repost-container">
-          <div className="repost-icon-container" onClick={onNavigateToPostDetails}>
-            <AiOutlineRetweet size={18} />
-          </div>
-          <span
-            className="post-preview-repost-user"
-            onClick={() => onNavigateToProfile(post.repostedBy!.username)}
-          >
-            {`${
-              post.repostedBy.id === loggedinUser?.id ? "You" : post.repostedBy.fullname
-            } Rechiped`}
-          </span>
-        </div>
+        <RepostDisplay
+          repostedBy={post.repostedBy}
+          onNavigateToProfile={onNavigateToProfile}
+          onNavigateToPostDetails={onNavigateToPostDetails}
+        />
       )}
-      <div className={"post-preview-content-wrapper" + (post.repostedBy ? " with-repost" : "")}>
-        <div
-          className={
-            "post-preview-content-wrapper-user-img-container" +
-            (isModalAbove ? " modal-above" : " modal-below")
-          }
-          onMouseEnter={() => onHandleMouseEnter()}
-          onMouseLeave={() => handleMouseLeave("userImg")}
-          ref={elementRef}
-        >
-          <UserImg
-            imgUrl={post.createdBy.imgUrl || userService.getDefaultUserImgUrl()}
-            onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
-          />
-
-          {elementsHoverState.userImg && (
-            <UserPreviewModal
-              user={post.createdBy}
-              onToggleFollow={handleToggleFollow}
-              onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
-              handleMouseLeave={() => handleMouseLeave("userImg")}
-              userPreviewModalPosition={getModalPosition()}
-            />
-          )}
-        </div>
+      <PostPreviewWrapper
+        className={"post-preview-wrapper" + (post.repostedBy ? " with-repost" : "")}
+      >
+        <PostPreviewAside
+          post={post}
+          onNavigateToProfile={onNavigateToProfile}
+          onToggleFollow={onToggleFollow}
+        />
         <PostPreviewMainContainer>
           <PostPreviewHeader
             post={post}
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
             onNavigateToPostDetails={onNavigateToPostDetails}
-            onToggleFollow={handleToggleFollow}
+            onToggleFollow={onToggleFollow}
           />
           <PostPreviewBody>
-            {!isPostReplyFromPostOwner() &&
+            {!isPostReplyFromPostOwner &&
               post.repliedPostDetails &&
               post.repliedPostDetails.length > 0 && (
                 <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails} />
@@ -182,12 +123,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
             <PostPreviewActions post={post} />
           </Footer>
         </PostPreviewMainContainer>
-      </div>
-      {isPostReplyFromPostOwner() && (
-        <button className="btn-show-thread" onClick={onNavigateToPostDetails}>
-          <span>Show this thread</span>
-        </button>
-      )}
+      </PostPreviewWrapper>
+      {isPostReplyFromPostOwner && <BtnShowThread onHandleClick={onNavigateToPostDetails} />}
     </article>
   );
 };

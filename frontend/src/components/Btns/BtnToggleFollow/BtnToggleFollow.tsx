@@ -4,10 +4,10 @@ import "./BtnToggleFollow.scss";
 
 type BtnToggleFollowProps = {
   user: MiniUser;
-  onToggleFollow: () => void;
+  handleBtnClick: () => void;
 };
 
-export const BtnToggleFollow: FC<BtnToggleFollowProps> = ({ user, onToggleFollow }) => {
+export const BtnToggleFollow: FC<BtnToggleFollowProps> = ({ user, handleBtnClick }) => {
   const [isHoverBtn, setIsHoverBtn] = useState(false);
   const { isFollowing } = user;
   const btnText = isFollowing ? (isHoverBtn ? "Unfollow" : "Following") : "Follow";
@@ -18,7 +18,7 @@ export const BtnToggleFollow: FC<BtnToggleFollowProps> = ({ user, onToggleFollow
         (isFollowing ? " btn-toggle-follow-following" : "") +
         (isHoverBtn ? " btn-toggle-follow-hover" : "")
       }
-      onClick={onToggleFollow}
+      onClick={handleBtnClick}
       onMouseEnter={() => setIsHoverBtn(true)}
       onMouseLeave={() => setIsHoverBtn(false)}
     >

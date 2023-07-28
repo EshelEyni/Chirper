@@ -2,12 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
-import {
-  NewPost,
-  NewPostImg,
-  Post,
-  QuotedPost,
-} from "../../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
 import {
   addNewPostToThread,
@@ -25,7 +20,7 @@ import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview/
 import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostContent/RepliedPostContent";
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
-import { BtnRemovePostFromThread } from "../BtnRemovePostFromThread/BtnRemovePostFromThread";
+import { BtnRemovePostFromThread } from "../../Btns/BtnRemovePostFromThread/BtnRemovePostFromThread";
 import { PostTextInput } from "../PostTextInput/PostTextInput";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { PostEditImg } from "../PostEditImg/PostEditImg";
@@ -37,7 +32,7 @@ import { PostEditTitleLocation } from "../PostEditTitleLocation/PostEditTitleLoc
 import { QuotedPostContent } from "../PostPreview/MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostEditActions } from "../PostEditActions/PostEditActions/PostEditActions";
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
-import { BtnAddThread } from "../BtnAddThread/BtnAddThread";
+import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost } from "../../Btns/BtnCreatePost/BtnCreatePost";
 
 interface PostEditProps {

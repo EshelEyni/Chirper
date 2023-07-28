@@ -32,7 +32,7 @@ export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({ newPost, type,
       className={`mini-post-preview ${type}`}
       onClick={type === "new-post" ? () => onSetCurrPost(newPost) : undefined}
     >
-      <div className="post-preview-content-wrapper"> {children}</div>
+      <div className="post-preview-wrapper"> {children}</div>
     </article>
   );
 };

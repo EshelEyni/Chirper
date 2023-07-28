@@ -47,7 +47,7 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
       <div className="user-preview-modal-header">
         <UserImg imgUrl={user.imgUrl} onNavigateToProfile={onNavigateToProfile} />
         {loggedinUser?.id !== user.id && (
-          <BtnToggleFollow user={user} onToggleFollow={onToggleFollow} />
+          <BtnToggleFollow user={user} handleBtnClick={onToggleFollow} />
         )}
       </div>
 

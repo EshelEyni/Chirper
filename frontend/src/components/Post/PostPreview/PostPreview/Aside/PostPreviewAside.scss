@@ -1,0 +1,9 @@
+@import "../../../../../styles/setup/mixins";
+@import "../../../../../styles/setup/functions";
+
+.post-preview-wrapper-aside {
+  position: relative;
+  width: rem(50px);
+  height: rem(50px);
+  @include modal-hover-guard;
+}

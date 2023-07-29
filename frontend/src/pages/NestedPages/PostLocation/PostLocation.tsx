@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { Location } from "../../../../../shared/interfaces/location.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import  locationService  from "../../../services/location.service";
+import locationService from "../../../services/location.service";
 import "./PostLocation.scss";
 import { LocationList } from "../../../components/Location/LocationList/LocationList";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
@@ -14,6 +14,11 @@ import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 
 export const PostLocation = () => {
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isNoResults = locations.length === 0 && !isLoading;
+
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
@@ -21,40 +26,33 @@ export const PostLocation = () => {
     newPostType === "home-page"
       ? homePage.posts[homePage.currPostIdx]
       : sideBar.posts[sideBar.currPostIdx];
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  // TODO: Check if isNoResults is needed. can be replaced with locations.length === 0
-  const [isNoResults, setisNoResults] = useState<boolean>(false);
 
-  const onGoBack = () => {
+  function onGoBack() {
     navigate("/home");
-  };
+  }
 
-  const onConfirmLocation = () => {
-    navigate("/home");
+  function onConfirmLocation() {
+    onGoBack();
     if (!selectedLocation || !currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, location: selectedLocation }, newPostType));
-  };
+  }
 
-  const onClearLocation = () => {
-    navigate("/home");
+  function onClearLocation() {
+    onGoBack();
     if (!currNewPost) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { location, ...postWithOutLocation } = currNewPost;
     dispatch(updateCurrNewPost(postWithOutLocation, newPostType));
-  };
+  }
 
-  const fetchLocations = async () => {
+  const fetchLocations = useCallback(async () => {
     const locations = await locationService.getUserDefaultLocations();
     if (!locations) return;
     if (currNewPost?.location) {
       const isLocationExist = locations.find((location: Location) => {
         return location.placeId === currNewPost?.location?.placeId;
       });
-      if (!isLocationExist) {
-        locations.unshift(currNewPost.location);
-      }
+      if (!isLocationExist) locations.unshift(currNewPost.location);
       setLocations(locations);
       setSelectedLocation(currNewPost.location);
     } else {
@@ -62,14 +60,12 @@ export const PostLocation = () => {
       setSelectedLocation(locations[0]);
     }
     setIsLoading(false);
-  };
+  }, [currNewPost]);
 
   useEffect(() => {
     if (!currNewPost) return;
-    if (currNewPost) {
-      fetchLocations();
-    }
-  }, [currNewPost]);
+    fetchLocations();
+  }, [currNewPost, fetchLocations]);
 
   return (
     <>
@@ -97,8 +93,6 @@ export const PostLocation = () => {
           setLocations={setLocations}
           fetchLocations={fetchLocations}
           setIsLoading={setIsLoading}
-          isNoResults={isNoResults}
-          setisNoResults={setisNoResults}
         />
         <main className="post-location-main-container">
           {isLoading && <ContentLoader />}

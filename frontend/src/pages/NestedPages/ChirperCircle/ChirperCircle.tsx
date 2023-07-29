@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
 export const ChirperCirclePage = () => {
-
   useEffect(() => {
     document.title = "Chirper Circle / Chirper";
   }, []);

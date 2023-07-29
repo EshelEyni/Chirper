@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import userService from "../../../services/user.service";
 
 export const ProfileDetails = () => {
+  const [wachedUser, setWachedUser] = useState<User | null>(null);
+
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const params = useParams();
-  const [wachedUser, setWachedUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUser();
@@ -20,7 +22,10 @@ export const ProfileDetails = () => {
 
   const getUser = async () => {
     const { username } = params;
-    if (!username) return;
+    if (!username) {
+      navigate("/home");
+      return;
+    }
     if (loggedinUser?.username === username) {
       setWachedUser(loggedinUser);
       return;

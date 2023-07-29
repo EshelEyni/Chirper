@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import postService from "../../../services/post.service";
+import { Outlet } from "react-router-dom";
 
 export const BookmarksPage = () => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
-  useEffect(() => {
-    getBookmarkedPosts();
-
-    document.title = "Bookmarks / Chirper";
-  }, []);
 
   const getBookmarkedPosts = async () => {
     const posts = await postService.getBookmarkedPosts();
     setBookmarkedPosts(posts);
   };
+
+  useEffect(() => {
+    document.title = "Bookmarks / Chirper";
+    getBookmarkedPosts();
+
+    return () => {
+      setBookmarkedPosts([]);
+    };
+  }, []);
 
   return (
     <div>
@@ -26,6 +31,7 @@ export const BookmarksPage = () => {
           ))}
         </div>
       )}
+      <Outlet />
     </div>
   );
 };

@@ -141,9 +141,12 @@ function readAsDataURL(file: File): Promise<string> {
   });
 }
 
-function getBasePathName(path: string): string {
-  const basePath = path.split("/").filter(p => p && p !== "/")[0];
-  return `/${basePath}`;
+function getBasePathName(path: string, currNestedPath: string): string {
+  const pathSegments = path.split("/");
+  const currNestedPathSegmentIdx = pathSegments.findIndex(segment => segment === currNestedPath);
+  if (currNestedPathSegmentIdx === -1) return "/home";
+  const basePath = pathSegments.slice(0, currNestedPathSegmentIdx).join("/");
+  return basePath;
 }
 
 export {

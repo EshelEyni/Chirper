@@ -33,7 +33,7 @@ function App() {
         <Route key={route.path} path={route.path} element={<route.component />} />
       ));
 
-    const filteredNestedRoutes = nestedRoutes.filter(route => isHomePage && route.onlyHomePage);
+    const filteredNestedRoutes = nestedRoutes.filter(route => !route.onlyHomePage);
     return filteredNestedRoutes.map(route => (
       <Route key={route.path} path={route.path} element={<route.component />} />
     ));

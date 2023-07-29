@@ -9,16 +9,12 @@ import "./LocationSearchBar.scss";
 interface locationSearchBarProps {
   setLocations: React.Dispatch<React.SetStateAction<Location[]>>;
   fetchLocations: () => Promise<void>;
-  isNoResults: boolean;
-  setisNoResults: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const LocationSearchBar: FC<locationSearchBarProps> = ({
   setLocations,
   fetchLocations,
-  isNoResults,
-  setisNoResults,
   setIsLoading,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -27,7 +23,6 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
 
   async function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
     try {
-      if (isNoResults) setisNoResults(false);
       const { value } = ev.target;
       setSearchTerm(value);
       if (!value) {
@@ -37,11 +32,7 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
       setIsLoading(true);
       const locations = await locationService.getLocationsBySearchTerm(value);
       setIsLoading(false);
-      if (locations.length === 0) {
-        setisNoResults(true);
-      } else {
-        setLocations(locations);
-      }
+      setLocations(locations);
     } catch (err) {
       console.log(err);
     }
@@ -58,7 +49,7 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
     return () => {
       setLocations([]);
     };
-  }, []);
+  }, [fetchLocations, setLocations]);
 
   return (
     <div className={"location-search-bar" + (isSearchBarFocused ? " focused" : "")}>

@@ -22,139 +22,25 @@ type SetterFunctions = {
 };
 
 export const PostSchedule = () => {
-  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
-  const currNewPost =
-    newPostType === "home-page"
-      ? homePage.posts[homePage.currPostIdx]
-      : sideBar.posts[sideBar.currPostIdx];
-  const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const getDefaultValues = (type: string) => {
-    const defaultNewDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-    switch (type) {
-      case "schedule":
-        return currNewPost.schedule ? new Date(currNewPost.schedule) : defaultNewDate;
-
-      case "month":
-        return currNewPost.schedule
-          ? new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-              new Date(0, currNewPost.schedule.getMonth())
-            )
-          : new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-              new Date(0, defaultNewDate.getMonth())
-            );
-
-      case "day":
-        return currNewPost.schedule ? currNewPost.schedule.getDate() : defaultNewDate.getDate();
-
-      case "year":
-        return currNewPost.schedule
-          ? currNewPost.schedule.getFullYear()
-          : defaultNewDate.getFullYear();
-
-      case "hour":
-        return currNewPost.schedule ? currNewPost.schedule.getHours() : defaultNewDate.getHours();
-
-      case "minute":
-        return currNewPost.schedule
-          ? currNewPost.schedule.getMinutes()
-          : defaultNewDate.getMinutes();
-
-      case "amPm": {
-        const hour = currNewPost.schedule
-          ? currNewPost.schedule.getHours()
-          : defaultNewDate.getHours();
-        return hour >= 12 ? "PM" : "AM";
-      }
-    }
-  };
-
   const [schedule, setSchedule] = useState<Date>(getDefaultValues("schedule") as Date);
   const [isDateInvalid, setIsDateInvalid] = useState<{
     status: boolean;
     location: "date" | "time" | "";
   }>({ status: false, location: "" });
 
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const currNewPost =
+    newPostType === "home-page"
+      ? homePage.posts[homePage.currPostIdx]
+      : sideBar.posts[sideBar.currPostIdx];
+
   const daysInSelectedMonth = useMemo(() => {
     return [...Array(getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys()].map(
       day => day + 1
     );
   }, [schedule]);
-
-  const getErrorLocation = (newDate: Date): "time" | "date" => {
-    const newMonth = newDate.getMonth();
-    const newDay = newDate.getDate();
-    const currDate = new Date();
-    const currMonth = currDate.getMonth();
-    const currDay = currDate.getDate();
-
-    if (newMonth === currMonth && newDay === currDay) {
-      return "time";
-    }
-    return "date";
-  };
-
-  const handleValueChange = (inputType: string, value: string | number) => {
-    setSchedule(prevSchedule => {
-      let monthIdx: number;
-      if (inputType === "month") {
-        const monthNames = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        monthIdx = monthNames.indexOf(value as string);
-      }
-
-      const setterFunctions = {
-        month: (date: Date) => {
-          const daysInMonth = getDaysInMonth(date.getFullYear(), monthIdx);
-          if (date.getDate() > daysInMonth) {
-            date.setDate(daysInMonth);
-          }
-          return new Date(date.setMonth(monthIdx));
-        },
-        day: (date: Date) => new Date(date.setDate(value as number)),
-        year: (date: Date) => {
-          const daysInMonth = getDaysInMonth(value as number, date.getMonth());
-          if (date.getDate() > daysInMonth) {
-            date.setDate(daysInMonth);
-          }
-          return new Date(date.setFullYear(value as number));
-        },
-        hour: (date: Date) => new Date(date.setHours(value as number)),
-        minute: (date: Date) => new Date(date.setMinutes(value as number)),
-        amPm: (date: Date) => {
-          const hours = (date.getHours() % 12) + (value === "AM" ? 0 : 12);
-          return new Date(date.setHours(hours));
-        },
-      };
-      const setterFunction = setterFunctions[inputType as keyof SetterFunctions];
-      if (!setterFunction) return prevSchedule;
-
-      const newDate = setterFunction(prevSchedule);
-      const newTimeStamp = newDate.getTime();
-      const currTimeStampPlusMinute = Date.now() + 60000;
-
-      if (newTimeStamp < currTimeStampPlusMinute) {
-        const location = getErrorLocation(newDate);
-        setIsDateInvalid({ status: true, location });
-        return prevSchedule;
-      }
-      setIsDateInvalid({ status: false, location: "" });
-      return newDate;
-    });
-  };
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(
     [
@@ -218,42 +104,152 @@ export const PostSchedule = () => {
     handleValueChange
   );
 
-  useEffect(() => {
-    setInputs(prevInputs => {
-      return prevInputs.map(input => {
-        if (input.type === "day") {
-          return {
-            ...input,
-            selectValues: [
-              ...Array(getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys(),
-            ].map(day => day + 1),
-          };
-        }
-        return input;
-      });
+  function getDefaultValues(type: string) {
+    const defaultNewDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+    switch (type) {
+      case "schedule":
+        return currNewPost.schedule ? new Date(currNewPost.schedule) : defaultNewDate;
+
+      case "month":
+        return currNewPost.schedule
+          ? new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+              new Date(0, currNewPost.schedule.getMonth())
+            )
+          : new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+              new Date(0, defaultNewDate.getMonth())
+            );
+
+      case "day":
+        return currNewPost.schedule ? currNewPost.schedule.getDate() : defaultNewDate.getDate();
+
+      case "year":
+        return currNewPost.schedule
+          ? currNewPost.schedule.getFullYear()
+          : defaultNewDate.getFullYear();
+
+      case "hour":
+        return currNewPost.schedule ? currNewPost.schedule.getHours() : defaultNewDate.getHours();
+
+      case "minute":
+        return currNewPost.schedule
+          ? currNewPost.schedule.getMinutes()
+          : defaultNewDate.getMinutes();
+
+      case "amPm": {
+        const hour = currNewPost.schedule
+          ? currNewPost.schedule.getHours()
+          : defaultNewDate.getHours();
+        return hour >= 12 ? "PM" : "AM";
+      }
+    }
+  }
+
+  function getErrorLocation(newDate: Date): "time" | "date" {
+    const newMonth = newDate.getMonth();
+    const newDay = newDate.getDate();
+    const currDate = new Date();
+    const currMonth = currDate.getMonth();
+    const currDay = currDate.getDate();
+
+    if (newMonth === currMonth && newDay === currDay) return "time";
+    return "date";
+  }
+
+  function handleValueChange(inputType: string, value: string | number) {
+    setSchedule(prevSchedule => {
+      let monthIdx: number;
+      if (inputType === "month") {
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        monthIdx = monthNames.indexOf(value as string);
+      }
+
+      const setterFunctions = {
+        month: (date: Date) => {
+          const daysInMonth = getDaysInMonth(date.getFullYear(), monthIdx);
+          if (date.getDate() > daysInMonth) {
+            date.setDate(daysInMonth);
+          }
+          return new Date(date.setMonth(monthIdx));
+        },
+        day: (date: Date) => new Date(date.setDate(value as number)),
+        year: (date: Date) => {
+          const daysInMonth = getDaysInMonth(value as number, date.getMonth());
+          if (date.getDate() > daysInMonth) {
+            date.setDate(daysInMonth);
+          }
+          return new Date(date.setFullYear(value as number));
+        },
+        hour: (date: Date) => new Date(date.setHours(value as number)),
+        minute: (date: Date) => new Date(date.setMinutes(value as number)),
+        amPm: (date: Date) => {
+          const hours = (date.getHours() % 12) + (value === "AM" ? 0 : 12);
+          return new Date(date.setHours(hours));
+        },
+      };
+      const setterFunction = setterFunctions[inputType as keyof SetterFunctions];
+      if (!setterFunction) return prevSchedule;
+
+      const newDate = setterFunction(prevSchedule);
+      const newTimeStamp = newDate.getTime();
+      const currTimeStampPlusMinute = Date.now() + 60000;
+
+      if (newTimeStamp < currTimeStampPlusMinute) {
+        const location = getErrorLocation(newDate);
+        setIsDateInvalid({ status: true, location });
+        return prevSchedule;
+      }
+      setIsDateInvalid({ status: false, location: "" });
+      return newDate;
     });
-  }, [schedule]);
+  }
 
-  const onGoBack = () => {
+  function onGoBack() {
     navigate("/home");
-  };
+  }
 
-  const onConfirmSchedule = () => {
-    navigate("/home");
+  function onConfirmSchedule() {
+    onGoBack();
     const newPost = { ...currNewPost, schedule };
     dispatch(updateCurrNewPost(newPost, newPostType));
-  };
+  }
 
-  const onClearSchedule = () => {
-    navigate("/home");
+  function onClearSchedule() {
+    onGoBack();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { schedule, ...postWithOutSchedule } = currNewPost;
     dispatch(updateCurrNewPost(postWithOutSchedule, newPostType));
-  };
+  }
 
-  const onGoToUnsentPostsPage = () => {
+  function onGoToUnsentPostsPage() {
     navigate("/unsent-posts");
-  };
+  }
+
+  useEffect(() => {
+    setInputs(prevInputs =>
+      prevInputs.map(input => {
+        if (input.type !== "day") return input;
+        return {
+          ...input,
+          selectValues: [
+            ...Array(getDaysInMonth(schedule.getFullYear(), schedule.getMonth())).keys(),
+          ].map(day => day + 1),
+        };
+      })
+    );
+  }, [schedule, setInputs]);
 
   return (
     <>

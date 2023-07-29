@@ -12,7 +12,8 @@ import { ContentLoader } from "../../../components/Loaders/ContentLoader/Content
 import { LocationSearchBar } from "../../../components/Location/LocationSearchBar/LocationSearchBar";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
-
+import { useMemo } from "react";
+import { NewPostType } from "../../../store/reducers/new-post.reducer";
 export const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -21,11 +22,19 @@ export const PostLocation = () => {
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
-  const currNewPost =
-    newPostType === "home-page"
-      ? homePage.posts[homePage.currPostIdx]
-      : sideBar.posts[sideBar.currPostIdx];
+  const { newPostModule } = useSelector((state: RootState) => state);
+  const { newPostType } = newPostModule;
+
+  const currNewPost = useMemo(() => {
+    switch (newPostType) {
+      case NewPostType.SideBar:
+        return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
+      case NewPostType.HomePage:
+        return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+      default:
+        return null;
+    }
+  }, [newPostModule, newPostType]);
 
   function onGoBack() {
     navigate("/home");

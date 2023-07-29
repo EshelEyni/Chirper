@@ -1,24 +1,23 @@
 import { FC, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper-circle-solid.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { Modal } from "../../Modals/Modal/Modal";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
 import { PostEditOption } from "../../../types/app.types";
+import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
 
-type BtnToggleAudienceProps = {
-  currNewPost: NewPost;
-};
+export const BtnToggleAudience: FC = () => {
+  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
 
-export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) => {
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const dispatch: AppDispatch = useDispatch();
-  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
+
+  const { currNewPost } = usePostEdit();
+  if (!currNewPost) return null;
   const title = getTitle(currNewPost.audience);
 
   const options: PostEditOption[] = [
@@ -52,6 +51,7 @@ export const BtnToggleAudience: FC<BtnToggleAudienceProps> = ({ currNewPost }) =
   }
 
   function onOptionClick(option: string) {
+    if (!currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, audience: option }, newPostType));
     toggleModal();
   }

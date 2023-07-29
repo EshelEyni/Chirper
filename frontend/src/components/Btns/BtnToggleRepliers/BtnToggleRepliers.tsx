@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
 import { PostEditOption } from "../../../types/app.types";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,16 +6,14 @@ import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
-import { Modal } from "../../Modals/Modal/Modal";
+import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
 
-type BtnToggleRepliersProps = {
-  currNewPost: NewPost;
-};
-
-export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) => {
+export const BtnToggleRepliers: FC = () => {
+  const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
+  if (!currNewPost) return null;
 
   const title = getTitle(currNewPost.repliersType);
 
@@ -59,6 +56,7 @@ export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({ currNewPost }) =
   }
 
   function onOptionClick(value: string) {
+    if (!currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, repliersType: value }, newPostType));
     toggleModal();
   }

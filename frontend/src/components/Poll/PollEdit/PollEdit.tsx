@@ -1,28 +1,27 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PollOptionsList } from "../PollOptionsList/PollOptionsList";
 import { PollLengthInputs } from "../PollLengthInputs/PollLengthInputs";
 import "./PollEdit.scss";
+import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
 
-type PollEditProps = {
-  currNewPost: NewPost;
-};
-export const PollEdit: FC<PollEditProps> = ({ currNewPost }) => {
+export const PollEdit: FC = () => {
+  const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   function onRemovePoll() {
+    if (!currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, poll: null }, newPostType));
   }
 
   return (
     <div className="poll-edit">
-      <PollOptionsList currNewPost={currNewPost} />
-      <PollLengthInputs currNewPost={currNewPost} />
+      <PollOptionsList />
+      <PollLengthInputs />
       <button className="btn-remove-poll" onClick={onRemovePoll}>
         Remove poll
       </button>

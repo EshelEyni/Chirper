@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import {
   clearNewPostState,
+  setNewPost,
   setNewPostType,
   setNewPosts,
 } from "../../../store/actions/new-post.actions";
@@ -16,6 +17,7 @@ import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
+import { PostEditProvider } from "../../../components/Post/PostEdit/PostEditContext";
 
 export const ComposePage = () => {
   const [isSavePostDraftModalOpen, setIsSavePostDraftModalOpen] = useState(false);
@@ -33,6 +35,12 @@ export const ComposePage = () => {
         break;
       case NewPostType.SideBar:
         await dispatch(setNewPosts([], NewPostType.SideBar));
+        break;
+      case NewPostType.Reply:
+        await dispatch(setNewPost(null, NewPostType.Reply));
+        break;
+      case NewPostType.Quote:
+        await dispatch(setNewPost(null, NewPostType.Quote));
         break;
       default:
         await dispatch(setNewPosts([], NewPostType.HomePage));
@@ -53,16 +61,16 @@ export const ComposePage = () => {
   }
 
   async function onGoBack() {
-    if (homePage.posts.length > 1 || sideBar.posts.length > 1) {
+    const isThread = homePage.posts.length > 1 || sideBar.posts.length > 1;
+    if (isThread) {
       setIsConfirmDeleteModalOpen(true);
-      dispatch(clearNewPostState());
     } else {
       const currPost =
         newPostType === "homePage" ? { ...homePage.posts[0] } : { ...sideBar.posts[0] };
-      if (currPost.text || currPost.imgs.length > 0 || currPost.video || currPost.gif)
-        setIsSavePostDraftModalOpen(true);
+      const isValidPost =
+        currPost.text || currPost.imgs.length > 0 || currPost.video || currPost.gif;
+      if (isValidPost) setIsSavePostDraftModalOpen(true);
       else discardPostThread();
-      dispatch(clearNewPostState());
     }
   }
 
@@ -74,7 +82,9 @@ export const ComposePage = () => {
   return (
     <main className="compose">
       <MainScreen onClickFn={onGoBack} mode="light" zIndex={2000} />
-      <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+      <PostEditProvider>
+        <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+      </PostEditProvider>
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal
           onCloseModal={onCloseModal}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -10,6 +10,7 @@ import { PostScheduleDateInputs } from "./DateInputs/PostScheduleDateInputs";
 import { PostScheduleTimeInputs } from "./TimeInputs/PostScheduleTimeInputs";
 import { TimeZoneDisplay } from "./TimeZoneDisplay/TimeZoneDisplay";
 import { Footer } from "../../../components/App/Footer/Footer";
+import { NewPostType } from "../../../store/reducers/new-post.reducer";
 
 export type invalidDateStatus = {
   status: boolean;
@@ -18,11 +19,21 @@ export type invalidDateStatus = {
 
 export const PostSchedule = () => {
   const navigate = useNavigate();
-  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
-  const currNewPost =
-    newPostType === "home-page"
-      ? homePage.posts[homePage.currPostIdx]
-      : sideBar.posts[sideBar.currPostIdx];
+  const { newPostModule } = useSelector((state: RootState) => state);
+  const { newPostType } = newPostModule;
+
+  const currNewPost = useMemo(() => {
+    switch (newPostType) {
+      case NewPostType.SideBar:
+        return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
+      case NewPostType.HomePage:
+        return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+      case NewPostType.Reply:
+        return newPostModule.reply.reply;
+      default:
+        return null;
+    }
+  }, [newPostModule, newPostType]);
 
   const [schedule, setSchedule] = useState<Date>(getScheduleDate());
   const [isDateInvalid, setIsDateInvalid] = useState<invalidDateStatus>({
@@ -30,10 +41,11 @@ export const PostSchedule = () => {
     location: "",
   });
 
-  const isDateTitleShown = !isDateInvalid.status && currNewPost.schedule;
+  const isDateTitleShown = !isDateInvalid.status && currNewPost?.schedule;
 
   function getScheduleDate() {
     const defaultNewDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+    if (!currNewPost) return defaultNewDate;
     return currNewPost.schedule ? new Date(currNewPost.schedule) : defaultNewDate;
   }
 
@@ -60,7 +72,7 @@ export const PostSchedule = () => {
       <MainScreen onClickFn={onGoBack} mode="light" />
       <section className="post-schedule">
         <PostScheduleHeader
-          currNewPost={currNewPost}
+          currNewPost={currNewPost!}
           schedule={schedule}
           onGoBack={onGoBack}
           isDateInvalid={isDateInvalid}

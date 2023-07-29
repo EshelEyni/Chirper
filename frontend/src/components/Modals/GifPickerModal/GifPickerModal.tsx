@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
@@ -9,14 +8,10 @@ import { Modal } from "../Modal/Modal";
 import { GifPickerModalHeader } from "./GifPickerModalHeader/GifPickerModalHeader";
 
 interface GifPickerProps {
-  currNewPost: NewPost;
   onToggleElementVisibility: (element: UIElement) => void;
 }
 
-export const GifPickerModal: React.FC<GifPickerProps> = ({
-  currNewPost,
-  onToggleElementVisibility,
-}) => {
+export const GifPickerModal: React.FC<GifPickerProps> = ({ onToggleElementVisibility }) => {
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const SearchBarInputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +42,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({
       />
 
       {gifs.length > 0 ? (
-        <GifList
-          currNewPost={currNewPost}
-          onToggleElementVisibility={onToggleElementVisibility}
-          gifs={gifs}
-        />
+        <GifList onToggleElementVisibility={onToggleElementVisibility} gifs={gifs} />
       ) : (
         <ContentLoader />
       )}

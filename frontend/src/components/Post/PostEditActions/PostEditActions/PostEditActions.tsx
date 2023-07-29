@@ -7,7 +7,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../store/types";
 import { setUserMsg } from "../../../../store/actions/system.actions";
-import { Poll, Emoji, NewPost } from "../../../../../../shared/interfaces/post.interface";
+import { Poll, Emoji } from "../../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { RootState } from "../../../../store/store";
 import { IoLocationSharp } from "react-icons/io5";
@@ -16,13 +16,7 @@ import { PostEditBtnImgAndVideoUpload } from "../PostEditBtnImgVideoUpload/PostE
 import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
 import { GifPickerModal } from "../../../Modals/GifPickerModal/GifPickerModal";
-
-interface PostEditActionsProps {
-  currNewPost: NewPost | null;
-  isPickerShown: boolean;
-  inputTextValue: string;
-  setInputTextValue: React.Dispatch<React.SetStateAction<string>>;
-}
+import { usePostEdit } from "../../PostEdit/PostEditContext";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {
@@ -35,12 +29,9 @@ export type PostEditActionBtn = {
 
 export type ElementVisibility = Record<UIElement, boolean>;
 
-export const PostEditActions: FC<PostEditActionsProps> = ({
-  currNewPost,
-  isPickerShown,
-  inputTextValue,
-  setInputTextValue,
-}) => {
+export const PostEditActions: FC = () => {
+  const { newPostText, setNewPostText, isPickerShown, currNewPost } = usePostEdit();
+
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
   const navigate = useNavigate();
@@ -165,9 +156,9 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
   function onEmojiPicked(emoji: Emoji) {
     if (!currNewPost) return;
     const nativeEmoji = emoji.native;
-    const newPostText = inputTextValue + nativeEmoji;
-    setInputTextValue(newPostText);
-    dispatch(updateCurrNewPost({ ...currNewPost, text: newPostText }, newPostType));
+    const newText = newPostText + nativeEmoji;
+    setNewPostText(newText);
+    dispatch(updateCurrNewPost({ ...currNewPost, text: newText }, newPostType));
   }
 
   function onToggleElementVisibility(elementName: UIElement) {
@@ -181,7 +172,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
     if (!currNewPost) return;
     if (currNewPost.imgs.length < 3) setIsMultiple(true);
     else setIsMultiple(false);
-  }, [currNewPost?.imgs]);
+  }, [currNewPost?.imgs, currNewPost]);
 
   return (
     <>
@@ -193,7 +184,6 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
                 btn={btn}
                 isMultiple={isMultiple}
                 isPickerShown={isPickerShown}
-                currNewPost={currNewPost!}
                 key={btn.name}
               />
             );
@@ -213,12 +203,7 @@ export const PostEditActions: FC<PostEditActionsProps> = ({
         })}
       </section>
 
-      {isGifModalShown && (
-        <GifPickerModal
-          currNewPost={currNewPost}
-          onToggleElementVisibility={onToggleElementVisibility}
-        />
-      )}
+      {isGifModalShown && <GifPickerModal onToggleElementVisibility={onToggleElementVisibility} />}
     </>
   );
 };

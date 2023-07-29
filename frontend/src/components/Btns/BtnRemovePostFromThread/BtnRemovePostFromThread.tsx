@@ -1,16 +1,13 @@
 import { FC } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { AppDispatch } from "../../../store/types";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { removeNewPostFromThread } from "../../../store/actions/new-post.actions";
-import { NewPostType as typeofPostType } from "../../../store//reducers/new-post.reducer";
+import { RootState } from "../../../store/store";
 
-type BtnRemovePostFromThreadProps = {
-  newPostType: typeofPostType;
-};
-
-export const BtnRemovePostFromThread: FC<BtnRemovePostFromThreadProps> = ({ newPostType }) => {
+export const BtnRemovePostFromThread: FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
 
   return (
     <button className="btn-remove-post-from-thread">

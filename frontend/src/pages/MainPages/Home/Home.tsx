@@ -8,6 +8,7 @@ import "./Home.scss";
 import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
+import { PostEditProvider } from "../../../components/Post/PostEdit/PostEditContext";
 
 export const HomePage = () => {
   const { posts } = useSelector((state: RootState) => state.postModule);
@@ -26,7 +27,9 @@ export const HomePage = () => {
         </div>
         <div className="home-main-container">
           <div className="post-edit-container">
-            <PostEdit isHomePage={true} />
+            <PostEditProvider>
+              <PostEdit isHomePage={true} />
+            </PostEditProvider>
           </div>
           <div className="home-page-post-list-container">
             {posts.length > 0 ? <PostList posts={posts} /> : <ContentLoader />}

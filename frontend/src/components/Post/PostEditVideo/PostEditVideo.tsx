@@ -1,24 +1,22 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
 import "./PostEditVideo.scss";
+import { usePostEdit } from "../PostEdit/PostEditContext";
 
-type PostEditVideoProps = {
-  currNewPost: NewPost;
-  setIsVideoRemoved: (isVideoRemoved: boolean) => void;
-};
-
-export const PostEditVideo: FC<PostEditVideoProps> = ({ currNewPost, setIsVideoRemoved }) => {
+export const PostEditVideo: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { currNewPost, setIsVideoRemoved } = usePostEdit();
+  if (!currNewPost) return null;
 
   function onRemoveVideo() {
+    if (!currNewPost) return;
     dispatch(updateCurrNewPost({ ...currNewPost, video: null }, newPostType));
     setIsVideoRemoved(true);
   }

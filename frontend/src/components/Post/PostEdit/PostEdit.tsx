@@ -7,7 +7,6 @@ import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post
 import { AppDispatch } from "../../../store/types";
 import {
   addNewPostToThread,
-  clearNewPostState,
   setNewPostType,
   setNewPosts,
   updateCurrNewPost,
@@ -37,6 +36,7 @@ import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
+import { usePostEdit } from "./PostEditContext";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -45,27 +45,22 @@ interface PostEditProps {
 
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { sideBar, homePage, reply, quote, newPostType } = useSelector(
-    (state: RootState) => state.newPostModule
-  );
-  // const newPostModule = useSelector((state: RootState) => state.newPostModule);
-
-  const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
-  // // setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
-  // const isValidType = newPostType === NewPostType.SideBar || newPostType === NewPostType.HomePage;
-  // const preCurrNewPostList = isValidType
-  //   ? newPostModule[newPostType].posts.filter((_, idx) => idx < homePage.currPostIdx)
-  //   : [];
-
-  const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
-  const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
-  const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
-
-  const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
-  const [arePostsValid, setArePostsValid] = useState<boolean>(false);
+  const {
+    currNewPost,
+    newPostText,
+    setNewPostText,
+    arePostsValid,
+    preCurrNewPostList,
+    postCurrNewPostList,
+    setArePostsValid,
+    isFirstPostInThread,
+    isPickerShown,
+    setIsPickerShown,
+  } = usePostEdit();
+  const { newPostModule } = useSelector((state: RootState) => state);
+  const { sideBar, homePage, reply, quote, newPostType } = newPostModule;
+  // const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
-  const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
-  const [isFirstPostInThread, setIsFirstPostInThread] = useState<boolean>(false);
 
   // Refs
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -94,7 +89,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const isQuotedPostShown = !!quote.quotedPost;
   const isPostCurrNewPostListShown = !isHomePage && postCurrNewPostList.length > 0;
 
-  function setBtnTitleText(): string {
+  function getBtnTitleText(): string {
     const postType = newPostTypeRef.current;
     if (currNewPost?.schedule) return "Schedule";
     if (postType === "reply") return "Reply";
@@ -109,12 +104,12 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
         let currPostText = "";
         if (newPostType === NewPostType.HomePage) {
           const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
-          currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
+          currPostText = currPostIdx === homePage.currPostIdx ? newPostText : post.text;
         } else if (newPostType === NewPostType.SideBar) {
           const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
-          currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+          currPostText = currPostIdx === sideBar.currPostIdx ? newPostText : post.text;
         } else {
-          currPostText = inputTextValue;
+          currPostText = newPostText;
         }
         return currPostText.length > 0 && currPostText.length <= 247;
       }
@@ -136,7 +131,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     [
       homePage.currPostIdx,
       homePage.posts,
-      inputTextValue,
+      newPostText,
       newPostType,
       sideBar.currPostIdx,
       sideBar.posts,
@@ -149,7 +144,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     (newPostTypeRef.current === NewPostType.HomePage ||
       newPostTypeRef.current === NewPostType.SideBar) &&
     !checkPostValidity(currNewPost);
-  const isIndicatorAndThreadBtnShown = checkPostValidity(currNewPost) || inputTextValue.length > 0;
+  const isIndicatorAndThreadBtnShown = checkPostValidity(currNewPost) || newPostText.length > 0;
 
   const checkPostArrayValidity = useCallback(
     (newPosts: NewPost[]): boolean => {
@@ -199,29 +194,23 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
   async function dispatchPost(newPosts: NewPost[]) {
     switch (newPostType) {
-      case "quote":
-        {
-          const [post] = newPosts;
-          await dispatch(addQuotePost(post));
-        }
+      case NewPostType.Quote:
+        await dispatch(addQuotePost(newPosts[0]));
         break;
-      case "reply":
-        {
-          const [post] = newPosts;
-          await dispatch(addReply(post));
-        }
+      case NewPostType.Reply:
+        await dispatch(addReply(newPosts[0]));
         break;
-      default: {
+      default:
         await dispatch(addPost(newPosts));
-      }
+        break;
     }
   }
 
   function resetState() {
-    dispatch(clearNewPostState());
+    // dispatch(clearNewPostState());
     dispatch(setNewPostType(NewPostType.HomePage));
     dispatch(setNewPosts([], newPostType));
-    setInputTextValue("");
+    setNewPostText("");
     setIsPickerShown(false);
     setPostSaveInProgress(false);
     setArePostsValid(false);
@@ -236,16 +225,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     textAreaRef.current?.focus();
   }
 
-  function onGoToLocationPage() {
-    if (!isPickerShown) return;
-    navigate("post-location", { relative: "path" });
-  }
-
   async function onAddPostToThread() {
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      const newPost = { ...currNewPost, text: inputTextValue };
+      const newPost = { ...currNewPost, text: newPostText };
       await dispatch(updateCurrNewPost(newPost, newPostType));
       setIsPickerShown(false);
       await dispatch(addNewPostToThread(newPostType));
@@ -273,63 +257,27 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   }, [
     preCurrNewPostList,
     currNewPost,
-    inputTextValue.length,
+    newPostText.length,
     postCurrNewPostList,
     arePostsValid,
     checkPostArrayValidity,
+    setArePostsValid,
   ]);
 
   useEffect(() => {
-    const postType = newPostTypeRef.current;
-    if (postType === NewPostType.HomePage) {
-      const currPost = homePage.posts[homePage.currPostIdx];
-      setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
-      setCurrNewPost(currPost);
-      setInputTextValue(currPost.text);
-      setPostCurrNewPostList(homePage.posts.filter((_, idx) => idx > homePage.currPostIdx));
-      setIsFirstPostInThread(homePage.currPostIdx === 0);
-    } else if (postType === NewPostType.SideBar) {
-      const currPost = sideBar.posts[sideBar.currPostIdx];
-      setPreCurrNewPostList(sideBar.posts.filter((_, idx) => idx < sideBar.currPostIdx));
-      setCurrNewPost(currPost);
-      setInputTextValue(currPost.text);
-      setPostCurrNewPostList(sideBar.posts.filter((_, idx) => idx > sideBar.currPostIdx));
-      setIsFirstPostInThread(sideBar.currPostIdx === 0);
-    } else if (postType === NewPostType.Reply) {
-      setCurrNewPost(reply.reply);
-      setInputTextValue(reply.reply.text);
-    } else if (postType === NewPostType.Quote) {
-      setCurrNewPost(quote.quote);
-      setInputTextValue(quote.quote.text);
-    }
-    if (location.pathname === "/compose" && isHomePage) {
-      setIsPickerShown(false);
-      setPreCurrNewPostList([]);
-      setCurrNewPost(null);
-      setInputTextValue("");
-      setPostCurrNewPostList([]);
-    }
-
+    setNewPostText(currNewPost?.text || "");
     return () => {
-      setPreCurrNewPostList([]);
-      setCurrNewPost(null);
-      setInputTextValue("");
-      setPostCurrNewPostList([]);
+      setNewPostText("");
     };
-  }, [
-    homePage.posts,
-    homePage.currPostIdx,
-    sideBar.posts,
-    sideBar.currPostIdx,
-    reply,
-    quote,
-    location.pathname,
-    isHomePage,
-  ]);
+  }, [newPostModule, currNewPost?.text, setNewPostText]);
 
   useEffect(() => {
     if (!isHomePage) textAreaRef.current?.focus();
   }, [homePage.currPostIdx, sideBar.currPostIdx, isHomePage]);
+
+  useEffect(() => {
+    setIsPickerShown(!isHomePage);
+  }, [isHomePage, setIsPickerShown]);
 
   return (
     <section
@@ -340,44 +288,33 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       {postSaveInProgress && <span className="progress-bar"></span>}
       {isPreCurrNewPostList && <PostList newPosts={preCurrNewPostList} />}
       {isReplyPostShown && (
-        <MiniPostPreview post={reply.repliedToPost as Post} type={"replied-post"}>
-          <RepliedPostContent post={reply.repliedToPost as Post} />
+        <MiniPostPreview type={"replied-post"}>
+          <RepliedPostContent />
         </MiniPostPreview>
       )}
       <div className="content-container">
         <UserImg imgUrl={loggedinUser?.imgUrl} />
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isBtnToggleAudienceShown && <BtnToggleAudience currNewPost={currNewPost} />}
+          {isBtnToggleAudienceShown && <BtnToggleAudience />}
           {isPostDateTitleShown && (
             <PostDateTitle date={currNewPost.schedule!} isLink={isPickerShown} />
           )}
-          {isBtnRemovePostFromThreadShown && <BtnRemovePostFromThread newPostType={newPostType} />}
+          {isBtnRemovePostFromThreadShown && <BtnRemovePostFromThread />}
 
           <PostTextInput
             isHomePage={isHomePage}
-            isPickerShown={isPickerShown}
-            isFirstPostInThread={isFirstPostInThread}
-            inputTextValue={inputTextValue}
             textAreaRef={textAreaRef}
             postType={newPostTypeRef.current}
-            currNewPost={currNewPost}
             replyToPost={reply.repliedToPost}
-            isVideoRemoved={isVideoRemoved}
-            setInputTextValue={setInputTextValue}
           />
-          {isPostEditImgShown && <PostEditImgList currNewPost={currNewPost} />}
-          {isPostEditVideoShown && (
-            <PostEditVideo currNewPost={currNewPost} setIsVideoRemoved={setIsVideoRemoved} />
-          )}
-          {isPostEditGifShown && <GifEdit currNewPost={currNewPost} />}
-          {isPostEditPollShown && <PollEdit currNewPost={currNewPost} />}
+          {isPostEditImgShown && <PostEditImgList />}
+          {isPostEditVideoShown && <PostEditVideo />}
+          {isPostEditGifShown && <GifEdit />}
+          {isPostEditPollShown && <PollEdit />}
           <div className="btn-replries-location-container">
-            {isBtnToggleRepliersShown && <BtnToggleRepliers currNewPost={currNewPost} />}
+            {isBtnToggleRepliersShown && <BtnToggleRepliers />}
             {isPostLocationTitleShown && (
-              <PostEditTitleLocation
-                title={currNewPost.location!.name}
-                onGoToLocationPage={onGoToLocationPage}
-              />
+              <PostEditTitleLocation title={currNewPost.location!.name} />
             )}
           </div>
           {isQuotedPostShown && (
@@ -386,16 +323,11 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             </MiniPostPreview>
           )}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <PostEditActions
-              currNewPost={currNewPost}
-              isPickerShown={isPickerShown}
-              inputTextValue={inputTextValue}
-              setInputTextValue={setInputTextValue}
-            />
+            <PostEditActions />
             <div className="secondary-action-container">
               {isIndicatorAndThreadBtnShown && (
                 <div className="indicator-thread-btn-container">
-                  <TextIndicator textLength={inputTextValue.length} />
+                  <TextIndicator />
                   <hr className="vertical" />
                   <BtnAddThread
                     isDisabled={isAddingPostToThreadDisabled}
@@ -404,10 +336,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
                 </div>
               )}
               <BtnCreatePost
-                isSideBarBtn={false}
                 isDisabled={!arePostsValid}
+                isSideBarBtn={false}
                 onAddPost={onAddPost}
-                btnText={setBtnTitleText()}
+                btnText={getBtnTitleText()}
               />
             </div>
           </div>

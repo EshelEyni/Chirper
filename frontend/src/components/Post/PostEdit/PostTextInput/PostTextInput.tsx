@@ -9,35 +9,31 @@ import {
   NewPostType as typeofPostType,
 } from "../../../../store/reducers/new-post.reducer";
 import { debounce } from "../../../../services/util/utils.service";
+import { usePostEdit } from "../PostEditContext";
 
 type PostTextInputProps = {
-  currNewPost: NewPost | null;
   replyToPost: Post | null;
-  setInputTextValue: React.Dispatch<React.SetStateAction<string>>;
-  inputTextValue: string;
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
   postType: typeofPostType;
   isHomePage: boolean;
-  isPickerShown: boolean;
-  isFirstPostInThread: boolean;
-  isVideoRemoved: boolean;
 };
 
 export const PostTextInput: FC<PostTextInputProps> = ({
-  currNewPost,
   replyToPost,
-  setInputTextValue,
-  inputTextValue,
   textAreaRef,
   postType,
   isHomePage,
-  isPickerShown,
-  isFirstPostInThread,
-  isVideoRemoved,
 }) => {
+  const {
+    newPostText,
+    setNewPostText,
+    isVideoRemoved,
+    isFirstPostInThread,
+    isPickerShown,
+    currNewPost,
+  } = usePostEdit();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
-
   const dispatch: AppDispatch = useDispatch();
 
   const detectURL = useRef(
@@ -71,7 +67,7 @@ export const PostTextInput: FC<PostTextInputProps> = ({
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    setInputTextValue(value);
+    setNewPostText(value);
     detectURL.current(currNewPost, value, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
@@ -79,7 +75,7 @@ export const PostTextInput: FC<PostTextInputProps> = ({
 
   const handleTextBlur = async () => {
     if (!currNewPost) return;
-    const newPost = { ...currNewPost, text: inputTextValue };
+    const newPost = { ...currNewPost, text: newPostText };
     await dispatch(updateCurrNewPost(newPost, newPostType));
   };
 
@@ -117,7 +113,7 @@ export const PostTextInput: FC<PostTextInputProps> = ({
         (!isFirstPostInThread ? " not-first-post" : "")
       }
       placeholder={setTextPlaceholder()}
-      value={inputTextValue}
+      value={newPostText}
       onChange={handleTextChange}
       onBlur={handleTextBlur}
       ref={textAreaRef}

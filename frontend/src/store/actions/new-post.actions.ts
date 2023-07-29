@@ -40,7 +40,7 @@ export function setNewPosts(
 }
 
 export function setNewPost(
-  newPost: NewPost,
+  newPost: NewPost | null,
   newPostType: NewPostType
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {

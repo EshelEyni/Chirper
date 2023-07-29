@@ -78,7 +78,7 @@ export function newPostReducer(
     repliedToPost: Post;
     quotedPost: Post;
     newPosts: NewPost[];
-    newPost: NewPost;
+    newPost: NewPost | null;
     updatedPost: NewPost;
     newPostType: NewPostType;
     currPostIdx: number;
@@ -165,13 +165,15 @@ export function newPostReducer(
     }
     case "SET_NEW_POST": {
       let newPostState: NewPostState = { ...state };
+      if (action.newPost === null) return newPostState;
       if (action.newPostType === NewPostType.HomePage) {
         newPostState = {
           ...state,
           homePage: {
             ...state.homePage,
             currPostIdx: state.homePage.posts.findIndex(
-              post => post.tempId === action.newPost.tempId
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              post => post.tempId === action.newPost!.tempId
             ),
           },
         };
@@ -181,7 +183,8 @@ export function newPostReducer(
           sideBar: {
             ...state.sideBar,
             currPostIdx: state.sideBar.posts.findIndex(
-              post => post.tempId === action.newPost.tempId
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              post => post.tempId === action.newPost!.tempId
             ),
           },
         };
@@ -203,14 +206,16 @@ export function newPostReducer(
     }
     case "UPDATE_NEW_POST": {
       let newPostState: NewPostState = { ...state };
+      if (action.newPost === null) return newPostState;
+
       if (action.newPostType === NewPostType.HomePage) {
         const newPosts = state.homePage.posts.map((post, idx) =>
-          state.homePage.currPostIdx === idx ? action.newPost : post
+          state.homePage.currPostIdx === idx ? (action.newPost as NewPost) : post
         );
         newPostState = { ...state, homePage: { ...state.homePage, posts: newPosts } };
       } else if (action.newPostType === NewPostType.SideBar) {
         const newPosts = state.sideBar.posts.map((post, idx) =>
-          state.sideBar.currPostIdx === idx ? action.newPost : post
+          state.sideBar.currPostIdx === idx ? (action.newPost as NewPost) : post
         );
         newPostState = { ...state, sideBar: { ...state.sideBar, posts: newPosts } };
       } else if (action.newPostType === "reply") {

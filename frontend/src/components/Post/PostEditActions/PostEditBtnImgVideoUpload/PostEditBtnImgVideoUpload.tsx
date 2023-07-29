@@ -1,30 +1,28 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NewPost } from "../../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { setUserMsg } from "../../../../store/actions/system.actions";
 import { RootState } from "../../../../store/store";
 import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { readAsDataURL } from "../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
+import { usePostEdit } from "../../PostEdit/PostEditContext";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;
   isMultiple: boolean;
   isPickerShown: boolean;
-  currNewPost: NewPost;
 };
 
 export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps> = ({
   btn,
   isMultiple,
   isPickerShown,
-  currNewPost,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
-
+  const { currNewPost } = usePostEdit();
   const fileRef = useRef<HTMLInputElement>(null);
 
   function onUploadFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -85,7 +83,7 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
   }
 
   function validateImgFiles(files: File[]): { isValid: boolean; type?: string } {
-    const isImagesGreaterThan4 = [...files].length + currNewPost.imgs.length > 4;
+    const isImagesGreaterThan4 = [...files].length + currNewPost!.imgs.length > 4;
     if (isImagesGreaterThan4) {
       dispatch(
         setUserMsg({

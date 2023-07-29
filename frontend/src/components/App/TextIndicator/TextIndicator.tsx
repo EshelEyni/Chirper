@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import "./TextIndicator.scss";
+import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
 
-interface TextIndicatorProps {
-  textLength: number;
-}
+export const TextIndicator: React.FC = () => {
+  const { newPostText } = usePostEdit();
+  const textLength = newPostText.length;
 
-export const TextIndicator: React.FC<TextIndicatorProps> = ({ textLength }) => {
   const progressBarStyle = useMemo(() => {
     const percentage = (textLength / 247) * 100;
     let background;

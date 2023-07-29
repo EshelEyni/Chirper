@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Poll } from "../../../../../shared/interfaces/post.interface";
-import { postService } from "../../../services/post.service";
+import  postService from "../../../services/post.service";
 import { PollDisplayOptionsList } from "./PollDisplayOptionsList/PollDisplayOptionsList";
 import { PollDisplayDetails } from "./PollDisplayDetails/PollDisplayDetails";
 

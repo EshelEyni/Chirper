@@ -5,7 +5,7 @@ import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { Location } from "../../../../../shared/interfaces/location.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { locationService } from "../../../services/location.service";
+import  locationService  from "../../../services/location.service";
 import "./PostLocation.scss";
 import { LocationList } from "../../../components/Location/LocationList/LocationList";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../../shared/interfaces/post.interface";
-import { postService } from "../../../services/post.service";
+import postService from "../../../services/post.service";
 
 export const BookmarksPage = () => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);

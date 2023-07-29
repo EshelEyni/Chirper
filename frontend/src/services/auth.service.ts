@@ -1,7 +1,7 @@
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
 import { User } from "../../../shared/interfaces/user.interface";
 import { UserCredentials } from "../types/auth.types";
-import { httpService } from "./http.service";
+import httpService from "./http.service";
 
 async function autoLogin(): Promise<User | null> {
   const response = (await httpService.post("auth/auto-login")) as unknown as JsendResponse;
@@ -32,9 +32,4 @@ async function logout(): Promise<void> {
   return res;
 }
 
-export const authService = {
-  login,
-  signup,
-  logout,
-  autoLogin,
-};
+export default { login, signup, logout, autoLogin };

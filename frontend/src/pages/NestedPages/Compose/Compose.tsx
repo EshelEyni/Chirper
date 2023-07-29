@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
 import { RootState } from "../../../store/store";
-import { postService } from "../../../services/post.service";
+import  postService from "../../../services/post.service";
 import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModal/SavePostDraftModal";
 import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";

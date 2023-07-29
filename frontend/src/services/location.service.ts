@@ -1,14 +1,9 @@
 import { Location } from "../../../shared/interfaces/location.interface";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
-import { cacheService } from "./cache.service";
-import { httpService } from "./http.service";
+import cacheService from "./cache.service";
+import httpService from "./http.service";
 import queryString from "query-string";
 import { handleServerResponse } from "./util/utils.service";
-
-export const locationService = {
-  getUserDefaultLocations,
-  getLocationsBySearchTerm,
-};
 
 const ERROR_MESSAGES = {
   locationError: "locationService: Cannot get location",
@@ -77,3 +72,5 @@ function _getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
     }
   });
 }
+
+export default { getUserDefaultLocations, getLocationsBySearchTerm };

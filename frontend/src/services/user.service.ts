@@ -1,6 +1,6 @@
 import { MiniUser, User, FollowingResult } from "../../../shared/interfaces/user.interface";
-import { httpService } from "./http.service";
-import { storageService } from "./storage.service";
+import httpService from "./http.service";
+import storageService from "./storage.service";
 import { handleServerResponse } from "./util/utils.service";
 
 function getLoggedinUser(): User | null {
@@ -84,7 +84,7 @@ function _getFollowingEndpoint(userId: string, postId?: string): string {
   return postId ? `user/${userId}/following/${postId}/fromPost` : `user/follow/${userId}`;
 }
 
-export const userService = {
+export default {
   query,
   getById,
   getByUsername,

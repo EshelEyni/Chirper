@@ -1,14 +1,8 @@
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { JsendResponse } from "../../../shared/interfaces/system.interface";
-import { httpService } from "./http.service";
+import httpService from "./http.service";
 import queryString from "query-string";
 import { handleServerResponse } from "./util/utils.service";
-
-export const gifService = {
-  getGifsBySearchTerm,
-  getGifCategroies,
-  getGifByCategory,
-};
 
 async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   try {
@@ -44,5 +38,7 @@ async function getGifByCategory(category: string): Promise<Gif[]> {
     throw err;
   }
 }
+
+export default { getGifsBySearchTerm, getGifCategroies, getGifByCategory };
 
 export const gifPlaceholderBcg = ["#00BFFF", "#0BDA51", "#FFD700", "#FF00FF"];

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { User } from "../../../../../shared/interfaces/user.interface";
-import { userService } from "../../../services/user.service";
+import userService from "../../../services/user.service";
 
 export const ProfileDetails = () => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);

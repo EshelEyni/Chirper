@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Gif, GifCategory } from "../../../../../shared/interfaces/gif.interface";
-import { gifService } from "../../../services/gif.service";
+import gifService from "../../../services/gif.service";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import "./GifCategoryList.scss";
 import { GifCategoryPreview } from "../GifCategoryPreview/GifCategoryPreview";

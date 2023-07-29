@@ -8,7 +8,4 @@ function get(key: string) {
   return JSON.parse(val);
 }
 
-export const storageService = {
-  get,
-  set,
-};
+export default { get, set };

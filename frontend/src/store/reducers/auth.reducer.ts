@@ -1,5 +1,5 @@
 import { User } from "../../../../shared/interfaces/user.interface";
-import { userService } from "../../services/user.service";
+import userService from "../../services/user.service";
 
 const initialState: {
   loggedinUser: User | null;

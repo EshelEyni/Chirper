@@ -1,4 +1,4 @@
-import { storageService } from "./storage.service";
+import storageService from "./storage.service";
 
 function set(cacheKey: string, data: any) {
   storageService.set(cacheKey, data);
@@ -17,7 +17,4 @@ function get(cacheKey: string, expiryTimeInMinutes: number) {
   return null;
 }
 
-export const cacheService = {
-  get,
-  set,
-};
+export default { get, set };

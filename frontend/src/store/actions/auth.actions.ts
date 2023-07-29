@@ -2,7 +2,7 @@ import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { RootState } from "../store";
 import { UserCredentials } from "../../types/auth.types";
-import { authService } from "../../services/auth.service";
+import authService from "../../services/auth.service";
 
 export function signup(
   userCredentials: UserCredentials

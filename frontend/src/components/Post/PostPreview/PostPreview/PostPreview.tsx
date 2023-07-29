@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { addFollowFromPost, removeFollowFromPost } from "../../../../store/actions/post.actions";
-import { postService } from "../../../../services/post.service";
+import postService from "../../../../services/post.service";
 import { RootState } from "../../../../store/store";
 import { useInView } from "react-intersection-observer";
 import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";

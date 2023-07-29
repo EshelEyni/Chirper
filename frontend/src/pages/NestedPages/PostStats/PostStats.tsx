@@ -5,7 +5,7 @@ import { Post, PostStats } from "../../../../../shared/interfaces/post.interface
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { clearPost, getPost } from "../../../store/actions/post.actions";
-import { postService } from "../../../services/post.service";
+import  postService from "../../../services/post.service";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { GoInfo } from "react-icons/go";

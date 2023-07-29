@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Slider } from "@mui/material";
-import { storageService } from "../../../services/storage.service";
+import storageService from "../../../services/storage.service";
 
 type VideoVolumeSliderProps = {
   isMuted: boolean;

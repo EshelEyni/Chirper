@@ -1,4 +1,4 @@
-import { httpService } from "./http.service";
+import httpService from "./http.service";
 import {
   NewPost,
   Post,
@@ -261,7 +261,7 @@ const getPostAddedMsg = ({ postId, date }: { postId?: string; date?: Date }): Us
   };
 };
 
-export const postService = {
+export default {
   query,
   getById,
   add,

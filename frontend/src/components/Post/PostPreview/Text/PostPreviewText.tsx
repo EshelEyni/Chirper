@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { postService } from "../../../../services/post.service";
+import postService from "../../../../services/post.service";
 import { useNavigate } from "react-router-dom";
 import { LoggedinUserActionState } from "../../../../../../shared/interfaces/post.interface";
 import "./PostPreviewText.scss";

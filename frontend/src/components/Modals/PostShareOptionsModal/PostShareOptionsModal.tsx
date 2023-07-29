@@ -6,7 +6,7 @@ import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../services/util/utils.service";
 import { AppDispatch } from "../../../store/types";
 import { addBookmark, removeBookmark } from "../../../store/actions/post.actions";
-import { postService } from "../../../services/post.service";
+import  postService from "../../../services/post.service";
 import { setUserMsg } from "../../../store/actions/system.actions";
 import "./PostShareOptionsModal.scss";
 import { Modal } from "../Modal/Modal";

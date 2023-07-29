@@ -6,24 +6,6 @@ const axios = Axios.create({
   withCredentials: true,
 });
 
-export const httpService = {
-  get(endpoint: string, data?: object) {
-    return ajax(endpoint, "GET", data);
-  },
-  post(endpoint: string, data?: object) {
-    return ajax(endpoint, "POST", data);
-  },
-  put(endpoint: string, data?: object) {
-    return ajax(endpoint, "PUT", data);
-  },
-  patch(endpoint: string, data?: object) {
-    return ajax(endpoint, "PATCH", data);
-  },
-  delete(endpoint: string, data?: object) {
-    return ajax(endpoint, "DELETE", data);
-  },
-};
-
 async function ajax(endpoint: string, method: Method = "GET", data: object | null = null) {
   try {
     const res = await axios({
@@ -42,3 +24,21 @@ async function ajax(endpoint: string, method: Method = "GET", data: object | nul
     throw err;
   }
 }
+
+export default {
+  get(endpoint: string, data?: object) {
+    return ajax(endpoint, "GET", data);
+  },
+  post(endpoint: string, data?: object) {
+    return ajax(endpoint, "POST", data);
+  },
+  put(endpoint: string, data?: object) {
+    return ajax(endpoint, "PUT", data);
+  },
+  patch(endpoint: string, data?: object) {
+    return ajax(endpoint, "PATCH", data);
+  },
+  delete(endpoint: string, data?: object) {
+    return ajax(endpoint, "DELETE", data);
+  },
+};

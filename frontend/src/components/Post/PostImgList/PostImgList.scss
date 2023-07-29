@@ -3,6 +3,7 @@
 .post-imgs {
   display: flex;
   gap: rem(2px);
+  margin-bottom: rem(5px);
 
   &.grid {
     display: grid;

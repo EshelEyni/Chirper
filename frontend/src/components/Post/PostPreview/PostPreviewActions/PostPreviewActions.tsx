@@ -1,18 +1,23 @@
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { AppDispatch } from "../../../store/types";
+import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
-import { RootState } from "../../../store/store";
-import { addLike, removeLike, removeRepost, repostPost } from "../../../store/actions/post.actions";
+import { setNewPostType, setNewPosts } from "../../../../store/actions/new-post.actions";
+import { RootState } from "../../../../store/store";
+import {
+  addLike,
+  removeLike,
+  removeRepost,
+  repostPost,
+} from "../../../../store/actions/post.actions";
 import { useState } from "react";
-import { useModalPosition } from "../../../hooks/useModalPosition";
-import { PostPreviewActionBtn } from "../PostPreviewActionBtn/PostPreviewActionBtn";
+import { useModalPosition } from "../../../../hooks/useModalPosition";
+import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBtn";
 import "./PostPreviewActions.scss";
 
 interface PostPreviewActionsProps {
@@ -29,28 +34,23 @@ export type PostPreviewActionBtn = {
 };
 
 export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
-  // Props
   const { isReposted, isLiked } = post.loggedinUserActionState;
-
-  // State
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  // Hooks
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 175,
   });
 
-  const iconClassName = "icon";
   const btns: PostPreviewActionBtn[] = [
     {
       name: "reply",
       title: "Reply",
-      icon: <FaRegComment className={iconClassName} />,
+      icon: <FaRegComment />,
       count: post.repliesCount,
       onClickFunc: async () => {
         await dispatch(setNewPostType("reply"));
@@ -61,7 +61,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "rechirp",
       title: isReposted ? "Undo Rechirp" : "Rechirp",
-      icon: <AiOutlineRetweet className={iconClassName} />,
+      icon: <AiOutlineRetweet />,
       count: post.repostsCount,
       isClicked: isReposted,
       onClickFunc: () => {
@@ -71,11 +71,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "like",
       title: isLiked ? "Unlike" : "Like",
-      icon: isLiked ? (
-        <FaHeart className={iconClassName} />
-      ) : (
-        <FaRegHeart className={iconClassName} />
-      ),
+      icon: isLiked ? <FaHeart /> : <FaRegHeart />,
       count: post.likesCount,
       isClicked: isLiked,
       onClickFunc: () => {
@@ -89,7 +85,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "view",
       title: "View",
-      icon: <RiBarChartGroupedFill className={iconClassName} />,
+      icon: <RiBarChartGroupedFill />,
       count: post.viewsCount,
       onClickFunc: () => {
         navigate(`post-stats/${post.id}`, { relative: "path" });
@@ -98,7 +94,7 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     {
       name: "share",
       title: "Share",
-      icon: <FiUpload className={iconClassName} />,
+      icon: <FiUpload />,
       onClickFunc: () => {
         updateModalPosition();
         setIsShareModalOpen(prev => !prev);
@@ -106,24 +102,24 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
     },
   ];
 
-  const onRepost = async () => {
+  async function onRepost() {
     const repostedPost = { ...post };
     await dispatch(repostPost(repostedPost));
     setIsRepostModalOpen(prev => !prev);
-  };
+  }
 
-  const onRemoveRepost = async () => {
+  async function onRemoveRepost() {
     if (!loggedinUser) return;
     await dispatch(removeRepost(post.id, loggedinUser.id));
     setIsRepostModalOpen(prev => !prev);
-  };
+  }
 
-  const onQuotePost = async () => {
+  async function onQuotePost() {
     setIsRepostModalOpen(prev => !prev);
     await dispatch(setNewPostType("quote"));
     await dispatch(setNewPosts([], "quote", post));
     navigate("compose", { relative: "path" });
-  };
+  }
 
   return (
     <div className="post-preview-action-btns">

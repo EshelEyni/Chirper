@@ -15,7 +15,7 @@ import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
 import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";
 import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
-import { PostPreviewActions } from "../../PostPreviewActions/PostPreviewActions";
+import { PostPreviewActions } from "../PostPreviewActions/PostPreviewActions";
 import "./PostPreview.scss";
 import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContainer";
 import { PostPreviewBody } from "../Body/PostPreviewBody";

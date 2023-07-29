@@ -32,12 +32,6 @@ export type repliedPostDetails = {
   };
 };
 
-export type repostedByDetails = {
-  id: string;
-  username: string;
-  fullname: string;
-};
-
 export type BasicPost = {
   text: string;
   video?: NewPostVideo | null;
@@ -82,7 +76,7 @@ export interface Post extends BasicPost {
   imgs: PostImg[];
   quotedPost?: QuotedPost;
   createdBy: MiniUser;
-  repostedBy?: repostedByDetails;
+  repostedBy?: MiniUser;
   loggedinUserActionState: LoggedinUserActionState;
 }
 

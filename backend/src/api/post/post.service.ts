@@ -579,6 +579,12 @@ function _populateRepostedBy() {
       _id: 1,
       username: 1,
       fullname: 1,
+      imgUrl: 1,
+      isVerified: 1,
+      isAdmin: 1,
+      bio: 1,
+      followersCount: 1,
+      followingCount: 1,
     },
   };
 }

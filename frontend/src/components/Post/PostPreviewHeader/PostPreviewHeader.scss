@@ -11,7 +11,6 @@
     align-items: center;
     gap: rem(5px);
     color: var(--color-text-gray);
-    cursor: pointer;
 
     .post-preview-header-user-info {
       display: flex;
@@ -26,6 +25,7 @@
         align-items: center;
         gap: rem(3px);
         @include modal-hover-guard;
+        cursor: pointer;
 
         .post-preview-header-full-name {
           color: black;
@@ -59,6 +59,7 @@
       .post-preview-header-username {
         position: relative;
         font-size: rem(13px);
+        cursor: pointer;
         @include modal-hover-guard;
       }
     }

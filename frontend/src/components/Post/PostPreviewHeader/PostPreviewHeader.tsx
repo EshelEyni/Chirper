@@ -63,12 +63,12 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
   return (
     <header className="post-preview-header">
       <div className="post-preview-header-main">
-        <div className="post-preview-header-user-info" onClick={onNavigateToProfile}>
+        <div className="post-preview-header-user-info" onMouseLeave={handleMouseLeaveInUserInfo}>
           {isMiniPreview && <UserImg imgUrl={post.createdBy.imgUrl} />}
           <div
             className="post-preview-header-details-container"
+            onClick={onNavigateToProfile}
             onMouseEnter={handleMouseEnterInUserInfo}
-            onMouseLeave={handleMouseLeaveInUserInfo}
           >
             <span className="post-preview-header-full-name">{post.createdBy.fullname}</span>
             {post.createdBy.isVerified && (
@@ -79,7 +79,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
           <span
             className="post-preview-header-username"
             onMouseEnter={handleMouseEnterInUserInfo}
-            onMouseLeave={handleMouseLeaveInUserInfo}
+            onClick={onNavigateToProfile}
           >
             @{post.createdBy.username}
           </span>

@@ -7,6 +7,7 @@ import {
 import { useModalPosition } from "../../../../../hooks/useModalPosition";
 import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
 import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import "./PostPreviewAside.scss";
 
 type PostPreviewAsideProps = {
   post: Post;
@@ -44,7 +45,7 @@ export const PostPreviewAside: FC<PostPreviewAsideProps> = ({
   };
 
   return (
-    <div
+    <aside
       className={"post-preview-wrapper-aside" + (isModalAbove ? " modal-above" : " modal-below")}
       onMouseEnter={() => onHandleMouseEnter()}
       onMouseLeave={() => handleMouseLeave("userImg")}
@@ -64,6 +65,6 @@ export const PostPreviewAside: FC<PostPreviewAsideProps> = ({
           userPreviewModalPosition={getModalPosition()}
         />
       )}
-    </div>
+    </aside>
   );
 };

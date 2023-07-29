@@ -74,6 +74,7 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
           repostedBy={post.repostedBy}
           onNavigateToProfile={onNavigateToProfile}
           onNavigateToPostDetails={onNavigateToPostDetails}
+          onToggleFollow={onToggleFollow}
         />
       )}
       <PostPreviewWrapper

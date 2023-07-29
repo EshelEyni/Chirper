@@ -3,8 +3,9 @@ import "./Footer.scss";
 
 type FooterProps = {
   children: React.ReactNode;
+  className?: string;
 };
 
-export const Footer: FC<FooterProps> = ({ children }) => {
-  return <footer>{children}</footer>;
+export const Footer: FC<FooterProps> = ({ children, className }) => {
+  return <footer className={className}>{children}</footer>;
 };

@@ -110,6 +110,21 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 function handleServerResponse<T>(response: JsendResponse): T {
   if (response.status === "success") {
     return response.data;
@@ -156,6 +171,7 @@ export {
   debounce,
   getTimeZone,
   getDaysInMonth,
+  monthNames,
   handleServerResponse,
   copyToClipboard,
   formatDateToCleanString,

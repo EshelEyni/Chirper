@@ -1,6 +1,6 @@
 import { useState, MouseEvent } from "react";
 
-type CustomSelectInput = {
+export type CustomSelectInput = {
   label: string;
   type: string;
   value: number | string;

@@ -12,9 +12,14 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
 
 const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { loginToken } = req.cookies;
-  if (!loginToken) throw new AppError("User not logged in", 401);
+  if (!loginToken) {
+    res.status(200).json({
+      status: "success",
+      data: null,
+    });
+    return;
+  }
   const { user, newToken } = await authService.autoLogin(loginToken);
-
   _sendUserTokenSuccessResponse(res, newToken, user, 200);
 });
 

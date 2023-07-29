@@ -1,0 +1,21 @@
+.date-inputs-container {
+  display: flex;
+  justify-content: space-between;
+
+  > * {
+    width: 22.5%;
+  }
+  > :first-child {
+    width: 50%;
+  }
+
+  &.error {
+    .custom-select-container {
+      border-color: var(--color-danger);
+    }
+
+    .custom-select-label {
+      color: var(--color-danger);
+    }
+  }
+}

@@ -1,0 +1,30 @@
+@import "../../../../styles/setup/functions";
+
+.post-stats-data {
+  margin: rem(50px) rem(32px) 0 rem(32px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  flex-grow: 1;
+
+  .post-stats-data-item {
+    display: flex;
+    flex-direction: column;
+    gap: rem(5px);
+    height: rem(100px);
+    width: 100%;
+    .post-stats-data-item-title {
+      display: flex;
+      align-items: center;
+      gap: rem(5px);
+      color: var(--color-text-gray);
+
+      .btn-post-stats-data-item-info-container {
+        display: flex;
+        align-items: flex-end;
+        cursor: pointer;
+        position: relative;
+      }
+    }
+  }
+}

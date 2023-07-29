@@ -1,0 +1,18 @@
+.time-inputs-container {
+  display: flex;
+  justify-content: space-between;
+
+  > * {
+    width: 32%;
+  }
+
+  &.error {
+    .custom-select-container {
+      border-color: var(--color-danger);
+    }
+
+    .custom-select-label {
+      color: var(--color-danger);
+    }
+  }
+}

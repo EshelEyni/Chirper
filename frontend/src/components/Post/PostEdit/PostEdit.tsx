@@ -45,7 +45,6 @@ interface PostEditProps {
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   // console.log("PostEdit", ++renderCount);
 
-  // State
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { sideBar, homePage, reply, quote, newPostType } = useSelector(
     (state: RootState) => state.newPostModule
@@ -59,7 +58,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
   // State - booleans
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
-  const [isPostsValid, setIsPostsValid] = useState<boolean>(false);
+  const [arePostsValid, setArePostsValid] = useState<boolean>(false);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
   const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
   const [isFirstPostInThread, setIsFirstPostInThread] = useState<boolean>(false);
@@ -205,7 +204,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     setInputTextValue("");
     setIsPickerShown(false);
     setPostSaveInProgress(false);
-    setIsPostsValid(false);
+    setArePostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
     const { pathname } = location;
     if (pathname === "/compose") navigate("/home");
@@ -250,7 +249,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
     const isValid = checkPostArrayValidity(postArray);
-    if (isValid !== isPostsValid) setIsPostsValid(isValid);
+    if (isValid !== arePostsValid) setArePostsValid(isValid);
   }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
 
   useEffect(() => {
@@ -300,6 +299,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     reply,
     quote,
     location.pathname,
+    isHomePage,
   ]);
 
   useEffect(() => {
@@ -380,7 +380,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
               )}
               <BtnCreatePost
                 isSideBarBtn={false}
-                isDisabled={!isPostsValid}
+                isDisabled={!arePostsValid}
                 onAddPost={onAddPost}
                 btnText={setBtnTitleText()}
               />

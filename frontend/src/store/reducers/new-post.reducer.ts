@@ -21,7 +21,12 @@ export type NewPostState = {
   newPostType: NewPostType;
 };
 
-export type NewPostType = "home-page" | "side-bar" | "reply" | "quote";
+export enum NewPostType {
+  HomePage = "homePage",
+  SideBar = "sideBar",
+  Reply = "reply",
+  Quote = "quote",
+}
 
 const getDefaultNewPost = (
   repliedPostDetails?: repliedPostDetails[],
@@ -63,7 +68,7 @@ const initialState: NewPostState = {
     quotedPost: null,
     quote: getDefaultNewPost(),
   },
-  newPostType: "home-page",
+  newPostType: NewPostType.HomePage,
 };
 
 export function newPostReducer(
@@ -78,14 +83,14 @@ export function newPostReducer(
     newPostType: NewPostType;
     currPostIdx: number;
   }
-) {
+): NewPostState {
   switch (action.type) {
     case "SET_NEW_POST_TYPE": {
       return { ...state, newPostType: action.newPostType };
     }
     case "SET_NEW_POSTS": {
       let newPostState: NewPostState = { ...state };
-      if (action.newPostType === "home-page") {
+      if (action.newPostType === NewPostType.HomePage) {
         newPostState = {
           ...state,
           homePage: {
@@ -93,7 +98,7 @@ export function newPostReducer(
             currPostIdx: 0,
           },
         };
-      } else if (action.newPostType === "side-bar") {
+      } else if (action.newPostType === NewPostType.SideBar) {
         newPostState = {
           ...state,
           sideBar: {
@@ -160,7 +165,7 @@ export function newPostReducer(
     }
     case "SET_NEW_POST": {
       let newPostState: NewPostState = { ...state };
-      if (action.newPostType === "home-page") {
+      if (action.newPostType === NewPostType.HomePage) {
         newPostState = {
           ...state,
           homePage: {
@@ -170,7 +175,7 @@ export function newPostReducer(
             ),
           },
         };
-      } else if (action.newPostType === "side-bar") {
+      } else if (action.newPostType === NewPostType.SideBar) {
         newPostState = {
           ...state,
           sideBar: {
@@ -185,11 +190,11 @@ export function newPostReducer(
     }
     case "ADD_NEW_POST": {
       let newPostState: NewPostState = { ...state };
-      if (action.newPostType === "home-page") {
+      if (action.newPostType === NewPostType.HomePage) {
         const currPostIdx = state.homePage.posts.length;
         const newPosts = [...state.homePage.posts, getDefaultNewPost()];
         newPostState = { ...state, homePage: { posts: newPosts, currPostIdx } };
-      } else if (action.newPostType === "side-bar") {
+      } else if (action.newPostType === NewPostType.SideBar) {
         const currPostIdx = state.sideBar.posts.length;
         const newPosts = [...state.sideBar.posts, getDefaultNewPost()];
         newPostState = { ...state, sideBar: { posts: newPosts, currPostIdx } };
@@ -198,12 +203,12 @@ export function newPostReducer(
     }
     case "UPDATE_NEW_POST": {
       let newPostState: NewPostState = { ...state };
-      if (action.newPostType === "home-page") {
+      if (action.newPostType === NewPostType.HomePage) {
         const newPosts = state.homePage.posts.map((post, idx) =>
           state.homePage.currPostIdx === idx ? action.newPost : post
         );
         newPostState = { ...state, homePage: { ...state.homePage, posts: newPosts } };
-      } else if (action.newPostType === "side-bar") {
+      } else if (action.newPostType === NewPostType.SideBar) {
         const newPosts = state.sideBar.posts.map((post, idx) =>
           state.sideBar.currPostIdx === idx ? action.newPost : post
         );
@@ -224,18 +229,21 @@ export function newPostReducer(
     }
     case "REMOVE_NEW_POST": {
       let newPostState: NewPostState = { ...state };
-      if (action.newPostType === "home-page") {
+      if (action.newPostType === NewPostType.HomePage) {
         const newPosts = state.homePage.posts.filter(
           (_, idx) => state.homePage.currPostIdx !== idx
         );
         const currPostIdx = newPosts.length - 1;
         newPostState = { ...state, homePage: { posts: newPosts, currPostIdx } };
-      } else if (action.newPostType === "side-bar") {
+      } else if (action.newPostType === NewPostType.SideBar) {
         const newPosts = state.sideBar.posts.filter((_, idx) => state.sideBar.currPostIdx !== idx);
         const currPostIdx = newPosts.length - 1;
         newPostState = { ...state, sideBar: { posts: newPosts, currPostIdx } };
       }
       return newPostState;
+    }
+    case "CLEAR_NEW_POSTS": {
+      return { ...initialState };
     }
     default:
       return state;

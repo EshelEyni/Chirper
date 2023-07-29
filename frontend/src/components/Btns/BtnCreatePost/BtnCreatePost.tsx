@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../store/types";
 import { setNewPostType } from "../../../store/actions/new-post.actions";
 import "./BtnCreatePost.scss";
+import { NewPostType } from "../../../store/reducers/new-post.reducer";
 
 interface BtnCreatePostProps {
   isSideBarBtn: boolean;
@@ -22,7 +23,7 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
 
   async function onClickBtn() {
     if (isSideBarBtn) {
-      await dispatch(setNewPostType("side-bar"));
+      await dispatch(setNewPostType(NewPostType.SideBar));
       navigate("compose", { relative: "path" });
     } else {
       onAddPost && onAddPost();

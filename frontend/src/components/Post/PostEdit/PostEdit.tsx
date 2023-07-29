@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
@@ -6,6 +7,7 @@ import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post
 import { AppDispatch } from "../../../store/types";
 import {
   addNewPostToThread,
+  clearNewPostState,
   setNewPostType,
   setNewPosts,
   updateCurrNewPost,
@@ -34,29 +36,31 @@ import { PostEditActions } from "../PostEditActions/PostEditActions/PostEditActi
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost } from "../../Btns/BtnCreatePost/BtnCreatePost";
+import { NewPostType } from "../../../store/reducers/new-post.reducer";
 
 interface PostEditProps {
   isHomePage?: boolean;
   onClickBtnClose?: () => void;
 }
 
-// let renderCount = 0;
-
 export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
-  // console.log("PostEdit", ++renderCount);
-
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const { sideBar, homePage, reply, quote, newPostType } = useSelector(
     (state: RootState) => state.newPostModule
   );
+  // const newPostModule = useSelector((state: RootState) => state.newPostModule);
+
+  const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
+  // // setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
+  // const isValidType = newPostType === NewPostType.SideBar || newPostType === NewPostType.HomePage;
+  // const preCurrNewPostList = isValidType
+  //   ? newPostModule[newPostType].posts.filter((_, idx) => idx < homePage.currPostIdx)
+  //   : [];
 
   const [currNewPost, setCurrNewPost] = useState<NewPost | null>(null);
-  const [replyToPost, setReplyToPost] = useState<Post | null>(null);
-  const [quotedPost, setQuotedPost] = useState<Post | null>(null);
-  const [preCurrNewPostList, setPreCurrNewPostList] = useState<NewPost[]>([]);
   const [postCurrNewPostList, setPostCurrNewPostList] = useState<NewPost[]>([]);
   const [inputTextValue, setInputTextValue] = useState(currNewPost?.text || "");
-  // State - booleans
+
   const [isPickerShown, setIsPickerShown] = useState<boolean>(!isHomePage);
   const [arePostsValid, setArePostsValid] = useState<boolean>(false);
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
@@ -76,15 +80,10 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const isAddingPostToThreadDisabled =
     preCurrNewPostList.length + postCurrNewPostList.length + 1 >= 10;
   const isMultipePosts = preCurrNewPostList.length + postCurrNewPostList.length + 1 > 1;
-  const isBtnRemovePostFromThreadShown =
-    !isFirstPostInThread &&
-    !isHomePage &&
-    (newPostTypeRef.current === "home-page" || newPostTypeRef.current === "side-bar") &&
-    !checkPostValidity(currNewPost);
   const isPostDateTitleShown = currNewPost?.schedule && isFirstPostInThread;
   const isBtnCloseShown = !!onClickBtnClose;
   const isPreCurrNewPostList = !isHomePage && preCurrNewPostList.length > 0;
-  const isReplyPostShown = !isHomePage && !!replyToPost;
+  const isReplyPostShown = !isHomePage && !!reply.repliedToPost;
   const isBtnToggleAudienceShown = isPickerShown && currNewPost && isFirstPostInThread;
   const isPostEditImgShown = currNewPost && currNewPost.imgs.length > 0;
   const isPostEditVideoShown = !!currNewPost?.video;
@@ -92,8 +91,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   const isPostEditPollShown = !!currNewPost?.poll;
   const isBtnToggleRepliersShown = isPickerShown && currNewPost;
   const isPostLocationTitleShown = !!currNewPost?.location;
-  const isQuotedPostShown = !!quotedPost;
-  const isIndicatorAndThreadBtnShown = checkPostValidity(currNewPost) || inputTextValue.length > 0;
+  const isQuotedPostShown = !!quote.quotedPost;
   const isPostCurrNewPostListShown = !isHomePage && postCurrNewPostList.length > 0;
 
   function setBtnTitleText(): string {
@@ -103,41 +101,62 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     return isMultipePosts && !isHomePage ? "Chirp All" : "Chirp";
   }
 
-  function checkPostValidity(post: NewPost | null): boolean {
-    if (!post) return false;
+  const checkPostValidity = useCallback(
+    (post: NewPost | null): boolean => {
+      if (!post) return false;
 
-    function checkPostTextValidity(post: NewPost): boolean {
-      let currPostText = "";
-      if (newPostType === "home-page") {
-        const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
-        currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
-      } else if (newPostType === "side-bar") {
-        const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
-        currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
-      } else {
-        currPostText = inputTextValue;
+      function checkPostTextValidity(post: NewPost): boolean {
+        let currPostText = "";
+        if (newPostType === NewPostType.HomePage) {
+          const currPostIdx = homePage.posts.findIndex(p => p.tempId === post.tempId);
+          currPostText = currPostIdx === homePage.currPostIdx ? inputTextValue : post.text;
+        } else if (newPostType === NewPostType.SideBar) {
+          const currPostIdx = sideBar.posts.findIndex(p => p.tempId === post.tempId);
+          currPostText = currPostIdx === sideBar.currPostIdx ? inputTextValue : post.text;
+        } else {
+          currPostText = inputTextValue;
+        }
+        return currPostText.length > 0 && currPostText.length <= 247;
       }
-      return currPostText.length > 0 && currPostText.length <= 247;
-    }
 
-    if (post.poll) {
-      return (
-        post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity(post)
-      );
-    } else {
-      return (
-        checkPostTextValidity(post) ||
-        post.imgs.length > 0 ||
-        !!post.gif ||
-        !!post.video ||
-        !!post.quotedPostId
-      );
-    }
-  }
+      if (post.poll) {
+        return (
+          post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity(post)
+        );
+      } else {
+        return (
+          checkPostTextValidity(post) ||
+          post.imgs.length > 0 ||
+          !!post.gif ||
+          !!post.video ||
+          !!post.quotedPostId
+        );
+      }
+    },
+    [
+      homePage.currPostIdx,
+      homePage.posts,
+      inputTextValue,
+      newPostType,
+      sideBar.currPostIdx,
+      sideBar.posts,
+    ]
+  );
 
-  function checkPostArrayValidity(newPosts: NewPost[]): boolean {
-    return newPosts.every(post => checkPostValidity(post));
-  }
+  const isBtnRemovePostFromThreadShown =
+    !isFirstPostInThread &&
+    !isHomePage &&
+    (newPostTypeRef.current === NewPostType.HomePage ||
+      newPostTypeRef.current === NewPostType.SideBar) &&
+    !checkPostValidity(currNewPost);
+  const isIndicatorAndThreadBtnShown = checkPostValidity(currNewPost) || inputTextValue.length > 0;
+
+  const checkPostArrayValidity = useCallback(
+    (newPosts: NewPost[]): boolean => {
+      return newPosts.every(post => checkPostValidity(post));
+    },
+    [checkPostValidity]
+  );
 
   async function onAddPost() {
     if (!currNewPost || !loggedinUser) return;
@@ -199,7 +218,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
   }
 
   function resetState() {
-    dispatch(setNewPostType("home-page"));
+    dispatch(clearNewPostState());
+    dispatch(setNewPostType(NewPostType.HomePage));
     dispatch(setNewPosts([], newPostType));
     setInputTextValue("");
     setIsPickerShown(false);
@@ -250,32 +270,37 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
     const isValid = checkPostArrayValidity(postArray);
     if (isValid !== arePostsValid) setArePostsValid(isValid);
-  }, [preCurrNewPostList, currNewPost, inputTextValue.length, postCurrNewPostList]);
+  }, [
+    preCurrNewPostList,
+    currNewPost,
+    inputTextValue.length,
+    postCurrNewPostList,
+    arePostsValid,
+    checkPostArrayValidity,
+  ]);
 
   useEffect(() => {
     const postType = newPostTypeRef.current;
-    if (postType === "home-page") {
+    if (postType === NewPostType.HomePage) {
       const currPost = homePage.posts[homePage.currPostIdx];
       setPreCurrNewPostList(homePage.posts.filter((_, idx) => idx < homePage.currPostIdx));
       setCurrNewPost(currPost);
       setInputTextValue(currPost.text);
       setPostCurrNewPostList(homePage.posts.filter((_, idx) => idx > homePage.currPostIdx));
       setIsFirstPostInThread(homePage.currPostIdx === 0);
-    } else if (postType === "side-bar") {
+    } else if (postType === NewPostType.SideBar) {
       const currPost = sideBar.posts[sideBar.currPostIdx];
       setPreCurrNewPostList(sideBar.posts.filter((_, idx) => idx < sideBar.currPostIdx));
       setCurrNewPost(currPost);
       setInputTextValue(currPost.text);
       setPostCurrNewPostList(sideBar.posts.filter((_, idx) => idx > sideBar.currPostIdx));
       setIsFirstPostInThread(sideBar.currPostIdx === 0);
-    } else if (postType === "reply") {
+    } else if (postType === NewPostType.Reply) {
       setCurrNewPost(reply.reply);
       setInputTextValue(reply.reply.text);
-      setReplyToPost(reply.repliedToPost);
-    } else if (postType === "quote") {
+    } else if (postType === NewPostType.Quote) {
       setCurrNewPost(quote.quote);
       setInputTextValue(quote.quote.text);
-      setQuotedPost(quote.quotedPost);
     }
     if (location.pathname === "/compose" && isHomePage) {
       setIsPickerShown(false);
@@ -315,8 +340,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
       {postSaveInProgress && <span className="progress-bar"></span>}
       {isPreCurrNewPostList && <PostList newPosts={preCurrNewPostList} />}
       {isReplyPostShown && (
-        <MiniPostPreview post={replyToPost} type={"replied-post"}>
-          <RepliedPostContent post={replyToPost} />
+        <MiniPostPreview post={reply.repliedToPost as Post} type={"replied-post"}>
+          <RepliedPostContent post={reply.repliedToPost as Post} />
         </MiniPostPreview>
       )}
       <div className="content-container">
@@ -336,7 +361,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             textAreaRef={textAreaRef}
             postType={newPostTypeRef.current}
             currNewPost={currNewPost}
-            replyToPost={replyToPost}
+            replyToPost={reply.repliedToPost}
             isVideoRemoved={isVideoRemoved}
             setInputTextValue={setInputTextValue}
           />
@@ -356,8 +381,8 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
             )}
           </div>
           {isQuotedPostShown && (
-            <MiniPostPreview quotedPost={quotedPost} type={"quoted-post"}>
-              <QuotedPostContent quotedPost={quotedPost} />
+            <MiniPostPreview quotedPost={quote.quotedPost as Post} type={"quoted-post"}>
+              <QuotedPostContent quotedPost={quote.quotedPost as Post} />
             </MiniPostPreview>
           )}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>

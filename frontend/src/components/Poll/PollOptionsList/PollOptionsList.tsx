@@ -7,6 +7,7 @@ import { NewPost } from "../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import "./PollOptionsList.scss";
 import { PollOption } from "./PollOption/PollOption";
+import { NewPostType } from "../../../store/reducers/new-post.reducer";
 
 type PollOptionsInputProps = {
   currNewPost: NewPost;
@@ -67,18 +68,18 @@ export const PollOptionsList: FC<PollOptionsInputProps> = ({ currNewPost }) => {
   useEffect(() => {
     setInputRefs(currNewPost.poll!.options.map(() => createRef<HTMLInputElement>()));
     inputRefs[0]?.current?.focus();
-  }, [currNewPost.poll!.options.length]);
+  }, [currNewPost.poll!.options.length, inputRefs, currNewPost.poll]);
 
   useEffect(() => {
     if (!inputRefs.length) return;
-    if (newPostType === "home-page") {
+    if (newPostType === NewPostType.HomePage) {
       const currHomePost = homePage.posts.find(p => p.tempId === currNewPost.tempId);
       if (currHomePost) inputRefs[0].current?.focus();
-    } else if (newPostType === "side-bar") {
+    } else if (newPostType === NewPostType.SideBar) {
       const currSideBarPost = sideBar.posts.find(p => p.tempId === currNewPost.tempId);
       if (currSideBarPost) inputRefs[0].current?.focus();
     }
-  }, [inputRefs]);
+  }, [inputRefs, newPostType, homePage.posts, sideBar.posts, currNewPost.tempId]);
 
   return (
     <div className="poll-options-container">

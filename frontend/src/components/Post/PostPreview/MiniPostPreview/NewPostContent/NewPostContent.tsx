@@ -10,6 +10,7 @@ import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
 import { useMemo } from "react";
+import { NewPostType } from "../../../../../store/reducers/new-post.reducer";
 
 type NewPostContentProps = {
   newPost: NewPost;
@@ -23,15 +24,15 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
 
   const currPostIdx = useMemo(() => {
     if (!newPost) return -1;
-    if (newPostType === "home-page")
+    if (newPostType === NewPostType.HomePage)
       return homePage.posts.findIndex(p => p.tempId === newPost?.tempId);
-    else if (newPostType === "side-bar")
+    else if (newPostType === NewPostType.SideBar)
       return sideBar.posts.findIndex(p => p.tempId === newPost?.tempId);
   }, [newPost, newPostType, homePage.posts, sideBar.posts]);
 
   const isPostLineShown = useMemo(() => {
-    if (newPostType === "home-page") return currPostIdx !== homePage.posts.length - 1;
-    else if (newPostType === "side-bar") return currPostIdx !== sideBar.posts.length - 1;
+    if (newPostType === NewPostType.HomePage) return currPostIdx !== homePage.posts.length - 1;
+    else if (newPostType === NewPostType.SideBar) return currPostIdx !== sideBar.posts.length - 1;
     else return false;
   }, [newPostType, homePage.posts, sideBar.posts, currPostIdx]);
 

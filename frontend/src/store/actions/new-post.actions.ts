@@ -88,3 +88,13 @@ export function removeNewPostFromThread(
     }
   };
 }
+
+export function clearNewPostState(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+  return async dispatch => {
+    try {
+      dispatch({ type: "CLEAR_NEW_POSTS" });
+    } catch (err) {
+      console.log("PostActions: err in clearNewPostState", err);
+    }
+  };
+}

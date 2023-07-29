@@ -8,12 +8,11 @@ function get(cacheKey: string, expiryTimeInMinutes: number) {
   const expiryTimeInMillis = 1000 * 60 * expiryTimeInMinutes;
   const cachedDataWithTimestamp = storageService.get(cacheKey);
   if (!cachedDataWithTimestamp) return null;
-  const { timestamp, data } = cachedDataWithTimestamp;
+  const { cachedAt, data } = cachedDataWithTimestamp;
   const currentTime = Date.now();
-  const elapsedTimeSinceCaching = currentTime - timestamp;
-  if (elapsedTimeSinceCaching < expiryTimeInMillis) {
-    return data;
-  }
+  const elapsedTimeSinceCaching = currentTime - cachedAt;
+  if (elapsedTimeSinceCaching < expiryTimeInMillis) return data;
+  storageService.clear(cacheKey);
   return null;
 }
 

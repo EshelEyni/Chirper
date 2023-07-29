@@ -8,4 +8,8 @@ function get(key: string) {
   return JSON.parse(val);
 }
 
-export default { get, set };
+function clear(key: string) {
+  localStorage.removeItem(key);
+}
+
+export default { get, set, clear };

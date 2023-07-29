@@ -26,9 +26,8 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 async function getUserDefaultLocations(): Promise<Location[] | null> {
   try {
     const cacheLocation = cacheService.get("location", 5);
-    if (cacheLocation) {
-      return cacheLocation;
-    }
+    if (cacheLocation) return cacheLocation;
+
     const currLocation = await _getCurrentLocation();
     if (currLocation) {
       const query = queryString.stringify(currLocation);

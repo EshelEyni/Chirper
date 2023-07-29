@@ -9,12 +9,19 @@ import {
 } from "../../../shared/interfaces/post.interface";
 import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
 import { handleServerResponse } from "./util/utils.service";
+import cacheService from "./cache.service";
 
 async function query(): Promise<Post[]> {
   try {
+    const cachePosts = cacheService.get("posts", 3);
+    if (cachePosts) return cachePosts;
     const response = await httpService.get(
       "post?sort=-createdAt&previousThreadPostId[exists]=false"
     );
+    cacheService.set("posts", {
+      cachedAt: Date.now(),
+      data: response.data,
+    });
     return handleServerResponse<Post[]>(response);
   } catch (err) {
     console.log("postService: Cannot get posts");

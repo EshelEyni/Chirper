@@ -17,9 +17,11 @@
   @include progress-bar;
 
   .logo-container {
+    cursor: default;
     .logo {
       width: rem(100px);
       height: rem(100px);
+      cursor: default;
     }
   }
 }

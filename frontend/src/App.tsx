@@ -10,11 +10,13 @@ import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
 import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
 import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
+import { useEffect } from "react";
+import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  if (!loggedinUser) dispatch(autoLogin());
+  const { isPageLoading } = useSelector((state: RootState) => state.systemModule);
 
   function getRoutes() {
     return routes.map(route => (
@@ -37,18 +39,26 @@ function App() {
     ));
   }
 
+  useEffect(() => {
+    if (!loggedinUser) dispatch(autoLogin());
+  }, [loggedinUser, dispatch]);
+
   return (
     <div className="app">
-      <div className="app-content">
-        <SideBar />
-        <Routes>
-          <Route index element={<Navigate replace to="/home" />} />
-          {getRoutes()}
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-        {!loggedinUser && <LoginSignupMsg />}
-        <UserMsg />
-      </div>
+      {isPageLoading ? (
+        <PageLoader />
+      ) : (
+        <div className="app-content">
+          <SideBar />
+          <Routes>
+            <Route index element={<Navigate replace to="/home" />} />
+            {getRoutes()}
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+          {!loggedinUser && <LoginSignupMsg />}
+          <UserMsg />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { QuotedPost } from "../../../../../../../shared/interfaces/post.interface";
+import { useSelector } from "react-redux";
 import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
 import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../../PostImgList/PostImgList";
@@ -7,12 +7,11 @@ import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import "./QuotedPostContent.scss";
+import { RootState } from "../../../../../store/store";
 
-type QuotedPostContentProps = {
-  quotedPost: QuotedPost;
-};
-
-export const QuotedPostContent: React.FC<QuotedPostContentProps> = ({ quotedPost }) => {
+export const QuotedPostContent: React.FC = () => {
+  const { quotedPost } = useSelector((state: RootState) => state.newPostModule.quote);
+  if (!quotedPost) return null;
   const isImgShown = quotedPost.imgs && quotedPost.imgs.length > 0;
   return (
     <PostPreviewMainContainer>

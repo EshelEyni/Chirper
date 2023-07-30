@@ -5,18 +5,20 @@ import { setNewPostType } from "../../../store/actions/new-post.actions";
 import "./BtnCreatePost.scss";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
 
+export type BtnCreatePostTitle = "Chirp" | "Chirp All" | "Schedule" | "Reply";
+
 interface BtnCreatePostProps {
   isSideBarBtn: boolean;
   isDisabled: boolean;
   onAddPost?: () => void;
-  btnText?: string;
+  title?: BtnCreatePostTitle;
 }
 
 export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   isSideBarBtn,
   isDisabled = false,
   onAddPost = null,
-  btnText = "Chirp",
+  title = "Chirp",
 }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
@@ -36,7 +38,7 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
       onClick={onClickBtn}
       disabled={isDisabled}
     >
-      {btnText}
+      {title}
     </button>
   );
 };

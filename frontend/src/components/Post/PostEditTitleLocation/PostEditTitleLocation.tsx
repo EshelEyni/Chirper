@@ -2,12 +2,12 @@ import { FC } from "react";
 import { IoLocationSharp } from "react-icons/io5";
 import { usePostEdit } from "../PostEdit/PostEditContext";
 import { useNavigate } from "react-router-dom";
-type PostEditTitleLocationProps = {
-  title: string;
-};
-export const PostEditTitleLocation: FC<PostEditTitleLocationProps> = ({ title }) => {
-  const { isPickerShown } = usePostEdit();
+
+export const PostEditTitleLocation: FC = () => {
   const navigate = useNavigate();
+  const { isPickerShown, currNewPost } = usePostEdit();
+  if (!currNewPost || !currNewPost.location) return null;
+  const title = currNewPost?.location.name;
 
   function onGoToLocationPage() {
     if (!isPickerShown) return;

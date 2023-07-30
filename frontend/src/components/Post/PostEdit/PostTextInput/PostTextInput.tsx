@@ -1,29 +1,19 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import { NewPost, Post } from "../../../../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { AppDispatch } from "../../../../store/types";
-import {
-  NewPostType,
-  NewPostType as typeofPostType,
-} from "../../../../store/reducers/new-post.reducer";
+import { NewPostType } from "../../../../store/reducers/new-post.reducer";
 import { debounce } from "../../../../services/util/utils.service";
 import { usePostEdit } from "../PostEditContext";
 
 type PostTextInputProps = {
-  replyToPost: Post | null;
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
-  postType: typeofPostType;
   isHomePage: boolean;
 };
 
-export const PostTextInput: FC<PostTextInputProps> = ({
-  replyToPost,
-  textAreaRef,
-  postType,
-  isHomePage,
-}) => {
+export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePage }) => {
   const {
     newPostText,
     setNewPostText,
@@ -33,7 +23,8 @@ export const PostTextInput: FC<PostTextInputProps> = ({
     currNewPost,
   } = usePostEdit();
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType, reply } = useSelector((state: RootState) => state.newPostModule);
+  const { repliedToPost } = reply;
   const dispatch: AppDispatch = useDispatch();
 
   const detectURL = useRef(
@@ -80,10 +71,10 @@ export const PostTextInput: FC<PostTextInputProps> = ({
   };
 
   const setTextPlaceholder = () => {
-    switch (postType) {
+    switch (newPostType) {
       case NewPostType.Reply: {
         if (currNewPost?.poll) return "Ask a question...";
-        const isLoggedinUserPost = loggedinUser && loggedinUser.id === replyToPost?.createdBy.id;
+        const isLoggedinUserPost = loggedinUser && loggedinUser.id === repliedToPost?.createdBy.id;
         if (isLoggedinUserPost) return "Add another Chirp!";
         return "Chirp your reply...";
       }

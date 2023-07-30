@@ -7,7 +7,7 @@ import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
 import "./PostEditVideo.scss";
-import { usePostEdit } from "../PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const PostEditVideo: FC = () => {
   const dispatch: AppDispatch = useDispatch();

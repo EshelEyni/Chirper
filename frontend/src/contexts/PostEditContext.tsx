@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
+import { RootState } from "../store/store";
+import { NewPostType } from "../store/reducers/new-post.reducer";
+import { NewPost } from "../../../shared/interfaces/post.interface";
 
 type PostEditContextType = {
   currNewPost: NewPost | null;
@@ -18,10 +18,6 @@ type PostEditContextType = {
   isPickerShown: boolean;
   setIsPickerShown: React.Dispatch<React.SetStateAction<boolean>>;
 };
-
-// const initialState: PostEditContextType = {
-//   newPostText: "",
-// };
 
 const PostEditContext = createContext<PostEditContextType | undefined>(undefined);
 

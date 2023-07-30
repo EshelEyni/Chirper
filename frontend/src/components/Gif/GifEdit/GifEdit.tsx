@@ -7,7 +7,7 @@ import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { BtnPlay } from "../../Btns/BtnPlay/BtnPlay";
 import "./GifEdit.scss";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const GifEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();

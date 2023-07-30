@@ -16,7 +16,7 @@ import { PostEditBtnImgAndVideoUpload } from "../PostEditBtnImgVideoUpload/PostE
 import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
 import { GifPickerModal } from "../../../Modals/GifPickerModal/GifPickerModal";
-import { usePostEdit } from "../../PostEdit/PostEditContext";
+import { usePostEdit } from "../../../../contexts/PostEditContext";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {

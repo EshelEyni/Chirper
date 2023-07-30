@@ -8,7 +8,7 @@ import "./Home.scss";
 import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
-import { PostEditProvider } from "../../../components/Post/PostEdit/PostEditContext";
+import { PostEditProvider } from "../../../contexts/PostEditContext";
 
 export const HomePage = () => {
   const { posts } = useSelector((state: RootState) => state.postModule);

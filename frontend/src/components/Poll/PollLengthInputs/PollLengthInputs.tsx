@@ -7,7 +7,7 @@ import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { CustomSelect } from "../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();

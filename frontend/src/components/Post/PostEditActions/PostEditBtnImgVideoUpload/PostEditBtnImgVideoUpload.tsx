@@ -6,7 +6,7 @@ import { RootState } from "../../../../store/store";
 import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { readAsDataURL } from "../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
-import { usePostEdit } from "../../PostEdit/PostEditContext";
+import { usePostEdit } from "../../../../contexts/PostEditContext";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;

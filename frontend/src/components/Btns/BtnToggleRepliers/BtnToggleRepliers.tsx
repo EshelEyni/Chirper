@@ -6,7 +6,7 @@ import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const BtnToggleRepliers: FC = () => {
   const { currNewPost } = usePostEdit();

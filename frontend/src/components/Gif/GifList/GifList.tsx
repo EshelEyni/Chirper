@@ -9,7 +9,7 @@ import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
 import { GifPreview } from "../GifPreview/GifPreview";
 import "./GifList.scss";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 interface GifListProps {
   gifs: Gif[];

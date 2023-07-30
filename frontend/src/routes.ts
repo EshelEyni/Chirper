@@ -15,37 +15,45 @@ import { PostStatsPage } from "./pages/NestedPages/PostStats/PostStats";
 export interface Route {
   path: string;
   component: () => JSX.Element;
-  onlyHomePage?: boolean;
+  authRequired: boolean;
+  homePageOnly?: boolean;
 }
 
 const routes: Route[] = [
   {
     path: "home",
     component: HomePage,
+    authRequired: false,
   },
   {
     path: "post/:id",
     component: PostDetails,
+    authRequired: false,
   },
   {
     path: "explore/:hashtag?",
     component: ExplorePage,
+    authRequired: false,
   },
   {
     path: "bookmarks",
     component: BookmarksPage,
+    authRequired: true,
   },
   {
     path: "profile/:username?",
     component: ProfileDetails,
+    authRequired: false,
   },
   {
     path: "login",
     component: LoginPage,
+    authRequired: false,
   },
   {
     path: "signup",
     component: SignupPage,
+    authRequired: false,
   },
 ];
 
@@ -53,28 +61,34 @@ const nestedRoutes: Route[] = [
   {
     path: "post-schedule",
     component: PostSchedule,
-    onlyHomePage: true,
+    homePageOnly: true,
+    authRequired: true,
   },
   {
     path: "post-location",
     component: PostLocation,
-    onlyHomePage: true,
+    homePageOnly: true,
+    authRequired: true,
   },
   {
     path: "post-stats/:id",
     component: PostStatsPage,
+    authRequired: false,
   },
   {
     path: "compose",
     component: ComposePage,
+    authRequired: true,
   },
   {
     path: "display",
     component: DisplayPage,
+    authRequired: true,
   },
   {
     path: "chirper-circle",
     component: ChirperCirclePage,
+    authRequired: true,
   },
 ];
 

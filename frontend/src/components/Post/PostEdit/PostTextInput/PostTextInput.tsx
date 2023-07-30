@@ -6,7 +6,7 @@ import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { AppDispatch } from "../../../../store/types";
 import { NewPostType } from "../../../../store/reducers/new-post.reducer";
 import { debounce } from "../../../../services/util/utils.service";
-import { usePostEdit } from "../PostEditContext";
+import { usePostEdit } from "../../../../contexts/PostEditContext";
 
 type PostTextInputProps = {
   textAreaRef: React.RefObject<HTMLTextAreaElement>;

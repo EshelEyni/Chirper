@@ -17,7 +17,7 @@ import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
-import { PostEditProvider } from "../../../components/Post/PostEdit/PostEditContext";
+import { PostEditProvider } from "../../../contexts/PostEditContext";
 
 export const ComposePage = () => {
   const [isSavePostDraftModalOpen, setIsSavePostDraftModalOpen] = useState(false);

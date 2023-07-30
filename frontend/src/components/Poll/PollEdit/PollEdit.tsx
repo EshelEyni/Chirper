@@ -6,7 +6,7 @@ import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PollOptionsList } from "../PollOptionsList/PollOptionsList";
 import { PollLengthInputs } from "../PollLengthInputs/PollLengthInputs";
 import "./PollEdit.scss";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const PollEdit: FC = () => {
   const { currNewPost } = usePostEdit();

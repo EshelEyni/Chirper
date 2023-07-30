@@ -12,6 +12,7 @@ import { Route as TypeOfRoute } from "./routes";
 import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 import { useEffect } from "react";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
+import { AuthGuard } from "./guards/AuthGuard";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
@@ -20,23 +21,23 @@ function App() {
 
   function getRoutes() {
     return routes.map(route => (
-      <Route key={route.path} path={route.path} element={<route.component />}>
+      <Route key={route.path} path={route.path} element={geRouteElement(route)}>
         {getNestedRoutes(route)}
       </Route>
     ));
   }
 
   function getNestedRoutes(route: TypeOfRoute) {
+    const getRoute = (route: TypeOfRoute) => (
+      <Route key={route.path} path={route.path} element={geRouteElement(route)} />
+    );
     const isHomePage = route.path === "home";
-    if (isHomePage)
-      return nestedRoutes.map(route => (
-        <Route key={route.path} path={route.path} element={<route.component />} />
-      ));
+    if (isHomePage) return nestedRoutes.map(route => getRoute(route));
+    return nestedRoutes.filter(route => !route.homePageOnly).map(route => getRoute(route));
+  }
 
-    const filteredNestedRoutes = nestedRoutes.filter(route => !route.onlyHomePage);
-    return filteredNestedRoutes.map(route => (
-      <Route key={route.path} path={route.path} element={<route.component />} />
-    ));
+  function geRouteElement(route: TypeOfRoute) {
+    return route.authRequired ? <AuthGuard component={<route.component />} /> : <route.component />;
   }
 
   useEffect(() => {

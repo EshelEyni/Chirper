@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import "./TextIndicator.scss";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const TextIndicator: React.FC = () => {
   const { newPostText } = usePostEdit();

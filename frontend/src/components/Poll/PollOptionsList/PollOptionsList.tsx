@@ -7,7 +7,7 @@ import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import "./PollOptionsList.scss";
 import { PollOption } from "./PollOption/PollOption";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const PollOptionsList: FC = () => {
   const dispatch: AppDispatch = useDispatch();

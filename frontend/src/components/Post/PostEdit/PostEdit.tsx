@@ -37,7 +37,7 @@ import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
-import { usePostEdit } from "./PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 interface PostEditProps {
   isHomePage?: boolean;

@@ -8,7 +8,7 @@ import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
 import { PostEditOption } from "../../../types/app.types";
-import { usePostEdit } from "../../Post/PostEdit/PostEditContext";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
 export const BtnToggleAudience: FC = () => {
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);

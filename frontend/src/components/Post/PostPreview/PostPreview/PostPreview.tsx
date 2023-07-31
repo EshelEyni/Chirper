@@ -22,6 +22,7 @@ import { PostPreviewWrapper } from "../Wrapper/PostPreviewWrapper";
 import { PostPreviewAside } from "./Aside/PostPreviewAside";
 import { BtnShowThread } from "../../../Btns/BtnShowThread/BtnShowThread";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
+import { VideoPlayerProvider } from "../../../../contexts/VideoPlayerContext";
 
 export const PostPreview: React.FC = () => {
   const { post, poll } = usePostPreview();
@@ -54,9 +55,13 @@ export const PostPreview: React.FC = () => {
           <PostPreviewHeader />
           <PostPreviewBody>
             {isRepliedToUserListShown && <PostRepliedToUsersList />}
-            <PostPreviewText isPlainText={false} />
+            <PostPreviewText text={post.text} isPlainText={false} />
             {post.imgs?.length > 0 && <PostImg imgs={post.imgs} />}
-            {post.videoUrl && <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />}
+            {post.videoUrl && (
+              <VideoPlayerProvider>
+                <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />
+              </VideoPlayerProvider>
+            )}
             {post.gif && <GifDisplay gif={post.gif} />}
             {poll && <PollDisplay postStartDate={postStartDate} />}
             {post.quotedPost && (

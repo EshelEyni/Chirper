@@ -1,9 +1,8 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import "./VideoTimer.scss";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 
 type VideoTimerProps = {
-  playedSeconds: number;
-  duration: number;
   isCountDown?: boolean;
 };
 
@@ -13,7 +12,8 @@ type TimeUnits = {
   seconds: number;
 };
 
-export const VideoTimer: FC<VideoTimerProps> = ({ playedSeconds, duration, isCountDown }) => {
+export const VideoTimer: FC<VideoTimerProps> = ({ isCountDown }) => {
+  const { playedSeconds, duration } = useVideoPlayer();
   const [timeStr, setTimeStr] = useState("");
 
   function extractTimeUnits(secs: number) {

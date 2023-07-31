@@ -5,6 +5,7 @@ import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
+import { PostPreviewProvider } from "../../../../../contexts/PostPreviewContext";
 
 export const RepliedPostContent: React.FC = () => {
   const post = useSelector((state: RootState) => state.newPostModule.reply.repliedToPost);
@@ -12,16 +13,18 @@ export const RepliedPostContent: React.FC = () => {
   const isReplyingToPostShown = post.repliedPostDetails && post.repliedPostDetails.length > 0;
   return (
     <>
-      <MiniPostPreviewAside userImgUrl={post.createdBy.imgUrl} isPostLineShowned={true} />
-      <PostPreviewMainContainer>
-        <PostPreviewBody>
-          <PostPreviewText text={post.text} isPlainText={true} />
-        </PostPreviewBody>
-        {isReplyingToPostShown && (
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          <PostRepliedToUsersList repliedPostDetails={post.repliedPostDetails!} />
-        )}
-      </PostPreviewMainContainer>
+      <PostPreviewProvider post={post}>
+        <MiniPostPreviewAside userImgUrl={post.createdBy.imgUrl} isPostLineShowned={true} />
+        <PostPreviewMainContainer>
+          <PostPreviewBody>
+            <PostPreviewText text={post.text} isPlainText={true} />
+          </PostPreviewBody>
+          {isReplyingToPostShown && (
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            <PostRepliedToUsersList />
+          )}
+        </PostPreviewMainContainer>
+      </PostPreviewProvider>
     </>
   );
 };

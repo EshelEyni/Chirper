@@ -8,25 +8,29 @@ import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainCon
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import "./QuotedPostContent.scss";
 import { RootState } from "../../../../../store/store";
+import { PostPreviewProvider } from "../../../../../contexts/PostPreviewContext";
+import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
 
 export const QuotedPostContent: React.FC = () => {
   const { quotedPost } = useSelector((state: RootState) => state.newPostModule.quote);
   if (!quotedPost) return null;
   const isImgShown = quotedPost.imgs && quotedPost.imgs.length > 0;
   return (
-    <PostPreviewMainContainer>
-      <PostPreviewHeader post={quotedPost} isMiniPreview={true} />
-      <PostPreviewBody>
-        <PostPreviewText text={quotedPost.text} isPlainText={true} />
-        {isImgShown && (
-          <PostImg imgs={quotedPost.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
-        )}
-        {quotedPost.videoUrl && (
-          <VideoPlayer videoUrl={quotedPost.videoUrl} isCustomControls={true} />
-        )}
-        {quotedPost.gif && <GifDisplay gif={quotedPost.gif} isAutoPlay={false} />}
-        {quotedPost.poll && <span className="link-to-poll">Show this poll</span>}
-      </PostPreviewBody>
-    </PostPreviewMainContainer>
+    <PostPreviewProvider post={quotedPost}>
+      <PostPreviewMainContainer>
+        <PostPreviewHeader isMiniPreview={true} />
+        <PostPreviewBody>
+          <PostPreviewText text={quotedPost.text} isPlainText={true} />
+          {isImgShown && <PostImg imgs={quotedPost.imgs} />}
+          {quotedPost.videoUrl && (
+            <VideoPlayerProvider>
+              <VideoPlayer videoUrl={quotedPost.videoUrl} isCustomControls={true} />
+            </VideoPlayerProvider>
+          )}
+          {quotedPost.gif && <GifDisplay gif={quotedPost.gif} isAutoPlay={false} />}
+          {quotedPost.poll && <span className="link-to-poll">Show this poll</span>}
+        </PostPreviewBody>
+      </PostPreviewMainContainer>
+    </PostPreviewProvider>
   );
 };

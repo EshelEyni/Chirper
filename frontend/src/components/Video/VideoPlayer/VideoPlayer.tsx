@@ -4,6 +4,8 @@ import storageService from "../../../services/storage.service";
 import { useInView } from "react-intersection-observer";
 import "./VideoPlayer.scss";
 import { VideoCustomControls } from "../VideoCustomControls/VideoCustomControls";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
+import { VideoCustomControlsProvider } from "../../../contexts/VideoCustomControlsContext";
 
 type VideoPlayerProps = {
   videoUrl: string;
@@ -14,14 +16,21 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
   const videoPlayerRef = useRef<ReactPlayer>(null);
   const playerWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [playedSeconds, setPlayedSeconds] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isLooping, setIsLooping] = useState(true);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const {
+    isPlaying,
+    setIsPlaying,
+    isMuted,
+    setIsMuted,
+    volume,
+    setVolume,
+    setProgress,
+    setPlayedSeconds,
+    setDuration,
+    isLooping,
+    setIsLooping,
+    playbackRate,
+  } = useVideoPlayer();
+
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
@@ -29,16 +38,16 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
   function onHandlePlayerClick() {
     if (!isCustomControls) return;
     if (isMuted) {
-      setIsMuted(!isMuted);
+      setIsMuted(prev => !prev);
       setVolume(Number(storageService.get("volume")) || 0.5);
       return;
     }
-    setIsPlaying(!isPlaying);
+    setIsPlaying(prev => !prev);
   }
 
   useEffect(() => {
     setIsPlaying(inView);
-  }, [inView]);
+  }, [inView, setIsPlaying]);
 
   return (
     <div className="video-player-container" ref={ref}>
@@ -66,22 +75,12 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
           playbackRate={playbackRate}
         />
         {isCustomControls && (
-          <VideoCustomControls
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            isMuted={isMuted}
-            setIsMuted={setIsMuted}
-            volume={volume}
-            setVolume={setVolume}
-            progress={progress}
-            setProgress={setProgress}
-            playedSeconds={playedSeconds}
-            duration={duration}
-            playbackRate={playbackRate}
-            setPlaybackRate={setPlaybackRate}
-            videoPlayerRef={videoPlayerRef}
-            playerWrapperRef={playerWrapperRef}
-          />
+          <VideoCustomControlsProvider>
+            <VideoCustomControls
+              videoPlayerRef={videoPlayerRef}
+              playerWrapperRef={playerWrapperRef}
+            />
+          </VideoCustomControlsProvider>
         )}
       </div>
     </div>

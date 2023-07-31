@@ -10,16 +10,18 @@ export const useCustomElementHover = (initialElementsState: ElementsHoverState) 
 
   const debounced = useRef(
     debounce((elementName: string) => {
-      setElementsHoverState(prevState => ({
-        ...prevState,
-        [elementName]: !prevState[elementName],
+      setElementsHoverState(prev => ({
+        ...prev,
+        [elementName]: !prev[elementName],
       }));
     }, 500)
   );
 
   useEffect(() => {
+    const currentDebounce = debounced.current;
+
     return () => {
-      debounced.current.cancel();
+      currentDebounce.cancel();
     };
   }, []);
 
@@ -29,9 +31,8 @@ export const useCustomElementHover = (initialElementsState: ElementsHoverState) 
 
   const handleMouseLeave = (elementName: string) => {
     debounced.current.cancel();
-    // if (!elementsHoverState[elementName]) return;
-    setElementsHoverState(prevState => ({
-      ...prevState,
+    setElementsHoverState(prev => ({
+      ...prev,
       [elementName]: false,
     }));
   };

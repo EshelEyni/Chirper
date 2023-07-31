@@ -8,12 +8,15 @@ import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { VideoPlayer } from "../VideoPlayer/VideoPlayer";
 import "./VideoEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 
 export const VideoEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const { currNewPost, setIsVideoRemoved } = usePostEdit();
-  if (!currNewPost) return null;
+  if (!currNewPost || !currNewPost.video) return null;
+  const { video } = currNewPost;
+  const { url, isLoading } = video;
 
   function onRemoveVideo() {
     if (!currNewPost) return;
@@ -25,11 +28,13 @@ export const VideoEdit: FC = () => {
     <section className="video-edit">
       <div className="video-edit-player-container">
         <BtnRemoveContent onRemoveContent={onRemoveVideo} />
-        {currNewPost.video?.isLoading ? (
+        {isLoading ? (
           <ContentLoader />
         ) : (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          <VideoPlayer videoUrl={currNewPost.video!.url} />
+          <VideoPlayerProvider>
+            <VideoPlayer videoUrl={url} />
+          </VideoPlayerProvider>
         )}
       </div>
 

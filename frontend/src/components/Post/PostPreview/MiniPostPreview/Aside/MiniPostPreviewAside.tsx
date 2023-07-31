@@ -3,7 +3,7 @@ import { UserImg } from "../../../../User/UserImg/UserImg";
 import "./MiniPostPreviewAside.scss";
 
 type MiniPostPreviewAsideProps = {
-  userImgUrl: string;
+  userImgUrl?: string;
   isPostLineShowned: boolean;
 };
 

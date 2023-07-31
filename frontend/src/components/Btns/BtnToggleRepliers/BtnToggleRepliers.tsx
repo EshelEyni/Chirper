@@ -39,7 +39,7 @@ export const BtnToggleRepliers: FC = () => {
   ];
 
   function toggleModal() {
-    setIsRepliersOpen(prevState => !prevState);
+    setIsRepliersOpen(prev => !prev);
   }
 
   function getTitle(value: string) {

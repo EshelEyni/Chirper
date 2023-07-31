@@ -30,7 +30,7 @@ export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) =
   }
 
   function handleChange() {
-    setIsPlaying(prevState => !prevState);
+    setIsPlaying(prev => !prev);
   }
 
   return (

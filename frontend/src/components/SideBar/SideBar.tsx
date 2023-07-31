@@ -13,7 +13,7 @@ export const SideBar = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   function toggleModal() {
-    setIsModalOpen((prevState: boolean): boolean => !prevState);
+    setIsModalOpen((prev: boolean): boolean => !prev);
   }
 
   return (

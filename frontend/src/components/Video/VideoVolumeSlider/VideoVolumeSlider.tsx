@@ -1,28 +1,15 @@
 import { FC, useEffect } from "react";
 import { Slider } from "@mui/material";
 import storageService from "../../../services/storage.service";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 
 type VideoVolumeSliderProps = {
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
-  volume: number;
-  setVolume: (volume: number) => void;
   isVolumeHover: boolean;
 };
-export const VideoVolumeSlider: FC<VideoVolumeSliderProps> = ({
-  isMuted,
-  setIsMuted,
-  volume,
-  setVolume,
-  isVolumeHover,
-}) => {
-  useEffect(() => {
-    if (isMuted) {
-      setVolume(0);
-    }
-  }, [isMuted]);
+export const VideoVolumeSlider: FC<VideoVolumeSliderProps> = ({ isVolumeHover }) => {
+  const { isMuted, setIsMuted, volume, setVolume } = useVideoPlayer();
 
-  const handleChange = (e: Event, newValue: number | number[]) => {
+  function handleChange(e: Event, newValue: number | number[]) {
     e.stopPropagation();
     setVolume((newValue as number) / 100);
     if (newValue === 0) {
@@ -31,7 +18,11 @@ export const VideoVolumeSlider: FC<VideoVolumeSliderProps> = ({
       storageService.set("volume", ((newValue as number) / 100).toString());
       if (isMuted) setIsMuted(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (isMuted) setVolume(0);
+  }, [isMuted, setVolume]);
 
   return (
     <div

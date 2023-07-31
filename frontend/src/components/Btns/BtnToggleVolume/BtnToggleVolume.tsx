@@ -3,36 +3,25 @@ import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
 import storageService from "../../../services/storage.service";
 import { VideoVolumeSlider } from "../../Video/VideoVolumeSlider/VideoVolumeSlider";
 import "./BtnToggleVolume.scss";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
+import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
 
 type BtnToggleVolumeProps = {
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
-  volume: number;
-  setVolume: (volume: number) => void;
   size: number;
-  isVolumeHover: boolean;
-  setIsVolumeHover: (isVolumeHover: boolean) => void;
 };
 
-export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({
-  isMuted,
-  setIsMuted,
-  volume,
-  setVolume,
-  size,
-  isVolumeHover,
-  setIsVolumeHover,
-}) => {
+export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({ size }) => {
+  const { isMuted, setIsMuted, setVolume } = useVideoPlayer();
+  const { isVolumeHover, setIsVolumeHover } = useVideoCustomControls();
   const btnRef = useRef<HTMLButtonElement | null>(null);
 
   function onToggleMute(e: React.MouseEvent) {
     e.stopPropagation();
-    setIsMuted(!isMuted);
+    setIsMuted(prev => !prev);
     if (isMuted) setVolume(Number(storageService.get("volume") || 0.5));
   }
 
   function onToggleVolumeHover(e: React.MouseEvent, isHover: boolean) {
-    console.log("onToggleVolumeHover", e.relatedTarget);
     e.stopPropagation();
     const isExternalClick =
       btnRef.current &&
@@ -48,13 +37,7 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({
       onMouseEnter={e => onToggleVolumeHover(e, true)}
       onMouseLeave={e => onToggleVolumeHover(e, false)}
     >
-      <VideoVolumeSlider
-        isMuted={isMuted}
-        setIsMuted={setIsMuted}
-        volume={volume}
-        setVolume={setVolume}
-        isVolumeHover={isVolumeHover}
-      />
+      <VideoVolumeSlider isVolumeHover={isVolumeHover} />
       <button className="btn-toggle-volume" onClick={e => onToggleMute(e)} ref={btnRef}>
         {isMuted ? <HiVolumeOff size={size} /> : <HiVolumeUp size={size} />}
       </button>

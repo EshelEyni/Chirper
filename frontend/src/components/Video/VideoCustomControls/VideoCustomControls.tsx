@@ -1,4 +1,4 @@
-import { Dispatch, FC, RefObject, SetStateAction, useState } from "react";
+import { FC, RefObject } from "react";
 import ReactPlayer from "react-player";
 import "./VideoCustomControls.scss";
 import { VideoProgressBar } from "../VideoProgressBar/VideoProgressBar";
@@ -7,91 +7,44 @@ import { VideoTimer } from "../VideoTimer/VideoTimer";
 import { BtnToggleVolume } from "../../Btns/BtnToggleVolume/BtnToggleVolume";
 import { BtnToggleVideoSetting } from "../../Btns/BtnToggleVideoSetting/BtnToggleVideoSetting";
 import { BtnToggleVideoFullScreen } from "../../Btns/BtnToggleVideoFullScreen/BtnToggleVideoFullScreen";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
+import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
 
 type VideoCustomControlsProps = {
-  isPlaying: boolean;
-  setIsPlaying: Dispatch<SetStateAction<boolean>>;
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
-  volume: number;
-  setVolume: (volume: number) => void;
-  progress: number;
-  setProgress: (timer: number) => void;
-  playedSeconds: number;
-  duration: number;
-  playbackRate: number;
-  setPlaybackRate: (playbackRate: number) => void;
   videoPlayerRef: RefObject<ReactPlayer>;
   playerWrapperRef: RefObject<HTMLDivElement>;
 };
 
 export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
-  isPlaying,
-  setIsPlaying,
-  isMuted,
-  setIsMuted,
-  volume,
-  setVolume,
-  progress,
-  setProgress,
-  playedSeconds,
-  duration,
-  playbackRate,
-  setPlaybackRate,
   videoPlayerRef,
   playerWrapperRef,
 }) => {
-  const [isVolumeHover, setIsVolumeHover] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isPlaybackRatePickerModalShown, setIsPlaybackRaterPickerModalShown] = useState(false);
+  const { isPlaying, setIsPlaying } = useVideoPlayer();
+
+  const { isFullScreen, isModalShown } = useVideoCustomControls();
 
   return (
     <section
       className={
         "video-cutom-controls" +
         (isFullScreen ? " full-screen" : "") +
-        (isPlaybackRatePickerModalShown ? " playback-rate-picker-shown" : "")
+        (isModalShown ? " playback-rate-picker-shown" : "")
       }
     >
       <div className="video-custom-controls-main-container" onClick={e => e.stopPropagation()}>
-        <VideoProgressBar
-          progress={progress}
-          setProgress={setProgress}
-          videoPlayerRef={videoPlayerRef}
-          isVolumeHover={isVolumeHover}
-        />
+        <VideoProgressBar videoPlayerRef={videoPlayerRef} />
         <div className="video-custom-controls-actions-container">
           <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={20} />
-
           <div className="video-custom-controls-actions-main-container">
-            <VideoTimer playedSeconds={playedSeconds} duration={duration} isCountDown={false} />
-            <BtnToggleVolume
-              isMuted={isMuted}
-              setIsMuted={setIsMuted}
-              volume={volume}
-              setVolume={setVolume}
-              size={20}
-              isVolumeHover={isVolumeHover}
-              setIsVolumeHover={setIsVolumeHover}
-            />
-            <BtnToggleVideoSetting
-              isPlaybackRatePickerModalShown={isPlaybackRatePickerModalShown}
-              setIsPlaybackRaterPickerModalShown={setIsPlaybackRaterPickerModalShown}
-              playbackRate={playbackRate}
-              setPlaybackRate={setPlaybackRate}
-              isFullScreen={isFullScreen}
-            />
-
-            <BtnToggleVideoFullScreen
-              isFullScreen={isFullScreen}
-              setIsFullScreen={setIsFullScreen}
-              playerWrapperRef={playerWrapperRef}
-            />
+            <VideoTimer isCountDown={false} />
+            <BtnToggleVolume size={20} />
+            <BtnToggleVideoSetting />
+            <BtnToggleVideoFullScreen playerWrapperRef={playerWrapperRef} />
           </div>
         </div>
       </div>
       <div className="count-down-timer-container">
-        <VideoTimer playedSeconds={playedSeconds} duration={duration} isCountDown={true} />
+        <VideoTimer isCountDown={true} />
       </div>
     </section>
   );

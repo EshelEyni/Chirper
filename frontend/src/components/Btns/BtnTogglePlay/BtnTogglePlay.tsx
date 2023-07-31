@@ -11,7 +11,7 @@ type BtnTogglePlayProps = {
 export const BtnTogglePlay: FC<BtnTogglePlayProps> = ({ isPlaying, setIsPlaying, size }) => {
   function onTogglePlay(e: React.MouseEvent) {
     e.stopPropagation();
-    setIsPlaying(prevState => !prevState);
+    setIsPlaying(prev => !prev);
   }
 
   return (

@@ -3,22 +3,10 @@ import { PlaybackRatePickerModal } from "../../Modals/PlaybackRatePickerModal/Pl
 import { useModalPosition } from "../../../hooks/useModalPosition";
 import { IoSettingsOutline } from "react-icons/io5";
 import "./BtnToggleVideoSetting.scss";
+import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
 
-type BtnToggleVideoSettingProps = {
-  playbackRate: number;
-  setPlaybackRate: (playbackRate: number) => void;
-  isPlaybackRatePickerModalShown: boolean;
-  setIsPlaybackRaterPickerModalShown: (isPlaybackRatePickerModalShown: boolean) => void;
-  isFullScreen: boolean;
-};
-
-export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
-  playbackRate,
-  setPlaybackRate,
-  isPlaybackRatePickerModalShown,
-  setIsPlaybackRaterPickerModalShown,
-  isFullScreen,
-}) => {
+export const BtnToggleVideoSetting: FC = () => {
+  const { isModalShown, setIsModalShown } = useVideoCustomControls();
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 200,
   });
@@ -26,7 +14,7 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
   function onTogglePlaybackRatePickerModal(e: React.MouseEvent) {
     e.stopPropagation();
     updateModalPosition();
-    setIsPlaybackRaterPickerModalShown(!isPlaybackRatePickerModalShown);
+    setIsModalShown(prev => !prev);
   }
 
   return (
@@ -38,15 +26,7 @@ export const BtnToggleVideoSetting: FC<BtnToggleVideoSettingProps> = ({
       >
         <IoSettingsOutline size={20} color="white" />
       </button>
-      {isPlaybackRatePickerModalShown && (
-        <PlaybackRatePickerModal
-          playbackRate={playbackRate}
-          setPlaybackRate={setPlaybackRate}
-          onToggleModal={setIsPlaybackRaterPickerModalShown}
-          isModalAbove={isModalAbove}
-          isFullScreen={isFullScreen}
-        />
-      )}
+      {isModalShown && <PlaybackRatePickerModal isModalAbove={isModalAbove} />}
     </div>
   );
 };

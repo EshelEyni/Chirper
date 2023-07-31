@@ -27,8 +27,8 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   });
 
   function onTogglePlay() {
-    setIsPlaying(prevState => !prevState);
-    setIsUserPaused(prevState => !prevState);
+    setIsPlaying(prev => !prev);
+    setIsUserPaused(prev => !prev);
   }
 
   function onToggleDescription(e: React.MouseEvent) {

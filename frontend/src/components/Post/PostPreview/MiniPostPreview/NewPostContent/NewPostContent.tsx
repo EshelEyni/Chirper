@@ -11,6 +11,7 @@ import { PostPreviewText } from "../../Text/PostPreviewText";
 import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
 import { useMemo } from "react";
 import { NewPostType } from "../../../../../store/reducers/new-post.reducer";
+import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
 
 type NewPostContentProps = {
   newPost: NewPost;
@@ -44,14 +45,18 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
 
   return (
     <>
-      <MiniPostPreviewAside userImgUrl={loggedinUser!.imgUrl} isPostLineShowned={isPostLineShown} />
+      <MiniPostPreviewAside userImgUrl={loggedinUser?.imgUrl} isPostLineShowned={isPostLineShown} />
       <PostPreviewMainContainer>
         <PostPreviewBody>
           <PostPreviewText text={getText()} isPlainText={isPlainText} />
           {isImgShown && (
             <PostImg imgs={newPost.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
           )}
-          {newPost.videoUrl && <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />}
+          {newPost.videoUrl && (
+            <VideoPlayerProvider>
+              <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />
+            </VideoPlayerProvider>
+          )}
           {newPost.gif && <GifDisplay gif={newPost.gif} isAutoPlay={false} />}
           {newPost.poll && <PollEdit />}
         </PostPreviewBody>

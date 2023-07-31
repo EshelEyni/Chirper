@@ -5,13 +5,15 @@ import "./PostPreviewText.scss";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 
 type PostPreviewTextProps = {
+  text: string;
   isPlainText: boolean;
 };
 
-export const PostPreviewText: FC<PostPreviewTextProps> = ({ isPlainText }) => {
+export const PostPreviewText: FC<PostPreviewTextProps> = ({ text, isPlainText }) => {
   const { post } = usePostPreview();
+  const { id: postId, loggedinUserActionState } = post;
+
   const navigate = useNavigate();
-  const { text, id: postId, loggedinUserActionState } = post;
 
   function formatPostText(text: string): string {
     const urls = text.match(/(https?:\/\/[^\s]+)/g);
@@ -57,12 +59,12 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({ isPlainText }) => {
   }
 
   const handleLinkClick = async (e: React.MouseEvent) => {
-    if (!postId || !loggedinUserActionState) return;
+    if (!loggedinUserActionState) return;
     if (e.target instanceof HTMLAnchorElement) {
       e.preventDefault();
       const type = e.target.dataset.type;
       if (type === "hashtag") {
-        if (!loggedinUserActionState.isHashTagClicked)
+        if (!postId || !loggedinUserActionState.isHashTagClicked)
           await postService.updatePostStats(postId, { isHashTagClicked: true });
         const url = e.target.dataset.url;
         navigate(`/explore/${url}`);
@@ -71,7 +73,7 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({ isPlainText }) => {
         const username = url.slice(url.lastIndexOf("/") + 1);
         navigate(`/profile/${username}`);
       } else if (type === "external-link") {
-        if (!loggedinUserActionState.isLinkClicked)
+        if (!postId || !loggedinUserActionState.isLinkClicked)
           await postService.updatePostStats(postId, { isLinkClicked: true });
         window.open(e.target.href, "_blank");
       }

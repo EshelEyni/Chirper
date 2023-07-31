@@ -18,7 +18,7 @@ export const GifEdit: FC = () => {
   if (!currNewPost || !currNewPost.gif) return null;
 
   function onTogglePlay() {
-    setIsPlaying(prevState => !prevState);
+    setIsPlaying(prev => !prev);
   }
 
   function onRemoveGif() {

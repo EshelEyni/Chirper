@@ -1,20 +1,17 @@
 import { FC, RefObject } from "react";
 import { Slider } from "@mui/material";
 import ReactPlayer from "react-player";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
+import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
 
 type VideoProgressBarProps = {
-  progress: number;
-  setProgress: (progress: number) => void;
   videoPlayerRef: RefObject<ReactPlayer>;
-  isVolumeHover?: boolean;
 };
 
-export const VideoProgressBar: FC<VideoProgressBarProps> = ({
-  progress,
-  setProgress,
-  videoPlayerRef,
-  isVolumeHover,
-}) => {
+export const VideoProgressBar: FC<VideoProgressBarProps> = ({ videoPlayerRef }) => {
+  const { progress, setProgress } = useVideoPlayer();
+  const { isVolumeHover } = useVideoCustomControls();
+
   function handleChange(e: Event, newValue: number) {
     e.stopPropagation();
     if (!videoPlayerRef.current) return;

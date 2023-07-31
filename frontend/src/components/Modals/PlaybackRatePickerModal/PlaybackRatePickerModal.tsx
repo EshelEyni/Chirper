@@ -3,26 +3,21 @@ import "./PlaybackRatePickerModal.scss";
 import { Modal } from "../Modal/Modal";
 import { Tippy } from "../../App/Tippy/Tippy";
 import { PlaybackRateList } from "./PlaybackRateList/PlaybackRateList";
+import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
+import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
 
 type PlaybackRatePickerModalProps = {
-  playbackRate: number;
-  setPlaybackRate: (playbackRate: number) => void;
-  onToggleModal: (isModal: boolean) => void;
   isModalAbove: boolean;
-  isFullScreen: boolean;
 };
 
-export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
-  playbackRate,
-  setPlaybackRate,
-  onToggleModal,
-  isModalAbove,
-  isFullScreen,
-}) => {
+export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({ isModalAbove }) => {
+  const { playbackRate, setPlaybackRate } = useVideoPlayer();
+  const { isFullScreen, setIsModalShown } = useVideoCustomControls();
+
   function onSetPlaybackRate(e: React.MouseEvent, rate: number) {
     e.stopPropagation();
     setPlaybackRate(rate);
-    onToggleModal(false);
+    setIsModalShown(false);
   }
 
   return (
@@ -32,7 +27,7 @@ export const PlaybackRatePickerModal: FC<PlaybackRatePickerModalProps> = ({
         (isModalAbove ? " modal-above" : "") +
         (isFullScreen ? " full-screen" : "")
       }
-      onClickMainScreen={() => onToggleModal(false)}
+      onClickMainScreen={() => setIsModalShown(false)}
     >
       <Tippy isModalAbove={isModalAbove} isFullScreen={isFullScreen} />
       <div className="playback-rate-picker-main-container">

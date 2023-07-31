@@ -1,23 +1,17 @@
 import { FC } from "react";
 import postService from "../../../../services/post.service";
 import { useNavigate } from "react-router-dom";
-import { LoggedinUserActionState } from "../../../../../../shared/interfaces/post.interface";
 import "./PostPreviewText.scss";
+import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 
 type PostPreviewTextProps = {
-  text: string;
   isPlainText: boolean;
-  postId?: string;
-  loggedinUserActionState?: LoggedinUserActionState;
 };
 
-export const PostPreviewText: FC<PostPreviewTextProps> = ({
-  text,
-  isPlainText,
-  postId,
-  loggedinUserActionState,
-}) => {
+export const PostPreviewText: FC<PostPreviewTextProps> = ({ isPlainText }) => {
+  const { post } = usePostPreview();
   const navigate = useNavigate();
+  const { text, id: postId, loggedinUserActionState } = post;
 
   function formatPostText(text: string): string {
     const urls = text.match(/(https?:\/\/[^\s]+)/g);

@@ -5,25 +5,15 @@ import { RootState } from "../../../../../store/store";
 import "./RepostDisplay.scss";
 import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
 import {
-  UserPreviewModal,
+  PostPreviewUserModal,
   UserPreviewModalPosition,
-} from "../../../../Modals/UserPreviewModal/UserPreviewModal";
+} from "../../../../Modals/PostPreviewUserModal/PostPreviewUserModal";
 import { useModalPosition } from "../../../../../hooks/useModalPosition";
-import { MiniUser } from "../../../../../../../shared/interfaces/user.interface";
+import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 
-type RepostDisplayProps = {
-  repostedBy: MiniUser;
-  onNavigateToPostDetails: () => void;
-  onNavigateToProfile: (username: string) => void;
-  onToggleFollow: () => void;
-};
-
-export const RepostDisplay: FC<RepostDisplayProps> = ({
-  repostedBy,
-  onNavigateToPostDetails,
-  onNavigateToProfile,
-  onToggleFollow,
-}) => {
+export const RepostDisplay: FC = () => {
+  const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();
+  const { repostedBy } = post;
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLDivElement>({
@@ -53,6 +43,7 @@ export const RepostDisplay: FC<RepostDisplayProps> = ({
         };
   };
 
+  if (!repostedBy) return null;
   return (
     <div
       className={"post-preview-repost-container" + (isModalAbove ? " modal-above" : " modal-below")}
@@ -71,9 +62,8 @@ export const RepostDisplay: FC<RepostDisplayProps> = ({
         {`${repostedBy.id === loggedinUser?.id ? "You" : repostedBy.fullname} Rechiped`}
       </span>
       {elementsHoverState.respostDetails && (
-        <UserPreviewModal
+        <PostPreviewUserModal
           user={repostedBy}
-          onToggleFollow={onToggleFollow}
           onNavigateToProfile={() => onNavigateToProfile(repostedBy!.username)}
           handleMouseLeave={() => handleMouseLeave("respostDetails")}
           userPreviewModalPosition={getModalPosition()}

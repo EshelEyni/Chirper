@@ -1,25 +1,16 @@
 import { FC } from "react";
 import { UserImg } from "../../../../User/UserImg/UserImg";
 import {
-  UserPreviewModal,
+  PostPreviewUserModal,
   UserPreviewModalPosition,
-} from "../../../../Modals/UserPreviewModal/UserPreviewModal";
+} from "../../../../Modals/PostPreviewUserModal/PostPreviewUserModal";
 import { useModalPosition } from "../../../../../hooks/useModalPosition";
 import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
-import { Post } from "../../../../../../../shared/interfaces/post.interface";
 import "./PostPreviewAside.scss";
+import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 
-type PostPreviewAsideProps = {
-  post: Post;
-  onNavigateToProfile: (username: string) => void;
-  onToggleFollow: () => void;
-};
-
-export const PostPreviewAside: FC<PostPreviewAsideProps> = ({
-  post,
-  onNavigateToProfile,
-  onToggleFollow,
-}) => {
+export const PostPreviewAside: FC = () => {
+  const { post, onNavigateToProfile } = usePostPreview();
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLDivElement>({
     modalHeight: 300,
   });
@@ -57,10 +48,7 @@ export const PostPreviewAside: FC<PostPreviewAsideProps> = ({
       />
 
       {elementsHoverState.userImg && (
-        <UserPreviewModal
-          user={post.createdBy}
-          onToggleFollow={onToggleFollow}
-          onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
+        <PostPreviewUserModal
           handleMouseLeave={() => handleMouseLeave("userImg")}
           userPreviewModalPosition={getModalPosition()}
         />

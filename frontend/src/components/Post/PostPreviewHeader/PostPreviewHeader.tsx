@@ -1,6 +1,5 @@
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
-import { Post, QuotedPost } from "../../../../../shared/interfaces/post.interface";
 import { useCustomElementHover } from "../../../hooks/useCustomElementHover";
 import { useState } from "react";
 import {
@@ -8,29 +7,21 @@ import {
   formatDateToRelativeTime,
 } from "../../../services/util/utils.service";
 import {
-  UserPreviewModal,
+  PostPreviewUserModal,
   UserPreviewModalPosition,
-} from "../../Modals/UserPreviewModal/UserPreviewModal";
+} from "../../Modals/PostPreviewUserModal/PostPreviewUserModal";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
 import { ElementTitle } from "../../App/ElementTitle/ElementTitle";
 import "./PostPreviewHeader.scss";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
 
 type PostPreviewHeaderProps = {
-  post: Post | QuotedPost;
   isMiniPreview?: boolean;
-  onNavigateToProfile?: () => void;
-  onNavigateToPostDetails?: () => void;
-  onToggleFollow?: () => void;
 };
 
-export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
-  post,
-  isMiniPreview = false,
-  onNavigateToProfile,
-  onNavigateToPostDetails,
-  onToggleFollow,
-}) => {
+export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPreview = false }) => {
+  const { post, onNavigateToProfile, onNavigateToPostDetails } = usePostPreview();
   const [userPreviewModalPosition, setUserPreviewModalPosition] =
     useState<UserPreviewModalPosition>({});
 
@@ -67,7 +58,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
           {isMiniPreview && <UserImg imgUrl={post.createdBy.imgUrl} />}
           <div
             className="post-preview-header-details-container"
-            onClick={onNavigateToProfile}
+            onClick={() => onNavigateToProfile(post.createdBy.username)}
             onMouseEnter={handleMouseEnterInUserInfo}
           >
             <span className="post-preview-header-full-name">{post.createdBy.fullname}</span>
@@ -79,15 +70,13 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({
           <span
             className="post-preview-header-username"
             onMouseEnter={handleMouseEnterInUserInfo}
-            onClick={onNavigateToProfile}
+            onClick={() => onNavigateToProfile(post.createdBy.username)}
           >
             @{post.createdBy.username}
           </span>
-          {elementsHoverState?.userInfo && onToggleFollow && (
-            <UserPreviewModal
-              user={post.createdBy}
+          {elementsHoverState?.userInfo && (
+            <PostPreviewUserModal
               userPreviewModalPosition={userPreviewModalPosition}
-              onToggleFollow={onToggleFollow}
               handleMouseLeave={handleMouseLeaveInUserInfo}
             />
           )}

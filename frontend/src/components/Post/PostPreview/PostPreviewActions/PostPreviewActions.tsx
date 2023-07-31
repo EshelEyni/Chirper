@@ -1,4 +1,3 @@
-import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FiUpload } from "react-icons/fi";
 import { RiBarChartGroupedFill } from "react-icons/ri";
@@ -19,10 +18,8 @@ import { useState } from "react";
 import { useModalPosition } from "../../../../hooks/useModalPosition";
 import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBtn";
 import "./PostPreviewActions.scss";
-
-interface PostPreviewActionsProps {
-  post: Post;
-}
+import { NewPostType } from "../../../../store/reducers/new-post.reducer";
+import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 
 export type PostPreviewActionBtn = {
   name: string;
@@ -33,7 +30,8 @@ export type PostPreviewActionBtn = {
   isClicked?: boolean;
 };
 
-export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) => {
+export const PostPreviewActions: React.FC = () => {
+  const { post } = usePostPreview();
   const { isReposted, isLiked } = post.loggedinUserActionState;
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -53,8 +51,8 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
       icon: <FaRegComment />,
       count: post.repliesCount,
       onClickFunc: async () => {
-        await dispatch(setNewPostType("reply"));
-        await dispatch(setNewPosts([], "reply", post));
+        await dispatch(setNewPostType(NewPostType.Reply));
+        await dispatch(setNewPosts([], NewPostType.Reply, post));
         navigate("compose", { relative: "path" });
       },
     },
@@ -116,8 +114,8 @@ export const PostPreviewActions: React.FC<PostPreviewActionsProps> = ({ post }) 
 
   async function onQuotePost() {
     setIsRepostModalOpen(prev => !prev);
-    await dispatch(setNewPostType("quote"));
-    await dispatch(setNewPosts([], "quote", post));
+    await dispatch(setNewPostType(NewPostType.Quote));
+    await dispatch(setNewPosts([], NewPostType.Quote, post));
     navigate("compose", { relative: "path" });
   }
 

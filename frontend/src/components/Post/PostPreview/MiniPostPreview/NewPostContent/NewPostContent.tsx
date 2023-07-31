@@ -18,23 +18,23 @@ type NewPostContentProps = {
 
 export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { homePage, sideBar, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostModule } = useSelector((state: RootState) => state);
+  const { newPostType } = newPostModule;
   const isPlainText = newPost?.text ? true : false;
   const isImgShown = newPost?.imgs && newPost.imgs.length > 0;
 
   const currPostIdx = useMemo(() => {
     if (!newPost) return -1;
-    if (newPostType === NewPostType.HomePage)
-      return homePage.posts.findIndex(p => p.tempId === newPost?.tempId);
-    else if (newPostType === NewPostType.SideBar)
-      return sideBar.posts.findIndex(p => p.tempId === newPost?.tempId);
-  }, [newPost, newPostType, homePage.posts, sideBar.posts]);
+    const isThread = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
+    if (!isThread) return -1;
+    return newPostModule[newPostType].posts.findIndex(p => p.tempId === newPost?.tempId);
+  }, [newPost, newPostType, newPostModule]);
 
   const isPostLineShown = useMemo(() => {
-    if (newPostType === NewPostType.HomePage) return currPostIdx !== homePage.posts.length - 1;
-    else if (newPostType === NewPostType.SideBar) return currPostIdx !== sideBar.posts.length - 1;
-    else return false;
-  }, [newPostType, homePage.posts, sideBar.posts, currPostIdx]);
+    const isThread = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
+    if (!isThread) return false;
+    return newPostModule[newPostType].currPostIdx !== newPostModule[newPostType].posts.length - 1;
+  }, [newPostType, newPostModule]);
 
   function getText() {
     if (newPost?.text) return newPost.text;
@@ -53,7 +53,7 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
           )}
           {newPost.videoUrl && <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />}
           {newPost.gif && <GifDisplay gif={newPost.gif} isAutoPlay={false} />}
-          {newPost.poll && <PollEdit currNewPost={newPost} />}
+          {newPost.poll && <PollEdit />}
         </PostPreviewBody>
       </PostPreviewMainContainer>
     </>

@@ -1,19 +1,20 @@
 import { FC } from "react";
-import { Poll } from "../../../../../shared/interfaces/post.interface";
-import  postService from "../../../services/post.service";
+import postService from "../../../services/post.service";
 import { PollDisplayOptionsList } from "./PollDisplayOptionsList/PollDisplayOptionsList";
 import { PollDisplayDetails } from "./PollDisplayDetails/PollDisplayDetails";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
 
 type PollDisplayProps = {
   postStartDate: Date;
-  postId: string;
-  poll: Poll;
-  setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
 };
 
-export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate, postId, poll, setPoll }) => {
+export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate }) => {
+  const { post, poll, setPoll } = usePostPreview();
+  if (!post || !poll) return null;
+  const postId = post.id;
+
   async function onVote(idx: number) {
-    if (poll.isVotingOff) return;
+    if (!poll || poll.isVotingOff) return;
     const { data: savedOption } = await postService.savePollVote(postId, idx);
     const updatedPoll = {
       ...poll,

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import "./UserPreviewModal.scss";
+import "./PostPreviewUserModal.scss";
 import { useSelector } from "react-redux";
 import { MiniUser } from "../../../../../shared/interfaces/user.interface";
 import { formatNumToK } from "../../../services/util/utils.service";
@@ -9,6 +9,7 @@ import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-
 import { BtnToggleFollow } from "../../Btns/BtnToggleFollow/BtnToggleFollow";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
 
 export type UserPreviewModalPosition = {
   top?: string;
@@ -17,22 +18,17 @@ export type UserPreviewModalPosition = {
 };
 
 type UserPreviewModalProps = {
-  user: MiniUser;
   userPreviewModalPosition?: any;
-  onToggleFollow: () => void;
-  onNavigateToProfile?: () => void;
   handleMouseLeave: () => void;
 };
 
-export const UserPreviewModal: FC<UserPreviewModalProps> = ({
-  user,
+export const PostPreviewUserModal: FC<UserPreviewModalProps> = ({
   userPreviewModalPosition,
-  onToggleFollow,
-  onNavigateToProfile,
   handleMouseLeave,
 }) => {
+  const { post, onNavigateToProfile, onToggleFollow } = usePostPreview();
+  const user = post.createdBy as MiniUser;
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-
   const followingStats = [
     { title: "Followers", count: user.followersCount, link: `/profile/${user.username}/followers` },
     { title: "Following", count: user.followingCount, link: `/profile/${user.username}/following` },
@@ -45,7 +41,10 @@ export const UserPreviewModal: FC<UserPreviewModalProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       <div className="user-preview-modal-header">
-        <UserImg imgUrl={user.imgUrl} onNavigateToProfile={onNavigateToProfile} />
+        <UserImg
+          imgUrl={user.imgUrl}
+          onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
+        />
         {loggedinUser?.id !== user.id && (
           <BtnToggleFollow user={user} handleBtnClick={onToggleFollow} />
         )}

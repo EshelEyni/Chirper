@@ -5,11 +5,11 @@ import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
-import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
-import "./PostEditVideo.scss";
+import { VideoPlayer } from "../VideoPlayer/VideoPlayer";
+import "./VideoEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 
-export const PostEditVideo: FC = () => {
+export const VideoEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const { currNewPost, setIsVideoRemoved } = usePostEdit();
@@ -22,8 +22,8 @@ export const PostEditVideo: FC = () => {
   }
 
   return (
-    <section className="post-edit-video">
-      <div className="post-edit-video-player-container">
+    <section className="video-edit">
+      <div className="video-edit-player-container">
         <BtnRemoveContent onRemoveContent={onRemoveVideo} />
         {currNewPost.video?.isLoading ? (
           <ContentLoader />

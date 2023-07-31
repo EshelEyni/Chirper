@@ -1,6 +1,6 @@
 @import "../../../styles/setup/functions";
 
-.post-edit-video {
+.video-edit {
   display: flex;
   flex-direction: column;
   gap: rem(10px);
@@ -11,7 +11,7 @@
     z-index: 200;
   }
 
-  .post-edit-video-player-container {
+  .video-edit-player-container {
     min-width: rem(250px);
     min-height: rem(250px);
     max-width: rem(500px);

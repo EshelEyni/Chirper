@@ -3,13 +3,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
-import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
 import {
   addNewPostToThread,
   clearNewPostState,
-  setNewPostType,
-  setNewPosts,
   updateCurrNewPost,
 } from "../../../store/actions/new-post.actions";
 import { addPost, addQuotePost, addReply } from "../../../store/actions/post.actions";
@@ -25,19 +23,19 @@ import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
 import { BtnRemovePostFromThread } from "../../Btns/BtnRemovePostFromThread/BtnRemovePostFromThread";
 import { PostEditTextArea } from "./PostTextInput/PostTextInput";
 import { UserImg } from "../../User/UserImg/UserImg";
-import { PostEditImgList } from "../PostEditImgList/PostEditImgList";
-import { PostEditVideo } from "../PostEditVideo/PostEditVideo";
+import { PostEditImgList } from "./PostEditImgList/PostEditImgList";
 import { GifEdit } from "../../Gif/GifEdit/GifEdit";
 import { PollEdit } from "../../Poll/PollEdit/PollEdit";
 import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleRepliers";
-import { PostEditTitleLocation } from "../PostEditTitleLocation/PostEditTitleLocation";
+import { PostEditTitleLocation } from "./PostEditTitleLocation/PostEditTitleLocation";
 import { QuotedPostContent } from "../PostPreview/MiniPostPreview/QuotedPostContent/QuotedPostContent";
-import { PostEditActions } from "../PostEditActions/PostEditActions/PostEditActions";
+import { PostEditActions } from "./PostEditActions/PostEditActions/PostEditActions";
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -273,7 +271,7 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
 
           <PostEditTextArea isHomePage={isHomePage} textAreaRef={textAreaRef} />
           {isPostEditImgShown && <PostEditImgList />}
-          {isPostEditVideoShown && <PostEditVideo />}
+          {isPostEditVideoShown && <VideoEdit />}
           {isPostEditGifShown && <GifEdit />}
           {isPostEditPollShown && <PollEdit />}
           <div className="btn-replries-location-container">

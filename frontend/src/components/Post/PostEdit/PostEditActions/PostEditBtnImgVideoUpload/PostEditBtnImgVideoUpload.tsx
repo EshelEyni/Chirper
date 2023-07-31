@@ -1,12 +1,12 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../../store/types";
-import { setUserMsg } from "../../../../store/actions/system.actions";
-import { RootState } from "../../../../store/store";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
-import { readAsDataURL } from "../../../../services/util/utils.service";
+import { AppDispatch } from "../../../../../store/types";
+import { setUserMsg } from "../../../../../store/actions/system.actions";
+import { RootState } from "../../../../../store/store";
+import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
+import { readAsDataURL } from "../../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
-import { usePostEdit } from "../../../../contexts/PostEditContext";
+import { usePostEdit } from "../../../../../contexts/PostEditContext";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;

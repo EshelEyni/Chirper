@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { IoLocationSharp } from "react-icons/io5";
-import { usePostEdit } from "../../../contexts/PostEditContext";
+import { usePostEdit } from "../../../../contexts/PostEditContext";
 import { useNavigate } from "react-router-dom";
 
 export const PostEditTitleLocation: FC = () => {

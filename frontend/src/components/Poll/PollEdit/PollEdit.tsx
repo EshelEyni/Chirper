@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PollOptionsList } from "../PollOptionsList/PollOptionsList";
-import { PollLengthInputs } from "../PollLengthInputs/PollLengthInputs";
+import { PollLengthInputs } from "./PollLengthInputs/PollLengthInputs";
 import "./PollEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 

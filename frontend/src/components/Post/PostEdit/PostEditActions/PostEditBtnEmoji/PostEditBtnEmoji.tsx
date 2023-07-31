@@ -1,13 +1,13 @@
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { FC } from "react";
-import { Emoji } from "../../../../../../shared/interfaces/post.interface";
+import { Emoji } from "../../../../../../../shared/interfaces/post.interface";
 import {
   ElementVisibility,
   PostEditActionBtn,
   UIElement,
 } from "../PostEditActions/PostEditActions";
-import { MainScreen } from "../../../App/MainScreen/MainScreen";
+import { MainScreen } from "../../../../App/MainScreen/MainScreen";
 
 type PostEditBtnEmojiProps = {
   btn: PostEditActionBtn;

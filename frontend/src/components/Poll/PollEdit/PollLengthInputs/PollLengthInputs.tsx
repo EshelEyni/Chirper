@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useCustomSelect } from "../../../hooks/useCustomSelect";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { CustomSelect } from "../../App/CustomSelect/CustomSelect";
+import { useCustomSelect } from "../../../../hooks/useCustomSelect";
+import { AppDispatch } from "../../../../store/types";
+import { RootState } from "../../../../store/store";
+import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
+import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
-import { usePostEdit } from "../../../contexts/PostEditContext";
+import { usePostEdit } from "../../../../contexts/PostEditContext";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();

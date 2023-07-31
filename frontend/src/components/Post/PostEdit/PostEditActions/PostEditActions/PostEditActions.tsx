@@ -5,18 +5,18 @@ import { RiFileGifLine } from "react-icons/ri";
 import { CiCalendarDate } from "react-icons/ci";
 import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../../store/types";
-import { setUserMsg } from "../../../../store/actions/system.actions";
-import { Poll, Emoji } from "../../../../../../shared/interfaces/post.interface";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
-import { RootState } from "../../../../store/store";
+import { AppDispatch } from "../../../../../store/types";
+import { setUserMsg } from "../../../../../store/actions/system.actions";
+import { Poll, Emoji } from "../../../../../../../shared/interfaces/post.interface";
+import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
+import { RootState } from "../../../../../store/store";
 import { IoLocationSharp } from "react-icons/io5";
 import "./PostEditActions.scss";
 import { PostEditBtnImgAndVideoUpload } from "../PostEditBtnImgVideoUpload/PostEditBtnImgVideoUpload";
 import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
-import { GifPickerModal } from "../../../Modals/GifPickerModal/GifPickerModal";
-import { usePostEdit } from "../../../../contexts/PostEditContext";
+import { GifPickerModal } from "../../../../Modals/GifPickerModal/GifPickerModal";
+import { usePostEdit } from "../../../../../contexts/PostEditContext";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {

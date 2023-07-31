@@ -116,8 +116,8 @@ export const PostPreview: React.FC<PostPreviewProps> = ({ post }) => {
               />
             )}
             {post.quotedPost && (
-              <MiniPostPreview quotedPost={post.quotedPost} type={"quoted-post"}>
-                <QuotedPostContent quotedPost={post.quotedPost} />
+              <MiniPostPreview type={"quoted-post"}>
+                <QuotedPostContent />
               </MiniPostPreview>
             )}
           </PostPreviewBody>

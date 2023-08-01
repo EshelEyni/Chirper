@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useEffect } from "react";
+import { FC, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
 import storageService from "../../../services/storage.service";
 import { useInView } from "react-intersection-observer";
@@ -16,6 +16,10 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
   const videoPlayerRef = useRef<ReactPlayer>(null);
   const playerWrapperRef = useRef<HTMLDivElement>(null);
 
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+
   const {
     isPlaying,
     setIsPlaying,
@@ -30,10 +34,6 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
     setIsLooping,
     playbackRate,
   } = useVideoPlayer();
-
-  const { ref, inView } = useInView({
-    threshold: 0.5,
-  });
 
   function onHandlePlayerClick() {
     if (!isCustomControls) return;

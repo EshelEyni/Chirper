@@ -18,7 +18,7 @@ export function userReducer(
     user: User;
     userId: string;
     updatedUser: User;
-    msg: any;
+    msg: string;
   }
 ) {
   switch (action.type) {
@@ -29,7 +29,7 @@ export function userReducer(
     case "REMOVE_USER":
       return {
         ...state,
-        users: state.users.filter((user) => user._id !== action.userId),
+        users: state.users.filter(user => user.id !== action.userId),
       };
     case "UPDATE_USER":
       return { ...state, loggedinUser: action.updatedUser };

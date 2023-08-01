@@ -27,7 +27,7 @@ export const HomePage = () => {
         </div>
         <div className="home-main-container">
           <div className="post-edit-container">
-            <PostEditProvider>
+            <PostEditProvider isHomePage={true}>
               <PostEdit isHomePage={true} />
             </PostEditProvider>
           </div>

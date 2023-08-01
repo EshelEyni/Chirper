@@ -21,7 +21,12 @@ export const PostStatsPreviewContent: React.FC<PostStatsPreviewContentProps> = (
       <PostPreviewMainContainer>
         <PostPreviewHeader isMiniPreview={true} />
         <PostPreviewBody>
-          <PostPreviewText text={post.text} isPlainText={true} />
+          <PostPreviewText
+            text={post.text}
+            isPlainText={true}
+            postId={post.id}
+            loggedinUserActionState={post.loggedinUserActionState}
+          />
           {isImgShown && (
             <PostImg imgs={post.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
           )}

@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import {
-  clearNewPostState,
-  setNewPost,
-  setNewPostType,
-  setNewPosts,
-} from "../../../store/actions/new-post.actions";
+import { setNewPost, setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
 import { RootState } from "../../../store/store";
 import postService from "../../../services/post.service";
 import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";

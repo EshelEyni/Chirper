@@ -2,17 +2,21 @@ import { FC } from "react";
 import postService from "../../../../services/post.service";
 import { useNavigate } from "react-router-dom";
 import "./PostPreviewText.scss";
-import { usePostPreview } from "../../../../contexts/PostPreviewContext";
+import { LoggedinUserActionState } from "../../../../../../shared/interfaces/post.interface";
 
 type PostPreviewTextProps = {
   text: string;
   isPlainText: boolean;
+  postId?: string;
+  loggedinUserActionState?: LoggedinUserActionState;
 };
 
-export const PostPreviewText: FC<PostPreviewTextProps> = ({ text, isPlainText }) => {
-  const { post } = usePostPreview();
-  const { id: postId, loggedinUserActionState } = post;
-
+export const PostPreviewText: FC<PostPreviewTextProps> = ({
+  text,
+  isPlainText,
+  postId,
+  loggedinUserActionState,
+}) => {
   const navigate = useNavigate();
 
   function formatPostText(text: string): string {
@@ -64,7 +68,7 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({ text, isPlainText })
       e.preventDefault();
       const type = e.target.dataset.type;
       if (type === "hashtag") {
-        if (!postId || !loggedinUserActionState.isHashTagClicked)
+        if (postId && !loggedinUserActionState.isHashTagClicked)
           await postService.updatePostStats(postId, { isHashTagClicked: true });
         const url = e.target.dataset.url;
         navigate(`/explore/${url}`);
@@ -73,7 +77,7 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({ text, isPlainText })
         const username = url.slice(url.lastIndexOf("/") + 1);
         navigate(`/profile/${username}`);
       } else if (type === "external-link") {
-        if (!postId || !loggedinUserActionState.isLinkClicked)
+        if (postId && !loggedinUserActionState.isLinkClicked)
           await postService.updatePostStats(postId, { isLinkClicked: true });
         window.open(e.target.href, "_blank");
       }

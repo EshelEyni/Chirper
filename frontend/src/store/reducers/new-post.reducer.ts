@@ -21,6 +21,17 @@ export type NewPostState = {
   newPostType: NewPostType;
 };
 
+type NewPostsAction = {
+  type: string;
+  repliedToPost: Post;
+  quotedPost: Post;
+  newPosts: NewPost[];
+  newPost: NewPost | null;
+  updatedPost: NewPost;
+  newPostType: NewPostType;
+  currPostIdx: number;
+};
+
 export enum NewPostType {
   HomePage = "homePage",
   SideBar = "sideBar",
@@ -71,125 +82,93 @@ const initialState: NewPostState = {
   newPostType: NewPostType.HomePage,
 };
 
-export function newPostReducer(
-  state = initialState,
-  action: {
-    type: string;
-    repliedToPost: Post;
-    quotedPost: Post;
-    newPosts: NewPost[];
-    newPost: NewPost | null;
-    updatedPost: NewPost;
-    newPostType: NewPostType;
-    currPostIdx: number;
-  }
-): NewPostState {
+function getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: NewPost } {
+  const {
+    id,
+    createdBy: { id: userId, username },
+  } = repliedToPost;
+
+  const currRepliedPostDetails = {
+    postId: id,
+    postOwner: { userId, username },
+  };
+
+  const repliedPostDetails = repliedToPost.repliedPostDetails?.length
+    ? [...repliedToPost.repliedPostDetails, currRepliedPostDetails]
+    : [currRepliedPostDetails];
+
+  return repliedToPost
+    ? {
+        repliedToPost: repliedToPost,
+        reply: getDefaultNewPost(repliedPostDetails),
+      }
+    : { repliedToPost: null, reply: getDefaultNewPost() };
+}
+
+function getQuote(quotedPost: Post): { quotedPost: Post | null; quote: NewPost } {
+  return quotedPost
+    ? {
+        quotedPost: quotedPost,
+        quote: getDefaultNewPost(undefined, quotedPost.id),
+      }
+    : {
+        quotedPost: null,
+        quote: getDefaultNewPost(),
+      };
+}
+
+export function newPostReducer(state = initialState, action: NewPostsAction): NewPostState {
   switch (action.type) {
     case "SET_NEW_POST_TYPE": {
       return { ...state, newPostType: action.newPostType };
     }
     case "SET_NEW_POSTS": {
-      let newPostState: NewPostState = { ...state };
-      if (action.newPostType === NewPostType.HomePage) {
-        newPostState = {
-          ...state,
-          homePage: {
-            posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
-            currPostIdx: 0,
-          },
-        };
-      } else if (action.newPostType === NewPostType.SideBar) {
-        newPostState = {
-          ...state,
-          sideBar: {
-            posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
-            currPostIdx: 0,
-          },
-        };
-      } else if (action.newPostType === "reply") {
-        if (!action.repliedToPost) {
-          newPostState = {
+      const { newPostType } = action;
+
+      switch (newPostType) {
+        case NewPostType.HomePage:
+          return {
             ...state,
-            reply: {
-              repliedToPost: null,
-              reply: getDefaultNewPost(),
+            homePage: {
+              posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
+              currPostIdx: 0,
             },
           };
-          return newPostState;
-        }
-
-        const {
-          id,
-          createdBy: { id: userId, username },
-        } = action.repliedToPost;
-
-        const currRepliedPostDetails = {
-          postId: id,
-          postOwner: { userId, username },
-        };
-
-        const repliedPostDetails = action.repliedToPost.repliedPostDetails?.length
-          ? [...action.repliedToPost.repliedPostDetails, currRepliedPostDetails]
-          : [currRepliedPostDetails];
-
-        newPostState = {
-          ...state,
-          reply: {
-            repliedToPost: action.repliedToPost,
-            reply: getDefaultNewPost(repliedPostDetails),
-          },
-        };
-      } else if (action.newPostType === "quote") {
-        if (!action.quotedPost) {
-          newPostState = {
+        case NewPostType.SideBar:
+          return {
             ...state,
-            quote: {
-              quotedPost: null,
-              quote: getDefaultNewPost(),
+            sideBar: {
+              posts: action.newPosts.length ? action.newPosts : [getDefaultNewPost()],
+              currPostIdx: 0,
             },
           };
-
-          return newPostState;
-        }
-
-        newPostState = {
-          ...state,
-          quote: {
-            quotedPost: action.quotedPost,
-            quote: getDefaultNewPost(undefined, action.quotedPost.id),
-          },
-        };
+        case NewPostType.Reply:
+          return {
+            ...state,
+            reply: getReply(action.repliedToPost),
+          };
+        case NewPostType.Quote:
+          return {
+            ...state,
+            quote: getQuote(action.quotedPost),
+          };
+        default:
+          return state;
       }
-
-      return newPostState;
     }
     case "SET_NEW_POST": {
-      let newPostState: NewPostState = { ...state };
-      if (action.newPost === null) return newPostState;
-      if (action.newPostType === NewPostType.HomePage) {
-        newPostState = {
-          ...state,
-          homePage: {
-            ...state.homePage,
-            currPostIdx: state.homePage.posts.findIndex(
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              post => post.tempId === action.newPost!.tempId
-            ),
-          },
-        };
-      } else if (action.newPostType === NewPostType.SideBar) {
-        newPostState = {
-          ...state,
-          sideBar: {
-            ...state.sideBar,
-            currPostIdx: state.sideBar.posts.findIndex(
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              post => post.tempId === action.newPost!.tempId
-            ),
-          },
-        };
-      }
-      return newPostState;
+      const { newPost, newPostType } = action;
+      if (newPost === null) return state;
+      const isThreadType =
+        newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
+      if (!isThreadType) return state;
+      return {
+        ...state,
+        [newPostType]: {
+          ...state[newPostType],
+          currPostIdx: state[newPostType].posts.findIndex(p => p.tempId === newPost.tempId),
+        },
+      };
     }
     case "ADD_NEW_POST": {
       let newPostState: NewPostState = { ...state };

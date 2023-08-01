@@ -55,7 +55,12 @@ export const PostPreview: React.FC = () => {
           <PostPreviewHeader />
           <PostPreviewBody>
             {isRepliedToUserListShown && <PostRepliedToUsersList />}
-            <PostPreviewText text={post.text} isPlainText={false} />
+            <PostPreviewText
+              text={post.text}
+              isPlainText={false}
+              postId={post.id}
+              loggedinUserActionState={post.loggedinUserActionState}
+            />
             {post.imgs?.length > 0 && <PostImg imgs={post.imgs} />}
             {post.videoUrl && (
               <VideoPlayerProvider>

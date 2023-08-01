@@ -21,7 +21,13 @@ type PostEditContextType = {
 
 const PostEditContext = createContext<PostEditContextType | undefined>(undefined);
 
-function PostEditProvider({ children }: { children: React.ReactNode }) {
+function PostEditProvider({
+  children,
+  isHomePage,
+}: {
+  children: React.ReactNode;
+  isHomePage?: boolean;
+}) {
   const [newPostText, setNewPostText] = useState("");
   const [isVideoRemoved, setIsVideoRemoved] = useState<boolean>(false);
   const [arePostsValid, setArePostsValid] = useState<boolean>(false);
@@ -29,7 +35,7 @@ function PostEditProvider({ children }: { children: React.ReactNode }) {
 
   const newPostModule = useSelector((state: RootState) => state.newPostModule);
   const { newPostType } = newPostModule;
-  const isThreadType = newPostType === NewPostType.SideBar || newPostType === NewPostType.HomePage;
+  const isThreadType = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
   const isFirstPostInThread = isThreadType && newPostModule[newPostType].currPostIdx === 0;
 
   const preCurrNewPostList = useMemo(() => {
@@ -49,6 +55,7 @@ function PostEditProvider({ children }: { children: React.ReactNode }) {
   }, [isThreadType, newPostModule, newPostType]);
 
   const currNewPost = useMemo(() => {
+    if (isHomePage) return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
     switch (newPostType) {
       case NewPostType.SideBar:
         return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
@@ -61,7 +68,7 @@ function PostEditProvider({ children }: { children: React.ReactNode }) {
       default:
         return null;
     }
-  }, [newPostModule, newPostType]);
+  }, [newPostModule, newPostType, isHomePage]);
 
   const value = {
     currNewPost,

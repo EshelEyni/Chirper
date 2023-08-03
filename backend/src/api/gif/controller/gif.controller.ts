@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import gifService from "./service/gif.service";
-import { asyncErrorCatcher, AppError } from "../../services/error/error.service";
-import { getAll } from "../../services/factory/factory.service";
-import { GifCategoryModel, GifModel } from "./gif.model";
+import gifService from "../service/gif.service";
+import { asyncErrorCatcher, AppError } from "../../../services/error/error.service";
+import { getAll } from "../../../services/factory/factory.service";
+import { GifCategoryModel, GifModel } from "../gif.model";
 
 const getGifCategories = getAll(GifCategoryModel);
 const getGifByCategory = getAll(GifModel);
@@ -60,11 +60,8 @@ const getGifsBySearchTerm = asyncErrorCatcher(
     const categorySet = new Set(categories);
 
     let gifs;
-    if (categorySet.has(searchTerm)) {
-      gifs = await gifService.getGifByCategory(searchTerm);
-    } else {
-      gifs = await gifService.getGifsBySearchTerm(searchTerm);
-    }
+    if (categorySet.has(searchTerm)) gifs = await gifService.getGifByCategory(searchTerm);
+    else gifs = await gifService.getGifsBySearchTerm(searchTerm);
 
     res.status(200).send({
       status: "success",

@@ -1,5 +1,9 @@
 import express from "express";
-import { getGifsBySearchTerm, getGifCategories, getGifByCategory } from "./gif.controller";
+import {
+  getGifsBySearchTerm,
+  getGifCategories,
+  getGifByCategory,
+} from "./controller/gif.controller";
 const router = express.Router();
 
 router.get("/search", getGifsBySearchTerm);

@@ -1,22 +1,13 @@
-import { Gif, GifCategory } from "../../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import config from "../../../config";
 import fetch from "cross-fetch";
-import { GifModel, GifCategoryModel } from "../gif.model";
+import { GifModel } from "../gif.model";
 import { APIFeatures } from "../../../services/util/util.service";
 import { AppError } from "../../../services/error/error.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).fetch = fetch;
-
-async function getGifCategories(): Promise<GifCategory[]> {
-  const features = new APIFeatures(GifCategoryModel.find(), {
-    sort: "sortOrder",
-  }).sort();
-
-  const gifHeaders = await features.getQuery().exec();
-  return gifHeaders as unknown as GifCategory[];
-}
 
 async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   if (!config.giphyApiKey) throw new AppError("Giphy API key not found", 500);
@@ -53,7 +44,7 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   return gifs;
 }
 
-async function getGifByCategory(category: string): Promise<Gif[]> {
+async function getGifFromDB(category: string): Promise<Gif[]> {
   const features = new APIFeatures(GifModel.find(), {
     category,
     sort: "sortOrder",
@@ -67,8 +58,4 @@ async function getGifByCategory(category: string): Promise<Gif[]> {
   return gifs as unknown as Gif[];
 }
 
-export default {
-  getGifsBySearchTerm,
-  getGifCategories,
-  getGifByCategory,
-};
+export default { getGifsBySearchTerm, getGifFromDB };

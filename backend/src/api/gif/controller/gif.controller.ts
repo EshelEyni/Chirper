@@ -5,7 +5,7 @@ import { getAll } from "../../../services/factory/factory.service";
 import { GifCategoryModel, GifModel } from "../gif.model";
 
 const getGifCategories = getAll(GifCategoryModel);
-const getGifByCategory = getAll(GifModel);
+const getGifFromDB = getAll(GifModel);
 
 const getGifsBySearchTerm = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
@@ -60,7 +60,7 @@ const getGifsBySearchTerm = asyncErrorCatcher(
     const categorySet = new Set(categories);
 
     let gifs;
-    if (categorySet.has(searchTerm)) gifs = await gifService.getGifByCategory(searchTerm);
+    if (categorySet.has(searchTerm)) gifs = await gifService.getGifFromDB(searchTerm);
     else gifs = await gifService.getGifsBySearchTerm(searchTerm);
 
     res.status(200).send({
@@ -72,4 +72,4 @@ const getGifsBySearchTerm = asyncErrorCatcher(
   }
 );
 
-export { getGifsBySearchTerm, getGifCategories, getGifByCategory };
+export { getGifsBySearchTerm, getGifCategories, getGifFromDB };

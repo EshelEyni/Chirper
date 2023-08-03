@@ -12,7 +12,7 @@ import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls/setupAls.middleware";
 import userRoutes from "./api/user/user.routes";
 import postRoutes from "./api/post/post.routes";
-import gifRoutes from "./api/gif/gif.routes";
+import gifRoutes from "./api/gif/routes/gif.routes";
 import locationRoutes from "./api/location/location.routes";
 import authRoutes from "./api/auth/auth.routes";
 import { requestLimiter } from "./services/rate-limiter.service";

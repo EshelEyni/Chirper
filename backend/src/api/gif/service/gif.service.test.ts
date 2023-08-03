@@ -1,4 +1,3 @@
-import { GifCategoryModel } from "../gif.model";
 import { APIFeatures } from "../../../services/util/util.service";
 import gifService from "./gif.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";
@@ -13,51 +12,6 @@ jest.mock("../../../services/util/util.service", () => ({
 }));
 
 describe("Gif Service", () => {
-  describe("getGifCategories", () => {
-    it("should return gif categories sorted by sortOrder", async () => {
-      // Arrange
-      const mockGifCategories = [
-        { name: "category1", sortOrder: 1 },
-        { name: "category2", sortOrder: 2 },
-      ];
-      const exec = jest.fn().mockResolvedValue(mockGifCategories);
-      const sort = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
-      (APIFeatures as jest.Mock).mockImplementation(() => ({ sort }));
-
-      // Act
-      const result = await gifService.getGifCategories();
-
-      // Assert
-      expect(APIFeatures).toHaveBeenCalledWith(GifCategoryModel.find(), { sort: "sortOrder" });
-      expect(sort).toHaveBeenCalled();
-      expect(exec).toHaveBeenCalled();
-      expect(result).toEqual(mockGifCategories);
-    });
-
-    it("should throw an error if fetching gif categories fails", async () => {
-      // Arrange
-      const exec = jest.fn().mockRejectedValue(new Error("Database error"));
-      const sort = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
-      (APIFeatures as jest.Mock).mockImplementation(() => ({ sort }));
-
-      // Act and Assert
-      await expect(gifService.getGifCategories()).rejects.toThrow("Database error");
-    });
-
-    it("should return an empty array if no gif categories are found", async () => {
-      // Arrange
-      const exec = jest.fn().mockResolvedValue([]);
-      const sort = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
-      (APIFeatures as jest.Mock).mockImplementation(() => ({ sort }));
-
-      // Act
-      const result = await gifService.getGifCategories();
-
-      // Assert
-      expect(result).toEqual([]);
-    });
-  });
-
   describe("getGifsBySearchTerm", () => {
     it("should throw an error if Giphy API key is not found", async () => {
       // Arrange
@@ -136,7 +90,7 @@ describe("Gif Service", () => {
     });
   });
 
-  describe("getGifByCategory", () => {
+  describe("getGifFromDB", () => {
     it("should return gifs by category", async () => {
       // Arrange
       const category = "test";
@@ -158,7 +112,7 @@ describe("Gif Service", () => {
       (APIFeatures as jest.Mock).mockImplementation(() => ({ filter }));
 
       // Act
-      const result = await gifService.getGifByCategory(category);
+      const result = await gifService.getGifFromDB(category);
 
       // Assert
       expect(GifModel.find).toHaveBeenCalledWith();
@@ -184,7 +138,7 @@ describe("Gif Service", () => {
       (APIFeatures as jest.Mock).mockImplementation(() => ({ filter }));
 
       // Act and Assert
-      await expect(gifService.getGifByCategory(category)).rejects.toThrow("Database error");
+      await expect(gifService.getGifFromDB(category)).rejects.toThrow("Database error");
     });
   });
 });

@@ -46,10 +46,10 @@ describe("Gif Controller", () => {
 
     it("should call getGifByCategory if the search term is a category", async () => {
       req.query!.searchTerm = "Agree";
-      (gifService.getGifByCategory as jest.Mock).mockResolvedValue([]);
+      (gifService.getGifFromDB as jest.Mock).mockResolvedValue([]);
       const sut = getGifsBySearchTerm as any;
       await sut(req as Request, res as Response, next);
-      expect(gifService.getGifByCategory).toHaveBeenCalledWith("Agree");
+      expect(gifService.getGifFromDB).toHaveBeenCalledWith("Agree");
     });
 
     it("should call getGifsBySearchTerm if the search term is not a category", async () => {
@@ -66,7 +66,7 @@ describe("Gif Controller", () => {
         { id: "1", url: "url1" },
         { id: "2", url: "url2" },
       ];
-      (gifService.getGifByCategory as jest.Mock).mockResolvedValue(mockGifs);
+      (gifService.getGifFromDB as jest.Mock).mockResolvedValue(mockGifs);
       const sut = getGifsBySearchTerm as any;
       await sut(req as Request, res as Response, next);
       expect(res.send).toHaveBeenCalledWith({
@@ -80,5 +80,5 @@ describe("Gif Controller", () => {
 });
 
 /*
-Note: getGifCategories and getGifByCategory are not tested because they were tested in the factory test file.
+Note: getGifCategories and getGifFromDB are not tested because they were tested in the factory test file.
 */

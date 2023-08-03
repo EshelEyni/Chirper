@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import gifService from "./gif.service";
+import gifService from "./service/gif.service";
 import { asyncErrorCatcher, AppError } from "../../services/error/error.service";
 import { getAll } from "../../services/factory/factory.service";
 import { GifCategoryModel, GifModel } from "./gif.model";

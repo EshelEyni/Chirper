@@ -25,9 +25,14 @@
   },
   "rules": {
     "prettier/prettier": ["error", { "endOfLine": "auto", "arrowParens": "avoid" }],
-    "no-console": "warn",
+    "no-console": ["warn", { "allow": ["error"] }],
     "linebreak-style": "off",
     "react/prop-types": "off",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "_" }
+    ]
   }
 }

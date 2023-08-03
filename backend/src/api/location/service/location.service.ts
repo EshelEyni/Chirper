@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import config from "../../config";
+import config from "../../../config";
 import { createClient } from "@google/maps";
 
-import { Location } from "../../../../shared/interfaces/location.interface";
+import { Location } from "../../../../../shared/interfaces/location.interface";
 
 const googleMapsClient = createClient({
-  key: config.googleApiKey!,
+  key: config.googleApiKey || "",
   Promise: Promise,
 });
+
+const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
+const plusSignRegex = /\+/;
 
 async function getUserSurroundingLocations(lat: number, lng: number): Promise<Location[]> {
   const currLoaction = await _getCurrUserLocation(lat, lng);
@@ -20,7 +23,6 @@ async function getUserSurroundingLocations(lat: number, lng: number): Promise<Lo
     .asPromise();
 
   const { results } = response.json;
-  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
   const locations = results
     .map((location: any) => {
       return {
@@ -32,11 +34,7 @@ async function getUserSurroundingLocations(lat: number, lng: number): Promise<Lo
     })
     .filter((location: any) => englishRegex.test(location.name));
 
-  if (currLoaction) {
-    return [currLoaction, ...locations.slice(0, 6)];
-  } else {
-    return locations.slice(0, 7);
-  }
+  return currLoaction ? [currLoaction, ...locations.slice(0, 6)] : locations.slice(0, 7);
 }
 
 async function _getCurrUserLocation(lat: number, lng: number): Promise<Location | null> {
@@ -46,9 +44,6 @@ async function _getCurrUserLocation(lat: number, lng: number): Promise<Location 
       language: "en",
     })
     .asPromise();
-
-  const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
-  const plusSignRegex = /\+/;
 
   const { results } = response.json;
   const result = results.find((location: any) => {

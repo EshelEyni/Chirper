@@ -1,4 +1,4 @@
-import locationService from "./location.service";
+import locationService from "./service/location.service";
 import { Request, Response } from "express";
 
 import { asyncErrorCatcher, AppError } from "../../services/error/error.service";

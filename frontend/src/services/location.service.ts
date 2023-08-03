@@ -29,46 +29,43 @@ async function getUserDefaultLocations(): Promise<Location[] | null> {
     if (cacheLocation) return cacheLocation;
 
     const currLocation = await _getCurrentLocation();
-    if (currLocation) {
-      const query = queryString.stringify(currLocation);
-      const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse;
-      cacheService.set("location", {
-        cachedAt: Date.now(),
-        data: response.data,
-      });
-      return handleServerResponse<Location[]>(response);
-    } else {
-      return null;
-    }
+    if (!currLocation) return null;
+    const query = queryString.stringify(currLocation);
+    const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse;
+    cacheService.set("location", {
+      cachedAt: Date.now(),
+      data: response.data,
+    });
+    return handleServerResponse<Location[]>(response);
   } catch (err) {
-    console.log(ERROR_MESSAGES.locationError);
+    console.error(ERROR_MESSAGES.locationError);
     throw err;
   }
 }
 
 function _getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
-  return new Promise((resolve, reject) => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          resolve({ lat, lng });
-        },
-        (error: GeolocationPositionError) => {
-          console.error("Error getting location:", error);
-          resolve(null);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    } else {
+  return new Promise((resolve, _) => {
+    if (!navigator.geolocation) {
       console.error(ERROR_MESSAGES.geolocationUnsupported);
       resolve(null);
     }
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        resolve({ lat, lng });
+      },
+      (error: GeolocationPositionError) => {
+        console.error("Error getting location:", error);
+        resolve(null);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      }
+    );
   });
 }
 

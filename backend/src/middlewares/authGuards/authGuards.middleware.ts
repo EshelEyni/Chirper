@@ -12,8 +12,9 @@ const checkUserAuthentication = asyncErrorCatcher(
     const verifiedToken = await tokenService.verifyToken(token);
     if (!verifiedToken) return next(new AppError("Invalid Token.", 401));
     const { id, timeStamp } = verifiedToken;
+
     const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) return next(new AppError("Invalid Token.", 401));
+    if (!isValidId) return next(new AppError("Invalid User Id.", 401));
     const currentUser = await UserModel.findById(id);
     if (!currentUser)
       return next(new AppError("The user belonging to this token does not exist.", 401));

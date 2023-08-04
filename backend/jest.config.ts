@@ -1,6 +1,6 @@
 import type { Config } from "@jest/types";
 
-const currPath = "/api/location/controller";
+const currPath = "/api/location/routes";
 const baseDir = `<rootDir>/src/${currPath}`;
 // const baseDir = `<rootDir>`;
 
@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
   verbose: true,
   collectCoverage: true,
   // collectCoverageFrom: [`${baseDir}/**/*.ts`],
-  collectCoverageFrom: ["<rootDir>/src/api/location/controller/location.controller.ts"],
+  collectCoverageFrom: ["<rootDir>/src/api/location/routes/location.routes.ts"],
   roots: [baseDir],
   testMatch: [`${baseDir}/**/*test.ts`],
 };

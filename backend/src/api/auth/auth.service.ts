@@ -32,10 +32,7 @@ async function login(username: string, password: string): Promise<{ user: User; 
     user.lockedUntil = 0;
     await user.save({ validateBeforeSave: false });
   }
-  return {
-    user: user as unknown as User,
-    token,
-  };
+  return { user: user as unknown as User, token };
 }
 
 async function autoLogin(loginToken: string): Promise<{ user: User; newToken: string }> {
@@ -45,19 +42,13 @@ async function autoLogin(loginToken: string): Promise<{ user: User; newToken: st
   const user = await UserModel.findById(id);
   if (!user) throw new AppError("User not found", 404);
   const newToken = tokenService.signToken(user.id);
-  return {
-    user: user as unknown as User,
-    newToken,
-  };
+  return { user: user as unknown as User, newToken };
 }
 
 async function signup(user: User): Promise<{ savedUser: User; token: string }> {
   const savedUser = await UserModel.create(user);
   const token = tokenService.signToken(savedUser.id);
-  return {
-    savedUser: savedUser as unknown as User,
-    token,
-  };
+  return { savedUser: savedUser as unknown as User, token };
 }
 
 async function updatePassword(
@@ -68,17 +59,12 @@ async function updatePassword(
 ) {
   const user = await UserModel.findById(loggedinUserId).select("+password");
   if (!user) throw new AppError("User not found", 404);
-
-  if (!(await user.checkPassword(currentPassword, user.password))) {
+  if (!(await user.checkPassword(currentPassword, user.password)))
     throw new AppError("Incorrect current password", 400);
-  }
-
   user.password = newPassword;
   user.passwordConfirm = newPasswordConfirm;
   await user.save();
-
   const newToken = tokenService.signToken(user.id);
-
   return {
     user: user as unknown as User,
     newToken,
@@ -116,24 +102,17 @@ async function resetPassword(
   passwordConfirm: string
 ): Promise<{ user: User; newToken: string }> {
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
   const user = await UserModel.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-  if (!user) {
-    throw new AppError("Token is invalid or has expired", 400);
-  }
-
+  if (!user) throw new AppError("Token is invalid or has expired", 400);
   user.password = password;
   user.passwordConfirm = passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-
   await user.save();
-
   const newToken = tokenService.signToken(user.id);
-
   return {
     user: user as unknown as User,
     newToken,

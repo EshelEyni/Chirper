@@ -138,7 +138,6 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
     await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
-
     const replyDoc = await PostModel.findById(savedReply.id).exec();
     if (!replyDoc) throw new AppError("reply post not found", 404);
     const reply = replyDoc.toObject() as unknown as Post;

@@ -1,6 +1,9 @@
 import express from "express";
-import { getUserDefaultLocations, getLocationsBySearchTerm } from "./controller/location.controller";
-import { checkUserAuthentication } from "../../middlewares/authGuards/authGuards.middleware";
+import {
+  getUserDefaultLocations,
+  getLocationsBySearchTerm,
+} from "../controller/location.controller";
+import { checkUserAuthentication } from "../../../middlewares/authGuards/authGuards.middleware";
 
 const router = express.Router();
 

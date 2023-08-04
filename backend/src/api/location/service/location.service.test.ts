@@ -133,7 +133,7 @@ describe("Location Service", () => {
     });
   });
 
-  describe.only("getLocationBySearchTerm", () => {
+  describe("getLocationBySearchTerm", () => {
     let locationService: any;
 
     function setMockPredictionResponse({

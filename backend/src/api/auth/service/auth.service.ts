@@ -1,38 +1,21 @@
-import { User } from "../../../../shared/interfaces/user.interface";
-import { UserModel } from "../user/user.model";
-import { AppError } from "../../services/error/error.service";
-import { sendEmail } from "../../services/util/util.service";
+import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
+import { IUser, UserModel } from "../../user/user.model";
+import { AppError } from "../../../services/error/error.service";
+import { sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";
-import tokenService from "../../services/token/token.service";
+import tokenService from "../../../services/token/token.service";
+import { Document, Types } from "mongoose";
+
+export type UserDoc = Document<unknown, object, IUser> & IUser & { _id: Types.ObjectId };
 
 async function login(username: string, password: string): Promise<{ user: User; token: string }> {
   const user = await UserModel.findOne({ username }).select("+password");
-  if (!user || !(await user.checkPassword(password, user.password))) {
-    if (user) {
-      if (user.loginAttempts >= 10 && user.lockedUntil < Date.now()) {
-        user.lockedUntil = Date.now() + 60 * 60 * 1000;
-        await user.save({ validateBeforeSave: false });
-        throw new AppError("Too many failed login attempts. Try again in 1 hour", 400);
-      }
-
-      if (user.lockedUntil && user.lockedUntil > Date.now()) {
-        const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
-        throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
-      }
-
-      user.loginAttempts++;
-      await user.save({ validateBeforeSave: false });
-    }
-    throw new AppError("Incorrect username or password", 400);
-  }
-  const token = tokenService.signToken(user.id);
-
-  if (user.loginAttempts > 0) {
-    user.loginAttempts = 0;
-    user.lockedUntil = 0;
-    await user.save({ validateBeforeSave: false });
-  }
-  return { user: user as unknown as User, token };
+  if (!user) throw new AppError("Incorrect username", 400);
+  _checkIsUserLocked(user);
+  await _checkLoginAttempts(user);
+  await _validateUserPassword(user, password);
+  await _resetLoginAttempts(user);
+  return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
 async function autoLogin(loginToken: string): Promise<{ user: User; newToken: string }> {
@@ -45,7 +28,7 @@ async function autoLogin(loginToken: string): Promise<{ user: User; newToken: st
   return { user: user as unknown as User, newToken };
 }
 
-async function signup(user: User): Promise<{ savedUser: User; token: string }> {
+async function signup(user: UserCredenitials): Promise<{ savedUser: User; token: string }> {
   const savedUser = await UserModel.create(user);
   const token = tokenService.signToken(savedUser.id);
   return { savedUser: savedUser as unknown as User, token };
@@ -117,6 +100,34 @@ async function resetPassword(
     user: user as unknown as User,
     newToken,
   };
+}
+
+async function _validateUserPassword(user: UserDoc, password: string) {
+  const isValidPassword = await user.checkPassword(password, user.password);
+  user.loginAttempts++;
+  await user.save({ validateBeforeSave: false });
+  if (!isValidPassword) throw new AppError("Incorrect password", 400);
+}
+
+function _checkIsUserLocked(user: UserDoc) {
+  if (user?.lockedUntil < Date.now()) return;
+  const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
+  throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
+}
+
+async function _checkLoginAttempts(user: UserDoc) {
+  if (user.loginAttempts < 10) return;
+  const HOUR = 60 * 60 * 1000;
+  user.lockedUntil = Date.now() + HOUR;
+  await user.save({ validateBeforeSave: false });
+  throw new AppError("Too many failed login attempts. Try again in 1 hour", 400);
+}
+
+async function _resetLoginAttempts(user: UserDoc) {
+  if (!user.loginAttempts) return;
+  user.loginAttempts = 0;
+  user.lockedUntil = 0;
+  await user.save({ validateBeforeSave: false });
 }
 
 export default {

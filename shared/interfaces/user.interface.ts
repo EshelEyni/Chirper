@@ -1,10 +1,13 @@
-export interface User {
-  id: string;
+export interface UserCredenitials {
   username: string;
+  fullname: string;
   password?: string;
   passwordConfirm?: string;
   email: string;
-  fullname: string;
+}
+
+export interface User extends UserCredenitials {
+  id: string;
   bio: string;
   imgUrl: string;
   isAdmin: boolean;

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { User } from "../../../../shared/interfaces/user.interface";
-import authService from "./auth.service";
+import { User, UserCredenitials } from "../../../../shared/interfaces/user.interface";
+import authService from "./service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../services/error/error.service";
 
 const login = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -24,9 +24,10 @@ const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
 });
 
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {
-  const user = req.body as unknown as User;
-  const { savedUser, token } = await authService.signup(user);
-
+  const userCreds = req.body as unknown as UserCredenitials;
+  const { isValid, msg } = validateUserCreds(userCreds);
+  if (!isValid) throw new AppError(msg, 400);
+  const { savedUser, token } = await authService.signup(userCreds);
   _sendUserTokenSuccessResponse(res, token, savedUser, 201);
 });
 
@@ -90,6 +91,20 @@ const _sendUserTokenSuccessResponse = (
     token,
     data: user,
   });
+};
+
+const validateUserCreds = (userCreds: UserCredenitials) => {
+  const requiredFields: (keyof UserCredenitials)[] = [
+    "username",
+    "password",
+    "passwordConfirm",
+    "email",
+    "fullname",
+  ];
+  if (!userCreds) return { isValid: false, msg: "User credentials are required" };
+  for (const field of requiredFields)
+    if (!userCreds[field]) return { isValid: false, msg: `${field} is required` };
+  return { isValid: true, msg: "" };
 };
 
 export { login, autoLogin, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };

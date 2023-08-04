@@ -16,7 +16,6 @@ import gifRoutes from "./api/gif/routes/gif.routes";
 import locationRoutes from "./api/location/routes/location.routes";
 import authRoutes from "./api/auth/auth.routes";
 import { requestLimiter } from "./services/rate-limiter.service";
-// import { setupSocketAPI } from "./services/socket.service";
 const isProdEnv = process.env.NODE_ENV === "production";
 
 const app = express();
@@ -67,7 +66,6 @@ app.use("/api/post", postRoutes);
 app.use("/api/gif", gifRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/auth", authRoutes);
-// setupSocketAPI(http);
 
 app.get("/**", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

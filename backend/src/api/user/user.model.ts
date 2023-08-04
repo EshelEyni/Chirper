@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../shared/interfaces/user.interface";
 
-interface IUser extends Document {
+export interface IUser extends Document {
   username: string;
   password: string;
   passwordConfirm: string;
@@ -152,9 +152,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-
   return resetToken;
 };
 

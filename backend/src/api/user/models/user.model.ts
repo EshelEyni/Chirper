@@ -1,7 +1,7 @@
 import { Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { User } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../shared/interfaces/user.interface";
 
 export interface IUser extends Document {
   username: string;

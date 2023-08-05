@@ -13,7 +13,7 @@ import {
   queryEntityExists,
 } from "../../services/util/util.service";
 import { PostModel } from "./models/post.model";
-import { RepostModel } from "./repost.model";
+import { RepostModel } from "./models/repost.model";
 import { PollResultModel } from "./models/poll.model";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
@@ -24,8 +24,8 @@ import { PostLikeModel } from "./models/post-like.model";
 import { PostStatsModel } from "./models/post-stats.model";
 import { BookmarkedPostModel } from "./models/bookmark-post.model";
 import { ObjectId } from "mongodb";
-import userService from "../user/user.service";
 import { User } from "../../../../shared/interfaces/user.interface";
+import followerService from "../user/service/follower.service";
 
 async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -68,7 +68,7 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   await Promise.all(setLoggedinUserActionStatePrms);
 
   const setIsFollowingPrms = posts.map(async post => {
-    await userService.populateIsFollowing(post.createdBy as unknown as User);
+    await followerService.populateIsFollowing(post.createdBy as unknown as User);
   });
   await Promise.all(setIsFollowingPrms);
 
@@ -84,7 +84,7 @@ async function getById(postId: string): Promise<Post | null> {
   const post = postDoc.toObject() as unknown as Post;
   await _getLoggedinUserPollDetails(post);
   await _setLoggedinUserActionState(post);
-  await userService.populateIsFollowing(post.createdBy as unknown as User);
+  await followerService.populateIsFollowing(post.createdBy as unknown as User);
   return post;
 }
 
@@ -94,7 +94,7 @@ async function add(post: NewPost): Promise<Post> {
   if (!postDoc) throw new AppError("post not found", 404);
   const populatedPost = postDoc.toObject() as unknown as Post;
   await _setLoggedinUserActionState(populatedPost, { isDefault: true });
-  await userService.populateIsFollowing(populatedPost.createdBy as unknown as User);
+  await followerService.populateIsFollowing(populatedPost.createdBy as unknown as User);
   return populatedPost as unknown as Post;
 }
 
@@ -142,7 +142,7 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     await session.commitTransaction();
     const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
-    await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
     const replyDoc = await PostModel.findById(savedReply.id).exec();
     if (!replyDoc) throw new AppError("reply post not found", 404);
     const reply = replyDoc.toObject() as unknown as Post;
@@ -176,7 +176,7 @@ async function repost(postId: string, loggedinUserId: string): Promise<PostRepos
     await session.commitTransaction();
     const updatedPost = repostedPostDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
-    await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     const repostDoc = await RepostModel.findById(savedRepost.id)
       .populate("post")
@@ -216,7 +216,7 @@ async function update(id: string, post: Post): Promise<Post> {
   const updatedPost = postDoc.toObject() as unknown as Post;
   await _getLoggedinUserPollDetails(updatedPost);
   await _setLoggedinUserActionState(updatedPost);
-  await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+  await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
   return updatedPost;
 }
 
@@ -245,7 +245,7 @@ async function removeRepost(postId: string, loggedinUserId: string): Promise<Pos
 
     const updatedPost = postDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
-    await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedinUserId}`);
 
@@ -316,7 +316,7 @@ async function addLike(postId: string, userId: string): Promise<Post> {
 
     const updatedPost = postDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
-    await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;
   } catch (error) {
@@ -348,7 +348,7 @@ async function removeLike(postId: string, userId: string): Promise<Post> {
 
     const updatedPost = postDoc.toObject() as unknown as Post;
     await _setLoggedinUserActionState(updatedPost);
-    await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;
   } catch (error) {
@@ -442,7 +442,7 @@ async function getBookmarkedPosts(loggedinUserId: string): Promise<Post[]> {
     const obj = doc.toObject() as unknown as { post: Post };
     const { post } = obj;
     await _setLoggedinUserActionState(post);
-    await userService.populateIsFollowing(post.createdBy as unknown as User);
+    await followerService.populateIsFollowing(post.createdBy as unknown as User);
     return post;
   });
   const bookmarkedPosts = await Promise.all(prms);
@@ -458,7 +458,7 @@ async function addBookmarkedPost(postId: string, loggedinUserId: string): Promis
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
   await _setLoggedinUserActionState(updatedPost);
-  await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+  await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
   return updatedPost;
 }
@@ -473,7 +473,7 @@ async function removeBookmarkedPost(postId: string, loggedinUserId: string): Pro
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
   await _setLoggedinUserActionState(updatedPost);
-  await userService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+  await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
   return updatedPost;
 }

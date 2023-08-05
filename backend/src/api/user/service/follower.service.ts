@@ -1,69 +1,13 @@
-import { FollowingResult, User } from "../../../../shared/interfaces/user.interface";
-import { UserModel } from "./user.model";
-import { FollowerModel } from "./followers.model";
-import { APIFeatures, QueryObj, filterObj, isValidId } from "../../services/util/util.service";
-import { Document, startSession } from "mongoose";
-import { asyncLocalStorage } from "../../services/als.service";
-import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
-import { PostStatsModel } from "../post/models/post-stats.model";
-import postService from "../post/post.service";
-import { Post } from "../../../../shared/interfaces/post.interface";
-
-async function query(queryString: QueryObj): Promise<User[]> {
-  const features = new APIFeatures(UserModel.find(), queryString)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const usersDocs = (await features.getQuery().exec()) as unknown as Document[];
-
-  const users = await Promise.all(
-    usersDocs.map(async userDoc => {
-      const user = userDoc.toObject();
-      await populateIsFollowing(user);
-      return user;
-    })
-  );
-  return users as unknown as User[];
-}
-
-async function getById(userId: string): Promise<User> {
-  const user = await UserModel.findById(userId).exec();
-  return user as unknown as User;
-}
-
-async function getByUsername(username: string): Promise<User> {
-  const features = new APIFeatures(UserModel.find(), { username }).filter();
-  const users = await features.getQuery().exec();
-  const [user] = users;
-  return user as unknown as User;
-}
-
-async function add(user: User): Promise<User> {
-  const savedUser = await new UserModel(user).save();
-  return savedUser as unknown as User;
-}
-
-async function update(id: string, user: User): Promise<User> {
-  const allowedFields = ["username", "email", "fullname", "imgUrl", "email", "isApprovedLocation"];
-  const filteredUser = filterObj(user, ...allowedFields);
-
-  const updatedUser = await UserModel.findByIdAndUpdate(id, filteredUser, {
-    new: true,
-    runValidators: true,
-  }).exec();
-  return updatedUser as unknown as User;
-}
-
-async function remove(userId: string): Promise<User> {
-  const userRemoved = await UserModel.findByIdAndRemove(userId).exec();
-  return userRemoved as unknown as User;
-}
-
-async function removeAccount(userId: string): Promise<User> {
-  const userRemoved = await UserModel.findByIdAndUpdate(userId, { active: false }).exec();
-  return userRemoved as unknown as User;
-}
+import { FollowingResult, User } from "../../../../../shared/interfaces/user.interface";
+import { UserModel } from "../models/user.model";
+import { FollowerModel } from "../models/followers.model";
+import { isValidId } from "../../../services/util/util.service";
+import { startSession } from "mongoose";
+import { asyncLocalStorage } from "../../../services/als.service";
+import { alStoreType } from "../../../middlewares/setupAls/setupAls.middleware";
+import { PostStatsModel } from "../../post/models/post-stats.model";
+import postService from "../../post/post.service";
+import { Post } from "../../../../../shared/interfaces/post.interface";
 
 async function populateIsFollowing(user: User): Promise<User> {
   const store = asyncLocalStorage.getStore() as alStoreType;
@@ -190,14 +134,7 @@ async function removeFollowings(
 }
 
 export default {
-  query,
-  getById,
-  getByUsername,
-  add,
-  update,
-  remove,
-  removeAccount,
+  populateIsFollowing,
   addFollowings,
   removeFollowings,
-  populateIsFollowing,
 };

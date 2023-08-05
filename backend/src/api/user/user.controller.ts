@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userService from "./user.service";
+import userService from "./service/user.service";
 import { logger } from "../../services/logger/logger.service";
 import {
   asyncErrorCatcher,
@@ -7,9 +7,10 @@ import {
   validatePatchRequestBody,
 } from "../../services/error/error.service";
 import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/factory.service";
-import { UserModel } from "./user.model";
+import { UserModel } from "./models/user.model";
 import { User } from "../../../../shared/interfaces/user.interface";
 import { QueryObj } from "../../services/util/util.service";
+import followerService from "./service/follower.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
@@ -81,7 +82,7 @@ const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Pro
   const toUserId = req.params.id;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await userService.addFollowings(loggedinUserId, toUserId);
+  const updatedUser = await followerService.addFollowings(loggedinUserId, toUserId);
 
   res.send({
     status: "success",
@@ -94,7 +95,7 @@ const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): 
   const toUserId = req.params.id;
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await userService.removeFollowings(loggedinUserId, toUserId);
+  const updatedUser = await followerService.removeFollowings(loggedinUserId, toUserId);
 
   res.send({
     status: "success",
@@ -110,7 +111,7 @@ const addFollowingsFromPost = asyncErrorCatcher(
     if (!toUserId) throw new AppError("No user id provided", 400);
     if (!postId) throw new AppError("No post id provided", 400);
 
-    const updatedPost = await userService.addFollowings(loggedinUserId, toUserId, postId);
+    const updatedPost = await followerService.addFollowings(loggedinUserId, toUserId, postId);
 
     res.send({
       status: "success",
@@ -127,7 +128,7 @@ const removeFollowingsFromPost = asyncErrorCatcher(
     if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
     if (!toUserId) throw new AppError("No user id provided", 400);
     if (!postId) throw new AppError("No post id provided", 400);
-    const updatedPost = await userService.removeFollowings(loggedinUserId, toUserId, postId);
+    const updatedPost = await followerService.removeFollowings(loggedinUserId, toUserId, postId);
 
     res.send({
       status: "success",

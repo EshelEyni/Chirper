@@ -1,5 +1,5 @@
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
-import { IUser, UserModel } from "../../user/user.model";
+import { IUser, UserModel } from "../../user/models/user.model";
 import { AppError } from "../../../services/error/error.service";
 import { isValidId, sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";

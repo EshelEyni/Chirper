@@ -103,13 +103,23 @@ describe("Gif Service", () => {
           placeholderUrl: "placeholderUrl1",
           staticPlaceholderUrl: "staticPlaceholderUrl1",
         },
-        // ...add more mock gifs as needed
       ];
-      const exec = jest.fn().mockResolvedValue(mockGifs);
-      const limitFields = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
-      const sort = jest.fn().mockReturnValue({ limitFields });
-      const filter = jest.fn().mockReturnValue({ sort });
-      (APIFeatures as jest.Mock).mockImplementation(() => ({ filter }));
+      // const exec = jest.fn().mockResolvedValue(mockGifs);
+      // const limitFields = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
+      // const sort = jest.fn().mockReturnValue({ limitFields });
+      // const filter = jest.fn().mockReturnValue({ sort });
+      // (APIFeatures as jest.Mock).mockImplementation(() => ({ filter }));
+
+      const mockQueryObj = {
+        filter: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        limitFields: jest.fn().mockReturnThis(),
+        getQuery: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(mockGifs),
+      };
+
+      const mockAPIFeatures = jest.fn().mockImplementation(() => mockQueryObj);
+      (APIFeatures as jest.Mock).mockImplementation(mockAPIFeatures);
 
       // Act
       const result = await gifService.getGifFromDB(category);
@@ -121,10 +131,10 @@ describe("Gif Service", () => {
         sort: "sortOrder",
         fields: "url,staticUrl,description,size,placeholderUrl,staticPlaceholderUrl",
       });
-      expect(filter).toHaveBeenCalled();
-      expect(sort).toHaveBeenCalled();
-      expect(limitFields).toHaveBeenCalled();
-      expect(exec).toHaveBeenCalled();
+      expect(mockQueryObj.filter).toHaveBeenCalled();
+      expect(mockQueryObj.sort).toHaveBeenCalled();
+      expect(mockQueryObj.limitFields).toHaveBeenCalled();
+      expect(mockQueryObj.exec).toHaveBeenCalled();
       expect(result).toEqual(mockGifs);
     });
 

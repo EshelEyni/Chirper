@@ -40,7 +40,11 @@ describe("Gif Controller", () => {
       await sut(req as Request, res as Response, next);
       expect(next).toHaveBeenCalledWith(expect.any(AppError));
       expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "No search term provided" })
+        expect.objectContaining({
+          statusCode: 400,
+          status: "fail",
+          message: "No search term provided",
+        })
       );
     });
 

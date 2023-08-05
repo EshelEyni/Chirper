@@ -7,7 +7,7 @@ import {
   sendPasswordResetEmail,
   resetPassword,
   updatePassword,
-} from "./auth.controller";
+} from "./controller/auth.controller";
 import { checkUserAuthentication } from "../../middlewares/authGuards/authGuards.middleware";
 import { authRequestLimiter } from "../../services/rate-limiter.service";
 

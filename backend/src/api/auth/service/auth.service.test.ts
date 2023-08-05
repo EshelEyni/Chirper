@@ -162,7 +162,7 @@ describe("Auth Service", () => {
       const result = await authService.signup(mockUserCredenitials as UserCredenitials);
       expect(UserModel.create).toHaveBeenCalledWith(mockUserCredenitials);
       expect(tokenService.signToken).toHaveBeenCalledWith(mockUser.id);
-      expect(result).toEqual({ savedUser: mockUser, token: mockToken });
+      expect(result).toEqual({ user: mockUser, token: mockToken });
     });
 
     it("should throw an error if the passwords do not match", async () => {
@@ -303,7 +303,7 @@ describe("Auth Service", () => {
     });
   });
 
-  fdescribe("resetPassword", () => {
+  describe("resetPassword", () => {
     const hashedToken = "hashedToken";
     const token = "token";
     const password = "newPassword";

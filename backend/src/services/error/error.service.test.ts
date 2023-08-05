@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from "express";
 import { logger } from "../logger/logger.service";
 import { CustomError } from "./error.service";
 
-jest.mock("../logger.service");
+jest.mock("../logger/logger.service");
 
 describe("Error Service", () => {
   describe("AppError", () => {

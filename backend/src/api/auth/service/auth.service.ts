@@ -1,14 +1,15 @@
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { IUser, UserModel } from "../../user/user.model";
 import { AppError } from "../../../services/error/error.service";
-import { sendEmail } from "../../../services/util/util.service";
+import { isValidId, sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";
 import tokenService from "../../../services/token/token.service";
 import { Document, Types } from "mongoose";
 
 export type UserDoc = Document<unknown, object, IUser> & IUser & { _id: Types.ObjectId };
 
-async function login(username: string, password: string): Promise<{ user: User; token: string }> {
+type UserAuthResult = { user: User; token: string };
+async function login(username: string, password: string): Promise<UserAuthResult> {
   const user = await UserModel.findOne({ username }).select("+password");
   if (!user) throw new AppError("Incorrect username", 400);
   _checkIsUserLocked(user);
@@ -18,20 +19,20 @@ async function login(username: string, password: string): Promise<{ user: User; 
   return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
-async function autoLogin(loginToken: string): Promise<{ user: User; newToken: string }> {
+async function autoLogin(loginToken: string): Promise<UserAuthResult> {
   const verifiedToken = await tokenService.verifyToken(loginToken);
   if (!verifiedToken) throw new AppError("Invalid token", 400);
   const { id } = verifiedToken;
+  if (!isValidId(id)) throw new AppError("Invalid Id", 400);
   const user = await UserModel.findById(id);
   if (!user) throw new AppError("User not found", 404);
-  const newToken = tokenService.signToken(user.id);
-  return { user: user as unknown as User, newToken };
+  return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
-async function signup(user: UserCredenitials): Promise<{ savedUser: User; token: string }> {
-  const savedUser = await UserModel.create(user);
-  const token = tokenService.signToken(savedUser.id);
-  return { savedUser: savedUser as unknown as User, token };
+async function signup(userCreds: UserCredenitials): Promise<UserAuthResult> {
+  const user = await UserModel.create(userCreds);
+  const token = tokenService.signToken(user.id);
+  return { user: user as unknown as User, token };
 }
 
 async function updatePassword(
@@ -39,28 +40,22 @@ async function updatePassword(
   currentPassword: string,
   newPassword: string,
   newPasswordConfirm: string
-) {
+): Promise<UserAuthResult> {
   const user = await UserModel.findById(loggedinUserId).select("+password");
   if (!user) throw new AppError("User not found", 404);
   if (!(await user.checkPassword(currentPassword, user.password)))
-    throw new AppError("Incorrect current password", 400);
-  user.password = newPassword;
-  user.passwordConfirm = newPasswordConfirm;
+    throw new AppError("Current password is incorrect. Please enter the correct password", 400);
+  (user.password = newPassword), (user.passwordConfirm = newPasswordConfirm);
   await user.save();
-  const newToken = tokenService.signToken(user.id);
-  return {
-    user: user as unknown as User,
-    newToken,
-  };
+  const token = tokenService.signToken(user.id);
+  return { user: user as unknown as User, token };
 }
 
 async function sendPasswordResetEmail(email: string, resetURL: string) {
   const user = await UserModel.findOne({ email });
   if (!user) throw new AppError("User not found", 404);
-
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
-
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${
     resetURL + resetToken
   }.\nIf you didn't forget your password, please ignore this email!`;
@@ -83,7 +78,7 @@ async function resetPassword(
   token: string,
   password: string,
   passwordConfirm: string
-): Promise<{ user: User; newToken: string }> {
+): Promise<UserAuthResult> {
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const user = await UserModel.findOne({
     passwordResetToken: hashedToken,
@@ -96,10 +91,7 @@ async function resetPassword(
   user.passwordResetExpires = undefined;
   await user.save();
   const newToken = tokenService.signToken(user.id);
-  return {
-    user: user as unknown as User,
-    newToken,
-  };
+  return { user: user as unknown as User, token: newToken };
 }
 
 async function _validateUserPassword(user: UserDoc, password: string) {

@@ -1,4 +1,4 @@
-import { FilterQuery, Model, Query, Document } from "mongoose";
+import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 import config from "../../config/index";
 
@@ -110,4 +110,8 @@ async function queryEntityExists<T extends Document>(
   return !!(await model.exists(query));
 }
 
-export { AnyObject, APIFeatures, sendEmail, filterObj, queryEntityExists };
+function isValidId(id: string): boolean {
+  return mongoose.Types.ObjectId.isValid(id);
+}
+
+export { AnyObject, APIFeatures, sendEmail, filterObj, queryEntityExists, isValidId };

@@ -19,16 +19,16 @@ const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
     });
     return;
   }
-  const { user, newToken } = await authService.autoLogin(loginToken);
-  _sendUserTokenSuccessResponse(res, newToken, user, 200);
+  const { user, token } = await authService.autoLogin(loginToken);
+  _sendUserTokenSuccessResponse(res, token, user, 200);
 });
 
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {
   const userCreds = req.body as unknown as UserCredenitials;
   const { isValid, msg } = validateUserCreds(userCreds);
   if (!isValid) throw new AppError(msg, 400);
-  const { savedUser, token } = await authService.signup(userCreds);
-  _sendUserTokenSuccessResponse(res, token, savedUser, 201);
+  const { user, token } = await authService.signup(userCreds);
+  _sendUserTokenSuccessResponse(res, token, user, 201);
 });
 
 const logout = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -45,14 +45,14 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
   const { currentPassword, newPassword, newPasswordConfirm } = req.body;
   const { loggedinUserId } = req;
   if (!loggedinUserId) throw new AppError("User not logged in", 401);
-  const { user, newToken } = await authService.updatePassword(
+  const { user, token } = await authService.updatePassword(
     loggedinUserId,
     currentPassword,
     newPassword,
     newPasswordConfirm
   );
 
-  _sendUserTokenSuccessResponse(res, newToken, user, 200);
+  _sendUserTokenSuccessResponse(res, token, user, 200);
 });
 
 const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -69,7 +69,11 @@ const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Respo
 const resetPassword = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { token } = req.params;
   const { password, passwordConfirm } = req.body;
-  const { user, newToken } = await authService.resetPassword(token, password, passwordConfirm);
+  const { user, token: newToken } = await authService.resetPassword(
+    token,
+    password,
+    passwordConfirm
+  );
 
   _sendUserTokenSuccessResponse(res, newToken, user, 200);
 });

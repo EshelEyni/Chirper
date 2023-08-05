@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError, asyncErrorCatcher } from "../../services/error/error.service";
 import { UserModel } from "../../api/user/user.model";
 import tokenService from "../../services/token/token.service";
-import mongoose from "mongoose";
+import { isValidId } from "../../services/util/util.service";
 
 const checkUserAuthentication = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -10,11 +10,10 @@ const checkUserAuthentication = asyncErrorCatcher(
     if (!token)
       return next(new AppError("You are not logged in! Please log in to get access.", 401));
     const verifiedToken = await tokenService.verifyToken(token);
-    if (!verifiedToken) return next(new AppError("Invalid Token.", 401));
+    if (!verifiedToken) return next(new AppError("Invalid Token", 401));
     const { id, timeStamp } = verifiedToken;
 
-    const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) return next(new AppError("Invalid User Id.", 401));
+    if (!isValidId(id)) return next(new AppError("Invalid User Id", 401));
     const currentUser = await UserModel.findById(id);
     if (!currentUser)
       return next(new AppError("The user belonging to this token does not exist.", 401));

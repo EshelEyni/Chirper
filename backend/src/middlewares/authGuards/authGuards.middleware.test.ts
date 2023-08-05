@@ -42,7 +42,7 @@ describe("Auth Guards Middleware", () => {
       (tokenService.verifyToken as jest.Mock).mockReturnValue(null);
       next = jest.fn().mockImplementation(err => {
         expect(next).toHaveBeenCalledWith(expect.any(AppError));
-        expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: "Invalid Token." }));
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: "Invalid Token" }));
       });
       checkUserAuthentication(req as Request, res as Response, next);
     });
@@ -55,7 +55,7 @@ describe("Auth Guards Middleware", () => {
       });
       next = jest.fn().mockImplementation(err => {
         expect(next).toHaveBeenCalledWith(expect.any(AppError));
-        expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: "Invalid User Id." }));
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: "Invalid User Id" }));
       });
       checkUserAuthentication(req as Request, res as Response, next);
     });

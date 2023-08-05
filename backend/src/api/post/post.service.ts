@@ -6,7 +6,12 @@ import {
   PostRepostResult,
   PostStatsBody,
 } from "../../../../shared/interfaces/post.interface";
-import { APIFeatures, QueryObj, queryEntityExists } from "../../services/util/util.service";
+import {
+  APIFeatures,
+  QueryObj,
+  isValidId,
+  queryEntityExists,
+} from "../../services/util/util.service";
 import { PostModel } from "./post.model";
 import { RepostModel } from "./repost.model";
 import { PollResultModel } from "./poll.model";
@@ -477,8 +482,7 @@ async function _getLoggedinUserPollDetails(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedinUserId = store?.loggedinUserId;
   const isNoPolls = posts.every(post => !post.poll);
-  const isValidId = mongoose.Types.ObjectId.isValid(loggedinUserId);
-  if (!isValidId || isNoPolls) return;
+  if (!isValidId(loggedinUserId) || isNoPolls) return;
 
   const pollResults = await PollResultModel.find({
     userId: new ObjectId(loggedinUserId),
@@ -520,8 +524,7 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
 
   post.loggedinUserActionState = defaultState;
 
-  const isValidId = mongoose.Types.ObjectId.isValid(loggedinUserId);
-  if (isDefault || !isValidId) return;
+  if (isDefault || !isValidId(loggedinUserId)) return;
 
   const postId = new ObjectId(post.id);
   const userId = new ObjectId(loggedinUserId);

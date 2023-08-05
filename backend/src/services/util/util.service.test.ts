@@ -6,6 +6,7 @@ import {
   filterObj,
   queryEntityExists,
   sendEmail,
+  isValidId,
 } from "./util.service";
 import config from "../../config/index";
 import nodemailer from "nodemailer";
@@ -246,6 +247,40 @@ describe("Util Service", () => {
 
       expect(result).toBe(false);
       expect(mockModel.exists).toHaveBeenCalledWith({ _id: "someId" });
+    });
+  });
+
+  fdescribe("isValidId", () => {
+    const invalidIds = [
+      { id: "Questions/0000000000000003599-A", type: "RavenDB Id" },
+      { id: "550e8400-e29b-41d4-a716-446655440000", type: "UUID" },
+      { id: "1234567890", type: "Numeric Id" },
+      { id: "abcd1234", type: "Alphanumeric Id" },
+      { id: "Zm9vYmFy", type: "Base64 Id" },
+      { id: "foo-bar", type: "Slug Id" },
+      { id: "123e4567-e89b-12d3-a456-426614174000", type: "GUID" },
+      { id: "1DVZDJJY", type: "Short Id" },
+      { id: "123-456-789", type: "Hyphenated Id" },
+    ];
+
+    it("should return true if id is valid", () => {
+      const result = isValidId("5e9d2d7f3c9d440000a1d3b0");
+      expect(result).toBe(true);
+    });
+
+    it("should return false if id is invalid", () => {
+      const result = isValidId("invalidId");
+      expect(result).toBe(false);
+    });
+
+    it("should return false if id is empty", () => {
+      const result = isValidId("");
+      expect(result).toBe(false);
+    });
+
+    it.each(invalidIds)("should return false if id is of type: $type", invalidId => {
+      const result = isValidId(invalidId.id);
+      expect(result).toBe(false);
     });
   });
 });

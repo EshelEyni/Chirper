@@ -6,11 +6,7 @@ import mongoose from "mongoose";
 import { UserModel } from "../../api/user/models/user.model";
 
 jest.mock("../../services/token/token.service");
-jest.mock("../../api/user/models/user.model", () => ({
-  UserModel: {
-    findById: jest.fn(),
-  },
-}));
+jest.mock("../../api/user/models/user.model");
 
 describe("Auth Guards Middleware", () => {
   describe("checkUserAuthentication", () => {

@@ -32,7 +32,9 @@ describe("requestLogger Middleware", () => {
   it("should log the request info and response info when the response finishes", () => {
     requestLogger(mockRequest, mockResponse, mockNext);
     expect(mockedLogger.info).toHaveBeenCalledWith("GET /test");
-    expect(mockedLogger.success).toHaveBeenCalledWith("GET /test 200 0ms");
+    expect(mockedLogger.success).toHaveBeenCalledWith(
+      expect.stringMatching(/GET \/test 200 \d+ms/)
+    );
     expect(mockNext).toHaveBeenCalled();
   });
 

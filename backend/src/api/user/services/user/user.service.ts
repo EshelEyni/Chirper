@@ -1,8 +1,8 @@
-import { User } from "../../../../../shared/interfaces/user.interface";
-import { UserModel } from "../models/user.model";
-import { APIFeatures, QueryObj, filterObj } from "../../../services/util/util.service";
+import { User } from "../../../../../../shared/interfaces/user.interface";
+import { UserModel } from "../../models/user.model";
+import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
 import { Document } from "mongoose";
-import followerService from "./follower.service";
+import followerService from "../follower/follower.service";
 
 async function query(queryString: QueryObj): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), queryString)

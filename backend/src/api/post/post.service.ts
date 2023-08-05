@@ -25,7 +25,7 @@ import { PostStatsModel } from "./models/post-stats.model";
 import { BookmarkedPostModel } from "./models/bookmark-post.model";
 import { ObjectId } from "mongodb";
 import { User } from "../../../../shared/interfaces/user.interface";
-import followerService from "../user/service/follower.service";
+import followerService from "../user/services/follower/follower.service";
 
 async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)

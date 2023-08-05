@@ -7,9 +7,7 @@ import { GifModel } from "../gif.model";
 
 jest.mock("@giphy/js-fetch-api");
 jest.mock("../gif.model");
-jest.mock("../../../services/util/util.service", () => ({
-  APIFeatures: jest.fn(),
-}));
+jest.mock("../../../services/util/util.service");
 
 describe("Gif Service", () => {
   describe("getGifsBySearchTerm", () => {
@@ -104,11 +102,6 @@ describe("Gif Service", () => {
           staticPlaceholderUrl: "staticPlaceholderUrl1",
         },
       ];
-      // const exec = jest.fn().mockResolvedValue(mockGifs);
-      // const limitFields = jest.fn().mockReturnValue({ getQuery: () => ({ exec }) });
-      // const sort = jest.fn().mockReturnValue({ limitFields });
-      // const filter = jest.fn().mockReturnValue({ sort });
-      // (APIFeatures as jest.Mock).mockImplementation(() => ({ filter }));
 
       const mockQueryObj = {
         filter: jest.fn().mockReturnThis(),

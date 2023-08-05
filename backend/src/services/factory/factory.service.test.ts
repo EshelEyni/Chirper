@@ -13,11 +13,9 @@ const resMock: DeepMockProxy<Response> = mockDeep<Response>();
 const reqMock = mockDeep<Request>();
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
-jest.mock("../util/util.service", () => {
-  return {
-    APIFeatures: jest.fn().mockImplementation(() => APIFeaturesMock),
-  };
-});
+jest.mock("../util/util.service", () => ({
+  APIFeatures: jest.fn().mockImplementation(() => APIFeaturesMock),
+}));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 (asyncErrorCatcher as jest.Mock) = jest.fn().mockImplementation(fn => {

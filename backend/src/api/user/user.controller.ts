@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userService from "./service/user.service";
+import userService from "./services/user/user.service";
 import { logger } from "../../services/logger/logger.service";
 import {
   asyncErrorCatcher,
@@ -10,7 +10,7 @@ import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/
 import { UserModel } from "./models/user.model";
 import { User } from "../../../../shared/interfaces/user.interface";
 import { QueryObj } from "../../services/util/util.service";
-import followerService from "./service/follower.service";
+import followerService from "./services/follower/follower.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;

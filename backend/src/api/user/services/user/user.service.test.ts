@@ -1,11 +1,11 @@
-import { APIFeatures } from "../../../services/util/util.service";
-import { UserModel } from "../models/user.model";
+import { APIFeatures } from "../../../../services/util/util.service";
+import { UserModel } from "../../models/user.model";
 import userService from "./user.service";
-import followerService from "./follower.service";
+import followerService from "../follower/follower.service";
 
-jest.mock("../../../services/util/util.service");
-jest.mock("../models/user.model");
-jest.mock("./follower.service");
+jest.mock("../../../../services/util/util.service");
+jest.mock("../../models/user.model");
+jest.mock("../follower/follower.service");
 
 describe("User Service", () => {
   const mockToObject = jest.fn().mockReturnThis();
@@ -42,6 +42,10 @@ describe("User Service", () => {
     const populateIsFollowing = jest.fn();
     (followerService.populateIsFollowing as jest.Mock).mockImplementation(populateIsFollowing);
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it("should return users", async () => {
       // Act
       const result = await userService.query({});
@@ -62,8 +66,14 @@ describe("User Service", () => {
 });
 
 /*
-Notes: this function are not tested, because they only use Mongoose methods:
+Notes: 
+
+this function are not tested, because they only use Mongoose methods:
 - getById
+- getByUsername
 - add
+- update (only filterObj is tested in util.service.test.ts)
 - remove
+
+
 */

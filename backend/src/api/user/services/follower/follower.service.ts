@@ -1,13 +1,14 @@
-import { FollowingResult, User } from "../../../../../shared/interfaces/user.interface";
-import { UserModel } from "../models/user.model";
-import { FollowerModel } from "../models/followers.model";
-import { isValidId } from "../../../services/util/util.service";
+import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
+import { UserModel } from "../../models/user.model";
+import { FollowerModel } from "../../models/followers.model";
+import { isValidId } from "../../../../services/util/util.service";
 import { startSession } from "mongoose";
-import { asyncLocalStorage } from "../../../services/als.service";
-import { alStoreType } from "../../../middlewares/setupAls/setupAls.middleware";
-import { PostStatsModel } from "../../post/models/post-stats.model";
-import postService from "../../post/post.service";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { asyncLocalStorage } from "../../../../services/als.service";
+import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
+import { PostStatsModel } from "../../../post/models/post-stats.model";
+import postService from "../../../post/post.service";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
+import { AppError } from "../../../../services/error/error.service";
 
 async function populateIsFollowing(user: User): Promise<User> {
   const store = asyncLocalStorage.getStore() as alStoreType;
@@ -38,27 +39,26 @@ async function addFollowings(
       { $inc: { followingCount: 1 } },
       { session, new: true }
     );
-    if (!updatedFollowerDoc) throw new Error("User not found");
+    if (!updatedFollowerDoc) throw new AppError("User not found", 404);
 
     const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
       toUserId,
       { $inc: { followersCount: 1 } },
       { session, new: true }
     );
-    if (!updatedFollowingDoc) throw new Error("User not found");
+    if (!updatedFollowingDoc) throw new AppError("User not found", 404);
 
-    if (postId) {
+    if (postId)
       await PostStatsModel.findOneAndUpdate(
         { postId, userId: fromUserId },
         { isFollowedFromPost: true },
         { session }
       );
-    }
 
     await session.commitTransaction();
     if (postId) {
       const updatedPost = await postService.getById(postId);
-      if (!updatedPost) throw new Error("Post not found");
+      if (!updatedPost) throw new AppError("Post not found", 404);
       return updatedPost;
     }
 
@@ -103,13 +103,13 @@ async function removeFollowings(
     );
     if (!updatedFollowingDoc) throw new Error("User not found");
 
-    if (postId) {
+    if (postId)
       await PostStatsModel.findOneAndUpdate(
         { postId, userId: fromUserId },
         { isFollowedFromPost: false },
         { session }
       );
-    }
+
     await session.commitTransaction();
 
     if (postId) {

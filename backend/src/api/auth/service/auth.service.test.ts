@@ -3,11 +3,13 @@ import { UserModel } from "../../user/user.model";
 import tokenService from "../../../services/token/token.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { AppError } from "../../../services/error/error.service";
-import { isValidId } from "../../../services/util/util.service";
+import { isValidId, sendEmail } from "../../../services/util/util.service";
+import * as crypto from "crypto";
 
 jest.mock("../../user/user.model");
 jest.mock("../../../services/token/token.service");
 jest.mock("../../../services/util/util.service");
+jest.mock("crypto");
 
 describe("Auth Service", () => {
   describe("login", () => {
@@ -184,7 +186,7 @@ describe("Auth Service", () => {
     });
   });
 
-  fdescribe("updatePassword", () => {
+  describe("updatePassword", () => {
     it("should return user and token if password update is successful", async () => {
       const mockUser = {
         id: "123",
@@ -234,6 +236,112 @@ describe("Auth Service", () => {
         authService.updatePassword("123", "wrongPassword", "newPassword", "newPassword")
       ).rejects.toThrow(
         new AppError("Current password is incorrect. Please enter the correct password", 400)
+      );
+    });
+  });
+
+  describe("sendPasswordResetEmail", () => {
+    it("should send a password reset email if user is found", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockUser: any = {
+        email: "test@example.com",
+        passwordResetToken: undefined,
+        passwordResetExpires: undefined,
+        createPasswordResetToken: jest.fn().mockImplementationOnce(() => {
+          const TEN_MINUTES = 10 * 60 * 1000;
+          mockUser.passwordResetToken = "resetToken";
+          mockUser.passwordResetExpires = Date.now() + TEN_MINUTES;
+          return mockUser.passwordResetToken;
+        }),
+        save: jest.fn(),
+      };
+      (UserModel.findOne as jest.Mock).mockResolvedValue(mockUser);
+
+      await authService.sendPasswordResetEmail("test@example.com", "resetURL/");
+
+      expect(mockUser.createPasswordResetToken).toHaveBeenCalled();
+      expect(mockUser.save).toHaveBeenCalledTimes(1);
+      expect(mockUser.passwordResetToken).toBeDefined();
+      expect(mockUser.passwordResetExpires).toBeGreaterThan(Date.now());
+
+      expect(sendEmail).toHaveBeenCalledWith({
+        email: "test@example.com",
+        subject: "Your password reset token (valid for 10 min)",
+        message: expect.stringContaining("resetURL/resetToken"),
+      });
+    });
+
+    it("should throw an error if user is not found", async () => {
+      (UserModel.findOne as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        authService.sendPasswordResetEmail("test@example.com", "resetURL/")
+      ).rejects.toThrow(new AppError("There is no user with email address", 404));
+    });
+
+    it("should reset passwordResetToken and passwordResetExpires if email sending fails", async () => {
+      const mockUser = {
+        email: "test@example.com",
+        passwordResetToken: "oldToken",
+        passwordResetExpires: "oldExpires",
+        createPasswordResetToken: jest.fn().mockReturnValue("resetToken"),
+        save: jest.fn(),
+      };
+      (UserModel.findOne as jest.Mock).mockResolvedValue(mockUser);
+      (sendEmail as jest.Mock).mockRejectedValue(new Error("Email error"));
+
+      await expect(
+        authService.sendPasswordResetEmail("test@example.com", "resetURL/")
+      ).rejects.toThrow(
+        new AppError("There was an error sending the email. Try again later!", 500)
+      );
+
+      expect(mockUser.passwordResetToken).toBeUndefined();
+      expect(mockUser.passwordResetExpires).toBeUndefined();
+      expect(mockUser.save).toHaveBeenCalledWith({ validateBeforeSave: false });
+      expect(mockUser.save).toHaveBeenCalledWith({ validateBeforeSave: false });
+    });
+  });
+
+  fdescribe("resetPassword", () => {
+    const hashedToken = "hashedToken";
+    const token = "token";
+    const password = "newPassword";
+    const passwordConfirm = "newPasswordConfirm";
+
+    beforeEach(() => {
+      (crypto.createHash as jest.Mock).mockReturnValue({
+        update: jest.fn().mockReturnThis(),
+        digest: jest.fn().mockReturnValue(hashedToken),
+      });
+    });
+
+    it("should reset password if token is valid and not expired", async () => {
+      const mockUser = {
+        password: "password",
+        passwordConfirm: "passwordConfirm",
+        passwordResetToken: "passwordResetToken",
+        passwordResetExpires: "passwordResetExpires",
+        save: jest.fn(),
+      };
+      (UserModel.findOne as jest.Mock).mockResolvedValue(mockUser);
+      (tokenService.signToken as jest.Mock).mockReturnValue("newToken");
+
+      const result = await authService.resetPassword(token, password, passwordConfirm);
+
+      expect(mockUser.password).toBe(password);
+      expect(mockUser.passwordConfirm).toBe(passwordConfirm);
+      expect(mockUser.passwordResetToken).toBeUndefined();
+      expect(mockUser.passwordResetExpires).toBeUndefined();
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(result).toEqual({ user: mockUser, token: "newToken" });
+    });
+
+    it("should throw an error if token is invalid or  if token has expired", async () => {
+      (UserModel.findOne as jest.Mock).mockResolvedValue(null);
+
+      await expect(authService.resetPassword(token, password, passwordConfirm)).rejects.toThrow(
+        new AppError("Token is invalid or has expired", 400)
       );
     });
   });

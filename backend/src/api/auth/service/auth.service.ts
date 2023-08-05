@@ -53,7 +53,7 @@ async function updatePassword(
 
 async function sendPasswordResetEmail(email: string, resetURL: string) {
   const user = await UserModel.findOne({ email });
-  if (!user) throw new AppError("User not found", 404);
+  if (!user) throw new AppError("There is no user with email address", 404);
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${
@@ -85,13 +85,10 @@ async function resetPassword(
     passwordResetExpires: { $gt: Date.now() },
   });
   if (!user) throw new AppError("Token is invalid or has expired", 400);
-  user.password = password;
-  user.passwordConfirm = passwordConfirm;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+  (user.password = password), (user.passwordConfirm = passwordConfirm);
+  user.passwordResetToken = user.passwordResetExpires = undefined;
   await user.save();
-  const newToken = tokenService.signToken(user.id);
-  return { user: user as unknown as User, token: newToken };
+  return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
 async function _validateUserPassword(user: UserDoc, password: string) {

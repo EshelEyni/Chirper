@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "./gif.routes";
+import router from "./gif.router";
 import gifService from "../service/gif.service";
 import { errorHandler } from "../../../services/error/error.service";
 import { APIFeatures } from "../../../services/util/util.service";
@@ -25,7 +25,7 @@ const app = express();
 app.use(router);
 app.use(errorHandler);
 
-describe("Gif Routes", () => {
+describe("Gif Router", () => {
   function setMocks() {
     APIFeaturesMock.filter.mockReturnThis();
     APIFeaturesMock.sort.mockReturnThis();

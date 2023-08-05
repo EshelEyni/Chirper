@@ -13,10 +13,7 @@ let config: {
   note?: string;
 };
 
-if (process.env.NODE_ENV === "production") {
-  config = prodConfig;
-} else {
-  config = devConfig;
-}
+if (process.env.NODE_ENV === "production") config = prodConfig;
+else config = devConfig;
 
 export default config;

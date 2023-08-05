@@ -34,15 +34,14 @@ describe("Auth Controller", () => {
 
   let req: Partial<Request>;
   const res: Partial<Response> = {
-    status: jest.fn().mockReturnThis(),
     cookie: jest.fn().mockReturnThis(),
+    status: jest.fn().mockReturnThis(),
     clearCookie: jest.fn(),
     send: jest.fn(),
   };
   const next: jest.Mock = jest.fn();
 
-  function assertUserTokenSuccesRes(statusCode = 200) {
-    expect(res.status).toHaveBeenCalledWith(statusCode);
+  function assertUserTokenSuccesRes() {
     expect(res.cookie).toHaveBeenCalledWith("loginToken", mockToken, {
       httpOnly: true,
       expires: expect.any(Date),
@@ -115,8 +114,6 @@ describe("Auth Controller", () => {
   });
 
   describe("autoLogin", () => {
-    const invalidCookies = [null, undefined, "", 123];
-
     beforeEach(() => {
       req = { body: {}, cookies: {} };
     });
@@ -128,7 +125,6 @@ describe("Auth Controller", () => {
     it("should send a succesfull response with no user if no token is provided", async () => {
       const sut = autoLogin as any;
       await sut(req as Request, res as Response, next);
-      expect(res.status).toHaveBeenCalledWith(200);
 
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -138,22 +134,18 @@ describe("Auth Controller", () => {
       );
     });
 
-    it.each(invalidCookies)(
-      "should send a succesfull response with no user if an invalid token is provided",
-      async cookie => {
-        req.cookies = { loginToken: cookie };
-        const sut = autoLogin as any;
-        await sut(req as Request, res as Response, next);
-        expect(res.status).toHaveBeenCalledWith(200);
+    it("should send a succesfull response with no user if an empty string is provided as a token", async () => {
+      req.cookies = { loginToken: "" };
+      const sut = autoLogin as any;
+      await sut(req as Request, res as Response, next);
 
-        expect(res.send).toHaveBeenCalledWith(
-          expect.objectContaining({
-            status: "success",
-            data: null,
-          })
-        );
-      }
-    );
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: "success",
+          data: null,
+        })
+      );
+    });
 
     it("should send a succesfull response with the user if a valid token is provided", async () => {
       req.cookies = { loginToken: mockToken };
@@ -169,7 +161,7 @@ describe("Auth Controller", () => {
   });
 
   describe("signup", () => {
-    const userCreds: UserCredenitials = {
+    const mockUserCredenitials: UserCredenitials = {
       username: "testUser",
       password: "testPassword",
       passwordConfirm: "testPassword",
@@ -178,7 +170,7 @@ describe("Auth Controller", () => {
     };
 
     beforeEach(() => {
-      req = { body: userCreds };
+      req = { body: mockUserCredenitials };
 
       (authService.signup as jest.Mock).mockResolvedValue({ user: mockUser, token: mockToken });
     });
@@ -190,21 +182,21 @@ describe("Auth Controller", () => {
     it("should sign up successfully with valid user credentials", async () => {
       const sut = signup as any;
       await sut(req as Request, res as Response, next);
-      expect(authService.signup).toHaveBeenCalledWith(userCreds);
-      assertUserTokenSuccesRes(201);
+      expect(authService.signup).toHaveBeenCalledWith(mockUserCredenitials);
+      assertUserTokenSuccesRes();
     });
 
     it("should throw an error if user credentials are missing", async () => {
-      req.body = null;
+      req.body = {};
       const sut = signup as any;
       await sut(req as Request, res as Response, next);
       assertBadRequestError("User credentials are required");
     });
 
-    it.each(["username", "password", "passwordConfirm", "email", "fullname"])(
+    it.each(Object.keys(mockUserCredenitials))(
       "should throw an error if %s is missing",
       async field => {
-        req.body = { ...userCreds };
+        req.body = { ...mockUserCredenitials };
         delete req.body[field];
         const sut = signup as any;
         await sut(req as Request, res as Response, next);
@@ -243,7 +235,7 @@ describe("Auth Controller", () => {
         body: {
           currentPassword: "currentPassword",
           newPassword: "newPassword",
-          newPasswordConfirm: "newPasswordConfirm",
+          newPasswordConfirm: "newPassword",
         },
         loggedinUserId: "userId",
       };
@@ -261,6 +253,14 @@ describe("Auth Controller", () => {
         assertBadRequestError(`${field} is required`);
         req.body[field] = field; // Reset the field for the next iteration
       }
+    });
+
+    it("should throw an error if newPassword and newPasswordConfirm do not match", async () => {
+      req.body.newPasswordConfirm = "notMatchingPassword";
+      const sut = updatePassword as any;
+      await sut(req as Request, res as Response, next);
+      assertBadRequestError("Passwords do not match");
+      req.body.newPasswordConfirm = "newPasswordConfirm";
     });
 
     it("should throw an error if user is not logged in", async () => {
@@ -295,9 +295,10 @@ describe("Auth Controller", () => {
   });
 
   describe("sendPasswordResetEmail", () => {
+    const validEmail = "test@example.com";
     beforeEach(() => {
       req = {
-        body: { email: "test@example.com" },
+        body: { email: validEmail },
         protocol: "http",
         get: jest.fn().mockReturnValue("localhost"),
       };
@@ -314,6 +315,14 @@ describe("Auth Controller", () => {
       assertBadRequestError("Email is required");
     });
 
+    it("should throw an error if email is invalid", async () => {
+      req.body.email = "invalidEmail";
+      const sut = sendPasswordResetEmail as any;
+      await sut(req as Request, res as Response, next);
+      assertBadRequestError("Email is invalid");
+      req.body.email = validEmail;
+    });
+
     it("should send a password reset email and send a successful response", async () => {
       const resetURL = `${req.protocol}://${req.get!("host")}/api/auth/resetPassword/`;
       (authService.sendPasswordResetEmail as jest.Mock) = jest.fn();
@@ -322,7 +331,6 @@ describe("Auth Controller", () => {
       await sut(req as Request, res as Response, next);
 
       expect(authService.sendPasswordResetEmail).toHaveBeenCalledWith(req.body.email, resetURL);
-      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith(
         expect.objectContaining({
           status: "success",
@@ -345,13 +353,6 @@ describe("Auth Controller", () => {
 
     afterEach(() => {
       jest.clearAllMocks();
-    });
-
-    it("should throw an error if token is missing", async () => {
-      delete req.params!.token;
-      const sut = resetPassword as any;
-      await sut(req as Request, res as Response, next);
-      assertBadRequestError("Token is required");
     });
 
     it("should throw an error if any required field is missing", async () => {

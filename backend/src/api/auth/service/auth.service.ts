@@ -11,7 +11,7 @@ export type UserDoc = Document<unknown, object, IUser> & IUser & { _id: Types.Ob
 type UserAuthResult = { user: User; token: string };
 async function login(username: string, password: string): Promise<UserAuthResult> {
   const user = await UserModel.findOne({ username }).select("+password");
-  if (!user) throw new AppError("Incorrect username", 400);
+  if (!user) throw new AppError("User not found", 404);
   _checkIsUserLocked(user);
   await _checkLoginAttempts(user);
   await _validateUserPassword(user, password);
@@ -95,7 +95,7 @@ async function _validateUserPassword(user: UserDoc, password: string) {
   const isValidPassword = await user.checkPassword(password, user.password);
   user.loginAttempts++;
   await user.save({ validateBeforeSave: false });
-  if (!isValidPassword) throw new AppError("Incorrect password", 400);
+  if (!isValidPassword) throw new AppError("Incorrect password", 401);
 }
 
 function _checkIsUserLocked(user: UserDoc) {

@@ -1,7 +1,7 @@
 import mongoose, { Document, Query } from "mongoose";
-import { gifSchema } from "../gif/gif.model";
+import { gifSchema } from "../../gif/gif.model";
 import { pollSchema } from "./poll.model";
-import { Post } from "../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../shared/interfaces/post.interface";
 
 const imgsSchema = new mongoose.Schema(
   {

@@ -46,7 +46,6 @@ describe("Location Controller", () => {
       const sut = getUserDefaultLocations as any;
       await sut(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
         requestAt: expect.any(String),
@@ -83,12 +82,11 @@ describe("Location Controller", () => {
 
       const sut = getUserDefaultLocations as any;
       await sut(req as Request, res as Response, next);
-      expect(res.status).not.toHaveBeenCalled();
       expect(res.send).not.toHaveBeenCalled();
     });
   });
 
-  fdescribe("getLocationsBySearchTerm", () => {
+  describe("getLocationsBySearchTerm", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let next: jest.Mock;
@@ -114,7 +112,6 @@ describe("Location Controller", () => {
       const sut = getLocationsBySearchTerm as any;
       await sut(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
         requestAt: expect.any(String),
@@ -137,7 +134,6 @@ describe("Location Controller", () => {
 
       const sut = getLocationsBySearchTerm as any;
       await sut(req as Request, res as Response, next);
-      expect(res.status).not.toHaveBeenCalled();
       expect(res.send).not.toHaveBeenCalled();
     });
   });

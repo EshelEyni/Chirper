@@ -63,7 +63,7 @@ const getGifsBySearchTerm = asyncErrorCatcher(
     if (categorySet.has(searchTerm)) gifs = await gifService.getGifFromDB(searchTerm);
     else gifs = await gifService.getGifsBySearchTerm(searchTerm);
 
-    res.status(200).send({
+    res.send({
       status: "success",
       requestedAt: new Date().toISOString(),
       results: gifs.length,

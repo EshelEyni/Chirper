@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "./location.routes";
+import router from "./location.router";
 import locationService from "../service/location.service";
 import { errorHandler } from "../../../services/error/error.service";
 
@@ -18,7 +18,7 @@ const app = express();
 app.use(router);
 app.use(errorHandler);
 
-describe("Location Routes", () => {
+describe("Location Router", () => {
   const mockLocations = [
     {
       name: "New York",
@@ -53,6 +53,7 @@ describe("Location Routes", () => {
       expect(res.body.status).toEqual("fail");
       expect(res.body.message).toEqual("No lat and lng provided");
     });
+
     it("should return 400 error if only lat is provided", async () => {
       const res = await request(app).get("/").query({ lat: 1 });
 

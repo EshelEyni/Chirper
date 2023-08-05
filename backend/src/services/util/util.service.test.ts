@@ -250,7 +250,7 @@ describe("Util Service", () => {
     });
   });
 
-  fdescribe("isValidId", () => {
+  describe("isValidId", () => {
     const invalidIds = [
       { id: "Questions/0000000000000003599-A", type: "RavenDB Id" },
       { id: "550e8400-e29b-41d4-a716-446655440000", type: "UUID" },

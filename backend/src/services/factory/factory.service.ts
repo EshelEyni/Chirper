@@ -14,7 +14,7 @@ const getAll = (Model: ModelType<any>) =>
 
     const docs = await features.getQuery();
 
-    res.status(200).json({
+    res.json({
       status: "success",
       requestedAt: new Date().toISOString(),
       results: docs.length,
@@ -34,7 +34,7 @@ const getOne = (Model: ModelType<any>, popOptions?: string) =>
         `No ${dataName.slice(0, dataName.length - 1)} was found with the id: ${id}`,
         404
       );
-    res.status(200).json({
+    res.json({
       status: "success",
       data: doc,
     });
@@ -72,7 +72,7 @@ const updateOne = (Model: ModelType<any>, allowedFields?: string[]) =>
         404
       );
 
-    res.status(200).json({
+    res.json({
       status: "success",
       data: doc,
     });

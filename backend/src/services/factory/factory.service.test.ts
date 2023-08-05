@@ -58,12 +58,6 @@ describe("Factory Service", () => {
       expect(APIFeaturesMock.getQuery).toHaveBeenCalled();
     });
 
-    it("should return status 200", async () => {
-      const controller = getAll(ModelMock) as any;
-      await controller(reqMock, resMock, nextMock);
-      expect(resMock.status).toHaveBeenCalledWith(200);
-    });
-
     it("should return success status", async () => {
       const controller = getAll(ModelMock) as any;
       await controller(reqMock, resMock, nextMock);
@@ -145,7 +139,6 @@ describe("Factory Service", () => {
       const controller = getOne(ModelMock) as any;
       await controller(reqMock, resMock, nextMock);
       expect(ModelMock.findById).toHaveBeenCalledWith(id);
-      expect(resMock.status).toHaveBeenCalledWith(200);
       expect(resMock.json).toHaveBeenCalledWith(
         expect.objectContaining({
           status: "success",
@@ -271,7 +264,6 @@ describe("Factory Service", () => {
         new: true,
         runValidators: true,
       });
-      expect(resMock.status).toHaveBeenCalledWith(200);
       expect(resMock.json).toHaveBeenCalledWith({ status: "success", data: mockData });
     });
 

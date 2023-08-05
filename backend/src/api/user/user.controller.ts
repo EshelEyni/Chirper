@@ -15,7 +15,7 @@ const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
   const users = (await userService.query(queryString as QueryObj)) as unknown as User[];
 
-  res.status(200).json({
+  res.json({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: users.length,
@@ -41,7 +41,7 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
   const user = await userService.getByUsername(username);
   if (!user) throw new AppError(`User with username ${username} not found`, 404);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     requestedAt: new Date().toISOString(),
     data: user,
@@ -57,7 +57,7 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
   // TODO: check if this error is needed
   if (!updatedUser) throw new AppError("User not found", 404);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: updatedUser,
   });
@@ -83,7 +83,7 @@ const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Pro
   if (!toUserId) throw new AppError("No user id provided", 400);
   const updatedUser = await userService.addFollowings(loggedinUserId, toUserId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: updatedUser,
   });
@@ -96,7 +96,7 @@ const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): 
   if (!toUserId) throw new AppError("No user id provided", 400);
   const updatedUser = await userService.removeFollowings(loggedinUserId, toUserId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: updatedUser,
   });
@@ -112,7 +112,7 @@ const addFollowingsFromPost = asyncErrorCatcher(
 
     const updatedPost = await userService.addFollowings(loggedinUserId, toUserId, postId);
 
-    res.status(200).send({
+    res.send({
       status: "success",
       data: updatedPost,
     });
@@ -129,7 +129,7 @@ const removeFollowingsFromPost = asyncErrorCatcher(
     if (!postId) throw new AppError("No post id provided", 400);
     const updatedPost = await userService.removeFollowings(loggedinUserId, toUserId, postId);
 
-    res.status(200).send({
+    res.send({
       status: "success",
       data: updatedPost,
     });

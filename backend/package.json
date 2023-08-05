@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "set NODE_ENV=development&& nodemon",
     "prod": "set NODE_ENV=production&& nodemon",
     "debug": "ndb --experimental-specifier-resolution=node --loader ts-node src/server.ts",
-    "test": "jest --watchAll --runInBand"
+    "test": "set NODE_ENV=test&& jest --watchAll --runInBand"
   },
   "author": "",
   "license": "ISC",

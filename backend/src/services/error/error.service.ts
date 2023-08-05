@@ -38,10 +38,11 @@ class AppError extends Error {
 function errorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-  const isDevEnv = process.env.NODE_ENV !== "production";
-  if (isDevEnv) _sendErrorDev(err, res);
+  const isDevEnv = process.env.NODE_ENV === "development";
+  const isTestEnv = process.env.NODE_ENV === "test";
+  if (isDevEnv || isTestEnv) _sendErrorDev(err, res);
   else _sendErrorProd(_refineErrorForProd(err), res);
-  logger.error(err.message);
+  if (!isTestEnv) logger.error(err.message);
 }
 
 function _refineErrorForProd(err: any) {

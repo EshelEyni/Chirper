@@ -12,17 +12,17 @@ import {
   isValidId,
   queryEntityExists,
 } from "../../services/util/util.service";
-import { PostModel } from "./post.model";
+import { PostModel } from "./models/post.model";
 import { RepostModel } from "./repost.model";
-import { PollResultModel } from "./poll.model";
+import { PollResultModel } from "./models/poll.model";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
 import mongoose, { Document } from "mongoose";
 import { AppError } from "../../services/error/error.service";
 import { logger } from "../../services/logger/logger.service";
-import { PostLikeModel } from "./post-like.model";
-import { PostStatsModel } from "./post-stats.model";
-import { BookmarkedPostModel } from "./bookmark-post.model";
+import { PostLikeModel } from "./models/post-like.model";
+import { PostStatsModel } from "./models/post-stats.model";
+import { BookmarkedPostModel } from "./models/bookmark-post.model";
 import { ObjectId } from "mongodb";
 import userService from "../user/user.service";
 import { User } from "../../../../shared/interfaces/user.interface";

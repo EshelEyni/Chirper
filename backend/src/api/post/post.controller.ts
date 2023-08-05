@@ -8,13 +8,13 @@ import {
   validatePatchRequestBody,
 } from "../../services/error/error.service";
 import { deleteOne } from "../../services/factory/factory.service";
-import { PostModel } from "./post.model";
+import { PostModel } from "./models/post.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
   const posts = (await postService.query(queryString as QueryObj)) as unknown as Post[];
 
-  res.status(200).send({
+  res.send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: posts.length,
@@ -27,7 +27,7 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
   const post = await postService.getById(id);
   if (!post) throw new AppError(`Post with id ${id} not found`, 404);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: post,
   });
@@ -118,7 +118,7 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   validatePatchRequestBody(postToUpdate);
   const updatedPost = await postService.update(id, postToUpdate);
   if (!updatedPost) throw new AppError(`Post with id ${id} not found`, 404);
-  res.status(200).send({
+  res.send({
     status: "success",
     data: updatedPost,
   });
@@ -135,7 +135,7 @@ const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Prom
 
   const updatedPost = await postService.removeRepost(postId, loggedinUserId);
 
-  res.status(200).json({
+  res.json({
     status: "success",
     data: updatedPost,
   });
@@ -150,7 +150,7 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   const pollOption = await postService.setPollVote(postId, optionIdx, loggedinUserId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: pollOption,
   });
@@ -176,7 +176,7 @@ const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promis
   if (!postId) throw new AppError("No post id provided", 400);
   const updatedPost = await postService.removeLike(postId, loggedinUserId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: updatedPost,
   });
@@ -187,7 +187,7 @@ const getPostStats = asyncErrorCatcher(async (req: Request, res: Response): Prom
   if (!postId) throw new AppError("No post id provided", 400);
   const postStats = await postService.getPostStats(postId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: postStats,
   });
@@ -216,7 +216,7 @@ const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): P
   if (!postId) throw new AppError("No post id provided", 400);
   const postStats = await postService.updatePostStats(postId, loggedinUserId, stats);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     data: postStats,
   });
@@ -227,7 +227,7 @@ const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response)
   if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
   const bookmarkedPosts = await postService.getBookmarkedPosts(loggedinUserId);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: bookmarkedPosts.length,
@@ -258,7 +258,7 @@ const removeBookmarkedPost = asyncErrorCatcher(
 
     const updatedPost = await postService.removeBookmarkedPost(postId, loggedinUserId);
 
-    res.status(200).json({
+    res.json({
       status: "success",
       data: updatedPost,
     });

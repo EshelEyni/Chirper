@@ -5,7 +5,7 @@ import { APIFeatures, QueryObj, filterObj, isValidId } from "../../services/util
 import { Document, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../services/als.service";
 import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
-import { PostStatsModel } from "../post/post-stats.model";
+import { PostStatsModel } from "../post/models/post-stats.model";
 import postService from "../post/post.service";
 import { Post } from "../../../../shared/interfaces/post.interface";
 

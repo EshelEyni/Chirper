@@ -38,14 +38,14 @@ describe("Auth Service", () => {
         select: jest.fn().mockResolvedValue(null),
       });
       await expect(authService.login("username", "password")).rejects.toThrow(
-        new AppError("Incorrect username", 400)
+        new AppError("User not found", 404)
       );
     });
 
     it("should throw an error if the password is incorrect", async () => {
       user.checkPassword = jest.fn().mockResolvedValue(false);
       await expect(authService.login("username", "password")).rejects.toThrow(
-        new AppError("Incorrect password", 400)
+        new AppError("Incorrect password", 401)
       );
     });
 
@@ -57,7 +57,7 @@ describe("Auth Service", () => {
     it("should increment loginAttempts if user is not locked", async () => {
       user.checkPassword = jest.fn().mockResolvedValue(false);
       await expect(authService.login("username", "password")).rejects.toThrow(
-        new AppError("Incorrect password", 400)
+        new AppError("Incorrect password", 401)
       );
       expect(user.loginAttempts).toBe(1);
       expect(user.save).toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe("Auth Service", () => {
   });
 
   describe("signup", () => {
-    const mockUserCredenitials = {
+    const mockUserCredenitials: UserCredenitials = {
       username: "Test User",
       fullname: "Test User",
       email: "test@example.com",

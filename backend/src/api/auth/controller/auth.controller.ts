@@ -13,7 +13,7 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
 const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { loginToken } = req.cookies;
   if (!loginToken || typeof loginToken !== "string") {
-    res.status(200).send({
+    res.send({
       status: "success",
       data: null,
     });
@@ -45,6 +45,8 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
   const { currentPassword, newPassword, newPasswordConfirm } = req.body;
   for (const field of ["currentPassword", "newPassword", "newPasswordConfirm"])
     if (!req.body[field]) throw new AppError(`${field} is required`, 400);
+
+  if (newPassword !== newPasswordConfirm) throw new AppError("Passwords do not match", 400);
   const { loggedinUserId } = req;
   if (!loggedinUserId) throw new AppError("You are not logged in", 401);
   const { user, token } = await authService.updatePassword(
@@ -60,9 +62,10 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
 const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email) throw new AppError("Email is required", 400);
+  if (!_isValidEmail(email)) throw new AppError("Email is invalid", 400);
   const resetURL = `${req.protocol}://${req.get("host")}/api/auth/resetPassword/`;
   await authService.sendPasswordResetEmail(email, resetURL);
-  res.status(200).send({
+  res.send({
     status: "success",
     message: "Password reset email sent successfully",
   });
@@ -70,7 +73,6 @@ const sendPasswordResetEmail = asyncErrorCatcher(async (req: Request, res: Respo
 
 const resetPassword = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { token } = req.params;
-  if (!token) throw new AppError("Token is required", 400);
   const { password, passwordConfirm } = req.body;
   for (const field of ["password", "passwordConfirm"])
     if (!req.body[field]) throw new AppError(`${field} is required`, 400);
@@ -106,10 +108,16 @@ const _validateUserCreds = (userCreds: UserCredenitials) => {
     "email",
     "fullname",
   ];
-  if (!userCreds) return { isValid: false, msg: "User credentials are required" };
+  const isUserCredsEmpty = Object.keys(userCreds).length === 0;
+  if (isUserCredsEmpty) return { isValid: false, msg: "User credentials are required" };
   for (const field of requiredFields)
     if (!userCreds[field]) return { isValid: false, msg: `${field} is required` };
   return { isValid: true, msg: "" };
+};
+
+const _isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 };
 
 export { login, autoLogin, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };

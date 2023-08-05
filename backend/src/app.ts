@@ -10,11 +10,11 @@ import cors from "cors";
 import { requestLogger } from "./middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls/setupAls.middleware";
-import userRoutes from "./api/user/user.routes";
-import postRoutes from "./api/post/post.routes";
-import gifRoutes from "./api/gif/routes/gif.routes";
-import locationRoutes from "./api/location/routes/location.routes";
-import authRoutes from "./api/auth/auth.routes";
+import userRouter from "./api/user/user.router";
+import postRouter from "./api/post/post.router";
+import gifRouter from "./api/gif/router/gif.router";
+import locationRouter from "./api/location/router/location.router";
+import authRouter from "./api/auth/router/auth.router";
 import { requestLimiter } from "./services/rate-limiter.service";
 const isProdEnv = process.env.NODE_ENV === "production";
 
@@ -61,11 +61,11 @@ if (!isProdEnv) {
   });
 }
 
-app.use("/api/user", userRoutes);
-app.use("/api/post", postRoutes);
-app.use("/api/gif", gifRoutes);
-app.use("/api/location", locationRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
+app.use("/api/gif", gifRouter);
+app.use("/api/location", locationRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/**", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

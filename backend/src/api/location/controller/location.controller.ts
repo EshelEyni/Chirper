@@ -13,7 +13,7 @@ const getUserDefaultLocations = asyncErrorCatcher(
     }
     const locations = await locationService.getUserSurroundingLocations(Number(lat), Number(lng));
 
-    res.status(200).send({
+    res.send({
       status: "success",
       requestAt: new Date().toISOString(),
       results: locations.length,
@@ -27,7 +27,7 @@ const getLocationsBySearchTerm = asyncErrorCatcher(async (req: Request, res: Res
   if (!searchTerm) throw new AppError("No search term provided", 400);
   const locations = await locationService.getLocationBySearchTerm(searchTerm);
 
-  res.status(200).send({
+  res.send({
     status: "success",
     requestAt: new Date().toISOString(),
     results: locations.length,

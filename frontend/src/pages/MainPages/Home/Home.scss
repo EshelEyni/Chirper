@@ -29,14 +29,18 @@
     @include scrollbar-hidden;
 
     .post-edit-container {
+      position: relative;
       border-bottom: 1px solid var(--color-secondary-border);
       width: 100%;
+      min-height: rem(100px);
       .post-edit {
         width: 100%;
       }
     }
-
+    
     .home-page-post-list-container {
+      position: relative;
+      min-height: rem(100px);
       .content-loader-container {
         position: relative;
         min-height: rem(100px);

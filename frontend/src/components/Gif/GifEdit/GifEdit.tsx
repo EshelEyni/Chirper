@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
-import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { BtnPlay } from "../../Btns/BtnPlay/BtnPlay";
 import "./GifEdit.scss";
@@ -29,7 +29,7 @@ export const GifEdit: FC = () => {
 
   return (
     <>
-      {isLoading && <ContentLoader />}
+      {isLoading && <SpinnerLoader />}
       <div className="gif-edit" style={{ visibility: isLoading ? "hidden" : "visible" }}>
         <BtnRemoveContent onRemoveContent={onRemoveGif} />
         <img

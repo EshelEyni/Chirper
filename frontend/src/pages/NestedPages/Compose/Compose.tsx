@@ -12,7 +12,7 @@ import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
-import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
@@ -79,7 +79,7 @@ const ComposePage = () => {
     <main className="compose">
       <MainScreen onClickFn={onGoBack} mode="light" zIndex={2000} />
       <PostEditProvider>
-        <Suspense fallback={<ContentLoader />}>
+        <Suspense fallback={<SpinnerLoader />}>
           <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
         </Suspense>
       </PostEditProvider>

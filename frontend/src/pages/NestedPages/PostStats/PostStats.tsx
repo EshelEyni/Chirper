@@ -7,7 +7,7 @@ import { AppDispatch } from "../../../store/types";
 import { clearPost, getPost } from "../../../store/actions/post.actions";
 import postService from "../../../services/post.service";
 import "./PostStats.scss";
-import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostStatsPreviewContent } from "../../../components/Post/PostPreview/MiniPostPreview/PostStatsPreviewContent/PostStatsPreviewContent";
 import { MiniPostPreview } from "../../../components/Post/PostPreview/MiniPostPreview/MiniPostPreview";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
@@ -64,7 +64,7 @@ const PostStatsPage = () => {
         <BtnClose onClickBtn={onGoBack} />
         <div className="post-stats-main-container">
           {!post ? (
-            <ContentLoader />
+            <SpinnerLoader />
           ) : !isLoggedinUserPost ? (
             <PostsStatsNonOwnerMsg onGoBack={onGoBack} />
           ) : (
@@ -82,7 +82,7 @@ const PostStatsPage = () => {
                   />
                 </>
               ) : (
-                <ContentLoader />
+                <SpinnerLoader />
               )}
             </div>
           )}

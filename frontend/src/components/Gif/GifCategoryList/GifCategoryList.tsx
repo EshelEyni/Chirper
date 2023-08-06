@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Gif, GifCategory } from "../../../../../shared/interfaces/gif.interface";
 import gifService from "../../../services/gif.service";
-import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import "./GifCategoryList.scss";
 import { GifCategoryPreview } from "../GifCategoryPreview/GifCategoryPreview";
 
@@ -35,7 +35,7 @@ export const GifCategoryList: React.FC<GifEditProps> = ({
 
   return (
     <div className="gif-category-list">
-      {!gifCategories.length && !currCategory && <ContentLoader />}
+      {!gifCategories.length && !currCategory && <SpinnerLoader />}
       {gifCategories.length > 0 &&
         gifCategories.map((gifCategory, idx) => {
           const isLast = idx === gifCategories.length - 1;

@@ -47,7 +47,7 @@ function App() {
   return (
     <div className="app">
       {isPageLoading ? (
-        <PageLoader />
+        <PageLoader isBirdLoader={true} />
       ) : (
         <div className="app-content">
           <SideBar />

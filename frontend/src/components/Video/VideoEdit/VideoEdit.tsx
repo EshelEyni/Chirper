@@ -4,7 +4,7 @@ import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
-import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { VideoPlayer } from "../VideoPlayer/VideoPlayer";
 import "./VideoEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
@@ -29,7 +29,7 @@ export const VideoEdit: FC = () => {
       <div className="video-edit-player-container">
         <BtnRemoveContent onRemoveContent={onRemoveVideo} />
         {isLoading ? (
-          <ContentLoader />
+          <SpinnerLoader />
         ) : (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           <VideoPlayerProvider>

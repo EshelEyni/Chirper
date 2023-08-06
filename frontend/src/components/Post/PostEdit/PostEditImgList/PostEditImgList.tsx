@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../../store/types";
 import { RootState } from "../../../../store/store";
 import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { BtnRemoveContent } from "../../../Btns/BtnRemoveContent/BtnRemoveContent";
-import { ContentLoader } from "../../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../../Loaders/SpinnerLoader/SpinnerLoader";
 import "./PostEditImgList.scss";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
 
@@ -29,7 +29,7 @@ export const PostEditImgList: FC = () => {
         <div className={`post-edit-img-container img-${idx + 1}`} key={idx}>
           <BtnRemoveContent onRemoveContent={() => onRemoveImg(idx)} />
           {img.isLoading ? (
-            <ContentLoader />
+            <SpinnerLoader />
           ) : (
             <img className="post-edit-img" src={img.url} alt="post-img" />
           )}

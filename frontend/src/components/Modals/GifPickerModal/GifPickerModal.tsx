@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
-import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { Modal } from "../Modal/Modal";
 import { GifPickerModalHeader } from "./GifPickerModalHeader/GifPickerModalHeader";
 import { UIElement } from "../../Post/PostEdit/PostEditActions/PostEditActions/PostEditActions";
@@ -44,7 +44,7 @@ export const GifPickerModal: React.FC<GifPickerProps> = ({ onToggleElementVisibi
       {gifs.length > 0 ? (
         <GifList onToggleElementVisibility={onToggleElementVisibility} gifs={gifs} />
       ) : (
-        <ContentLoader />
+        <SpinnerLoader />
       )}
 
       {!searchTerm && (

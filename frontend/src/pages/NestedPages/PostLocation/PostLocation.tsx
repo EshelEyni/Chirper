@@ -8,7 +8,7 @@ import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import locationService from "../../../services/location.service";
 import "./PostLocation.scss";
 import { LocationList } from "../../../components/Location/LocationList/LocationList";
-import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { LocationSearchBar } from "../../../components/Location/LocationSearchBar/LocationSearchBar";
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
@@ -105,7 +105,7 @@ const PostLocation = () => {
           setIsLoading={setIsLoading}
         />
         <main className="post-location-main-container">
-          {isLoading && <ContentLoader />}
+          {isLoading && <SpinnerLoader />}
           {!isLoading && !isNoResults && currNewPost && (
             <LocationList
               currNewPost={currNewPost}

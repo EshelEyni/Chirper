@@ -4,7 +4,7 @@ import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { AppDispatch } from "../../../store/types";
-import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
+import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
 import { GifPreview } from "../GifPreview/GifPreview";
 import "./GifList.scss";
@@ -53,7 +53,7 @@ export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) =
             );
           })
         ) : (
-          <ContentLoader />
+          <SpinnerLoader />
         )}
       </ul>
     </div>

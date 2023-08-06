@@ -17,7 +17,7 @@ import { PostsStatsNonOwnerMsg } from "./NonOwnerMsg/PostsStatsNonOwnerMsg";
 import { PostStatsActionStatsList } from "./ActionStatsList/PostStatsActionStatsList";
 import { PostStatsDataStatsList } from "./DataStatsList/PostStatsDataStatsList";
 
-export const PostStatsPage = () => {
+const PostStatsPage = () => {
   const [postStats, setPostStats] = useState<PostStats | null>(null);
   const [isLoggedinUserPost, setIsLoggedinUserPost] = useState(false);
   const [openedModal, setOpenedModal] = useState<string>("");
@@ -91,3 +91,5 @@ export const PostStatsPage = () => {
     </section>
   );
 };
+
+export default PostStatsPage;

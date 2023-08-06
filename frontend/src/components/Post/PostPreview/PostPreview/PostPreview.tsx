@@ -12,7 +12,6 @@ import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";
 import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
 import { PostPreviewActions } from "../PostPreviewActions/PostPreviewActions";
-import "./PostPreview.scss";
 import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContainer";
 import { PostPreviewBody } from "../Body/PostPreviewBody";
 import { PostPreviewText } from "../Text/PostPreviewText";
@@ -23,6 +22,7 @@ import { PostPreviewAside } from "./Aside/PostPreviewAside";
 import { BtnShowThread } from "../../../Btns/BtnShowThread/BtnShowThread";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../../contexts/VideoPlayerContext";
+import "./PostPreview.scss";
 
 export const PostPreview: React.FC = () => {
   const { post, poll } = usePostPreview();

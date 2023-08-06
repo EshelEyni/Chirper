@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import userService from "../../../services/user.service";
 
-export const ProfileDetails = () => {
+const ProfileDetails = () => {
   const [wachedUser, setWachedUser] = useState<User | null>(null);
 
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
@@ -13,14 +13,10 @@ export const ProfileDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getUser();
-  }, []);
-
-  useEffect(() => {
     document.title = `${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`;
   }, [wachedUser]);
 
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     const { username } = params;
     if (!username) {
       navigate("/home");
@@ -33,7 +29,11 @@ export const ProfileDetails = () => {
       const user = await userService.getByUsername(username);
       setWachedUser(user);
     }
-  };
+  }, [loggedinUser, params, navigate]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   return (
     <div>
@@ -43,3 +43,5 @@ export const ProfileDetails = () => {
     </div>
   );
 };
+
+export default ProfileDetails;

@@ -1,20 +1,21 @@
-import { BookmarksPage } from "./pages/MainPages/Bookmarks/Bookmarks";
-import { ExplorePage } from "./pages/MainPages/Explore/Explore";
-import { HomePage } from "./pages/MainPages/Home/Home";
-import { LoginPage } from "./pages/MainPages/Login/Login";
-import { PostDetails } from "./pages/MainPages/PostDetails/PostDetails";
-import { ProfileDetails } from "./pages/MainPages/ProfileDetails/ProfileDetails";
-import { SignupPage } from "./pages/MainPages/Signup/Signup";
-import { ChirperCirclePage } from "./pages/NestedPages/ChirperCircle/ChirperCircle";
-import { ComposePage } from "./pages/NestedPages/Compose/Compose";
-import { DisplayPage } from "./pages/NestedPages/Display/Display";
-import { PostLocation } from "./pages/NestedPages/PostLocation/PostLocation";
-import { PostSchedule } from "./pages/NestedPages/PostScheduler/PostSchedule";
-import { PostStatsPage } from "./pages/NestedPages/PostStats/PostStats";
+import { LazyExoticComponent, lazy, FC } from "react";
+const Homepage = lazy(() => import("./pages/MainPages/Home/Home"));
+const BookmarksPage = lazy(() => import("./pages/MainPages/Bookmarks/Bookmarks"));
+const ExplorePage = lazy(() => import("./pages/MainPages/Explore/Explore"));
+const LoginPage = lazy(() => import("./pages/MainPages/Login/Login"));
+const PostDetails = lazy(() => import("./pages/MainPages/PostDetails/PostDetails"));
+const ProfileDetails = lazy(() => import("./pages/MainPages/ProfileDetails/ProfileDetails"));
+const SignupPage = lazy(() => import("./pages/MainPages/Signup/Signup"));
+const ChirperCirclePage = lazy(() => import("./pages/NestedPages/ChirperCircle/ChirperCircle"));
+const ComposePage = lazy(() => import("./pages/NestedPages/Compose/Compose"));
+const DisplayPage = lazy(() => import("./pages/NestedPages/Display/Display"));
+const PostLocation = lazy(() => import("./pages/NestedPages/PostLocation/PostLocation"));
+const PostSchedule = lazy(() => import("./pages/NestedPages/PostScheduler/PostSchedule"));
+const PostStatsPage = lazy(() => import("./pages/NestedPages/PostStats/PostStats"));
 
 export interface Route {
   path: string;
-  component: () => JSX.Element;
+  component: LazyExoticComponent<FC>;
   authRequired: boolean;
   homePageOnly?: boolean;
 }
@@ -22,7 +23,7 @@ export interface Route {
 const routes: Route[] = [
   {
     path: "home",
-    component: HomePage,
+    component: Homepage,
     authRequired: false,
   },
   {

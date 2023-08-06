@@ -42,7 +42,7 @@ interface PostEditProps {
   onClickBtnClose?: () => void;
 }
 
-export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
+const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
   const { loggedinUser } = useSelector((state: RootState) => state.authModule);
   const {
     currNewPost,
@@ -310,3 +310,5 @@ export const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickB
     </section>
   );
 };
+
+export default PostEdit;

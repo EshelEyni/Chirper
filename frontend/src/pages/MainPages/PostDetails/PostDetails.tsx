@@ -5,7 +5,7 @@ import { AppDispatch } from "../../../store/types";
 import { getPost } from "../../../store/actions/post.actions";
 import { RootState } from "../../../store/store";
 
-export const PostDetails = () => {
+const PostDetails = () => {
   const { post } = useSelector((state: RootState) => state.postModule);
   const params = useParams<{ id: string }>();
   const dispatch: AppDispatch = useDispatch();
@@ -14,7 +14,7 @@ export const PostDetails = () => {
     const { id } = params;
     if (!id) return;
     dispatch(getPost(id));
-  }, []);
+  }, [dispatch, params]);
 
   return (
     <div style={{ width: "600px", overflow: "hidden" }}>
@@ -24,3 +24,5 @@ export const PostDetails = () => {
     </div>
   );
 };
+
+export default PostDetails;

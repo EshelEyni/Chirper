@@ -4,12 +4,12 @@ import { RootState } from "../../../store/store";
 import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { AppDispatch } from "../../../store/types";
-import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
 import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
 import { GifPreview } from "../GifPreview/GifPreview";
 import "./GifList.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { UIElement } from "../../Post/PostEdit/PostEditActions/PostEditActions/PostEditActions";
 
 interface GifListProps {
   gifs: Gif[];

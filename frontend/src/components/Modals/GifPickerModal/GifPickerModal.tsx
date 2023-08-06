@@ -3,9 +3,9 @@ import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { GifList } from "../../Gif/GifList/GifList";
 import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
 import { ContentLoader } from "../../Loaders/ContentLoader/ContentLoader";
-import { UIElement } from "../../Post/PostEditActions/PostEditActions/PostEditActions";
 import { Modal } from "../Modal/Modal";
 import { GifPickerModalHeader } from "./GifPickerModalHeader/GifPickerModalHeader";
+import { UIElement } from "../../Post/PostEdit/PostEditActions/PostEditActions/PostEditActions";
 
 interface GifPickerProps {
   onToggleElementVisibility: (element: UIElement) => void;

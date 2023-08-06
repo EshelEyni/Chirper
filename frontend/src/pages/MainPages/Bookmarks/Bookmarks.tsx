@@ -3,7 +3,7 @@ import { Post } from "../../../../../shared/interfaces/post.interface";
 import postService from "../../../services/post.service";
 import { Outlet } from "react-router-dom";
 
-export const BookmarksPage = () => {
+const BookmarksPage = () => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
 
   const getBookmarkedPosts = async () => {
@@ -35,3 +35,5 @@ export const BookmarksPage = () => {
     </div>
   );
 };
+
+export default BookmarksPage;

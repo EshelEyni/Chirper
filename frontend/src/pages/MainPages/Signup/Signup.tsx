@@ -5,7 +5,7 @@ import { signup } from "../../../store/actions/auth.actions";
 import { AppDispatch } from "../../../store/types";
 import "./Signup.scss";
 
-export const SignupPage = () => {
+const SignupPage = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
@@ -73,3 +73,5 @@ export const SignupPage = () => {
     </section>
   );
 };
+
+export default SignupPage;

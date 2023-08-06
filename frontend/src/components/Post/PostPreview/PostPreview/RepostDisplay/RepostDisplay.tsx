@@ -63,8 +63,6 @@ export const RepostDisplay: FC = () => {
       </span>
       {elementsHoverState.respostDetails && (
         <PostPreviewUserModal
-          user={repostedBy}
-          onNavigateToProfile={() => onNavigateToProfile(repostedBy!.username)}
           handleMouseLeave={() => handleMouseLeave("respostDetails")}
           userPreviewModalPosition={getModalPosition()}
         />

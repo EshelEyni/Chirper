@@ -14,7 +14,8 @@ import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { useMemo } from "react";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
-export const PostLocation = () => {
+
+const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -124,3 +125,5 @@ export const PostLocation = () => {
     </>
   );
 };
+
+export default PostLocation;

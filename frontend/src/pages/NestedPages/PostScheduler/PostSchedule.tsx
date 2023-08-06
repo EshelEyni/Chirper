@@ -17,7 +17,7 @@ export type invalidDateStatus = {
   location: "date" | "time" | "";
 };
 
-export const PostSchedule = () => {
+const PostSchedule = () => {
   const navigate = useNavigate();
   const { newPostModule } = useSelector((state: RootState) => state);
   const { newPostType } = newPostModule;
@@ -104,3 +104,5 @@ export const PostSchedule = () => {
     </>
   );
 };
+
+export default PostSchedule;

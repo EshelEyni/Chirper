@@ -5,7 +5,7 @@ import { AppDispatch } from "../../../store/types";
 import { login } from "../../../store/actions/auth.actions";
 import "./Login.scss";
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
@@ -53,3 +53,5 @@ export const LoginPage = () => {
     </section>
   );
 };
+
+export default LoginPage;

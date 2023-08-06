@@ -11,16 +11,20 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
 });
 
 const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
-  const { loginToken } = req.cookies;
-  if (!loginToken || typeof loginToken !== "string") {
+  const sendFailedResponse = () => {
     res.send({
       status: "success",
       data: null,
     });
-    return;
+  };
+  const { loginToken } = req.cookies;
+  if (!loginToken || typeof loginToken !== "string") return sendFailedResponse();
+  try {
+    const { user, token } = await authService.autoLogin(loginToken);
+    _sendUserTokenSuccessResponse(res, token, user);
+  } catch (err) {
+    return sendFailedResponse();
   }
-  const { user, token } = await authService.autoLogin(loginToken);
-  _sendUserTokenSuccessResponse(res, token, user);
 });
 
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {

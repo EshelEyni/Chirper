@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { setNewPost, setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
 import { RootState } from "../../../store/store";
 import postService from "../../../services/post.service";
-import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModal/SavePostDraftModal";
 import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";
 import "./Compose.scss";
@@ -13,8 +12,10 @@ import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
+import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
+const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
-export const ComposePage = () => {
+const ComposePage = () => {
   const [isSavePostDraftModalOpen, setIsSavePostDraftModalOpen] = useState(false);
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
 
@@ -78,7 +79,9 @@ export const ComposePage = () => {
     <main className="compose">
       <MainScreen onClickFn={onGoBack} mode="light" zIndex={2000} />
       <PostEditProvider>
-        <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+        <Suspense fallback={<ContentLoader />}>
+          <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+        </Suspense>
       </PostEditProvider>
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal
@@ -96,3 +99,5 @@ export const ComposePage = () => {
     </main>
   );
 };
+
+export default ComposePage;

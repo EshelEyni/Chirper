@@ -1,3 +1,4 @@
+import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
@@ -9,10 +10,10 @@ import { SideBar } from "./components/SideBar/SideBar";
 import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
 import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
-import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
-import { useEffect } from "react";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 import { AuthGuard } from "./guards/AuthGuard";
+const PageNotFound = lazy(() => import("./pages/MainPages/PageNotFound/PageNotFound"));
+// import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
@@ -51,11 +52,13 @@ function App() {
       ) : (
         <div className="app-content">
           <SideBar />
-          <Routes>
-            <Route index element={<Navigate replace to="/home" />} />
-            {getRoutes()}
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route index element={<Navigate replace to="/home" />} />
+              {getRoutes()}
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </Suspense>
           {!loggedinUser && <LoginSignupMsg />}
           <UserMsg />
         </div>

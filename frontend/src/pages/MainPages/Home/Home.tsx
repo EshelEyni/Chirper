@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { getPosts } from "../../../store/actions/post.actions";
 import { AppDispatch } from "../../../store/types";
 import "./Home.scss";
-import { PostEdit } from "../../../components/Post/PostEdit/PostEdit";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { ContentLoader } from "../../../components/Loaders/ContentLoader/ContentLoader";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
+const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
-export const HomePage = () => {
+const Homepage = () => {
   const { posts } = useSelector((state: RootState) => state.postModule);
   const dispatch: AppDispatch = useDispatch();
 
@@ -28,7 +28,9 @@ export const HomePage = () => {
         <div className="home-main-container">
           <div className="post-edit-container">
             <PostEditProvider isHomePage={true}>
-              <PostEdit isHomePage={true} />
+              <Suspense fallback={<ContentLoader />}>
+                <PostEdit isHomePage={true} />
+              </Suspense>
             </PostEditProvider>
           </div>
           <div className="home-page-post-list-container">
@@ -40,3 +42,5 @@ export const HomePage = () => {
     </>
   );
 };
+
+export default Homepage;

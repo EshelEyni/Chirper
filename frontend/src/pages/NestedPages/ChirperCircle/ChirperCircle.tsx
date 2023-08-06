@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const ChirperCirclePage = () => {
+const ChirperCirclePage = () => {
   useEffect(() => {
     document.title = "Chirper Circle / Chirper";
   }, []);
@@ -11,3 +11,5 @@ export const ChirperCirclePage = () => {
     </div>
   );
 };
+
+export default ChirperCirclePage;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { Logo } from "../../../components/App/Logo/Logo";
 
-export const ExplorePage = () => {
+const ExplorePage = () => {
   const params = useParams();
 
   const [currHashtag, setCurrHashtag] = useState<string>("");
@@ -21,3 +21,5 @@ export const ExplorePage = () => {
     </div>
   );
 };
+
+export default ExplorePage;

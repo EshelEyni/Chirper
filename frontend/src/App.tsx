@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
 import { AppDispatch } from "./store/types";
 import "./styles/main.scss";
-import { autoLogin } from "./store/actions/auth.actions";
+import { loginWithToken } from "./store/actions/auth.actions";
 import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
 import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
@@ -42,7 +42,7 @@ function App() {
   }
 
   useEffect(() => {
-    if (!loggedinUser) dispatch(autoLogin());
+    if (!loggedinUser) dispatch(loginWithToken());
   }, [loggedinUser, dispatch]);
 
   return (

@@ -19,7 +19,7 @@ async function login(username: string, password: string): Promise<UserAuthResult
   return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
-async function autoLogin(loginToken: string): Promise<UserAuthResult> {
+async function loginWithToken(loginToken: string): Promise<UserAuthResult> {
   const verifiedToken = await tokenService.verifyToken(loginToken);
   if (!verifiedToken) throw new AppError("Invalid token", 400);
   const { id } = verifiedToken;
@@ -121,7 +121,7 @@ async function _resetLoginAttempts(user: UserDoc) {
 
 export default {
   login,
-  autoLogin,
+  loginWithToken,
   signup,
   sendPasswordResetEmail,
   resetPassword,

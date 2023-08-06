@@ -25,7 +25,7 @@ jest.mock("../../../services/rate-limiter.service", () => ({
 
 jest.mock("../service/auth.service", () => ({
   login: jest.fn().mockReturnValue({}),
-  autoLogin: jest.fn().mockReturnValue({}),
+  loginWithToken: jest.fn().mockReturnValue({}),
   signup: jest.fn().mockReturnValue({}),
   sendPasswordResetEmail: jest.fn().mockReturnValue({}),
   resetPassword: jest.fn().mockReturnValue({}),
@@ -51,14 +51,14 @@ describe("Auth Router", () => {
     passwordConfirm: "test-password",
   };
 
-  describe("POST /auto-login", () => {
+  describe("POST /login/with-token", () => {
     it("should handle auto-login", async () => {
-      (authService.autoLogin as jest.Mock).mockResolvedValue({
+      (authService.loginWithToken as jest.Mock).mockResolvedValue({
         user: mockUser,
         token: mockToken,
       });
       const response = await request(app)
-        .post("/auto-login")
+        .post("/login/with-token")
         .set("Cookie", ["loginToken=some-token"]);
 
       expect(response.status).toBe(200);
@@ -70,7 +70,7 @@ describe("Auth Router", () => {
     });
 
     it("should send a succesfull response with no user if an invalid token is provided", async () => {
-      const response = await request(app).post("/auto-login");
+      const response = await request(app).post("/login/with-token");
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
@@ -81,7 +81,7 @@ describe("Auth Router", () => {
     it("should send a succesfull response with no user if an invalid token is provided", async () => {
       const emptyStr = "";
       const response = await request(app)
-        .post("/auto-login")
+        .post("/login/with-token")
         .set("Cookie", [`loginToken=${emptyStr}`]);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import {
-  autoLogin,
+  loginWithToken,
   login,
   logout,
   resetPassword,
@@ -113,7 +113,7 @@ describe("Auth Controller", () => {
     });
   });
 
-  describe("autoLogin", () => {
+  describe("loginWithToken", () => {
     beforeEach(() => {
       req = { body: {}, cookies: {} };
     });
@@ -123,7 +123,7 @@ describe("Auth Controller", () => {
     });
 
     it("should send a succesfull response with no user if no token is provided", async () => {
-      const sut = autoLogin as any;
+      const sut = loginWithToken as any;
       await sut(req as Request, res as Response, next);
 
       expect(res.send).toHaveBeenCalledWith(
@@ -136,7 +136,7 @@ describe("Auth Controller", () => {
 
     it("should send a succesfull response with no user if an empty string is provided as a token", async () => {
       req.cookies = { loginToken: "" };
-      const sut = autoLogin as any;
+      const sut = loginWithToken as any;
       await sut(req as Request, res as Response, next);
 
       expect(res.send).toHaveBeenCalledWith(
@@ -149,12 +149,12 @@ describe("Auth Controller", () => {
 
     it("should send a succesfull response with the user if a valid token is provided", async () => {
       req.cookies = { loginToken: mockToken };
-      (authService.autoLogin as jest.Mock).mockResolvedValue({
+      (authService.loginWithToken as jest.Mock).mockResolvedValue({
         user: mockUser,
         token: mockToken,
       });
 
-      const sut = autoLogin as any;
+      const sut = loginWithToken as any;
       await sut(req as Request, res as Response, next);
       assertUserTokenSuccesRes();
     });

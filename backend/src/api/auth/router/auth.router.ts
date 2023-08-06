@@ -1,7 +1,7 @@
 import express from "express";
 import {
   login,
-  autoLogin,
+  loginWithToken,
   signup,
   logout,
   sendPasswordResetEmail,
@@ -13,7 +13,7 @@ import { authRequestLimiter } from "../../../services/rate-limiter.service";
 
 const router = express.Router();
 
-router.post("/auto-login", autoLogin);
+router.post("/login/with-token", loginWithToken);
 
 router.use(authRequestLimiter);
 router.post("/login", login);

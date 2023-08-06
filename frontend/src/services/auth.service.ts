@@ -3,8 +3,8 @@ import { User } from "../../../shared/interfaces/user.interface";
 import { UserCredentials } from "../types/auth.types";
 import httpService from "./http.service";
 
-async function autoLogin(): Promise<User | null> {
-  const response = (await httpService.post("auth/auto-login")) as unknown as JsendResponse;
+async function loginWithToken(): Promise<User | null> {
+  const response = (await httpService.post("auth/login/with-token")) as unknown as JsendResponse;
   const user = response.data;
   return user;
 }
@@ -32,4 +32,4 @@ async function logout(): Promise<void> {
   return res;
 }
 
-export default { login, signup, logout, autoLogin };
+export default { login, signup, logout, loginWithToken };

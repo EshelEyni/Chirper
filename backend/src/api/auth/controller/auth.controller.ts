@@ -10,7 +10,7 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   _sendUserTokenSuccessResponse(res, token, user);
 });
 
-const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
+const loginWithToken = asyncErrorCatcher(async (req: Request, res: Response) => {
   const sendFailedResponse = () => {
     res.send({
       status: "success",
@@ -20,7 +20,7 @@ const autoLogin = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { loginToken } = req.cookies;
   if (!loginToken || typeof loginToken !== "string") return sendFailedResponse();
   try {
-    const { user, token } = await authService.autoLogin(loginToken);
+    const { user, token } = await authService.loginWithToken(loginToken);
     _sendUserTokenSuccessResponse(res, token, user);
   } catch (err) {
     return sendFailedResponse();
@@ -124,4 +124,12 @@ const _isValidEmail = (email: string) => {
   return emailRegex.test(email);
 };
 
-export { login, autoLogin, signup, logout, sendPasswordResetEmail, resetPassword, updatePassword };
+export {
+  login,
+  loginWithToken,
+  signup,
+  logout,
+  sendPasswordResetEmail,
+  resetPassword,
+  updatePassword,
+};

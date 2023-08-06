@@ -104,20 +104,20 @@ describe("Auth Service", () => {
     });
   });
 
-  describe("autoLogin", () => {
+  describe("loginWithToken", () => {
     it("should return user and token if login is successful", async () => {
       const mockUser = { id: "123", name: "Test User" };
       (tokenService.verifyToken as jest.Mock).mockResolvedValue({ id: "123" });
       (isValidId as jest.Mock).mockReturnValue(true);
       (UserModel.findById as jest.Mock).mockResolvedValue(mockUser);
       (tokenService.signToken as jest.Mock).mockReturnValue("validToken");
-      const result = await authService.autoLogin("validToken");
+      const result = await authService.loginWithToken("validToken");
       expect(result).toEqual({ user: mockUser, token: "validToken" });
     });
 
     it("should throw an error if token is invalid", async () => {
       (tokenService.verifyToken as jest.Mock).mockResolvedValue(null);
-      await expect(authService.autoLogin("invalidToken")).rejects.toThrow(
+      await expect(authService.loginWithToken("invalidToken")).rejects.toThrow(
         new AppError("Invalid token", 400)
       );
     });
@@ -125,7 +125,7 @@ describe("Auth Service", () => {
     it("should throw an error if id is invalid", async () => {
       (tokenService.verifyToken as jest.Mock).mockResolvedValue({ id: "123" });
       (isValidId as jest.Mock).mockReturnValue(false);
-      await expect(authService.autoLogin("validToken")).rejects.toThrow(
+      await expect(authService.loginWithToken("validToken")).rejects.toThrow(
         new AppError("Invalid Id", 400)
       );
     });
@@ -134,7 +134,7 @@ describe("Auth Service", () => {
       (tokenService.verifyToken as jest.Mock).mockResolvedValue({ id: "123" });
       (isValidId as jest.Mock).mockReturnValue(true);
       (UserModel.findById as jest.Mock).mockResolvedValue(null);
-      await expect(authService.autoLogin("validToken")).rejects.toThrow(
+      await expect(authService.loginWithToken("validToken")).rejects.toThrow(
         new AppError("User not found", 404)
       );
     });

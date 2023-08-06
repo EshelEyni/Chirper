@@ -31,15 +31,15 @@ export function login(
   };
 }
 
-export function autoLogin(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
+export function loginWithToken(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
       dispatch({ type: "SET_IS_PAGE_LOADING", isPageLoading: true });
-      const user = await authService.autoLogin();
+      const user = await authService.loginWithToken();
       dispatch({ type: "SET_LOGGEDIN_USER", user });
       dispatch({ type: "SET_IS_PAGE_LOADING", isPageLoading: false });
     } catch (err) {
-      console.log("AuthActions: err in autoLogin", err);
+      console.log("AuthActions: err in loginWithToken", err);
     }
   };
 }

@@ -21,7 +21,7 @@ import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostCo
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
 import { BtnRemovePostFromThread } from "../../Btns/BtnRemovePostFromThread/BtnRemovePostFromThread";
-import { PostEditTextArea } from "./PostTextInput/PostTextInput";
+import { PostEditTextArea } from "./PostEditTextArea/PostEditTextArea";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { PostEditImgList } from "./PostEditImgList/PostEditImgList";
 import { GifEdit } from "../../Gif/GifEdit/GifEdit";
@@ -109,9 +109,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   const isIndicatorAndAddThreadBtnShown = checkPostValidity(currNewPost) || newPostText.length > 0;
 
   const checkPostArrayValidity = useCallback(
-    (newPosts: NewPost[]): boolean => {
-      return newPosts.every(post => checkPostValidity(post));
-    },
+    (newPosts: NewPost[]): boolean => newPosts.every(post => checkPostValidity(post)),
     [checkPostValidity]
   );
 
@@ -132,10 +130,10 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   async function uploadImagesAndSetToPost(newPosts: NewPost[]) {
     for (const post of newPosts) {
       if (!post.imgs.length) return;
-      const prms = post.imgs.map(async (img, idx) => {
-        const currImgUrl = await uploadFileToCloudinary(img.file, "image");
-        return { url: currImgUrl, sortOrder: idx };
-      });
+      const prms = post.imgs.map(async (img, idx) => ({
+        url: await uploadFileToCloudinary(img.file, "image"),
+        sortOrder: idx,
+      }));
       const savedImgUrl = await Promise.all(prms);
       post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
     }
@@ -144,12 +142,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   async function uploadVideoAndSetToPost(newPosts: NewPost[]) {
     for (const post of newPosts) {
       if (!post.video) return;
-      if (post.video.file) {
-        const videoUrl = await uploadFileToCloudinary(post.video.file, "video");
-        post.videoUrl = videoUrl;
-      } else {
-        post.videoUrl = post.video.url;
-      }
+      if (post.video.file) post.videoUrl = await uploadFileToCloudinary(post.video.file, "video");
+      else post.videoUrl = post.video.url;
       delete post.video;
     }
   }

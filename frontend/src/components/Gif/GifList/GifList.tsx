@@ -37,8 +37,7 @@ export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) =
     <div className="gif-list">
       <BtnSwitchPlay isPlaying={isPlaying} handleChange={handleChange} />
       <ul className="gif-list-main-container">
-        {gifs.length === 0 && <ContentLoader />}
-        {gifs.length > 0 &&
+        {gifs.length > 0 ? (
           gifs.map((gif, idx) => {
             const ratio = gif.size.width / gif.size.height;
             const width = 120 * ratio + "px";
@@ -52,7 +51,10 @@ export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) =
                 handleGifClick={handleGifClick}
               />
             );
-          })}
+          })
+        ) : (
+          <ContentLoader />
+        )}
       </ul>
     </div>
   );

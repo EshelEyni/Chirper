@@ -13,7 +13,6 @@ import { Route as TypeOfRoute } from "./routes";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 import { AuthGuard } from "./guards/AuthGuard";
 const PageNotFound = lazy(() => import("./pages/MainPages/PageNotFound/PageNotFound"));
-// import { PageNotFound } from "./pages/MainPages/PageNotFound/PageNotFound";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();

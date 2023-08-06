@@ -1,0 +1,10 @@
+@import "../../../styles/setup/functions";
+
+.btn-link {
+  font-size: rem(15px);
+  font-weight: 700;
+  padding: rem(8px) rem(16px);
+  color: white;
+  background-color: var(--color-primary);
+  border-radius: 25px;
+}

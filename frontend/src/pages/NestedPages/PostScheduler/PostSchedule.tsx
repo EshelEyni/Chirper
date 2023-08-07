@@ -10,7 +10,7 @@ import { PostScheduleDateInputs } from "./DateInputs/PostScheduleDateInputs";
 import { PostScheduleTimeInputs } from "./TimeInputs/PostScheduleTimeInputs";
 import { TimeZoneDisplay } from "./TimeZoneDisplay/TimeZoneDisplay";
 import { Footer } from "../../../components/App/Footer/Footer";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
+import { NewPostType } from "../../../store/slices/postEditSlice";
 
 export type invalidDateStatus = {
   status: boolean;
@@ -19,21 +19,21 @@ export type invalidDateStatus = {
 
 const PostSchedule = () => {
   const navigate = useNavigate();
-  const { newPostModule } = useSelector((state: RootState) => state);
-  const { newPostType } = newPostModule;
+  const { postEdit } = useSelector((state: RootState) => state);
+  const { newPostType } = postEdit;
 
   const currNewPost = useMemo(() => {
     switch (newPostType) {
       case NewPostType.SideBar:
-        return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
+        return postEdit.sideBar.posts[postEdit.sideBar.currPostIdx];
       case NewPostType.HomePage:
-        return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+        return postEdit.homePage.posts[postEdit.homePage.currPostIdx];
       case NewPostType.Reply:
-        return newPostModule.reply.reply;
+        return postEdit.reply.reply;
       default:
         return null;
     }
-  }, [newPostModule, newPostType]);
+  }, [postEdit, newPostType]);
 
   const [schedule, setSchedule] = useState<Date>(getScheduleDate());
   const [isDateInvalid, setIsDateInvalid] = useState<invalidDateStatus>({

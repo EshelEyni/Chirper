@@ -5,15 +5,15 @@ import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
 import { PostEditOption } from "../../../types/app.types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 
 export const BtnToggleAudience: FC = () => {
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
 
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
 
   const { currNewPost } = usePostEdit();
@@ -52,7 +52,7 @@ export const BtnToggleAudience: FC = () => {
 
   function onOptionClick(option: string) {
     if (!currNewPost) return;
-    dispatch(updateCurrNewPost({ ...currNewPost, audience: option }, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, audience: option }, newPostType }));
     toggleModal();
   }
 

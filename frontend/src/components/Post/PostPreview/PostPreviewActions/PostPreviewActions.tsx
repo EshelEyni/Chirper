@@ -6,7 +6,6 @@ import { FaRegComment } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { setNewPostType, setNewPosts } from "../../../../store/actions/new-post.actions";
 import { RootState } from "../../../../store/store";
 import {
   addLike,
@@ -18,8 +17,8 @@ import { useState } from "react";
 import { useModalPosition } from "../../../../hooks/useModalPosition";
 import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBtn";
 import "./PostPreviewActions.scss";
-import { NewPostType } from "../../../../store/reducers/new-post.reducer";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
+import { NewPostType, setNewPostType, setNewPosts } from "../../../../store/slices/postEditSlice";
 
 export type PostPreviewActionBtn = {
   name: string;
@@ -51,8 +50,8 @@ export const PostPreviewActions: React.FC = () => {
       icon: <FaRegComment />,
       count: post.repliesCount,
       onClickFunc: async () => {
-        await dispatch(setNewPostType(NewPostType.Reply));
-        await dispatch(setNewPosts([], NewPostType.Reply, post));
+        dispatch(setNewPostType(NewPostType.Reply));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Reply, post }));
         navigate("compose", { relative: "path" });
       },
     },
@@ -114,8 +113,8 @@ export const PostPreviewActions: React.FC = () => {
 
   async function onQuotePost() {
     setIsRepostModalOpen(prev => !prev);
-    await dispatch(setNewPostType(NewPostType.Quote));
-    await dispatch(setNewPosts([], NewPostType.Quote, post));
+    dispatch(setNewPostType(NewPostType.Quote));
+    dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Quote, post }));
     navigate("compose", { relative: "path" });
   }
 

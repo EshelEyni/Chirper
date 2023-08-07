@@ -2,7 +2,6 @@ import { useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import { setNewPost, setNewPostType, setNewPosts } from "../../../store/actions/new-post.actions";
 import { RootState } from "../../../store/store";
 import postService from "../../../services/post.service";
 import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModal/SavePostDraftModal";
@@ -10,9 +9,14 @@ import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmD
 import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
+import {
+  NewPostType,
+  setNewPost,
+  setNewPostType,
+  setNewPosts,
+} from "../../../store/slices/postEditSlice";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
@@ -22,27 +26,27 @@ const ComposePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.postEdit);
 
   async function discardPostThread() {
     switch (newPostType) {
       case NewPostType.HomePage:
-        await dispatch(setNewPosts([], NewPostType.HomePage));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.HomePage }));
         break;
       case NewPostType.SideBar:
-        await dispatch(setNewPosts([], NewPostType.SideBar));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.SideBar }));
         break;
       case NewPostType.Reply:
-        await dispatch(setNewPost(null, NewPostType.Reply));
+        dispatch(setNewPost({ newPost: null, newPostType: NewPostType.Reply }));
         break;
       case NewPostType.Quote:
-        await dispatch(setNewPost(null, NewPostType.Quote));
+        dispatch(setNewPost({ newPost: null, newPostType: NewPostType.Quote }));
         break;
       default:
-        await dispatch(setNewPosts([], NewPostType.HomePage));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.HomePage }));
         break;
     }
-    await dispatch(setNewPostType(NewPostType.HomePage));
+    dispatch(setNewPostType(NewPostType.HomePage));
     const basePath = getBasePathName(location.pathname, "compose");
     navigate(basePath);
   }

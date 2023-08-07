@@ -2,9 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewPost, Post, QuotedPost } from "../../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../../store/store";
 import { AppDispatch } from "../../../../store/types";
-import { setNewPost } from "../../../../store/actions/new-post.actions";
 import "./MiniPostPreview.scss";
 import { PostPreviewWrapper } from "../Wrapper/PostPreviewWrapper";
+import { setNewPost } from "../../../../store/slices/postEditSlice";
 
 export interface MiniPostPreviewProps {
   post?: Post;
@@ -21,12 +21,12 @@ export type MiniPostPreviewType =
   | "post-stats-preview";
 
 export const MiniPostPreview: React.FC<MiniPostPreviewProps> = ({ newPost, type, children }) => {
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
 
-  function onSetCurrPost(currPost: NewPost | undefined) {
-    if (!currPost) return;
-    dispatch(setNewPost(currPost, newPostType));
+  function onSetCurrPost(newPost: NewPost | undefined) {
+    if (!newPost) return;
+    dispatch(setNewPost({ newPost, newPostType }));
   }
 
   return (

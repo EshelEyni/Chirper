@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signup } from "../../../store/actions/auth.actions";
 import { AppDispatch } from "../../../store/types";
 import "./Signup.scss";
+import { signup } from "../../../store/slices/authSlice";
 
 const SignupPage = () => {
   const navigate = useNavigate();

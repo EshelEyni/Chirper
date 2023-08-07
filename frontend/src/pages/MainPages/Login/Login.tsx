@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import { login } from "../../../store/actions/auth.actions";
+import { login } from "../../../store/slices/authSlice";
 import "./Login.scss";
 
 const LoginPage = () => {

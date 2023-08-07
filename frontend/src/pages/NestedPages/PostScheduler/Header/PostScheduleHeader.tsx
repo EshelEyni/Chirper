@@ -5,7 +5,7 @@ import { NewPost } from "../../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
+import { updateNewPost } from "../../../../store/slices/postEditSlice";
 
 type PostScheduleHeaderProps = {
   currNewPost: NewPost;
@@ -24,19 +24,19 @@ export const PostScheduleHeader: FC<PostScheduleHeaderProps> = ({
   isDateInvalid,
 }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
 
   function onConfirmSchedule() {
     onGoBack();
     const newPost = { ...currNewPost, schedule };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost, newPostType }));
   }
 
   function onClearSchedule() {
     onGoBack();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { schedule, ...postWithOutSchedule } = currNewPost;
-    dispatch(updateCurrNewPost(postWithOutSchedule, newPostType));
+    dispatch(updateNewPost({ newPost: postWithOutSchedule, newPostType }));
   }
 
   return (

@@ -2,11 +2,10 @@ import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
 import { NewPost } from "../../../../../../shared/interfaces/post.interface";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { AppDispatch } from "../../../../store/types";
-import { NewPostType } from "../../../../store/reducers/new-post.reducer";
 import { debounce } from "../../../../services/util/utils.service";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
+import { NewPostType, updateNewPost } from "../../../../store/slices/postEditSlice";
 
 type PostTextInputProps = {
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
@@ -23,7 +22,7 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
     currNewPost,
   } = usePostEdit();
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { newPostType, reply } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType, reply } = useSelector((state: RootState) => state.postEdit);
   const { repliedToPost } = reply;
   const dispatch: AppDispatch = useDispatch();
 
@@ -48,10 +47,10 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
           video: { url: youtubeURL, isLoading: false, file: null },
         };
 
-        dispatch(updateCurrNewPost(newPost, newPostType));
+        dispatch(updateNewPost({ newPost, newPostType }));
       } else if (currPost.video) {
         const newPost = { ...currPost, text, video: null };
-        dispatch(updateCurrNewPost(newPost, newPostType));
+        dispatch(updateNewPost({ newPost, newPostType }));
       }
     }, 500).debouncedFunc
   );
@@ -67,7 +66,7 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
   const handleTextBlur = async () => {
     if (!currNewPost) return;
     const newPost = { ...currNewPost, text: newPostText };
-    await dispatch(updateCurrNewPost(newPost, newPostType));
+    await dispatch(updateNewPost({ newPost, newPostType }));
   };
 
   const setTextPlaceholder = () => {

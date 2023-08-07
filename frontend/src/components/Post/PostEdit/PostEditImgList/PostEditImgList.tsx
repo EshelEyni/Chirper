@@ -2,15 +2,15 @@ import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../store/types";
 import { RootState } from "../../../../store/store";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { BtnRemoveContent } from "../../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { SpinnerLoader } from "../../../Loaders/SpinnerLoader/SpinnerLoader";
 import "./PostEditImgList.scss";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../../store/slices/postEditSlice";
 
 export const PostEditImgList: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
   if (!currNewPost) return null;
   const { imgs } = currNewPost;
@@ -20,7 +20,7 @@ export const PostEditImgList: FC = () => {
     if (!currNewPost || !currNewPost.imgs) return;
     const newImgs = [...currNewPost.imgs];
     newImgs.splice(idx, 1);
-    dispatch(updateCurrNewPost({ ...currNewPost, imgs: newImgs }, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, imgs: newImgs }, newPostType }));
   }
 
   return (

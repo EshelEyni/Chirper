@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { AppDispatch } from "../../../store/types";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
@@ -10,6 +9,7 @@ import { GifPreview } from "../GifPreview/GifPreview";
 import "./GifList.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { UIElement } from "../../Post/PostEdit/PostEditActions/PostEditActions/PostEditActions";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 
 interface GifListProps {
   gifs: Gif[];
@@ -19,13 +19,12 @@ interface GifListProps {
 export const GifList: FC<GifListProps> = ({ gifs, onToggleElementVisibility }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
 
   function handleGifClick(gif: Gif) {
     if (!currNewPost) return;
-    const newPost = { ...currNewPost, gif };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, gif }, newPostType }));
     onToggleElementVisibility("gifPicker");
   }
 

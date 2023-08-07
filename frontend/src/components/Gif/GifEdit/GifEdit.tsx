@@ -2,16 +2,16 @@ import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { BtnPlay } from "../../Btns/BtnPlay/BtnPlay";
 import "./GifEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 
 export const GifEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -23,8 +23,7 @@ export const GifEdit: FC = () => {
 
   function onRemoveGif() {
     if (!currNewPost) return;
-    const newPost = { ...currNewPost, gif: null };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, gif: null }, newPostType }));
   }
 
   return (

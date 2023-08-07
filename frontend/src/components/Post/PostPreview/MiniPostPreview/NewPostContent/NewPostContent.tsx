@@ -10,8 +10,8 @@ import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
 import { useMemo } from "react";
-import { NewPostType } from "../../../../../store/reducers/new-post.reducer";
 import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
+import { NewPostType } from "../../../../../store/slices/postEditSlice";
 
 type NewPostContentProps = {
   newPost: NewPost;
@@ -19,8 +19,8 @@ type NewPostContentProps = {
 
 export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { newPostModule } = useSelector((state: RootState) => state);
-  const { newPostType } = newPostModule;
+  const { postEdit } = useSelector((state: RootState) => state);
+  const { newPostType } = postEdit;
   const isPlainText = newPost?.text ? true : false;
   const isImgShown = newPost?.imgs && newPost.imgs.length > 0;
 
@@ -28,14 +28,14 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
     if (!newPost) return -1;
     const isThread = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
     if (!isThread) return -1;
-    return newPostModule[newPostType].posts.findIndex(p => p.tempId === newPost?.tempId);
-  }, [newPost, newPostType, newPostModule]);
+    return postEdit[newPostType].posts.findIndex(p => p.tempId === newPost?.tempId);
+  }, [newPost, newPostType, postEdit]);
 
   const isPostLineShown = useMemo(() => {
     const isThread = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
     if (!isThread) return false;
-    return newPostModule[newPostType].currPostIdx !== newPostModule[newPostType].posts.length - 1;
-  }, [newPostType, newPostModule]);
+    return postEdit[newPostType].currPostIdx !== postEdit[newPostType].posts.length - 1;
+  }, [newPostType, postEdit]);
 
   function getText() {
     if (newPost?.text) return newPost.text;

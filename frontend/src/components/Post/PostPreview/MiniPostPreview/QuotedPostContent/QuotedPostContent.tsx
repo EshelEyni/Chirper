@@ -12,7 +12,7 @@ import { PostPreviewProvider } from "../../../../../contexts/PostPreviewContext"
 import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
 
 export const QuotedPostContent: React.FC = () => {
-  const { quotedPost } = useSelector((state: RootState) => state.newPostModule.quote);
+  const { quotedPost } = useSelector((state: RootState) => state.postEdit.quote);
   if (!quotedPost) return null;
   const isImgShown = quotedPost.imgs && quotedPost.imgs.length > 0;
   return (

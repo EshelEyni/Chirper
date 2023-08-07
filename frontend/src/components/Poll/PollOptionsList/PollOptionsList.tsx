@@ -3,15 +3,14 @@ import { createRef, useState, useEffect, FC } from "react";
 import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import "./PollOptionsList.scss";
 import { PollOption } from "./PollOption/PollOption";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
 
 export const PollOptionsList: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.postEdit);
 
   const [inputRefs, setInputRefs] = useState<React.RefObject<HTMLInputElement>[]>([]);
   const [focused, setFocused] = useState<Record<string, boolean>>({});
@@ -36,7 +35,7 @@ export const PollOptionsList: FC = () => {
         options: [...currNewPost.poll!.options, defaultOption],
       },
     };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost, newPostType }));
   }
 
   function onFocusChoice(idx: number) {
@@ -61,7 +60,7 @@ export const PollOptionsList: FC = () => {
         options,
       },
     };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost, newPostType }));
   }
 
   useEffect(() => {

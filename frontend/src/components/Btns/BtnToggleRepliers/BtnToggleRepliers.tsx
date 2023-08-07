@@ -4,14 +4,14 @@ import { PostEditOption } from "../../../types/app.types";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 
 export const BtnToggleRepliers: FC = () => {
   const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const [isRepliersOpen, setIsRepliersOpen] = useState<boolean>(false);
   if (!currNewPost) return null;
 
@@ -57,7 +57,7 @@ export const BtnToggleRepliers: FC = () => {
 
   function onOptionClick(value: string) {
     if (!currNewPost) return;
-    dispatch(updateCurrNewPost({ ...currNewPost, repliersType: value }, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, repliersType: value }, newPostType }));
     toggleModal();
   }
 

@@ -7,7 +7,6 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../store/types";
 import { Poll, Emoji } from "../../../../../../../shared/interfaces/post.interface";
-import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
 import { RootState } from "../../../../../store/store";
 import { IoLocationSharp } from "react-icons/io5";
 import "./PostEditActions.scss";
@@ -17,6 +16,7 @@ import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
 import { GifPickerModal } from "../../../../Modals/GifPickerModal/GifPickerModal";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
 import { setUserMsg } from "../../../../../store/slices/systemSlice";
+import { updateNewPost } from "../../../../../store/slices/postEditSlice";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {
@@ -33,7 +33,7 @@ export const PostEditActions: FC = () => {
   const { newPostText, setNewPostText, isPickerShown, currNewPost } = usePostEdit();
 
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.postEdit);
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const [isMultiple, setIsMultiple] = useState(true);
@@ -124,8 +124,7 @@ export const PostEditActions: FC = () => {
       isVotingOff: false,
       createdAt: Date.now(),
     };
-    const newPost = { ...currNewPost, poll: defaultPoll };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, poll: defaultPoll }, newPostType }));
   }
 
   function handleBtnEmojiClick() {
@@ -158,7 +157,7 @@ export const PostEditActions: FC = () => {
     const nativeEmoji = emoji.native;
     const newText = newPostText + nativeEmoji;
     setNewPostText(newText);
-    dispatch(updateCurrNewPost({ ...currNewPost, text: newText }, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, text: newText }, newPostType }));
   }
 
   function onToggleElementVisibility(elementName: UIElement) {

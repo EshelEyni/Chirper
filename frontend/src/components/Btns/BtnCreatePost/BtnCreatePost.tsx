@@ -1,9 +1,8 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../store/types";
-import { setNewPostType } from "../../../store/actions/new-post.actions";
 import "./BtnCreatePost.scss";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
+import { NewPostType, setNewPostType } from "../../../store/slices/postEditSlice";
 
 export type BtnCreatePostTitle = "Chirp" | "Chirp All" | "Schedule" | "Reply";
 
@@ -23,9 +22,9 @@ export const BtnCreatePost: React.FC<BtnCreatePostProps> = ({
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
-  async function onClickBtn() {
+  function onClickBtn() {
     if (isSideBarBtn) {
-      await dispatch(setNewPostType(NewPostType.SideBar));
+      dispatch(setNewPostType(NewPostType.SideBar));
       navigate("compose", { relative: "path" });
     } else {
       onAddPost && onAddPost();

@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCustomSelect } from "../../../../hooks/useCustomSelect";
 import { AppDispatch } from "../../../../store/types";
 import { RootState } from "../../../../store/store";
-import { updateCurrNewPost } from "../../../../store/actions/new-post.actions";
 import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../../store/slices/postEditSlice";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
   const pollDays = currNewPost!.poll!.length.days;
 
@@ -38,7 +38,7 @@ export const PollLengthInputs: FC = () => {
         length: setPollLength(inputType, value),
       },
     };
-    dispatch(updateCurrNewPost(newPost, newPostType));
+    dispatch(updateNewPost({ newPost, newPostType }));
   }
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(

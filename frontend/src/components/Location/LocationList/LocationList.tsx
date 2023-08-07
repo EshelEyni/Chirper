@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { NewPost } from "../../../../../shared/interfaces/post.interface";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import { LocationPreview } from "../LocationPreview/LocationPreview";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 
 interface LocationListProps {
   currNewPost: NewPost;
@@ -24,11 +24,11 @@ export const LocationList: FC<LocationListProps> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
 
   function onClickLocation(location: Location) {
     setSelectedLocation(location);
-    dispatch(updateCurrNewPost({ ...currNewPost, location }, newPostType));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, location }, newPostType }));
     navigate("/home");
   }
 

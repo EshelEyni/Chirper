@@ -2,11 +2,11 @@ import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../store/types";
 import { RootState } from "../../../../../store/store";
-import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
 import { readAsDataURL } from "../../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
 import { setUserMsg } from "../../../../../store/slices/systemSlice";
+import { updateNewPost } from "../../../../../store/slices/postEditSlice";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;
@@ -21,7 +21,7 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { newPostType } = useSelector((state: RootState) => state.newPostModule);
+  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -104,10 +104,10 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
         if (file) {
           const currIdx = newImgs.length;
           newImgs.push({ url: "", isLoading: true, file });
-          dispatch(updateCurrNewPost({ ...currNewPost, imgs: [...newImgs] }, newPostType));
+          dispatch(updateNewPost({ newPost: { ...currNewPost, imgs: [...newImgs] }, newPostType }));
           const dataUrl = await readAsDataURL(file);
           newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-          dispatch(updateCurrNewPost({ ...currNewPost, imgs: [...newImgs] }, newPostType));
+          dispatch(updateNewPost({ newPost: { ...currNewPost, imgs: [...newImgs] }, newPostType }));
         }
       } catch (error) {
         console.error("Error reading file:", error);
@@ -119,10 +119,10 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
     if (!currNewPost) return;
     try {
       const newPostPreLoad = { ...currNewPost, video: { url: "", isLoading: true, file } };
-      dispatch(updateCurrNewPost(newPostPreLoad, newPostType));
+      dispatch(updateNewPost({ newPost: newPostPreLoad, newPostType }));
       const dataUrl = await readAsDataURL(file);
       const newPost = { ...currNewPost, video: { url: dataUrl, isLoading: false, file } };
-      dispatch(updateCurrNewPost(newPost, newPostType));
+      dispatch(updateNewPost({ newPost, newPostType }));
     } catch (error) {
       console.error("Error reading file:", error);
     }

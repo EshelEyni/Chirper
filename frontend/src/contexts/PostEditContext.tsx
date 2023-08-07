@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { NewPostType } from "../store/reducers/new-post.reducer";
 import { NewPost } from "../../../shared/interfaces/post.interface";
+import { NewPostType } from "../store/slices/postEditSlice";
 
 type PostEditContextType = {
   currNewPost: NewPost | null;
@@ -33,42 +33,38 @@ function PostEditProvider({
   const [arePostsValid, setArePostsValid] = useState<boolean>(false);
   const [isPickerShown, setIsPickerShown] = useState<boolean>(false);
 
-  const newPostModule = useSelector((state: RootState) => state.newPostModule);
-  const { newPostType } = newPostModule;
+  const postEdit = useSelector((state: RootState) => state.postEdit);
+  const { newPostType } = postEdit;
   const isThreadType = newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
-  const isFirstPostInThread = isThreadType && newPostModule[newPostType].currPostIdx === 0;
+  const isFirstPostInThread = isThreadType && postEdit[newPostType].currPostIdx === 0;
 
   const preCurrNewPostList = useMemo(() => {
     return isThreadType
-      ? newPostModule[newPostType].posts.filter(
-          (_, idx) => idx < newPostModule[newPostType].currPostIdx
-        )
+      ? postEdit[newPostType].posts.filter((_, idx) => idx < postEdit[newPostType].currPostIdx)
       : [];
-  }, [isThreadType, newPostModule, newPostType]);
+  }, [isThreadType, postEdit, newPostType]);
 
   const postCurrNewPostList = useMemo(() => {
     return isThreadType
-      ? newPostModule[newPostType].posts.filter(
-          (_, idx) => idx > newPostModule[newPostType].currPostIdx
-        )
+      ? postEdit[newPostType].posts.filter((_, idx) => idx > postEdit[newPostType].currPostIdx)
       : [];
-  }, [isThreadType, newPostModule, newPostType]);
+  }, [isThreadType, postEdit, newPostType]);
 
   const currNewPost = useMemo(() => {
-    if (isHomePage) return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+    if (isHomePage) return postEdit.homePage.posts[postEdit.homePage.currPostIdx];
     switch (newPostType) {
       case NewPostType.SideBar:
-        return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
+        return postEdit.sideBar.posts[postEdit.sideBar.currPostIdx];
       case NewPostType.HomePage:
-        return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+        return postEdit.homePage.posts[postEdit.homePage.currPostIdx];
       case NewPostType.Reply:
-        return newPostModule.reply.reply;
+        return postEdit.reply.reply;
       case NewPostType.Quote:
-        return newPostModule.quote.quote;
+        return postEdit.quote.quote;
       default:
         return null;
     }
-  }, [newPostModule, newPostType, isHomePage]);
+  }, [postEdit, newPostType, isHomePage]);
 
   const value = {
     currNewPost,

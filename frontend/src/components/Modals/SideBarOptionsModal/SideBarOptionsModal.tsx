@@ -10,7 +10,7 @@ import { GiFeather } from "react-icons/gi";
 import { FaAt } from "react-icons/fa";
 import "./SideBarOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
-import { logout } from "../../../store/slices/authSlice";
+import { userLogout } from "../../../store/slices/authSlice";
 
 interface SideBarOptionsModalProps {
   loggedInUser: User;
@@ -30,7 +30,7 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
   };
 
   const onLogout = async () => {
-    await dispatch(logout());
+    await dispatch(userLogout());
     toggleModal();
     navigate("/explore");
   };

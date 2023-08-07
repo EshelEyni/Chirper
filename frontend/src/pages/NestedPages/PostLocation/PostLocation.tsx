@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { Location } from "../../../../../shared/interfaces/location.interface";
-import { updateCurrNewPost } from "../../../store/actions/new-post.actions";
 import locationService from "../../../services/location.service";
 import "./PostLocation.scss";
 import { LocationList } from "../../../components/Location/LocationList/LocationList";
@@ -13,7 +12,7 @@ import { LocationSearchBar } from "../../../components/Location/LocationSearchBa
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { useMemo } from "react";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
+import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
 
 const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -23,19 +22,19 @@ const PostLocation = () => {
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { newPostModule } = useSelector((state: RootState) => state);
-  const { newPostType } = newPostModule;
+  const { postEdit } = useSelector((state: RootState) => state);
+  const { newPostType } = postEdit;
 
   const currNewPost = useMemo(() => {
     switch (newPostType) {
       case NewPostType.SideBar:
-        return newPostModule.sideBar.posts[newPostModule.sideBar.currPostIdx];
+        return postEdit.sideBar.posts[postEdit.sideBar.currPostIdx];
       case NewPostType.HomePage:
-        return newPostModule.homePage.posts[newPostModule.homePage.currPostIdx];
+        return postEdit.homePage.posts[postEdit.homePage.currPostIdx];
       default:
         return null;
     }
-  }, [newPostModule, newPostType]);
+  }, [postEdit, newPostType]);
 
   function onGoBack() {
     navigate("/home");
@@ -44,7 +43,9 @@ const PostLocation = () => {
   function onConfirmLocation() {
     onGoBack();
     if (!selectedLocation || !currNewPost) return;
-    dispatch(updateCurrNewPost({ ...currNewPost, location: selectedLocation }, newPostType));
+    dispatch(
+      updateNewPost({ newPost: { ...currNewPost, location: selectedLocation }, newPostType })
+    );
   }
 
   function onClearLocation() {
@@ -52,7 +53,7 @@ const PostLocation = () => {
     if (!currNewPost) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { location, ...postWithOutLocation } = currNewPost;
-    dispatch(updateCurrNewPost(postWithOutLocation, newPostType));
+    dispatch(updateNewPost({ newPost: postWithOutLocation, newPostType }));
   }
 
   const fetchLocations = useCallback(async () => {

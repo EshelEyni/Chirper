@@ -5,11 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { NewPost, NewPostImg } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
-import {
-  addNewPostToThread,
-  clearNewPostState,
-  updateCurrNewPost,
-} from "../../../store/actions/new-post.actions";
 import { addPost, addQuotePost, addReply } from "../../../store/actions/post.actions";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
@@ -32,10 +27,15 @@ import { PostEditActions } from "./PostEditActions/PostEditActions/PostEditActio
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
-import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 import { setUserMsg } from "../../../store/slices/systemSlice";
+import {
+  NewPostType,
+  addNewPostToThread,
+  clearNewPosts,
+  updateNewPost,
+} from "../../../store/slices/postEditSlice";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -56,8 +56,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     isPickerShown,
     setIsPickerShown,
   } = usePostEdit();
-  const { newPostModule } = useSelector((state: RootState) => state);
-  const { sideBar, homePage, reply, quote, newPostType } = newPostModule;
+  const { postEdit } = useSelector((state: RootState) => state);
+  const { sideBar, homePage, reply, quote, newPostType } = postEdit;
   const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -163,7 +163,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   }
 
   function resetState() {
-    dispatch(clearNewPostState());
+    dispatch(clearNewPosts());
     setIsPickerShown(false);
     setPostSaveInProgress(false);
     setArePostsValid(false);
@@ -178,14 +178,13 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     textAreaRef.current?.focus();
   }
 
-  async function onAddPostToThread() {
+  function onAddPostToThread() {
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      const newPost = { ...currNewPost, text: newPostText };
-      await dispatch(updateCurrNewPost(newPost, newPostType));
+      dispatch(updateNewPost({ post: { ...currNewPost, text: newPostText }, newPostType }));
       setIsPickerShown(false);
-      await dispatch(addNewPostToThread(newPostType));
+      dispatch(addNewPostToThread(newPostType));
       navigate("compose", { relative: "path" });
     } else {
       if (isAddingPostToThreadDisabled)
@@ -195,7 +194,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
             text: "You can add more Chirps to this thread after sending these.",
           })
         );
-      await dispatch(addNewPostToThread(newPostType));
+      dispatch(addNewPostToThread(newPostType));
       textAreaRef.current?.focus();
     }
   }
@@ -231,7 +230,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     return () => {
       setNewPostText("");
     };
-  }, [newPostModule, currNewPost?.text, setNewPostText]);
+  }, [postEdit, currNewPost?.text, setNewPostText]);
 
   useEffect(() => {
     if (!isHomePage) textAreaRef.current?.focus();

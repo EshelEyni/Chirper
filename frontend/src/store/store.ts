@@ -2,17 +2,17 @@ import { ThunkAction } from "redux-thunk";
 import { AnyAction } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 
-import { userReducer } from "./reducers/user.reducer";
 import { postReducer } from "./reducers/post.reducer";
 import systemSlice from "./slices/systemSlice";
 import authSlice from "./slices/authSlice";
 import postEditSlice from "./slices/postEditSlice";
+import userSlice from "./slices/userSlice";
 
 export const store = configureStore({
   reducer: {
-    userModule: userReducer as any,
-    auth: authSlice,
     system: systemSlice,
+    auth: authSlice,
+    user: userSlice,
     postModule: postReducer as any,
     postEdit: postEditSlice,
   },

@@ -3,7 +3,6 @@ import { AnyAction } from "redux";
 import postService from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-// import { setUserMsg } from "./system.actions";
 import { PostRepostResult } from "../../../../shared/interfaces/post.interface";
 import userService from "../../services/user.service";
 import { setUserMsg } from "../slices/systemSlice";

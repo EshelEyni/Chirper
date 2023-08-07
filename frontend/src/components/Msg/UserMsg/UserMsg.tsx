@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import "./UserMsg.scss";
+import { setUserMsg } from "../../../store/slices/systemSlice";
 
 export const UserMsg = () => {
   const { userMsg } = useSelector((state: RootState) => state.system);
@@ -12,8 +13,9 @@ export const UserMsg = () => {
   const { text, type, link } = userMsg;
 
   function handleLinkClick() {
-    dispatch({ type: "SET_USER_MSG", userMsg: null });
+    dispatch(setUserMsg(null));
   }
+
   return (
     <div className={"user-msg " + type}>
       <p>{text}</p>

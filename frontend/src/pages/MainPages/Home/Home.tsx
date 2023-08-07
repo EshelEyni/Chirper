@@ -37,7 +37,9 @@ const Homepage = () => {
             {posts.length > 0 ? <PostList posts={posts} /> : <SpinnerLoader />}
           </div>
         </div>
-        <Outlet />
+        <Suspense fallback={<SpinnerLoader />}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   );

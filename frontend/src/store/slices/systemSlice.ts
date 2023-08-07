@@ -1,3 +1,4 @@
+import { AppThunk } from "./../store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
 
@@ -25,5 +26,13 @@ const systemSlice = createSlice({
 });
 
 export const { setIsPageLoading, setUserMsg } = systemSlice.actions;
+
+export function displayUserMsg(userMsg: UserMsg): AppThunk {
+  return async dispatch => {
+    dispatch(setUserMsg(userMsg));
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    dispatch(setUserMsg(null));
+  };
+}
 
 export default systemSlice.reducer;

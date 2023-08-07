@@ -29,7 +29,7 @@ import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
-import { setUserMsg } from "../../../store/slices/systemSlice";
+import { displayUserMsg } from "../../../store/slices/systemSlice";
 import {
   NewPostType,
   addNewPostToThread,
@@ -67,7 +67,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   const location = useLocation();
 
   const threadLength = preCurrNewPostList.length + postCurrNewPostList.length + 1;
-  const isAddingPostToThreadDisabled = threadLength >= 10;
+  const threadLimit = 10;
+  const isAddingPostToThreadDisabled = threadLength >= threadLimit;
   const isMultipePosts = threadLength > 1;
   const isPostDateTitleShown = currNewPost?.schedule && isFirstPostInThread;
   const isPreCurrNewPostListShown = !isHomePage && preCurrNewPostList.length > 0;
@@ -182,14 +183,14 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      dispatch(updateNewPost({ post: { ...currNewPost, text: newPostText }, newPostType }));
+      dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText }, newPostType }));
       setIsPickerShown(false);
       dispatch(addNewPostToThread(newPostType));
       navigate("compose", { relative: "path" });
     } else {
-      if (isAddingPostToThreadDisabled)
+      if (threadLength === threadLimit - 1)
         dispatch(
-          setUserMsg({
+          displayUserMsg({
             type: "info",
             text: "You can add more Chirps to this thread after sending these.",
           })

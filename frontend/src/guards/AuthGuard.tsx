@@ -8,12 +8,12 @@ type AuthGuardProps = {
 };
 
 export const AuthGuard: FC<AuthGuardProps> = ({ component }) => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loggedinUser) navigate("/explore");
-  }, [loggedinUser, navigate]);
+    if (!loggedInUser) navigate("/explore");
+  }, [loggedInUser, navigate]);
 
   return <>{component}</>;
 };

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
 import { AppDispatch } from "./store/types";
 import "./styles/main.scss";
-import { loginWithToken } from "./store/actions/auth.actions";
 import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
 import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
@@ -12,12 +11,13 @@ import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 import { AuthGuard } from "./guards/AuthGuard";
+import { loginWithToken } from "./store/slices/authSlice";
 const PageNotFound = lazy(() => import("./pages/MainPages/PageNotFound/PageNotFound"));
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
-  const { isPageLoading } = useSelector((state: RootState) => state.systemModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
+  const { isPageLoading } = useSelector((state: RootState) => state.system);
 
   function getRoutes() {
     return routes.map(route => (
@@ -41,8 +41,8 @@ function App() {
   }
 
   useEffect(() => {
-    if (!loggedinUser) dispatch(loginWithToken());
-  }, [loggedinUser, dispatch]);
+    if (!loggedInUser) dispatch(loginWithToken());
+  }, [loggedInUser, dispatch]);
 
   return (
     <div className="app">
@@ -58,7 +58,7 @@ function App() {
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
-          {!loggedinUser && <LoginSignupMsg />}
+          {!loggedInUser && <LoginSignupMsg />}
           <UserMsg />
         </div>
       )}

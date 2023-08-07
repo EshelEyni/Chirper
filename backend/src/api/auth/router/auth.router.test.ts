@@ -14,7 +14,7 @@ app.use(errorHandler);
 
 jest.mock("../../../middlewares/authGuards/authGuards.middleware", () => ({
   checkUserAuthentication: jest.fn().mockImplementation((req, res, next) => {
-    req.loggedinUserId = "some-id";
+    req.loggedInUserId = "some-id";
     next();
   }),
 }));

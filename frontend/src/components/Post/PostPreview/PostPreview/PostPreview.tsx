@@ -26,12 +26,12 @@ import "./PostPreview.scss";
 
 export const PostPreview: React.FC = () => {
   const { post, poll } = usePostPreview();
-  const { isViewed } = post.loggedinUserActionState;
+  const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const isPostReplyFromPostOwner =
     post?.repliedPostDetails &&
-    post.repliedPostDetails.at(-1)?.postOwner.userId === loggedinUser?.id;
+    post.repliedPostDetails.at(-1)?.postOwner.userId === loggedInUser?.id;
   const isRepliedToUserListShown =
     !isPostReplyFromPostOwner && post.repliedPostDetails && post.repliedPostDetails.length > 0;
 
@@ -59,7 +59,7 @@ export const PostPreview: React.FC = () => {
               text={post.text}
               isPlainText={false}
               postId={post.id}
-              loggedinUserActionState={post.loggedinUserActionState}
+              loggedInUserActionState={post.loggedInUserActionState}
             />
             {post.imgs?.length > 0 && <PostImg imgs={post.imgs} />}
             {post.videoUrl && (

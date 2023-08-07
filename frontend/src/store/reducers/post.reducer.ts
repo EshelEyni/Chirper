@@ -18,7 +18,7 @@ export function postReducer(
     repost: Post;
     postId: string;
     updatedPost: Post;
-    loggedinUserId: string;
+    loggedInUserId: string;
   }
 ) {
   switch (action.type) {
@@ -64,7 +64,7 @@ export function postReducer(
           .filter(
             post =>
               post.id !== action.post.id ||
-              !(post.repostedBy && post.repostedBy.id === action.loggedinUserId)
+              !(post.repostedBy && post.repostedBy.id === action.loggedInUserId)
           )
           .map(post => {
             if (post.id === action.post.id) return action.post;

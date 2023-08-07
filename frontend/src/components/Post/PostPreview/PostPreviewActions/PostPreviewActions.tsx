@@ -32,13 +32,13 @@ export type PostPreviewActionBtn = {
 
 export const PostPreviewActions: React.FC = () => {
   const { post } = usePostPreview();
-  const { isReposted, isLiked } = post.loggedinUserActionState;
+  const { isReposted, isLiked } = post.loggedInUserActionState;
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 175,
@@ -107,8 +107,8 @@ export const PostPreviewActions: React.FC = () => {
   }
 
   async function onRemoveRepost() {
-    if (!loggedinUser) return;
-    await dispatch(removeRepost(post.id, loggedinUser.id));
+    if (!loggedInUser) return;
+    await dispatch(removeRepost(post.id, loggedInUser.id));
     setIsRepostModalOpen(prev => !prev);
   }
 

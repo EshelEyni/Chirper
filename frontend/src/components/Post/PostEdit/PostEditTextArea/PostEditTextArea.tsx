@@ -22,7 +22,7 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
     isPickerShown,
     currNewPost,
   } = usePostEdit();
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { newPostType, reply } = useSelector((state: RootState) => state.newPostModule);
   const { repliedToPost } = reply;
   const dispatch: AppDispatch = useDispatch();
@@ -74,8 +74,8 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
     switch (newPostType) {
       case NewPostType.Reply: {
         if (currNewPost?.poll) return "Ask a question...";
-        const isLoggedinUserPost = loggedinUser && loggedinUser.id === repliedToPost?.createdBy.id;
-        if (isLoggedinUserPost) return "Add another Chirp!";
+        const isLoggedInUserPost = loggedInUser && loggedInUser.id === repliedToPost?.createdBy.id;
+        if (isLoggedInUserPost) return "Add another Chirp!";
         return "Chirp your reply...";
       }
       case NewPostType.Quote: {

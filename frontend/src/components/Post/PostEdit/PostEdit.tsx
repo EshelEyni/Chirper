@@ -13,7 +13,6 @@ import {
 import { addPost, addQuotePost, addReply } from "../../../store/actions/post.actions";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
-import { setUserMsg } from "../../../store/actions/system.actions";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { PostList } from "../PostList/PostList";
 import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview";
@@ -36,6 +35,7 @@ import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnC
 import { NewPostType } from "../../../store/reducers/new-post.reducer";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
+import { setUserMsg } from "../../../store/slices/systemSlice";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -43,7 +43,7 @@ interface PostEditProps {
 }
 
 const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose }) => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const {
     currNewPost,
     newPostText,
@@ -114,7 +114,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   );
 
   async function onAddPost() {
-    if (!currNewPost || !loggedinUser) return;
+    if (!currNewPost || !loggedInUser) return;
     try {
       setPostSaveInProgress(true);
       const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
@@ -255,7 +255,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         </MiniPostPreview>
       )}
       <div className="content-container">
-        <UserImg imgUrl={loggedinUser?.imgUrl} />
+        <UserImg imgUrl={loggedInUser?.imgUrl} />
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
           {isBtnToggleAudienceShown && <BtnToggleAudience />}
           {isPostDateTitleShown && (

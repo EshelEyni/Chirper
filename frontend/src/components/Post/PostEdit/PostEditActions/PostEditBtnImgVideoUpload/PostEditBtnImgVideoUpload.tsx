@@ -1,12 +1,12 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../store/types";
-import { setUserMsg } from "../../../../../store/actions/system.actions";
 import { RootState } from "../../../../../store/store";
 import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
 import { readAsDataURL } from "../../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
+import { setUserMsg } from "../../../../../store/slices/systemSlice";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;
@@ -20,7 +20,7 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
   isPickerShown,
 }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { newPostType } = useSelector((state: RootState) => state.newPostModule);
   const { currNewPost } = usePostEdit();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -69,7 +69,7 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
     const videoFile = [...files].at(0)!;
     const isVideoGreaterThan10MB = videoFile.size > 10000000;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { isVerified } = loggedinUser!;
+    const { isVerified } = loggedInUser!;
     if (!isVerified && isVideoGreaterThan10MB) {
       dispatch(
         setUserMsg({

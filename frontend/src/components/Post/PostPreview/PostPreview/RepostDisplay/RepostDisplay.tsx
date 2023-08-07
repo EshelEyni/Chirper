@@ -14,7 +14,7 @@ import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 export const RepostDisplay: FC = () => {
   const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();
   const { repostedBy } = post;
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLDivElement>({
     modalHeight: 300,
@@ -59,7 +59,7 @@ export const RepostDisplay: FC = () => {
         onMouseEnter={() => onHandleMouseEnter()}
         ref={elementRef}
       >
-        {`${repostedBy.id === loggedinUser?.id ? "You" : repostedBy.fullname} Rechiped`}
+        {`${repostedBy.id === loggedInUser?.id ? "You" : repostedBy.fullname} Rechiped`}
       </span>
       {elementsHoverState.respostDetails && (
         <PostPreviewUserModal

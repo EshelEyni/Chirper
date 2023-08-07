@@ -6,10 +6,10 @@ import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../services/util/utils.service";
 import { AppDispatch } from "../../../store/types";
 import { addBookmark, removeBookmark } from "../../../store/actions/post.actions";
-import  postService from "../../../services/post.service";
-import { setUserMsg } from "../../../store/actions/system.actions";
+import postService from "../../../services/post.service";
 import "./PostShareOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
+import { setUserMsg } from "../../../store/slices/systemSlice";
 
 type PostShareOptionsModalProps = {
   post: Post;
@@ -22,7 +22,7 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
   isModalAbove,
   onToggleModal,
 }) => {
-  const { isBookmarked } = post.loggedinUserActionState;
+  const { isBookmarked } = post.loggedInUserActionState;
   const dispatch: AppDispatch = useDispatch();
 
   const url = `${location.origin}/post/${post.id}`;

@@ -28,7 +28,7 @@ export const PostPreviewUserModal: FC<UserPreviewModalProps> = ({
 }) => {
   const { post, onNavigateToProfile, onToggleFollow } = usePostPreview();
   const user = post.createdBy as MiniUser;
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const followingStats = [
     { title: "Followers", count: user.followersCount, link: `/profile/${user.username}/followers` },
     { title: "Following", count: user.followingCount, link: `/profile/${user.username}/following` },
@@ -45,7 +45,7 @@ export const PostPreviewUserModal: FC<UserPreviewModalProps> = ({
           imgUrl={user.imgUrl}
           onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
         />
-        {loggedinUser?.id !== user.id && (
+        {loggedInUser?.id !== user.id && (
           <BtnToggleFollow user={user} handleBtnClick={onToggleFollow} />
         )}
       </div>

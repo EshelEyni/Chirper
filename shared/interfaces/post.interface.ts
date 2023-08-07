@@ -77,10 +77,10 @@ export interface Post extends BasicPost {
   quotedPost?: QuotedPost;
   createdBy: MiniUser;
   repostedBy?: MiniUser;
-  loggedinUserActionState: LoggedinUserActionState;
+  loggedInUserActionState: LoggedInUserActionState;
 }
 
-export type LoggedinUserActionState = {
+export type LoggedInUserActionState = {
   isLiked: boolean;
   isReposted: boolean;
   isViewed: boolean;
@@ -99,7 +99,7 @@ export type LoggedinUserActionState = {
 export type PollOption = {
   text: string;
   voteCount: number;
-  isLoggedinUserVoted: boolean;
+  isLoggedInUserVoted: boolean;
 };
 
 export interface Poll {

@@ -19,10 +19,10 @@ import { PostStatsDataStatsList } from "./DataStatsList/PostStatsDataStatsList";
 
 const PostStatsPage = () => {
   const [postStats, setPostStats] = useState<PostStats | null>(null);
-  const [isLoggedinUserPost, setIsLoggedinUserPost] = useState(false);
+  const [isLoggedInUserPost, setIsLoggedInUserPost] = useState(false);
   const [openedModal, setOpenedModal] = useState<string>("");
 
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { post } = useSelector((state: RootState) => state.postModule);
 
   const location = useLocation();
@@ -50,12 +50,12 @@ const PostStatsPage = () => {
   }, [dispatch, id, post?.id]);
 
   useEffect(() => {
-    if (loggedinUser && post) {
-      const isLoggedinUserPost = loggedinUser.id === post.createdBy.id;
-      setIsLoggedinUserPost(isLoggedinUserPost);
-      if (isLoggedinUserPost) fetchPostStats();
+    if (loggedInUser && post) {
+      const isLoggedInUserPost = loggedInUser.id === post.createdBy.id;
+      setIsLoggedInUserPost(isLoggedInUserPost);
+      if (isLoggedInUserPost) fetchPostStats();
     }
-  }, [post, loggedinUser, dispatch, fetchPostStats]);
+  }, [post, loggedInUser, dispatch, fetchPostStats]);
 
   return (
     <section className="post-stats">
@@ -65,7 +65,7 @@ const PostStatsPage = () => {
         <div className="post-stats-main-container">
           {!post ? (
             <SpinnerLoader />
-          ) : !isLoggedinUserPost ? (
+          ) : !isLoggedInUserPost ? (
             <PostsStatsNonOwnerMsg onGoBack={onGoBack} />
           ) : (
             <div className="post-stats-content">

@@ -99,7 +99,7 @@ describe("Auth Guards Middleware", () => {
       checkUserAuthentication(req as Request, res as Response, next);
     });
 
-    it("should set req.loggedinUserId and call next with no arguments if the authentication is successful", done => {
+    it("should set req.loggedInUserId and call next with no arguments if the authentication is successful", done => {
       const id = new mongoose.Types.ObjectId();
       const user = {
         changedPasswordAfter: jest.fn().mockReturnValue(false),
@@ -109,7 +109,7 @@ describe("Auth Guards Middleware", () => {
       (UserModel.findById as jest.Mock).mockReturnValue(user);
 
       next = jest.fn().mockImplementation(() => {
-        expect(req.loggedinUserId).toBe(id);
+        expect(req.loggedInUserId).toBe(id);
         expect(next).toHaveBeenCalled();
         done();
       });
@@ -135,7 +135,7 @@ describe("Auth Guards Middleware", () => {
     });
 
     it("should call next with an error if no user is logged in", done => {
-      req.loggedinUserId = undefined;
+      req.loggedInUserId = undefined;
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(expect.objectContaining({ message: "User not logged in" }));
@@ -145,7 +145,7 @@ describe("Auth Guards Middleware", () => {
     });
 
     it("should call next with an error if the user does not exist", done => {
-      req.loggedinUserId = validMongoId;
+      req.loggedInUserId = validMongoId;
       (UserModel.findById as jest.Mock).mockResolvedValue(null);
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
@@ -157,7 +157,7 @@ describe("Auth Guards Middleware", () => {
 
     it("should call next with an error if the user is not an admin", done => {
       const user = { isAdmin: false };
-      req.loggedinUserId = validMongoId;
+      req.loggedInUserId = validMongoId;
       (UserModel.findById as jest.Mock).mockResolvedValue(user);
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
@@ -169,7 +169,7 @@ describe("Auth Guards Middleware", () => {
 
     it("should call next with no arguments if the user is an admin", done => {
       const user = { isAdmin: true };
-      req.loggedinUserId = validMongoId;
+      req.loggedInUserId = validMongoId;
       (UserModel.findById as jest.Mock).mockResolvedValue(user);
       next = jest.fn().mockImplementation(() => {
         expect(next).toHaveBeenCalled();

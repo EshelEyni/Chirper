@@ -12,13 +12,13 @@ import { AppError } from "../../../../services/error/error.service";
 
 async function populateIsFollowing(user: User): Promise<User> {
   const store = asyncLocalStorage.getStore() as alStoreType;
-  const loggedinUserId = store?.loggedinUserId;
-  if (!isValidId(loggedinUserId)) {
+  const loggedInUserId = store?.loggedInUserId;
+  if (!isValidId(loggedInUserId)) {
     user.isFollowing = false;
     return user;
   }
 
-  const isFollowing = await FollowerModel.exists({ fromUserId: loggedinUserId, toUserId: user.id });
+  const isFollowing = await FollowerModel.exists({ fromUserId: loggedInUserId, toUserId: user.id });
   user.isFollowing = !!isFollowing;
   return user;
 }

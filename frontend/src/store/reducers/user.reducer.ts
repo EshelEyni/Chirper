@@ -32,7 +32,7 @@ export function userReducer(
         users: state.users.filter(user => user.id !== action.userId),
       };
     case "UPDATE_USER":
-      return { ...state, loggedinUser: action.updatedUser };
+      return { ...state, loggedInUser: action.updatedUser };
     case "UPDATE_WATCHED_USER":
       return { ...state, watchedUser: action.updatedUser };
     case "SET_USER_MSG":

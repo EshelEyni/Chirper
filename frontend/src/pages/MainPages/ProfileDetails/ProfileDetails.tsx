@@ -8,7 +8,7 @@ import userService from "../../../services/user.service";
 const ProfileDetails = () => {
   const [wachedUser, setWachedUser] = useState<User | null>(null);
 
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -22,14 +22,14 @@ const ProfileDetails = () => {
       navigate("/home");
       return;
     }
-    if (loggedinUser?.username === username) {
-      setWachedUser(loggedinUser);
+    if (loggedInUser?.username === username) {
+      setWachedUser(loggedInUser);
       return;
     } else {
       const user = await userService.getByUsername(username);
       setWachedUser(user);
     }
-  }, [loggedinUser, params, navigate]);
+  }, [loggedInUser, params, navigate]);
 
   useEffect(() => {
     getUser();

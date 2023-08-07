@@ -29,8 +29,8 @@ router.post("/:id/following", addFollowings);
 router.delete("/:id/following", removeFollowings);
 router.post("/:userId/following/:postId/fromPost", addFollowingsFromPost);
 router.delete("/:userId/following/:postId/fromPost", removeFollowingsFromPost);
-router.patch("/loggedinUser", updateLoggedInUser);
-router.delete("/loggedinUser", removeLoggedInUser);
+router.patch("/loggedInUser", updateLoggedInUser);
+router.delete("/loggedInUser", removeLoggedInUser);
 
 router.use(checkAdminAuthorization);
 router.post("/", addUser);

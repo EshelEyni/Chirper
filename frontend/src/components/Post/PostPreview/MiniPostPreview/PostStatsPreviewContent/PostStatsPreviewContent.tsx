@@ -25,7 +25,7 @@ export const PostStatsPreviewContent: React.FC<PostStatsPreviewContentProps> = (
             text={post.text}
             isPlainText={true}
             postId={post.id}
-            loggedinUserActionState={post.loggedinUserActionState}
+            loggedInUserActionState={post.loggedInUserActionState}
           />
           {isImgShown && (
             <PostImg imgs={post.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />

@@ -51,7 +51,7 @@ describe("SetupAsyncLocalStorage", () => {
     expect(asyncLocalStorage.run).toHaveBeenCalledTimes(1);
   });
 
-  it("should set loggedinUserId in the alsStore if the token is valid", async () => {
+  it("should set loggedInUserId in the alsStore if the token is valid", async () => {
     const verifiedToken = { id: "userId" };
 
     const alsStore: any = {};
@@ -67,7 +67,7 @@ describe("SetupAsyncLocalStorage", () => {
     // Run the callback manually with the mocked alsStore
     await runCallback();
 
-    expect(alsStore.loggedinUserId).toEqual("userId");
+    expect(alsStore.loggedInUserId).toEqual("userId");
     expect(next).toHaveBeenCalledTimes(1);
   });
 });

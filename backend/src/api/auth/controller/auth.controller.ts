@@ -51,10 +51,10 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
     if (!req.body[field]) throw new AppError(`${field} is required`, 400);
 
   if (newPassword !== newPasswordConfirm) throw new AppError("Passwords do not match", 400);
-  const { loggedinUserId } = req;
-  if (!loggedinUserId) throw new AppError("You are not logged in", 401);
+  const { loggedInUserId } = req;
+  if (!loggedInUserId) throw new AppError("You are not logged in", 401);
   const { user, token } = await authService.updatePassword(
-    loggedinUserId,
+    loggedInUserId,
     currentPassword,
     newPassword,
     newPasswordConfirm

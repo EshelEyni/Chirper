@@ -3,9 +3,10 @@ import { AnyAction } from "redux";
 import postService from "../../services/post.service";
 import { RootState } from "../store";
 import { NewPost, Post } from "../../../../shared/interfaces/post.interface";
-import { setUserMsg } from "./system.actions";
+// import { setUserMsg } from "./system.actions";
 import { PostRepostResult } from "../../../../shared/interfaces/post.interface";
 import userService from "../../services/user.service";
+import { setUserMsg } from "../slices/systemSlice";
 
 export function getPosts(): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
@@ -203,12 +204,12 @@ export function addQuotePost(
 
 export function removeRepost(
   postId: string,
-  loggedinUserId: string
+  loggedInUserId: string
 ): ThunkAction<Promise<void>, RootState, undefined, AnyAction> {
   return async dispatch => {
     try {
       const updatedPost = await postService.removeRepost(postId);
-      dispatch({ type: "REMOVE_REPOST", post: updatedPost, loggedinUserId });
+      dispatch({ type: "REMOVE_REPOST", post: updatedPost, loggedInUserId });
     } catch (err) {
       dispatch(
         setUserMsg({

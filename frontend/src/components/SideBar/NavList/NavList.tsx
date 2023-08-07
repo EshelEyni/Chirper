@@ -8,7 +8,7 @@ import { RootState } from "../../../store/store";
 import "./NavList.scss";
 
 export const NavList = () => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
 
   const links: NavLinkType[] = [
     {
@@ -16,7 +16,7 @@ export const NavList = () => {
       title: "Home",
       iconActive: <AiFillHome className="active-icon" />,
       iconUnActive: <AiOutlineHome className="unactive-icon" />,
-      isShown: !!loggedinUser,
+      isShown: !!loggedInUser,
     },
     {
       path: "/explore",
@@ -30,14 +30,14 @@ export const NavList = () => {
       title: "Bookmarks",
       iconActive: <FaBookmark className="active-icon" />,
       iconUnActive: <FaRegBookmark className="unactive-icon" />,
-      isShown: !!loggedinUser,
+      isShown: !!loggedInUser,
     },
     {
-      path: `/profile/${loggedinUser?.username}`,
+      path: `/profile/${loggedInUser?.username}`,
       title: "Profile",
       iconActive: <FaUser className="active-icon" />,
       iconUnActive: <FaRegUser className="unactive-icon" />,
-      isShown: !!loggedinUser,
+      isShown: !!loggedInUser,
     },
   ];
 

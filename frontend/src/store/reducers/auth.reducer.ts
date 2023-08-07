@@ -1,19 +1,19 @@
-import { User } from "../../../../shared/interfaces/user.interface";
-import userService from "../../services/user.service";
+// import { User } from "../../../../shared/interfaces/user.interface";
+// import userService from "../../services/user.service";
 
-const initialState: {
-  loggedinUser: User | null;
-} = {
-  loggedinUser: userService.getLoggedinUser(),
-};
+// const initialState: {
+//   loggedInUser: User | null;
+// } = {
+//   loggedInUser: userService.getLoggedinUser(),
+// };
 
-export function authReducer(state = initialState, action: { type: string; user: User }) {
-  switch (action.type) {
-    case "SET_LOGGEDIN_USER":
-      return { loggedinUser: action.user };
-    case "LOGOUT":
-      return { loggedinUser: null };
-    default:
-      return state;
-  }
-}
+// export function authReducer(state = initialState, action: { type: string; user: User }) {
+//   switch (action.type) {
+//     case "SET_LOGGEDIN_USER":
+//       return { loggedInUser: action.user };
+//     case "LOGOUT":
+//       return { loggedInUser: null };
+//     default:
+//       return state;
+//   }
+// }

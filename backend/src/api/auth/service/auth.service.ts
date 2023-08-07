@@ -36,12 +36,12 @@ async function signup(userCreds: UserCredenitials): Promise<UserAuthResult> {
 }
 
 async function updatePassword(
-  loggedinUserId: string,
+  loggedInUserId: string,
   currentPassword: string,
   newPassword: string,
   newPasswordConfirm: string
 ): Promise<UserAuthResult> {
-  const user = await UserModel.findById(loggedinUserId).select("+password");
+  const user = await UserModel.findById(loggedInUserId).select("+password");
   if (!user) throw new AppError("User not found", 404);
   if (!(await user.checkPassword(currentPassword, user.password)))
     throw new AppError("Current password is incorrect. Please enter the correct password", 400);

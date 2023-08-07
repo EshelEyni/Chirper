@@ -6,19 +6,19 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import { logout } from "../../../store/actions/auth.actions";
 import { GiFeather } from "react-icons/gi";
 import { FaAt } from "react-icons/fa";
 import "./SideBarOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
+import { logout } from "../../../store/slices/authSlice";
 
 interface SideBarOptionsModalProps {
-  loggedinUser: User;
+  loggedInUser: User;
   toggleModal: () => void;
 }
 
 export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
-  loggedinUser,
+  loggedInUser,
   toggleModal,
 }) => {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ export const SideBarOptionsModal: FC<SideBarOptionsModalProps> = ({
       onClick: () => handleLinkClick("display"),
     },
     {
-      title: `Logout @${loggedinUser.username}`,
+      title: `Logout @${loggedInUser.username}`,
       onClick: onLogout,
     },
   ];

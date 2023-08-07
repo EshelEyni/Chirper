@@ -52,9 +52,9 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
 const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const userToUpdate = req.body;
   validatePatchRequestBody(userToUpdate);
-  const { loggedinUserId } = req;
-  if (!loggedinUserId) throw new AppError("User not logged in", 401);
-  const updatedUser = await userService.update(loggedinUserId, userToUpdate);
+  const { loggedInUserId } = req;
+  if (!loggedInUserId) throw new AppError("User not logged in", 401);
+  const updatedUser = await userService.update(loggedInUserId, userToUpdate);
   // TODO: check if this error is needed
   if (!updatedUser) throw new AppError("User not found", 404);
 
@@ -65,9 +65,9 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 });
 
 const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedinUserId } = req;
-  if (!loggedinUserId) throw new AppError("User not logged in", 401);
-  const removedUser = await userService.removeAccount(loggedinUserId);
+  const { loggedInUserId } = req;
+  if (!loggedInUserId) throw new AppError("User not logged in", 401);
+  const removedUser = await userService.removeAccount(loggedInUserId);
   if (!removedUser) throw new AppError("User not found", 404);
   logger.warn(`User ${removedUser.username} was deactivated`);
 
@@ -78,11 +78,11 @@ const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 });
 
 const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedinUserId } = req;
+  const { loggedInUserId } = req;
   const toUserId = req.params.id;
-  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await followerService.addFollowings(loggedinUserId, toUserId);
+  const updatedUser = await followerService.addFollowings(loggedInUserId, toUserId);
 
   res.send({
     status: "success",
@@ -91,11 +91,11 @@ const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Pro
 });
 
 const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedinUserId } = req;
+  const { loggedInUserId } = req;
   const toUserId = req.params.id;
-  if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await followerService.removeFollowings(loggedinUserId, toUserId);
+  const updatedUser = await followerService.removeFollowings(loggedInUserId, toUserId);
 
   res.send({
     status: "success",
@@ -105,13 +105,13 @@ const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): 
 
 const addFollowingsFromPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const { loggedinUserId } = req;
+    const { loggedInUserId } = req;
     const { postId, userId: toUserId } = req.params;
-    if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+    if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
     if (!toUserId) throw new AppError("No user id provided", 400);
     if (!postId) throw new AppError("No post id provided", 400);
 
-    const updatedPost = await followerService.addFollowings(loggedinUserId, toUserId, postId);
+    const updatedPost = await followerService.addFollowings(loggedInUserId, toUserId, postId);
 
     res.send({
       status: "success",
@@ -122,13 +122,13 @@ const addFollowingsFromPost = asyncErrorCatcher(
 
 const removeFollowingsFromPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const { loggedinUserId } = req;
+    const { loggedInUserId } = req;
     const { postId, userId: toUserId } = req.params;
 
-    if (!loggedinUserId) throw new AppError("No logged in user id provided", 400);
+    if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
     if (!toUserId) throw new AppError("No user id provided", 400);
     if (!postId) throw new AppError("No post id provided", 400);
-    const updatedPost = await followerService.removeFollowings(loggedinUserId, toUserId, postId);
+    const updatedPost = await followerService.removeFollowings(loggedInUserId, toUserId, postId);
 
     res.send({
       status: "success",

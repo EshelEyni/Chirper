@@ -5,7 +5,7 @@ import { AppDispatch } from "../../../store/types";
 import "./UserMsg.scss";
 
 export const UserMsg = () => {
-  const { userMsg } = useSelector((state: RootState) => state.systemModule);
+  const { userMsg } = useSelector((state: RootState) => state.system);
   const dispatch: AppDispatch = useDispatch();
 
   if (!userMsg) return null;

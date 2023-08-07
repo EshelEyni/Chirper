@@ -25,7 +25,7 @@ export const PollDisplayOptionResult: FC<PollDisplayOptionResultProps> = ({
       />
       <div className="poll-option-content">
         <span>{option.text}</span>
-        {option.isLoggedinUserVoted && <AiOutlineCheckCircle />}
+        {option.isLoggedInUserVoted && <AiOutlineCheckCircle />}
       </div>
       <span className="poll-option-percentage">{percentage + "%"}</span>
     </li>

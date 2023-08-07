@@ -1,11 +1,6 @@
 import { MiniUser, User, FollowingResult } from "../../../shared/interfaces/user.interface";
 import httpService from "./http.service";
-import storageService from "./storage.service";
 import { handleServerResponse } from "./util/utils.service";
-
-function getLoggedinUser(): User | null {
-  return storageService.get("loggedinUser");
-}
 
 function getMiniUser(user: User): MiniUser {
   const miniUser = {
@@ -88,7 +83,6 @@ export default {
   query,
   getById,
   getByUsername,
-  getLoggedinUser,
   getMiniUser,
   getDefaultUserImgUrl,
   followUser,

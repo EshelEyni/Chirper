@@ -6,7 +6,6 @@ import { CiCalendarDate } from "react-icons/ci";
 import { BsEmojiSmile } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../store/types";
-import { setUserMsg } from "../../../../../store/actions/system.actions";
 import { Poll, Emoji } from "../../../../../../../shared/interfaces/post.interface";
 import { updateCurrNewPost } from "../../../../../store/actions/new-post.actions";
 import { RootState } from "../../../../../store/store";
@@ -17,6 +16,7 @@ import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
 import { GifPickerModal } from "../../../../Modals/GifPickerModal/GifPickerModal";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
+import { setUserMsg } from "../../../../../store/slices/systemSlice";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {
@@ -32,7 +32,7 @@ export type ElementVisibility = Record<UIElement, boolean>;
 export const PostEditActions: FC = () => {
   const { newPostText, setNewPostText, isPickerShown, currNewPost } = usePostEdit();
 
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.newPostModule);
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
@@ -99,7 +99,7 @@ export const PostEditActions: FC = () => {
     {
       name: "location",
       icon: <IoLocationSharp />,
-      isDisabled: !loggedinUser?.isApprovedLocation,
+      isDisabled: !loggedInUser?.isApprovedLocation,
       onClickFn: handleBtnLocationClick,
     },
   ];
@@ -113,8 +113,8 @@ export const PostEditActions: FC = () => {
     if (!isPickerShown || !currNewPost) return;
     const defaultPoll: Poll = {
       options: [
-        { text: "", voteCount: 0, isLoggedinUserVoted: false },
-        { text: "", voteCount: 0, isLoggedinUserVoted: false },
+        { text: "", voteCount: 0, isLoggedInUserVoted: false },
+        { text: "", voteCount: 0, isLoggedInUserVoted: false },
       ],
       length: {
         days: 1,
@@ -140,7 +140,7 @@ export const PostEditActions: FC = () => {
 
   function handleBtnLocationClick() {
     if (!isPickerShown) return;
-    if (loggedinUser?.isApprovedLocation) {
+    if (loggedInUser?.isApprovedLocation) {
       navigate("post-location", { relative: "path" });
       return;
     }

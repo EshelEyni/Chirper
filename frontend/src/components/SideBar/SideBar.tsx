@@ -9,7 +9,7 @@ import { SideBarOptionsModal } from "../Modals/SideBarOptionsModal/SideBarOption
 import "./SideBar.scss";
 
 export const SideBar = () => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   function toggleModal() {
@@ -23,11 +23,11 @@ export const SideBar = () => {
         <NavList />
         <BtnCreatePost isSideBarBtn={true} isDisabled={false} />
       </div>
-      {loggedinUser && (
+      {loggedInUser && (
         <div className="user-preview-container">
-          <UserPreview user={loggedinUser} isEllipsisShown={true} onClickFunc={toggleModal} />
+          <UserPreview user={loggedInUser} isEllipsisShown={true} onClickFunc={toggleModal} />
           {isModalOpen && (
-            <SideBarOptionsModal loggedinUser={loggedinUser} toggleModal={toggleModal} />
+            <SideBarOptionsModal loggedInUser={loggedInUser} toggleModal={toggleModal} />
           )}
         </div>
       )}

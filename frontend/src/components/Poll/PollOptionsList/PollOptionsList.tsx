@@ -22,7 +22,7 @@ export const PollOptionsList: FC = () => {
     return {
       text: "",
       voteCount: 0,
-      isLoggedinUserVoted: false,
+      isLoggedInUserVoted: false,
     };
   }
 

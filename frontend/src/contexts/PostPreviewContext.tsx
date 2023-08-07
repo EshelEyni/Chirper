@@ -18,7 +18,7 @@ type PostPreviewContextType = {
 const PostPreviewContext = createContext<PostPreviewContextType | undefined>(undefined);
 
 function PostPreviewProvider({ post, children }: { post: Post; children: React.ReactNode }) {
-  const { isDetailedViewed, isProfileViewed } = post.loggedinUserActionState;
+  const { isDetailedViewed, isProfileViewed } = post.loggedInUserActionState;
   const [poll, setPoll] = useState(post.poll || null);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();

@@ -26,8 +26,8 @@ describe("Followers Service", () => {
       jest.clearAllMocks();
     });
 
-    it("should set isFollowing to false if loggedinUserId is not valid", async () => {
-      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedinUserId: null });
+    it("should set isFollowing to false if loggedInUserId is not valid", async () => {
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId: null });
       const result = await followerService.populateIsFollowing(mockUser as any);
       expect(result.isFollowing).toBe(false);
       expect(mockFollowerModel.exists).not.toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe("Followers Service", () => {
 
     it("should set isFollowing based on FollowerModel.exists result", async () => {
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({
-        loggedinUserId: validMongoId,
+        loggedInUserId: validMongoId,
       });
       (mockFollowerModel.exists as jest.Mock).mockResolvedValueOnce(true);
       const result = await followerService.populateIsFollowing(mockUser as any);

@@ -18,7 +18,7 @@ type NewPostContentProps = {
 };
 
 export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
-  const { loggedinUser } = useSelector((state: RootState) => state.authModule);
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { newPostModule } = useSelector((state: RootState) => state);
   const { newPostType } = newPostModule;
   const isPlainText = newPost?.text ? true : false;
@@ -45,7 +45,7 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
 
   return (
     <>
-      <MiniPostPreviewAside userImgUrl={loggedinUser?.imgUrl} isPostLineShowned={isPostLineShown} />
+      <MiniPostPreviewAside userImgUrl={loggedInUser?.imgUrl} isPostLineShowned={isPostLineShown} />
       <PostPreviewMainContainer>
         <PostPreviewBody>
           <PostPreviewText text={getText()} isPlainText={isPlainText} />

@@ -26,7 +26,7 @@ function _formatLogMessage(
     .join(" | ");
 
   const store = asyncLocalStorage.getStore() as alStoreType;
-  const userId = store?.loggedinUserId;
+  const userId = store?.loggedInUserId;
   const userStr = userId ? `(userId: ${userId})` : "";
   const currTime = new Date().toLocaleString("he");
   return `${currTime} - ${level} - ${text} ${userStr}\n`;

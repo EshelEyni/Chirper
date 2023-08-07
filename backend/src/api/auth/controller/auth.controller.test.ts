@@ -237,7 +237,7 @@ describe("Auth Controller", () => {
           newPassword: "newPassword",
           newPasswordConfirm: "newPassword",
         },
-        loggedinUserId: "userId",
+        loggedInUserId: "userId",
       };
     });
 
@@ -264,7 +264,7 @@ describe("Auth Controller", () => {
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedinUserId = undefined;
+      req.loggedInUserId = undefined;
       const sut = updatePassword as any;
       await sut(req as Request, res as Response, next);
       expect(next).toHaveBeenCalledWith(expect.any(AppError));
@@ -285,7 +285,7 @@ describe("Auth Controller", () => {
       const sut = updatePassword as any;
       await sut(req as Request, res as Response, next);
       expect(authService.updatePassword).toHaveBeenCalledWith(
-        req.loggedinUserId,
+        req.loggedInUserId,
         req.body.currentPassword,
         req.body.newPassword,
         req.body.newPasswordConfirm

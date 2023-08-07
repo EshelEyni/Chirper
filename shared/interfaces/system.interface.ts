@@ -9,7 +9,7 @@ export interface JsendResponse {
 }
 
 export interface IAsyncLocalStorageStore {
-  loggedinUser?: User;
+  loggedInUser?: User;
 }
 
 export interface UserMsg {

@@ -62,10 +62,10 @@ async function query(queryString: QueryObj): Promise<Post[]> {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-  const setLoggedinUserActionStatePrms = posts.map(async post => {
-    await _setLoggedinUserActionState(post);
+  const setLoggedInUserActionStatePrms = posts.map(async post => {
+    await _setLoggedInUserActionState(post);
   });
-  await Promise.all(setLoggedinUserActionStatePrms);
+  await Promise.all(setLoggedInUserActionStatePrms);
 
   const setIsFollowingPrms = posts.map(async post => {
     await followerService.populateIsFollowing(post.createdBy as unknown as User);
@@ -73,7 +73,7 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   await Promise.all(setIsFollowingPrms);
 
   if (posts.length > 0) {
-    await _getLoggedinUserPollDetails(...(posts as unknown as Post[]));
+    await _getLoggedInUserPollDetails(...(posts as unknown as Post[]));
   }
   return posts as unknown as Post[];
 }
@@ -82,8 +82,8 @@ async function getById(postId: string): Promise<Post | null> {
   const postDoc = await PostModel.findById(postId).exec();
   if (!postDoc) return null;
   const post = postDoc.toObject() as unknown as Post;
-  await _getLoggedinUserPollDetails(post);
-  await _setLoggedinUserActionState(post);
+  await _getLoggedInUserPollDetails(post);
+  await _setLoggedInUserActionState(post);
   await followerService.populateIsFollowing(post.createdBy as unknown as User);
   return post;
 }
@@ -93,7 +93,7 @@ async function add(post: NewPost): Promise<Post> {
   const postDoc = await PostModel.findById(savedPost.id).exec();
   if (!postDoc) throw new AppError("post not found", 404);
   const populatedPost = postDoc.toObject() as unknown as Post;
-  await _setLoggedinUserActionState(populatedPost, { isDefault: true });
+  await _setLoggedInUserActionState(populatedPost, { isDefault: true });
   await followerService.populateIsFollowing(populatedPost.createdBy as unknown as User);
   return populatedPost as unknown as Post;
 }
@@ -117,7 +117,7 @@ async function addMany(posts: NewPost[]): Promise<Post> {
     const postDoc = await PostModel.findById(originalPost.id).exec();
     if (!postDoc) throw new AppError("post not found", 404);
     const populatedPost = postDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(populatedPost, { isDefault: true });
+    await _setLoggedInUserActionState(populatedPost, { isDefault: true });
     populatedPost.createdBy.isFollowing = false;
     return populatedPost as unknown as Post;
   } catch (error) {
@@ -141,12 +141,12 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     if (!repliedToPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
     const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(updatedPost);
+    await _setLoggedInUserActionState(updatedPost);
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
     const replyDoc = await PostModel.findById(savedReply.id).exec();
     if (!replyDoc) throw new AppError("reply post not found", 404);
     const reply = replyDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(reply, { isDefault: true });
+    await _setLoggedInUserActionState(reply, { isDefault: true });
     reply.createdBy.isFollowing = false;
     return { updatedPost, reply };
   } catch (error) {
@@ -157,14 +157,14 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
   }
 }
 
-async function repost(postId: string, loggedinUserId: string): Promise<PostRepostResult> {
+async function repost(postId: string, loggedInUserId: string): Promise<PostRepostResult> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const savedRepost = await new RepostModel({
       postId,
-      repostOwnerId: loggedinUserId,
+      repostOwnerId: loggedInUserId,
     }).save({ session });
 
     const repostedPostDoc = await PostModel.findByIdAndUpdate(
@@ -175,7 +175,7 @@ async function repost(postId: string, loggedinUserId: string): Promise<PostRepos
     if (!repostedPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
     const updatedPost = repostedPostDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(updatedPost);
+    await _setLoggedInUserActionState(updatedPost);
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     const repostDoc = await RepostModel.findById(savedRepost.id)
@@ -195,7 +195,7 @@ async function repost(postId: string, loggedinUserId: string): Promise<PostRepos
       repostedBy,
     } as unknown as Post;
 
-    await _setLoggedinUserActionState(repost);
+    await _setLoggedInUserActionState(repost);
 
     return { updatedPost, repost };
   } catch (error) {
@@ -214,8 +214,8 @@ async function update(id: string, post: Post): Promise<Post> {
 
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
-  await _getLoggedinUserPollDetails(updatedPost);
-  await _setLoggedinUserActionState(updatedPost);
+  await _getLoggedInUserPollDetails(updatedPost);
+  await _setLoggedInUserActionState(updatedPost);
   await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
   return updatedPost;
 }
@@ -225,14 +225,14 @@ async function remove(postId: string): Promise<Post> {
   return removedPost as unknown as Post;
 }
 
-async function removeRepost(postId: string, loggedinUserId: string): Promise<Post> {
+async function removeRepost(postId: string, loggedInUserId: string): Promise<Post> {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     await RepostModel.findOneAndRemove({
       postId,
-      repostOwnerId: loggedinUserId,
+      repostOwnerId: loggedInUserId,
     }).session(session);
 
     const postDoc = await PostModel.findByIdAndUpdate(
@@ -244,10 +244,10 @@ async function removeRepost(postId: string, loggedinUserId: string): Promise<Pos
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(updatedPost);
+    await _setLoggedInUserActionState(updatedPost);
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
-    logger.warn(`Deleted repost of Post With ${postId} by user ${loggedinUserId}`);
+    logger.warn(`Deleted repost of Post With ${postId} by user ${loggedInUserId}`);
 
     return updatedPost;
   } catch (error) {
@@ -287,7 +287,7 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
     await session.commitTransaction();
 
     const { text, voteCount } = option;
-    return { text, voteCount, isLoggedinUserVoted: true };
+    return { text, voteCount, isLoggedInUserVoted: true };
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -315,7 +315,7 @@ async function addLike(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(updatedPost);
+    await _setLoggedInUserActionState(updatedPost);
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;
@@ -347,7 +347,7 @@ async function removeLike(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await _setLoggedinUserActionState(updatedPost);
+    await _setLoggedInUserActionState(updatedPost);
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;
@@ -433,15 +433,15 @@ async function updatePostStats(
   })) as unknown as PostStatsBody;
 }
 
-async function getBookmarkedPosts(loggedinUserId: string): Promise<Post[]> {
+async function getBookmarkedPosts(loggedInUserId: string): Promise<Post[]> {
   const bookmarkedPostsDocs = await BookmarkedPostModel.find({
-    bookmarkOwnerId: loggedinUserId,
+    bookmarkOwnerId: loggedInUserId,
   }).exec();
   const prms = bookmarkedPostsDocs.map(async doc => {
     // TODO: defince type correctly
     const obj = doc.toObject() as unknown as { post: Post };
     const { post } = obj;
-    await _setLoggedinUserActionState(post);
+    await _setLoggedInUserActionState(post);
     await followerService.populateIsFollowing(post.createdBy as unknown as User);
     return post;
   });
@@ -449,43 +449,43 @@ async function getBookmarkedPosts(loggedinUserId: string): Promise<Post[]> {
   return bookmarkedPosts as unknown as Post[];
 }
 
-async function addBookmarkedPost(postId: string, loggedinUserId: string): Promise<Post> {
+async function addBookmarkedPost(postId: string, loggedInUserId: string): Promise<Post> {
   await new BookmarkedPostModel({
     postId,
-    bookmarkOwnerId: loggedinUserId,
+    bookmarkOwnerId: loggedInUserId,
   }).save();
   const postDoc = await PostModel.findById(postId);
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
-  await _setLoggedinUserActionState(updatedPost);
+  await _setLoggedInUserActionState(updatedPost);
   await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
   return updatedPost;
 }
 
-async function removeBookmarkedPost(postId: string, loggedinUserId: string): Promise<Post> {
+async function removeBookmarkedPost(postId: string, loggedInUserId: string): Promise<Post> {
   await BookmarkedPostModel.findOneAndRemove({
     postId,
-    bookmarkOwnerId: loggedinUserId,
+    bookmarkOwnerId: loggedInUserId,
   });
 
   const postDoc = await PostModel.findById(postId);
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
-  await _setLoggedinUserActionState(updatedPost);
+  await _setLoggedInUserActionState(updatedPost);
   await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
   return updatedPost;
 }
 
-async function _getLoggedinUserPollDetails(...posts: Post[]) {
+async function _getLoggedInUserPollDetails(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
-  const loggedinUserId = store?.loggedinUserId;
+  const loggedInUserId = store?.loggedInUserId;
   const isNoPolls = posts.every(post => !post.poll);
-  if (!isValidId(loggedinUserId) || isNoPolls) return;
+  if (!isValidId(loggedInUserId) || isNoPolls) return;
 
   const pollResults = await PollResultModel.find({
-    userId: new ObjectId(loggedinUserId),
+    userId: new ObjectId(loggedInUserId),
     postId: { $in: posts.map(post => post.id) },
   }).exec();
 
@@ -494,17 +494,17 @@ async function _getLoggedinUserPollDetails(...posts: Post[]) {
 
   for (const post of posts) {
     if (!post.poll) continue;
-    const isLoggedinUserPoll = post.createdBy.id === loggedinUserId;
-    if (isLoggedinUserPoll) post.poll.isVotingOff = true;
+    const isLoggedInUserPoll = post.createdBy.id === loggedInUserId;
+    if (isLoggedInUserPoll) post.poll.isVotingOff = true;
     const pollResult = pollResultsMap.get(post.id.toString());
     if (!pollResult) continue;
-    post.poll.options[pollResult.optionIdx].isLoggedinUserVoted = true;
+    post.poll.options[pollResult.optionIdx].isLoggedInUserVoted = true;
     post.poll.isVotingOff = true;
   }
 }
-async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {}) {
+async function _setLoggedInUserActionState(post: Post, { isDefault = false } = {}) {
   const store = asyncLocalStorage.getStore() as alStoreType;
-  const loggedinUserId = store?.loggedinUserId;
+  const loggedInUserId = store?.loggedInUserId;
 
   const defaultState = {
     isLiked: false,
@@ -522,12 +522,12 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
     isPostBookmarked: false,
   };
 
-  post.loggedinUserActionState = defaultState;
+  post.loggedInUserActionState = defaultState;
 
-  if (isDefault || !isValidId(loggedinUserId)) return;
+  if (isDefault || !isValidId(loggedInUserId)) return;
 
   const postId = new ObjectId(post.id);
-  const userId = new ObjectId(loggedinUserId);
+  const userId = new ObjectId(loggedInUserId);
 
   const [isReposted, isLiked, isBookmarked] = await Promise.all([
     queryEntityExists(RepostModel, { postId, repostOwnerId: userId }),
@@ -552,7 +552,7 @@ async function _setLoggedinUserActionState(post: Post, { isDefault = false } = {
       }
     : {};
 
-  post.loggedinUserActionState = {
+  post.loggedInUserActionState = {
     ...defaultState,
     isReposted,
     isLiked,

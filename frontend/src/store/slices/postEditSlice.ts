@@ -29,7 +29,7 @@ export enum NewPostType {
   Quote = "quote",
 }
 
-const getDefaultNewPost = (
+const _getDefaultNewPost = (
   repliedPostDetails?: repliedPostDetails[],
   quotedPostId?: string
 ): NewPost => {
@@ -52,14 +52,13 @@ const getDefaultNewPost = (
   };
 };
 
-function getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: NewPost } {
+function _getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: NewPost } {
   const {
-    id,
     createdBy: { id: userId, username },
   } = repliedToPost;
 
   const currRepliedPostDetails = {
-    postId: id,
+    postId: repliedToPost.id,
     postOwner: { userId, username },
   };
 
@@ -70,38 +69,38 @@ function getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: New
   return repliedToPost
     ? {
         repliedToPost: repliedToPost,
-        reply: getDefaultNewPost(repliedPostDetails),
+        reply: _getDefaultNewPost(repliedPostDetails),
       }
-    : { repliedToPost: null, reply: getDefaultNewPost() };
+    : { repliedToPost: null, reply: _getDefaultNewPost() };
 }
 
-function getQuote(quotedPost: Post): { quotedPost: Post | null; quote: NewPost } {
+function _getQuote(quotedPost: Post): { quotedPost: Post | null; quote: NewPost } {
   return quotedPost
     ? {
         quotedPost: quotedPost,
-        quote: getDefaultNewPost(undefined, quotedPost.id),
+        quote: _getDefaultNewPost(undefined, quotedPost.id),
       }
     : {
         quotedPost: null,
-        quote: getDefaultNewPost(),
+        quote: _getDefaultNewPost(),
       };
 }
 const initialState: NewPostState = {
   homePage: {
-    posts: [getDefaultNewPost()],
+    posts: [_getDefaultNewPost()],
     currPostIdx: 0,
   },
   sideBar: {
-    posts: [getDefaultNewPost()],
+    posts: [_getDefaultNewPost()],
     currPostIdx: 0,
   },
   reply: {
     repliedToPost: null,
-    reply: getDefaultNewPost(),
+    reply: _getDefaultNewPost(),
   },
   quote: {
     quotedPost: null,
-    quote: getDefaultNewPost(),
+    quote: _getDefaultNewPost(),
   },
   newPostType: NewPostType.HomePage,
 };
@@ -118,25 +117,28 @@ const newPostSlice = createSlice({
       action: PayloadAction<{ newPosts: NewPost[]; newPostType: NewPostType; post?: Post }>
     ) {
       const { newPostType } = action.payload;
-
       switch (newPostType) {
         case NewPostType.HomePage:
           state.homePage = {
-            posts: action.payload.newPosts.length ? action.payload.newPosts : [getDefaultNewPost()],
+            posts: action.payload.newPosts.length
+              ? action.payload.newPosts
+              : [_getDefaultNewPost()],
             currPostIdx: 0,
           };
           break;
         case NewPostType.SideBar:
           state.sideBar = {
-            posts: action.payload.newPosts.length ? action.payload.newPosts : [getDefaultNewPost()],
+            posts: action.payload.newPosts.length
+              ? action.payload.newPosts
+              : [_getDefaultNewPost()],
             currPostIdx: 0,
           };
           break;
         case NewPostType.Reply:
-          state.reply = getReply(action.payload.post as Post);
+          state.reply = _getReply(action.payload.post as Post);
           break;
         case NewPostType.Quote:
-          state.quote = getQuote(action.payload.post as Post);
+          state.quote = _getQuote(action.payload.post as Post);
           break;
         default:
           break;
@@ -161,7 +163,7 @@ const newPostSlice = createSlice({
       if (newPostType === NewPostType.Reply || newPostType === NewPostType.Quote) return;
       state[newPostType] = {
         ...state[newPostType],
-        posts: [...state[newPostType].posts, getDefaultNewPost()],
+        posts: [...state[newPostType].posts, _getDefaultNewPost()],
         currPostIdx: state[newPostType].posts.length,
       };
     },
@@ -193,9 +195,7 @@ const newPostSlice = createSlice({
     },
     removeNewPost(state, action: PayloadAction<NewPostType>) {
       const newPostType = action.payload;
-
       if (newPostType === NewPostType.Reply || newPostType === NewPostType.Quote) return;
-
       state[newPostType].posts = state[newPostType].posts.filter(
         (_, idx) => state[newPostType].currPostIdx !== idx
       );

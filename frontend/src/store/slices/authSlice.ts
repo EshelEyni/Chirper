@@ -30,9 +30,8 @@ export const { setLoggedInUser, logout } = authSlice.actions;
 
 export default authSlice.reducer;
 
-export const signup =
-  (userCredentials: UserCredentials): AppThunk =>
-  async dispatch => {
+export function signup(userCredentials: UserCredentials): AppThunk {
+  return async dispatch => {
     try {
       const user = await authService.signup(userCredentials);
       dispatch(setLoggedInUser(user));
@@ -40,10 +39,10 @@ export const signup =
       console.log("AuthActions: err in signup", err);
     }
   };
+}
 
-export const login =
-  (username: string, password: string): AppThunk =>
-  async dispatch => {
+export function login(username: string, password: string): AppThunk {
+  return async dispatch => {
     try {
       const user = await authService.login(username, password);
       dispatch(setLoggedInUser(user));
@@ -51,23 +50,28 @@ export const login =
       console.log("AuthActions: err in login", err);
     }
   };
+}
 
-export const loginWithToken = (): AppThunk => async dispatch => {
-  try {
-    dispatch(setIsPageLoading(true));
-    const user = await authService.loginWithToken();
-    dispatch(setLoggedInUser(user));
-    dispatch(setIsPageLoading(false));
-  } catch (err) {
-    console.log("AuthActions: err in loginWithToken", err);
-  }
-};
+export function loginWithToken(): AppThunk {
+  return async dispatch => {
+    try {
+      dispatch(setIsPageLoading(true));
+      const user = await authService.loginWithToken();
+      dispatch(setLoggedInUser(user));
+      dispatch(setIsPageLoading(false));
+    } catch (err) {
+      console.log("AuthActions: err in loginWithToken", err);
+    }
+  };
+}
 
-export const userLogout = (): AppThunk => async dispatch => {
-  try {
-    await authService.logout();
-    dispatch(logout());
-  } catch (err) {
-    console.log("AuthActions: err in logout", err);
-  }
-};
+export function userLogout(): AppThunk {
+  return async dispatch => {
+    try {
+      await authService.logout();
+      dispatch(logout());
+    } catch (err) {
+      console.log("AuthActions: err in logout", err);
+    }
+  };
+}

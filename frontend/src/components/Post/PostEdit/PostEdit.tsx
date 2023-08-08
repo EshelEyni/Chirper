@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
@@ -37,6 +37,30 @@ import {
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
 
+function checkPostTextValidity(newPostText: string): boolean {
+  return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
+}
+
+function checkPostPollValidity(post: NewPost): boolean {
+  return post.poll!.options.every(option => option.text.length > 0);
+}
+
+function checkPostValidity(post: NewPost | null, newPostText: string): boolean {
+  if (!post) return false;
+  if (post.poll) return checkPostPollValidity(post) && checkPostTextValidity(newPostText);
+  return (
+    checkPostTextValidity(newPostText) ||
+    post.imgs.length > 0 ||
+    !!post.gif ||
+    !!post.video ||
+    !!post.quotedPostId
+  );
+}
+
+function checkPostArrayValidity(newPosts: NewPost[], newPostText: string): boolean {
+  return newPosts.every(post => checkPostValidity(post, newPostText));
+}
+
 interface PostEditProps {
   isHomePage?: boolean;
   onClickBtnClose?: () => void;
@@ -69,50 +93,20 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   const threadLength = preCurrNewPostList.length + postCurrNewPostList.length + 1;
   const threadLimit = 10;
   const isAddingPostToThreadDisabled = threadLength >= threadLimit;
-  const isMultipePosts = threadLength > 1;
   const isPostDateTitleShown = currNewPost?.schedule && isFirstPostInThread;
   const isPreCurrNewPostListShown = !isHomePage && preCurrNewPostList.length > 0;
   const isReplyPostShown = !isHomePage && !!reply.repliedToPost;
-  const isBtnToggleAudienceShown = isPickerShown && currNewPost && isFirstPostInThread;
-  const isPostEditImgShown = currNewPost && currNewPost.imgs.length > 0;
-  const isPostEditVideoShown = !!currNewPost?.video;
-  const isPostEditGifShown = !!currNewPost?.gif;
-  const isPostEditPollShown = !!currNewPost?.poll;
-  const isBtnToggleRepliersShown = isPickerShown && currNewPost;
-  const isQuotedPostShown = !!quote.quotedPost;
+  const isQueotePostShown = !isHomePage && !!quote.quotedPost;
+  const isBtnToggleAudienceShown = isPickerShown && isFirstPostInThread;
   const isPostCurrNewPostListShown = !isHomePage && postCurrNewPostList.length > 0;
-
-  const checkPostValidity = useCallback(
-    (post: NewPost | null): boolean => {
-      if (!post) return false;
-
-      const checkPostTextValidity = (): boolean =>
-        !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
-
-      if (post.poll)
-        return post.poll.options.every(option => option.text.length > 0) && checkPostTextValidity();
-      return (
-        checkPostTextValidity() ||
-        post.imgs.length > 0 ||
-        !!post.gif ||
-        !!post.video ||
-        !!post.quotedPostId
-      );
-    },
-    [newPostText]
-  );
 
   const isBtnRemovePostFromThreadShown =
     !isFirstPostInThread &&
     !isHomePage &&
     (newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar) &&
-    !checkPostValidity(currNewPost);
-  const isIndicatorAndAddThreadBtnShown = checkPostValidity(currNewPost) || newPostText.length > 0;
-
-  const checkPostArrayValidity = useCallback(
-    (newPosts: NewPost[]): boolean => newPosts.every(post => checkPostValidity(post)),
-    [checkPostValidity]
-  );
+    !checkPostValidity(currNewPost, newPostText);
+  const isIndicatorAndAddThreadBtnShown =
+    checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
 
   async function onAddPost() {
     if (!currNewPost || !loggedInUser) return;
@@ -206,7 +200,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         return "Schedule";
       case newPostType === NewPostType.Reply:
         return "Reply";
-      case isMultipePosts && !isHomePage:
+      case threadLength > 1 && !isHomePage:
         return "Chirp All";
       default:
         return "Chirp";
@@ -214,15 +208,14 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   }
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
-    const isValid = checkPostArrayValidity(postArray);
+    const isValid = checkPostArrayValidity(postArray, newPostText);
     if (isValid !== arePostsValid) setArePostsValid(isValid);
   }, [
     preCurrNewPostList,
     currNewPost,
-    newPostText.length,
+    newPostText,
     postCurrNewPostList,
     arePostsValid,
-    checkPostArrayValidity,
     setArePostsValid,
   ]);
 
@@ -241,6 +234,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     setIsPickerShown(!isHomePage);
   }, [isHomePage, setIsPickerShown]);
 
+  if (!currNewPost) return null;
   return (
     <section
       className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
@@ -264,15 +258,15 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {isBtnRemovePostFromThreadShown && <BtnRemovePostFromThread />}
 
           <PostEditTextArea isHomePage={isHomePage} textAreaRef={textAreaRef} />
-          {isPostEditImgShown && <PostEditImgList />}
-          {isPostEditVideoShown && <VideoEdit />}
-          {isPostEditGifShown && <GifEdit />}
-          {isPostEditPollShown && <PollEdit />}
+          {currNewPost.imgs.length > 0 && <PostEditImgList />}
+          {!!currNewPost?.video && <VideoEdit />}
+          {!!currNewPost?.gif && <GifEdit />}
+          {!!currNewPost?.poll && <PollEdit />}
           <div className="btn-replries-location-container">
-            {isBtnToggleRepliersShown && <BtnToggleRepliers />}
+            {isPickerShown && <BtnToggleRepliers />}
             <PostEditTitleLocation />
           </div>
-          {isQuotedPostShown && (
+          {isQueotePostShown && (
             <MiniPostPreview type={"quoted-post"}>
               <QuotedPostContent />
             </MiniPostPreview>

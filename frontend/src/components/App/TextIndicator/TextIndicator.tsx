@@ -10,22 +10,18 @@ export const TextIndicator: React.FC = () => {
     const percentage = (textLength / 247) * 100;
     let background;
 
-    if (textLength < 227) {
+    if (textLength < 227)
       background = `radial-gradient(closest-side, white 79%, transparent 80% 100%),
        conic-gradient(var(--color-primary) ${percentage}%, rgb(239,243,244) 0)`;
-    } else if (textLength < 247) {
+    else if (textLength < 247)
       background = `radial-gradient(closest-side, white 79%, transparent 80% 100%),
          conic-gradient(var(--color-warning) ${percentage}%, rgb(239,243,244) 0)`;
-    } else if (textLength < 257) {
+    else if (textLength < 257)
       background = `radial-gradient(closest-side, white 79%, transparent 80% 100%),
          conic-gradient(var(--color-danger) 100%, rgb(239,243,244) 0)`;
-    } else {
-      background = `none`;
-    }
+    else background = `none`;
 
-    return {
-      background,
-    };
+    return { background };
   }, [textLength]);
 
   return (

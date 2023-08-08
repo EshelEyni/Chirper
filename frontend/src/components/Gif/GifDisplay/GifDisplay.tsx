@@ -13,7 +13,12 @@ interface GifDisplayProps {
 }
 
 export const GifDisplay: React.FC<GifDisplayProps> = ({
-  gif: { url, staticUrl, description, size },
+  gif: {
+    url,
+    staticUrl,
+    description,
+    size: { height, width },
+  },
   isAutoPlay = true,
 }) => {
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
@@ -48,7 +53,11 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
         ref={isUserPaused || !isAutoPlay ? undefined : ref}
         alt={description}
         loading="lazy"
-        style={{ height: size.height, width: size.width, backgroundColor: gifPlaceholderBcg[0] }}
+        style={{
+          height: `${(height / width) * 100}%`,
+          width: "100%",
+          backgroundColor: gifPlaceholderBcg[0],
+        }}
         onClick={onTogglePlay}
       />
       <div className="gif-display-content-container">

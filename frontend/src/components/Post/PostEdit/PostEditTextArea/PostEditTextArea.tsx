@@ -31,14 +31,13 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = text.match(urlRegex);
       let youtubeURL = "";
-      if (urls) {
+      if (urls)
         for (let i = urls.length - 1; i >= 0; i--) {
           if (urls[i].includes("https://www.youtube.com/watch")) {
             youtubeURL = urls[i];
             break;
           }
         }
-      }
 
       if (youtubeURL && youtubeURL !== currPost.video?.url && !isVideoRemoved) {
         const newPost = {
@@ -48,28 +47,25 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
         };
 
         dispatch(updateNewPost({ newPost, newPostType }));
-      } else if (currPost.video) {
-        const newPost = { ...currPost, text, video: null };
-        dispatch(updateNewPost({ newPost, newPostType }));
-      }
+      } else if (currPost.video)
+        dispatch(updateNewPost({ newPost: { ...currPost, text, video: null }, newPostType }));
     }, 500).debouncedFunc
   );
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>): void {
     const value = e.target.value;
     setNewPostText(value);
     detectURL.current(currNewPost, value, isVideoRemoved);
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
-  };
+  }
 
-  const handleTextBlur = async () => {
+  function handleTextBlur(): void {
     if (!currNewPost) return;
-    const newPost = { ...currNewPost, text: newPostText };
-    await dispatch(updateNewPost({ newPost, newPostType }));
-  };
+    dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText }, newPostType }));
+  }
 
-  const setTextPlaceholder = () => {
+  function setTextPlaceholder() {
     switch (newPostType) {
       case NewPostType.Reply: {
         if (currNewPost?.poll) return "Ask a question...";
@@ -93,7 +89,7 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
         return "What's happening?";
       }
     }
-  };
+  }
   return (
     <textarea
       className={

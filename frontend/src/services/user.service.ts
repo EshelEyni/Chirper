@@ -1,3 +1,4 @@
+import { Post } from "../../../shared/interfaces/post.interface";
 import { MiniUser, User, FollowingResult } from "../../../shared/interfaces/user.interface";
 import httpService from "./http.service";
 import { handleServerResponse } from "./util/utils.service";
@@ -53,22 +54,22 @@ async function getByUsername(username: string): Promise<User> {
   }
 }
 
-async function followUser(userId: string, postId?: string): Promise<FollowingResult> {
+async function followUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   try {
     const endpoint = _getFollowingEndpoint(userId, postId);
     const respose = await httpService.post(endpoint);
-    return handleServerResponse<FollowingResult>(respose);
+    return handleServerResponse<FollowingResult | Post>(respose);
   } catch (err) {
     console.log("User service: err in addFollowiing", err);
     throw err;
   }
 }
 
-async function unFollowUser(userId: string, postId?: string): Promise<FollowingResult> {
+async function unFollowUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   try {
     const endpoint = _getFollowingEndpoint(userId, postId);
     const respose = await httpService.delete(endpoint);
-    return handleServerResponse<FollowingResult>(respose);
+    return handleServerResponse<FollowingResult | Post>(respose);
   } catch (err) {
     console.log("User service: err in removeFollowiing", err);
     throw err;

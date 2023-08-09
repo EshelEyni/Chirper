@@ -5,11 +5,11 @@ import { FiUpload } from "react-icons/fi";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../services/util/utils.service";
 import { AppDispatch } from "../../../store/types";
-import { addBookmark, removeBookmark } from "../../../store/actions/post.actions";
 import postService from "../../../services/post.service";
 import "./PostShareOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
 import { setUserMsg } from "../../../store/slices/systemSlice";
+import { addBookmark, removeBookmark } from "../../../store/slices/postSlice";
 
 type PostShareOptionsModalProps = {
   post: Post;

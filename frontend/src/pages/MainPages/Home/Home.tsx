@@ -2,12 +2,12 @@ import { useEffect, lazy, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { getPosts } from "../../../store/actions/post.actions";
 import { AppDispatch } from "../../../store/types";
 import "./Home.scss";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
+import { getPosts } from "../../../store/slices/postSlice";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const Homepage = () => {

@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
-import { getPost } from "../../../store/actions/post.actions";
 import { RootState } from "../../../store/store";
+import { getPost } from "../../../store/slices/postSlice";
 
 const PostDetails = () => {
   const { post } = useSelector((state: RootState) => state.postModule);

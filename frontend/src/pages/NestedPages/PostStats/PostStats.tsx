@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { PostStats } from "../../../../../shared/interfaces/post.interface";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
-import { clearPost, getPost } from "../../../store/actions/post.actions";
 import postService from "../../../services/post.service";
 import "./PostStats.scss";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
@@ -16,6 +15,7 @@ import { getBasePathName } from "../../../services/util/utils.service";
 import { PostsStatsNonOwnerMsg } from "./NonOwnerMsg/PostsStatsNonOwnerMsg";
 import { PostStatsActionStatsList } from "./ActionStatsList/PostStatsActionStatsList";
 import { PostStatsDataStatsList } from "./DataStatsList/PostStatsDataStatsList";
+import { getPost, setPost } from "../../../store/slices/postSlice";
 
 const PostStatsPage = () => {
   const [postStats, setPostStats] = useState<PostStats | null>(null);
@@ -37,7 +37,7 @@ const PostStatsPage = () => {
   }, [id]);
 
   function onGoBack() {
-    dispatch(clearPost());
+    dispatch(setPost(null));
     const basePath = getBasePathName(location.pathname, "post-stats");
     navigate(basePath);
   }

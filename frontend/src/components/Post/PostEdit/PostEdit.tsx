@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { NewPost, NewPostImg } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
-import { addPost, addQuotePost, addReply } from "../../../store/actions/post.actions";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
@@ -36,6 +35,7 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
+import { addPostAsync, addQuotePost, addReplyAsync } from "../../../store/slices/postSlice";
 
 function checkPostTextValidity(newPostText: string): boolean {
   return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
@@ -149,10 +149,10 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         await dispatch(addQuotePost(newPosts[0]));
         break;
       case NewPostType.Reply:
-        await dispatch(addReply(newPosts[0]));
+        await dispatch(addReplyAsync(newPosts[0]));
         break;
       default:
-        await dispatch(addPost(newPosts));
+        await dispatch(addPostAsync(newPosts));
         break;
     }
   }

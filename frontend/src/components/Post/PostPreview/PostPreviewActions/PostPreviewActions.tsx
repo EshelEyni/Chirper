@@ -7,18 +7,18 @@ import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import {
-  addLike,
-  removeLike,
-  removeRepost,
-  repostPost,
-} from "../../../../store/actions/post.actions";
 import { useState } from "react";
 import { useModalPosition } from "../../../../hooks/useModalPosition";
 import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBtn";
 import "./PostPreviewActions.scss";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { NewPostType, setNewPostType, setNewPosts } from "../../../../store/slices/postEditSlice";
+import {
+  addLike,
+  addRepostAsync,
+  removeLike,
+  removeRepostAsync,
+} from "../../../../store/slices/postSlice";
 
 export type PostPreviewActionBtn = {
   name: string;
@@ -72,11 +72,8 @@ export const PostPreviewActions: React.FC = () => {
       count: post.likesCount,
       isClicked: isLiked,
       onClickFunc: () => {
-        if (isLiked) {
-          dispatch(removeLike(post.id));
-        } else {
-          dispatch(addLike(post.id));
-        }
+        if (isLiked) dispatch(removeLike(post.id));
+        else dispatch(addLike(post.id));
       },
     },
     {
@@ -101,13 +98,13 @@ export const PostPreviewActions: React.FC = () => {
 
   async function onRepost() {
     const repostedPost = { ...post };
-    await dispatch(repostPost(repostedPost));
+    await dispatch(addRepostAsync(repostedPost));
     setIsRepostModalOpen(prev => !prev);
   }
 
   async function onRemoveRepost() {
     if (!loggedInUser) return;
-    await dispatch(removeRepost(post.id, loggedInUser.id));
+    await dispatch(removeRepostAsync(post.id, loggedInUser.id));
     setIsRepostModalOpen(prev => !prev);
   }
 

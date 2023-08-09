@@ -4,7 +4,7 @@ import { Poll, Post } from "../../../shared/interfaces/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
 import { AppDispatch } from "../store/types";
-import { addFollowFromPost, removeFollowFromPost } from "../store/actions/post.actions";
+import { addFollowFromPost, removeFollowFromPost } from "../store/slices/postSlice";
 
 type PostPreviewContextType = {
   post: Post;

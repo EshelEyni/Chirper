@@ -160,7 +160,7 @@ async function addImpression(postId: string) {
     await httpService.post(`post/${postId}/stats`);
   } catch (err) {
     console.log("postService: Cannot add impression", err);
-    throw err;
+    // throw err;
   }
 }
 

@@ -41,8 +41,9 @@ export const PostPreview: React.FC = () => {
   });
 
   useEffect(() => {
-    if (inView) postService.addImpression(post.id);
-  }, [inView, post.id]);
+    const shouldSaveImpression = inView && !post.loggedInUserActionState.isViewed && loggedInUser;
+    if (shouldSaveImpression) postService.addImpression(post.id);
+  }, [inView, post.id, loggedInUser, post.loggedInUserActionState.isViewed]);
 
   return (
     <article className="post-preview" ref={isViewed ? undefined : ref}>

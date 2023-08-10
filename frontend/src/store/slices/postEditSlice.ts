@@ -85,6 +85,7 @@ function _getQuote(quotedPost: Post): { quotedPost: Post | null; quote: NewPost 
         quote: _getDefaultNewPost(),
       };
 }
+
 const initialState: NewPostState = {
   homePage: {
     posts: [_getDefaultNewPost()],

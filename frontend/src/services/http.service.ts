@@ -1,6 +1,6 @@
 import Axios, { Method } from "axios";
-
-const BASE_URL = process.env.NODE_ENV === "production" ? "/api/" : "http://localhost:3030/api/";
+const isProd = process.env.NODE_ENV === "production";
+const BASE_URL = isProd ? "/api/" : "http://localhost:3030/api/";
 
 const axios = Axios.create({
   withCredentials: true,
@@ -16,9 +16,9 @@ async function ajax(endpoint: string, method: Method = "GET", data: object | nul
     });
     return res.data;
   } catch (err) {
-    if (data) {
-      delete (data as any)["password"];
-    }
+    if (isProd) return;
+    if (data) delete (data as any)["password"];
+    // eslint-disable-next-line no-console
     console.log(`Had issues ${method}ing to the backend, endpoint: ${endpoint}, with data: `, data);
     console.error(err);
     throw err;

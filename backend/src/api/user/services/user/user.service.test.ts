@@ -72,7 +72,7 @@ this function are not tested, because they only use Mongoose methods:
 - getById
 - getByUsername
 - add
-- update (only filterObj is tested in util.service.test.ts)
+- update (filterObj is tested in util.service.test.ts)
 - remove
 
 

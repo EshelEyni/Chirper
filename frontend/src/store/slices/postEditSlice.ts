@@ -115,7 +115,7 @@ const newPostSlice = createSlice({
     },
     setNewPosts(
       state,
-      action: PayloadAction<{ newPosts: NewPost[]; newPostType: NewPostType; post?: Post }>
+      action: PayloadAction<{ newPosts: NewPost[]; newPostType: NewPostType; post?: Post | null }>
     ) {
       const { newPostType } = action.payload;
       switch (newPostType) {

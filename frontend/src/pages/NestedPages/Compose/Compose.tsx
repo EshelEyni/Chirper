@@ -13,7 +13,7 @@ import { PostEditProvider } from "../../../contexts/PostEditContext";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import {
   NewPostType,
-  setNewPost,
+  clearNewPosts,
   setNewPostType,
   setNewPosts,
 } from "../../../store/slices/postEditSlice";
@@ -37,13 +37,13 @@ const ComposePage = () => {
         dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.SideBar }));
         break;
       case NewPostType.Reply:
-        dispatch(setNewPost({ newPost: null, newPostType: NewPostType.Reply }));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Reply, post: null }));
         break;
       case NewPostType.Quote:
-        dispatch(setNewPost({ newPost: null, newPostType: NewPostType.Quote }));
+        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Quote, post: null }));
         break;
       default:
-        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.HomePage }));
+        dispatch(clearNewPosts());
         break;
     }
     dispatch(setNewPostType(NewPostType.HomePage));

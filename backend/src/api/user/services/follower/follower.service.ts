@@ -31,28 +31,27 @@ async function addFollowings(
   const session = await startSession();
   session.startTransaction();
   try {
-    const following = new FollowerModel({ fromUserId, toUserId });
-    await following.save({ session });
+    await FollowerModel.create([{ fromUserId, toUserId }], { session });
 
     const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
       fromUserId,
       { $inc: { followingCount: 1 } },
       { session, new: true }
     );
-    if (!updatedFollowerDoc) throw new AppError("User not found", 404);
+    if (!updatedFollowerDoc) throw new AppError("Follower not found", 404);
 
     const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
       toUserId,
       { $inc: { followersCount: 1 } },
       { session, new: true }
     );
-    if (!updatedFollowingDoc) throw new AppError("User not found", 404);
+    if (!updatedFollowingDoc) throw new AppError("Following not found", 404);
 
     if (postId)
       await PostStatsModel.findOneAndUpdate(
         { postId, userId: fromUserId },
         { isFollowedFromPost: true },
-        { session }
+        { session, upsert: true }
       );
 
     await session.commitTransaction();
@@ -64,14 +63,12 @@ async function addFollowings(
 
     const updatedFollower = updatedFollowerDoc.toObject() as User;
     updatedFollower.isFollowing = false;
-
     const updatedFollowing = updatedFollowingDoc.toObject() as User;
     updatedFollowing.isFollowing = true;
 
     return { updatedFollower, updatedFollowing };
   } catch (err) {
     await session.abortTransaction();
-    session.endSession();
     throw err;
   } finally {
     session.endSession();
@@ -107,7 +104,7 @@ async function removeFollowings(
       await PostStatsModel.findOneAndUpdate(
         { postId, userId: fromUserId },
         { isFollowedFromPost: false },
-        { session }
+        { session, upsert: true }
       );
 
     await session.commitTransaction();
@@ -126,7 +123,6 @@ async function removeFollowings(
     return { updatedFollower, updatedFollowing };
   } catch (err) {
     await session.abortTransaction();
-    session.endSession();
     throw err;
   } finally {
     session.endSession();

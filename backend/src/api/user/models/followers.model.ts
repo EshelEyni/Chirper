@@ -11,6 +11,12 @@ const followerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
+      validate: {
+        validator: function (this: IFollower, v: string): boolean {
+          return this.fromUserId.toString() !== v.toString();
+        },
+        message: "You can't follow yourself",
+      },
     },
     isAccepted: {
       type: Boolean,

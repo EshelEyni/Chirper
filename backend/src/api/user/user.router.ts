@@ -12,7 +12,7 @@ import {
   removeFollowings,
   addFollowingsFromPost,
   removeFollowingsFromPost,
-} from "./user.controller";
+} from "./controller/user.controller";
 import {
   checkUserAuthentication,
   checkAdminAuthorization,

@@ -40,7 +40,7 @@ describe("Followers Service", () => {
       toObject: jest.fn().mockReturnThis(),
     };
   }
-  xdescribe("populateIsFollowing", () => {
+  describe("populateIsFollowing", () => {
     const mockUser = getMockUser("1");
 
     beforeEach(() => {

@@ -138,3 +138,5 @@ function validatePatchRequestBody(body: object) {
 }
 
 export { CustomError, AppError, errorHandler, asyncErrorCatcher, validatePatchRequestBody };
+
+// Path: src\services\logger\logger.service.ts

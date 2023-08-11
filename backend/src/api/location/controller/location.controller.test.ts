@@ -20,11 +20,11 @@ const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 });
 
 describe("Location Controller", () => {
-  describe("getUserDefaultLocations", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: jest.Mock;
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: jest.Mock;
 
+  describe("getUserDefaultLocations", () => {
     beforeEach(() => {
       req = { query: {} };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
@@ -48,7 +48,7 @@ describe("Location Controller", () => {
 
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: mockLocations.length,
         data: mockLocations,
       });
@@ -75,22 +75,20 @@ describe("Location Controller", () => {
     });
 
     it("should handle errors from locationService.getUserSurroundingLocations", async () => {
-      jest
-        .spyOn(locationService, "getUserSurroundingLocations")
-        .mockRejectedValue(new Error("Test error"));
+      const mockError = new Error("Test error");
+      jest.spyOn(locationService, "getUserSurroundingLocations").mockImplementationOnce(() => {
+        throw mockError;
+      });
       req.query = { lat: "1", lng: "1" };
 
       const sut = getUserDefaultLocations as any;
       await sut(req as Request, res as Response, next);
+      expect(next).toHaveBeenCalledWith(mockError);
       expect(res.send).not.toHaveBeenCalled();
     });
   });
 
   describe("getLocationsBySearchTerm", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: jest.Mock;
-
     beforeEach(() => {
       req = { query: {} };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
@@ -114,7 +112,7 @@ describe("Location Controller", () => {
 
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: mockLocations.length,
         data: mockLocations,
       });

@@ -15,7 +15,7 @@ const getUserDefaultLocations = asyncErrorCatcher(
 
     res.send({
       status: "success",
-      requestAt: new Date().toISOString(),
+      requestedAt: new Date().toISOString(),
       results: locations.length,
       data: locations,
     });
@@ -29,7 +29,7 @@ const getLocationsBySearchTerm = asyncErrorCatcher(async (req: Request, res: Res
 
   res.send({
     status: "success",
-    requestAt: new Date().toISOString(),
+    requestedAt: new Date().toISOString(),
     results: locations.length,
     data: locations,
   });

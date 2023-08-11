@@ -3,6 +3,7 @@ import { UserModel } from "../../models/user.model";
 import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
 import { Document } from "mongoose";
 import followerService from "../follower/follower.service";
+import { AppError } from "../../../../services/error/error.service";
 
 async function query(queryString: QueryObj): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), queryString)
@@ -29,6 +30,7 @@ async function getById(userId: string): Promise<User> {
 
 async function getByUsername(username: string): Promise<User> {
   const user = await UserModel.findOne({ username }).exec();
+  if (!user) throw new AppError(`User with username ${username} not found`, 404);
   return user as unknown as User;
 }
 
@@ -45,6 +47,7 @@ async function update(id: string, user: User): Promise<User> {
     new: true,
     runValidators: true,
   }).exec();
+  if (!updatedUser) throw new AppError("User not found", 404);
   return updatedUser as unknown as User;
 }
 
@@ -55,6 +58,7 @@ async function remove(userId: string): Promise<User> {
 
 async function removeAccount(userId: string): Promise<User> {
   const userRemoved = await UserModel.findByIdAndUpdate(userId, { active: false }).exec();
+  if (!userRemoved) throw new AppError("User not found", 404);
   return userRemoved as unknown as User;
 }
 

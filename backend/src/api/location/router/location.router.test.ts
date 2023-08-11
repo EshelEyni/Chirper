@@ -41,7 +41,7 @@ describe("Location Router", () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: mockLocations.length,
         data: mockLocations,
       });
@@ -90,7 +90,7 @@ describe("Location Router", () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: 0,
         data: [],
       });
@@ -106,7 +106,7 @@ describe("Location Router", () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: mockLocations.length,
         data: mockLocations,
       });
@@ -136,7 +136,7 @@ describe("Location Router", () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
         status: "success",
-        requestAt: expect.any(String),
+        requestedAt: expect.any(String),
         results: 0,
         data: [],
       });

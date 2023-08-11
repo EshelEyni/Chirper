@@ -1,22 +1,20 @@
 import { Request, Response } from "express";
-import userService from "./services/user/user.service";
-import { logger } from "../../services/logger/logger.service";
+import userService from "../services/user/user.service";
+import { logger } from "../../../services/logger/logger.service";
 import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../services/error/error.service";
-import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/factory.service";
-import { UserModel } from "./models/user.model";
-import { User } from "../../../../shared/interfaces/user.interface";
-import { QueryObj } from "../../services/util/util.service";
-import followerService from "./services/follower/follower.service";
+} from "../../../services/error/error.service";
+import { getOne, createOne, updateOne, deleteOne } from "../../../services/factory/factory.service";
+import { UserModel } from "../models/user.model";
+import { QueryObj } from "../../../services/util/util.service";
+import followerService from "../services/follower/follower.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
-  const users = (await userService.query(queryString as QueryObj)) as unknown as User[];
-
-  res.json({
+  const users = await userService.query(queryString as QueryObj);
+  res.send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: users.length,
@@ -40,7 +38,6 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
   const { username } = req.params;
   if (!username) throw new AppError("No user username provided", 400);
   const user = await userService.getByUsername(username);
-  if (!user) throw new AppError(`User with username ${username} not found`, 404);
 
   res.send({
     status: "success",
@@ -55,8 +52,6 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
   const { loggedInUserId } = req;
   if (!loggedInUserId) throw new AppError("User not logged in", 401);
   const updatedUser = await userService.update(loggedInUserId, userToUpdate);
-  // TODO: check if this error is needed
-  if (!updatedUser) throw new AppError("User not found", 404);
 
   res.send({
     status: "success",
@@ -68,7 +63,6 @@ const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
   const { loggedInUserId } = req;
   if (!loggedInUserId) throw new AppError("User not logged in", 401);
   const removedUser = await userService.removeAccount(loggedInUserId);
-  if (!removedUser) throw new AppError("User not found", 404);
   logger.warn(`User ${removedUser.username} was deactivated`);
 
   res.status(204).send({

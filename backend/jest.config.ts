@@ -2,11 +2,11 @@ import type { Config } from "@jest/types";
 
 const isGlobalTesting = false;
 
-const currPath = "/api/user/router";
+const currPath = "/services/factory";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 const coveragePath = isGlobalTesting
   ? `${baseDir}/**/*.ts`
-  : "<rootDir>/src/api/user/router/user.router.ts";
+  : "<rootDir>/src/services/factory/factory.service.ts";
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { APIFeatures } from "../util/util.service";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { createOne, deleteOne, getAll, getOne, updateOne } from "./factory.service";
 import { DeepMockProxy, mockDeep } from "jest-mock-extended";
 import { asyncErrorCatcher } from "../error/error.service";
@@ -15,6 +15,7 @@ const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
 jest.mock("../util/util.service", () => ({
   APIFeatures: jest.fn().mockImplementation(() => APIFeaturesMock),
+  validateIds: jest.fn(),
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,7 +118,7 @@ describe("Factory Service", () => {
 
     beforeEach(() => {
       setMocks();
-      id = "1234567890";
+      id = new Types.ObjectId().toHexString();
       reqMock.params.id = id;
       mockData = { _id: id, name: "Item" };
       error = new Error("Test error");
@@ -127,6 +128,7 @@ describe("Factory Service", () => {
       };
 
       ModelMock.findById.mockReturnValue(queryMock as any);
+      ModelMock.collection.collectionName = "testItems";
     });
 
     afterEach(() => {

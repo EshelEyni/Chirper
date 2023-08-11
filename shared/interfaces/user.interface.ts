@@ -16,7 +16,7 @@ export interface User extends UserCredenitials {
   followingCount: number;
   followersCount: number;
   createdAt: number;
-  isFollowing: boolean;
+  isFollowing?: boolean;
 }
 
 export interface MiniUser {

@@ -2,7 +2,7 @@ import { FollowingResult, User } from "../../../../../../shared/interfaces/user.
 import { UserModel } from "../../models/user.model";
 import { FollowerModel } from "../../models/followers.model";
 import { isValidId } from "../../../../services/util/util.service";
-import { startSession } from "mongoose";
+import { ClientSession, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
@@ -33,38 +33,20 @@ async function addFollowings(
   try {
     await FollowerModel.create([{ fromUserId, toUserId }], { session });
 
-    const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+    const { updatedFollower, updatedFollowing } = await _updateAndGetUsers({
       fromUserId,
-      { $inc: { followingCount: 1 } },
-      { session, new: true }
-    );
-    if (!updatedFollowerDoc) throw new AppError("Follower not found", 404);
-
-    const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
       toUserId,
-      { $inc: { followersCount: 1 } },
-      { session, new: true }
-    );
-    if (!updatedFollowingDoc) throw new AppError("Following not found", 404);
+      session,
+      inc: 1,
+    });
 
     if (postId)
-      await PostStatsModel.findOneAndUpdate(
-        { postId, userId: fromUserId },
-        { isFollowedFromPost: true },
-        { session, upsert: true }
-      );
-
-    await session.commitTransaction();
-    if (postId) {
-      const updatedPost = await postService.getById(postId);
-      if (!updatedPost) throw new AppError("Post not found", 404);
-      return updatedPost;
-    }
-
-    const updatedFollower = updatedFollowerDoc.toObject() as User;
-    updatedFollower.isFollowing = false;
-    const updatedFollowing = updatedFollowingDoc.toObject() as User;
-    updatedFollowing.isFollowing = true;
+      return await _updatePostStatsAndReturnPost({
+        fromUserId,
+        postId,
+        isFollowedFromPost: true,
+        session,
+      });
 
     return { updatedFollower, updatedFollowing };
   } catch (err) {
@@ -83,42 +65,26 @@ async function removeFollowings(
   const session = await startSession();
   session.startTransaction();
   try {
-    const follower = await FollowerModel.findOneAndDelete({ fromUserId, toUserId }, { session });
-    if (!follower) throw new Error("Follower not found");
+    const followLinkage = await FollowerModel.findOneAndDelete(
+      { fromUserId, toUserId },
+      { session }
+    );
+    if (!followLinkage) throw new AppError("You are not following this User", 404);
 
-    const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+    const { updatedFollower, updatedFollowing } = await _updateAndGetUsers({
       fromUserId,
-      { $inc: { followingCount: -1 } },
-      { session, new: true }
-    );
-    if (!updatedFollowerDoc) throw new Error("User not found");
-
-    const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
       toUserId,
-      { $inc: { followersCount: -1 } },
-      { session, new: true }
-    );
-    if (!updatedFollowingDoc) throw new Error("User not found");
+      session,
+      inc: -1,
+    });
 
     if (postId)
-      await PostStatsModel.findOneAndUpdate(
-        { postId, userId: fromUserId },
-        { isFollowedFromPost: false },
-        { session, upsert: true }
-      );
-
-    await session.commitTransaction();
-
-    if (postId) {
-      const updatedPost = await postService.getById(postId);
-      if (!updatedPost) throw new Error("Post not found");
-      return updatedPost;
-    }
-
-    const updatedFollower = updatedFollowerDoc.toObject() as User;
-    updatedFollower.isFollowing = false;
-    const updatedFollowing = updatedFollowingDoc.toObject() as User;
-    updatedFollowing.isFollowing = false;
+      return await _updatePostStatsAndReturnPost({
+        fromUserId,
+        postId,
+        isFollowedFromPost: false,
+        session,
+      });
 
     return { updatedFollower, updatedFollowing };
   } catch (err) {
@@ -127,6 +93,66 @@ async function removeFollowings(
   } finally {
     session.endSession();
   }
+}
+
+type UpdateAndGetUsersParams = {
+  fromUserId: string;
+  toUserId: string;
+  session: ClientSession;
+  inc: number;
+};
+
+async function _updateAndGetUsers({
+  fromUserId,
+  toUserId,
+  session,
+  inc,
+}: UpdateAndGetUsersParams): Promise<FollowingResult> {
+  const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+    fromUserId,
+    { $inc: { followingCount: inc } },
+    { session, new: true }
+  );
+  if (!updatedFollowerDoc) throw new AppError("Follower not found", 404);
+
+  const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
+    toUserId,
+    { $inc: { followersCount: inc } },
+    { session, new: true }
+  );
+  if (!updatedFollowingDoc) throw new AppError("Following not found", 404);
+
+  await session.commitTransaction();
+
+  const updatedFollowing = updatedFollowingDoc.toObject() as User;
+  updatedFollowing.isFollowing = inc > 0;
+  return { updatedFollower: updatedFollowerDoc as unknown as User, updatedFollowing };
+}
+
+type UpdatePostStatsAndReturnPostParams = {
+  postId: string;
+  fromUserId: string;
+  isFollowedFromPost: boolean;
+  session: ClientSession;
+};
+
+async function _updatePostStatsAndReturnPost({
+  postId,
+  fromUserId,
+  isFollowedFromPost,
+  session,
+}: UpdatePostStatsAndReturnPostParams): Promise<Post> {
+  await PostStatsModel.findOneAndUpdate(
+    { postId, userId: fromUserId },
+    { isFollowedFromPost },
+    { session, upsert: true }
+  );
+
+  await session.commitTransaction();
+
+  const updatedPost = await postService.getById(postId);
+  if (!updatedPost) throw new AppError("Post not found", 404);
+  return updatedPost;
 }
 
 export default {

@@ -18,14 +18,6 @@ const followerSchema = new mongoose.Schema(
         message: "You can't follow yourself",
       },
     },
-    isAccepted: {
-      type: Boolean,
-      default: false,
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     toObject: {
@@ -67,8 +59,6 @@ followerSchema.post(/^find/, async function (docs: any[]) {
 interface IFollowerBase {
   fromUserId: string;
   toUserId: string;
-  isAccepted: boolean;
-  isBlocked: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

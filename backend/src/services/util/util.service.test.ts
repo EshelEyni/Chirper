@@ -6,7 +6,7 @@ import {
   filterObj,
   queryEntityExists,
   sendEmail,
-  isValidId,
+  isValidMongoId,
 } from "./util.service";
 import config from "../../config/index";
 import nodemailer from "nodemailer";
@@ -250,7 +250,7 @@ describe("Util Service", () => {
     });
   });
 
-  describe("isValidId", () => {
+  describe("isValidMongoId", () => {
     const invalidIds = [
       { id: "Questions/0000000000000003599-A", type: "RavenDB Id" },
       { id: "550e8400-e29b-41d4-a716-446655440000", type: "UUID" },
@@ -264,22 +264,22 @@ describe("Util Service", () => {
     ];
 
     it("should return true if id is valid", () => {
-      const result = isValidId("5e9d2d7f3c9d440000a1d3b0");
+      const result = isValidMongoId("5e9d2d7f3c9d440000a1d3b0");
       expect(result).toBe(true);
     });
 
     it("should return false if id is invalid", () => {
-      const result = isValidId("invalidId");
+      const result = isValidMongoId("invalidId");
       expect(result).toBe(false);
     });
 
     it("should return false if id is empty", () => {
-      const result = isValidId("");
+      const result = isValidMongoId("");
       expect(result).toBe(false);
     });
 
     it.each(invalidIds)("should return false if id is of type: $type", invalidId => {
-      const result = isValidId(invalidId.id);
+      const result = isValidMongoId(invalidId.id);
       expect(result).toBe(false);
     });
   });

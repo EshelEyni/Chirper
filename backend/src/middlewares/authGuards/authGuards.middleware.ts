@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError, asyncErrorCatcher } from "../../services/error/error.service";
 import { UserModel } from "../../api/user/models/user.model";
 import tokenService from "../../services/token/token.service";
-import { isValidId } from "../../services/util/util.service";
+import { isValidMongoId } from "../../services/util/util.service";
 
 const checkUserAuthentication = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +13,7 @@ const checkUserAuthentication = asyncErrorCatcher(
     if (!verifiedToken) return next(new AppError("Invalid Token", 401));
     const { id, timeStamp } = verifiedToken;
 
-    if (!isValidId(id)) return next(new AppError("Invalid User Id", 401));
+    if (!isValidMongoId(id)) return next(new AppError("Invalid User Id", 401));
     const currentUser = await UserModel.findById(id);
     if (!currentUser)
       return next(new AppError("The user belonging to this token does not exist.", 401));

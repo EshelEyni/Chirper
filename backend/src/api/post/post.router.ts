@@ -25,7 +25,7 @@ import {
 const router = express.Router();
 
 router.get("/", getPosts);
-router.get("/:id([a-fA-F0-9]{24})", getPostById);
+router.get("/:id", getPostById);
 router.use(checkUserAuthentication);
 
 router.get("/:id/stats", getPostStats);

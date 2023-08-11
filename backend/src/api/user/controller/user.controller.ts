@@ -8,7 +8,7 @@ import {
 } from "../../../services/error/error.service";
 import { getOne, createOne, updateOne, deleteOne } from "../../../services/factory/factory.service";
 import { UserModel } from "../models/user.model";
-import { QueryObj } from "../../../services/util/util.service";
+import { QueryObj, validateIds } from "../../../services/util/util.service";
 import followerService from "../services/follower/follower.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
@@ -74,22 +74,28 @@ const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedInUserId } = req;
   const toUserId = req.params.id;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await followerService.addFollowings(loggedInUserId, toUserId);
+  validateIds(
+    { id: loggedInUserId, entityName: "loggedInUser" },
+    { id: toUserId, entityName: "user" }
+  );
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const updatedUsers = await followerService.add(loggedInUserId!, toUserId);
 
   res.send({
     status: "success",
-    data: updatedUser,
+    data: updatedUsers,
   });
 });
 
 const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedInUserId } = req;
   const toUserId = req.params.id;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!toUserId) throw new AppError("No user id provided", 400);
-  const updatedUser = await followerService.removeFollowings(loggedInUserId, toUserId);
+  validateIds(
+    { id: loggedInUserId, entityName: "loggedInUser" },
+    { id: toUserId, entityName: "user" }
+  );
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const updatedUser = await followerService.remove(loggedInUserId!, toUserId);
 
   res.send({
     status: "success",
@@ -101,11 +107,15 @@ const addFollowingsFromPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
     const { loggedInUserId } = req;
     const { postId, userId: toUserId } = req.params;
-    if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-    if (!toUserId) throw new AppError("No user id provided", 400);
-    if (!postId) throw new AppError("No post id provided", 400);
 
-    const updatedPost = await followerService.addFollowings(loggedInUserId, toUserId, postId);
+    validateIds(
+      { id: loggedInUserId, entityName: "loggedInUser" },
+      { id: toUserId, entityName: "user" },
+      { id: postId, entityName: "post" }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const updatedPost = await followerService.add(loggedInUserId!, toUserId, postId);
 
     res.send({
       status: "success",
@@ -119,10 +129,14 @@ const removeFollowingsFromPost = asyncErrorCatcher(
     const { loggedInUserId } = req;
     const { postId, userId: toUserId } = req.params;
 
-    if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-    if (!toUserId) throw new AppError("No user id provided", 400);
-    if (!postId) throw new AppError("No post id provided", 400);
-    const updatedPost = await followerService.removeFollowings(loggedInUserId, toUserId, postId);
+    validateIds(
+      { id: loggedInUserId, entityName: "loggedInUser" },
+      { id: toUserId, entityName: "user" },
+      { id: postId, entityName: "post" }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const updatedPost = await followerService.remove(loggedInUserId!, toUserId, postId);
 
     res.send({
       status: "success",

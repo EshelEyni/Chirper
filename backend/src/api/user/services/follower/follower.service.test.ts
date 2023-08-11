@@ -4,7 +4,7 @@ import followerService from "./follower.service";
 import { UserModel } from "../../models/user.model";
 import postService from "../../../post/post.service";
 import * as mongoose from "mongoose";
-import { isValidId } from "../../../../services/util/util.service";
+import { isValidMongoId } from "../../../../services/util/util.service";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
 import { AppError } from "../../../../services/error/error.service";
 
@@ -29,7 +29,7 @@ jest.mock("../../../post/models/post-stats.model", () => ({
 }));
 jest.mock("../../../post/post.service");
 jest.mock("../../../../services/util/util.service", () => ({
-  isValidId: jest.fn().mockReturnValue(true),
+  isValidMongoId: jest.fn().mockReturnValue(true),
 }));
 
 describe("Followers Service", () => {
@@ -49,7 +49,7 @@ describe("Followers Service", () => {
 
     it("should set isFollowing to false if loggedInUserId is not valid", async () => {
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId: null });
-      (isValidId as jest.Mock).mockReturnValueOnce(false);
+      (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
       const result = await followerService.populateIsFollowing(mockUser as any);
       expect(result.isFollowing).toBe(false);
       expect(FollowerModel.exists).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
 
-      const result = (await followerService.addFollowings("1", "2")) as any;
+      const result = (await followerService.add("1", "2")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
       expect(FollowerModel.create).toHaveBeenCalledWith(
@@ -145,7 +145,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
 
-      const result = (await followerService.addFollowings("1", "2", "postId")) as any;
+      const result = (await followerService.add("1", "2", "postId")) as any;
 
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe("Followers Service", () => {
     it("should abort transaction and throw error if an error occurs", async () => {
       (FollowerModel.create as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-      await expect(followerService.addFollowings("1", "2")).rejects.toThrow("Test error");
+      await expect(followerService.add("1", "2")).rejects.toThrow("Test error");
       expect(mockSession.abortTransaction).toHaveBeenCalled();
       expect(mockSession.endSession).toHaveBeenCalledTimes(1);
     });
@@ -194,7 +194,7 @@ describe("Followers Service", () => {
     it("should throw error if follower is not found", async () => {
       (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValueOnce(null);
 
-      await expect(followerService.addFollowings("1", "2")).rejects.toThrow(
+      await expect(followerService.add("1", "2")).rejects.toThrow(
         new AppError("Follower not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -206,7 +206,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(null);
 
-      await expect(followerService.addFollowings("1", "2")).rejects.toThrow(
+      await expect(followerService.add("1", "2")).rejects.toThrow(
         new AppError("Following not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -221,7 +221,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(null);
 
-      await expect(followerService.addFollowings("1", "2", "postId")).rejects.toThrow(
+      await expect(followerService.add("1", "2", "postId")).rejects.toThrow(
         new AppError("Post not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
 
-      const result = (await followerService.removeFollowings("1", "2")) as any;
+      const result = (await followerService.remove("1", "2")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
       expect(FollowerModel.findOneAndDelete).toHaveBeenCalledWith(
@@ -297,7 +297,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
 
-      const result = (await followerService.removeFollowings("1", "2", "postId")) as any;
+      const result = (await followerService.remove("1", "2", "postId")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
       expect(FollowerModel.findOneAndDelete).toHaveBeenCalledWith(
@@ -330,7 +330,7 @@ describe("Followers Service", () => {
     it("should abort transaction and throw error if an error occurs", async () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
-      await expect(followerService.removeFollowings("1", "2")).rejects.toThrow("Test error");
+      await expect(followerService.remove("1", "2")).rejects.toThrow("Test error");
       expect(mockSession.abortTransaction).toHaveBeenCalled();
       expect(mockSession.endSession).toHaveBeenCalledTimes(1);
     });
@@ -338,7 +338,7 @@ describe("Followers Service", () => {
     it("should throw error if follow Linkage is not found", async () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce(null);
 
-      await expect(followerService.removeFollowings("1", "2")).rejects.toThrow(
+      await expect(followerService.remove("1", "2")).rejects.toThrow(
         new AppError("You are not following this User", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -349,7 +349,7 @@ describe("Followers Service", () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
       (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValueOnce(null);
 
-      await expect(followerService.removeFollowings("1", "2")).rejects.toThrow(
+      await expect(followerService.remove("1", "2")).rejects.toThrow(
         new AppError("Follower not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -362,7 +362,7 @@ describe("Followers Service", () => {
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(null);
 
-      await expect(followerService.removeFollowings("1", "2")).rejects.toThrow(
+      await expect(followerService.remove("1", "2")).rejects.toThrow(
         new AppError("Following not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -377,7 +377,7 @@ describe("Followers Service", () => {
 
       (postService.getById as jest.Mock).mockResolvedValueOnce(null);
 
-      await expect(followerService.removeFollowings("1", "2", "postId")).rejects.toThrow(
+      await expect(followerService.remove("1", "2", "postId")).rejects.toThrow(
         new AppError("Post not found", 404)
       );
       expect(mockSession.abortTransaction).toHaveBeenCalled();

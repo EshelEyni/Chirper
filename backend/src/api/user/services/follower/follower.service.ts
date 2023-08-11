@@ -1,7 +1,7 @@
 import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { FollowerModel } from "../../models/followers.model";
-import { isValidId } from "../../../../services/util/util.service";
+import { isValidMongoId } from "../../../../services/util/util.service";
 import { ClientSession, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
@@ -10,10 +10,24 @@ import postService from "../../../post/post.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
 
+type UpdateAndGetUsersParams = {
+  fromUserId: string;
+  toUserId: string;
+  session: ClientSession;
+  inc: number;
+};
+
+type UpdatePostStatsAndReturnPostParams = {
+  postId: string;
+  fromUserId: string;
+  isFollowedFromPost: boolean;
+  session: ClientSession;
+};
+
 async function populateIsFollowing(user: User): Promise<User> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
-  if (!isValidId(loggedInUserId)) {
+  if (!isValidMongoId(loggedInUserId)) {
     user.isFollowing = false;
     return user;
   }
@@ -23,7 +37,7 @@ async function populateIsFollowing(user: User): Promise<User> {
   return user;
 }
 
-async function addFollowings(
+async function add(
   fromUserId: string,
   toUserId: string,
   postId?: string
@@ -57,7 +71,7 @@ async function addFollowings(
   }
 }
 
-async function removeFollowings(
+async function remove(
   fromUserId: string,
   toUserId: string,
   postId?: string
@@ -78,15 +92,14 @@ async function removeFollowings(
       inc: -1,
     });
 
-    if (postId)
-      return await _updatePostStatsAndReturnPost({
-        fromUserId,
-        postId,
-        isFollowedFromPost: false,
-        session,
-      });
+    if (!postId) return { updatedFollower, updatedFollowing };
 
-    return { updatedFollower, updatedFollowing };
+    return await _updatePostStatsAndReturnPost({
+      fromUserId,
+      postId,
+      isFollowedFromPost: false,
+      session,
+    });
   } catch (err) {
     await session.abortTransaction();
     throw err;
@@ -94,13 +107,6 @@ async function removeFollowings(
     session.endSession();
   }
 }
-
-type UpdateAndGetUsersParams = {
-  fromUserId: string;
-  toUserId: string;
-  session: ClientSession;
-  inc: number;
-};
 
 async function _updateAndGetUsers({
   fromUserId,
@@ -129,13 +135,6 @@ async function _updateAndGetUsers({
   return { updatedFollower: updatedFollowerDoc as unknown as User, updatedFollowing };
 }
 
-type UpdatePostStatsAndReturnPostParams = {
-  postId: string;
-  fromUserId: string;
-  isFollowedFromPost: boolean;
-  session: ClientSession;
-};
-
 async function _updatePostStatsAndReturnPost({
   postId,
   fromUserId,
@@ -157,6 +156,6 @@ async function _updatePostStatsAndReturnPost({
 
 export default {
   populateIsFollowing,
-  addFollowings,
-  removeFollowings,
+  add,
+  remove,
 };

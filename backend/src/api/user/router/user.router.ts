@@ -12,11 +12,11 @@ import {
   removeFollowings,
   addFollowingsFromPost,
   removeFollowingsFromPost,
-} from "./controller/user.controller";
+} from "../controller/user.controller";
 import {
   checkUserAuthentication,
   checkAdminAuthorization,
-} from "../../middlewares/authGuards/authGuards.middleware";
+} from "../../../middlewares/authGuards/authGuards.middleware";
 
 const router = express.Router();
 

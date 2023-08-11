@@ -1,6 +1,7 @@
 import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 import config from "../../config/index";
+import { AppError } from "../error/error.service";
 
 export interface QueryObj {
   [key: string]: string | undefined;
@@ -110,8 +111,27 @@ async function queryEntityExists<T extends Document>(
   return !!(await model.exists(query));
 }
 
-function isValidId(id: string): boolean {
+function isValidMongoId(id: string): boolean {
   return mongoose.Types.ObjectId.isValid(id);
 }
+interface IdEntity {
+  id: string | undefined;
+  entityName: string;
+}
 
-export { AnyObject, APIFeatures, sendEmail, filterObj, queryEntityExists, isValidId };
+function validateIds(...idEntities: IdEntity[]): void {
+  idEntities.forEach(({ id, entityName }) => {
+    if (!id) throw new AppError(`No ${entityName} id provided`, 400);
+    if (!isValidMongoId(id)) throw new AppError(`Invalid ${entityName} id: ${id}`, 400);
+  });
+}
+
+export {
+  AnyObject,
+  APIFeatures,
+  sendEmail,
+  filterObj,
+  queryEntityExists,
+  isValidMongoId,
+  validateIds,
+};

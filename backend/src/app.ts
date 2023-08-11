@@ -10,7 +10,7 @@ import cors from "cors";
 import { requestLogger } from "./middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls/setupAls.middleware";
-import userRouter from "./api/user/user.router";
+import userRouter from "./api/user/router/user.router";
 import postRouter from "./api/post/post.router";
 import gifRouter from "./api/gif/router/gif.router";
 import locationRouter from "./api/location/router/location.router";
@@ -55,11 +55,10 @@ if (isProdEnv) {
 
 app.all("*", setupAsyncLocalStorage);
 
-if (!isProdEnv) {
+if (!isProdEnv)
   app.use((req: Request, res: Response, next: NextFunction) => {
     requestLogger(req, res, next);
   });
-}
 
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);

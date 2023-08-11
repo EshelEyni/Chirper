@@ -14,6 +14,7 @@ import {
 } from "./user.controller";
 import { logger } from "../../../services/logger/logger.service";
 import followerService from "../services/follower/follower.service";
+import { Types } from "mongoose";
 
 jest.mock("../services/user/user.service");
 jest.mock("../services/follower/follower.service");
@@ -301,9 +302,9 @@ describe("User Controller", () => {
   describe("addFollowings", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: "12345",
+        loggedInUserId: new Types.ObjectId().toHexString(),
         params: {
-          id: "67890",
+          id: new Types.ObjectId().toHexString(),
         },
       };
       res = {
@@ -322,7 +323,7 @@ describe("User Controller", () => {
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "No logged in user id provided",
+          message: "No loggedInUser id provided",
           statusCode: 400,
         })
       );
@@ -340,8 +341,20 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if user id is not a valid MongoDB id", async () => {
+      req.params!.id = "123";
+      const sut = addFollowings as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid user id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should throw an error if user is not found", async () => {
-      (followerService.addFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.add as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
       const sut = addFollowings as any;
@@ -356,7 +369,7 @@ describe("User Controller", () => {
 
     it("should add followings and return updated user data", async () => {
       const mockUpdatedUser = { id: "12345", username: "TestUser" };
-      (followerService.addFollowings as jest.Mock).mockResolvedValue(mockUpdatedUser);
+      (followerService.add as jest.Mock).mockResolvedValue(mockUpdatedUser);
       const sut = addFollowings as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
@@ -366,7 +379,7 @@ describe("User Controller", () => {
     });
 
     it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.addFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.add as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
       const sut = addFollowings as any;
@@ -378,9 +391,9 @@ describe("User Controller", () => {
   describe("removeFollowings", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: "12345",
+        loggedInUserId: new Types.ObjectId().toHexString(),
         params: {
-          id: "67890",
+          id: new Types.ObjectId().toHexString(),
         },
       };
       res = {
@@ -396,7 +409,7 @@ describe("User Controller", () => {
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "No logged in user id provided",
+          message: "No loggedInUser id provided",
           statusCode: 400,
         })
       );
@@ -415,7 +428,7 @@ describe("User Controller", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      (followerService.removeFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
       const sut = removeFollowings as any;
@@ -428,9 +441,21 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if user id is not a valid MongoDB id", async () => {
+      req.params!.id = "123";
+      const sut = removeFollowings as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid user id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should remove followings and return updated user data", async () => {
       const mockUpdatedUser = { id: "12345", username: "TestUser" };
-      (followerService.removeFollowings as jest.Mock).mockResolvedValue(mockUpdatedUser);
+      (followerService.remove as jest.Mock).mockResolvedValue(mockUpdatedUser);
       const sut = removeFollowings as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
@@ -440,7 +465,7 @@ describe("User Controller", () => {
     });
 
     it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.removeFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
       const sut = removeFollowings as any;
@@ -452,10 +477,10 @@ describe("User Controller", () => {
   describe("addFollowingsFromPost", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: "12345",
+        loggedInUserId: new Types.ObjectId().toHexString(),
         params: {
-          postId: "67890",
-          userId: "111213",
+          postId: new Types.ObjectId().toHexString(),
+          userId: new Types.ObjectId().toHexString(),
         },
       };
       res = {
@@ -473,7 +498,7 @@ describe("User Controller", () => {
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "No logged in user id provided",
+          message: "No loggedInUser id provided",
           statusCode: 400,
         })
       );
@@ -491,6 +516,18 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if user id is not a valid MongoDB id", async () => {
+      req.params!.userId = "123";
+      const sut = addFollowingsFromPost as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid user id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should throw an error if no post id is provided", async () => {
       delete req.params!.postId;
       const sut = addFollowingsFromPost as any;
@@ -503,8 +540,20 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if post id is not a valid MongoDB id", async () => {
+      req.params!.postId = "123";
+      const sut = addFollowingsFromPost as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid post id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should throw an error if user is not found", async () => {
-      (followerService.addFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.add as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
       const sut = addFollowingsFromPost as any;
@@ -519,7 +568,7 @@ describe("User Controller", () => {
 
     it("should add followings from post and return updated post data", async () => {
       const mockUpdatedPost = { id: "67890", title: "TestPost" };
-      (followerService.addFollowings as jest.Mock).mockResolvedValue(mockUpdatedPost);
+      (followerService.add as jest.Mock).mockResolvedValue(mockUpdatedPost);
       const sut = addFollowingsFromPost as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
@@ -529,7 +578,7 @@ describe("User Controller", () => {
     });
 
     it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.addFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.add as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
       const sut = addFollowingsFromPost as any;
@@ -538,13 +587,13 @@ describe("User Controller", () => {
     });
   });
 
-  fdescribe("removeFollowingsFromPost", () => {
+  describe("removeFollowingsFromPost", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: "12345",
+        loggedInUserId: new Types.ObjectId().toHexString(),
         params: {
-          postId: "67890",
-          userId: "111213",
+          postId: new Types.ObjectId().toHexString(),
+          userId: new Types.ObjectId().toHexString(),
         },
       };
       res = {
@@ -562,7 +611,7 @@ describe("User Controller", () => {
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "No logged in user id provided",
+          message: "No loggedInUser id provided",
           statusCode: 400,
         })
       );
@@ -580,6 +629,18 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if user id is not a valid MongoDB id", async () => {
+      req.params!.userId = "123";
+      const sut = removeFollowingsFromPost as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid user id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should throw an error if no post id is provided", async () => {
       delete req.params!.postId;
       const sut = removeFollowingsFromPost as any;
@@ -592,8 +653,20 @@ describe("User Controller", () => {
       );
     });
 
+    it("should throw an error if post id is not a valid MongoDB id", async () => {
+      req.params!.postId = "123";
+      const sut = removeFollowingsFromPost as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Invalid post id: 123",
+          statusCode: 400,
+        })
+      );
+    });
+
     it("should throw an error if user is not found", async () => {
-      (followerService.removeFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
       const sut = removeFollowingsFromPost as any;
@@ -608,7 +681,7 @@ describe("User Controller", () => {
 
     it("should remove followings from post and return updated post data", async () => {
       const mockUpdatedPost = { id: "67890", title: "TestPost" };
-      (followerService.removeFollowings as jest.Mock).mockResolvedValue(mockUpdatedPost);
+      (followerService.remove as jest.Mock).mockResolvedValue(mockUpdatedPost);
       const sut = removeFollowingsFromPost as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
@@ -618,7 +691,7 @@ describe("User Controller", () => {
     });
 
     it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.removeFollowings as jest.Mock).mockImplementationOnce(() => {
+      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
       const sut = removeFollowingsFromPost as any;
@@ -636,6 +709,5 @@ this function are not tested, because they are factory functions and are tested 
 - addUser
 - updateUser
 - removeUser
-
 
 */

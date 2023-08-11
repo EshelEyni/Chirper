@@ -42,7 +42,8 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
   const isTestEnv = process.env.NODE_ENV === "test";
   if (isDevEnv || isTestEnv) _sendErrorDev(err, res);
   else _sendErrorProd(_refineErrorForProd(err), res);
-  if (!isTestEnv) logger.error(err.message);
+  // if (!isTestEnv) logger.error(err.message);
+  logger.error(err.message);
 }
 
 function _refineErrorForProd(err: any) {
@@ -109,17 +110,16 @@ function _sendErrorDev(err: AppError, res: Response): void {
 }
 
 function _sendErrorProd(err: AppError, res: Response): void {
-  if (err.isOperational) {
+  if (err.isOperational)
     res.status(err.statusCode).send({
       status: err.status,
       message: err.message,
     });
-  } else {
+  else
     res.status(500).send({
       status: "error",
       message: "Something went wrong!",
     });
-  }
 }
 
 function asyncErrorCatcher(fn: AsyncExpressMiddleware) {

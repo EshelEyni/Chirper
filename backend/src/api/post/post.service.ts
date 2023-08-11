@@ -9,7 +9,7 @@ import {
 import {
   APIFeatures,
   QueryObj,
-  isValidId,
+  isValidMongoId,
   queryEntityExists,
 } from "../../services/util/util.service";
 import { PostModel } from "./models/post.model";
@@ -482,7 +482,7 @@ async function _getLoggedInUserPollDetails(...posts: Post[]) {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
   const isNoPolls = posts.every(post => !post.poll);
-  if (!isValidId(loggedInUserId) || isNoPolls) return;
+  if (!isValidMongoId(loggedInUserId) || isNoPolls) return;
 
   const pollResults = await PollResultModel.find({
     userId: new ObjectId(loggedInUserId),
@@ -524,7 +524,7 @@ async function _setLoggedInUserActionState(post: Post, { isDefault = false } = {
 
   post.loggedInUserActionState = defaultState;
 
-  if (isDefault || !isValidId(loggedInUserId)) return;
+  if (isDefault || !isValidMongoId(loggedInUserId)) return;
 
   const postId = new ObjectId(post.id);
   const userId = new ObjectId(loggedInUserId);

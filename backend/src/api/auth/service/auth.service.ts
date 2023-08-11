@@ -1,7 +1,7 @@
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { IUser, UserModel } from "../../user/models/user.model";
 import { AppError } from "../../../services/error/error.service";
-import { isValidId, sendEmail } from "../../../services/util/util.service";
+import { isValidMongoId, sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";
 import tokenService from "../../../services/token/token.service";
 import { Document, Types } from "mongoose";
@@ -23,7 +23,7 @@ async function loginWithToken(loginToken: string): Promise<UserAuthResult> {
   const verifiedToken = await tokenService.verifyToken(loginToken);
   if (!verifiedToken) throw new AppError("Invalid token", 400);
   const { id } = verifiedToken;
-  if (!isValidId(id)) throw new AppError("Invalid Id", 400);
+  if (!isValidMongoId(id)) throw new AppError("Invalid Id", 400);
   const user = await UserModel.findById(id);
   if (!user) throw new AppError("User not found", 404);
   return { user: user as unknown as User, token: tokenService.signToken(user.id) };

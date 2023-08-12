@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { AppError } from "../error/error.service";
-import config from "../../config/index";
+require("dotenv").config();
 import jwt from "jsonwebtoken";
 
 function getTokenFromRequest(req: Request) {
@@ -14,11 +14,12 @@ function getTokenFromRequest(req: Request) {
 }
 
 function signToken(id: string) {
-  if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
-  if (!config.jwtExpirationTime) throw new AppError("jwtExpirationTime not found in config", 500);
+  if (!process.env.JWT_SECRET_CODE) throw new AppError("jwtSecretCode not found in config", 500);
+  if (!process.env.JWT_EXPIRATION_TIME)
+    throw new AppError("jwtExpirationTime not found in config", 500);
 
-  const token = jwt.sign({ id }, config.jwtSecretCode, {
-    expiresIn: config.jwtExpirationTime,
+  const token = jwt.sign({ id }, process.env.JWT_SECRET_CODE, {
+    expiresIn: process.env.JWT_EXPIRATION_TIME,
   });
 
   if (!token) throw new AppError("Token not created", 500);
@@ -27,9 +28,9 @@ function signToken(id: string) {
 
 async function verifyToken(token: string): Promise<{ id: string; timeStamp: number } | null> {
   try {
-    if (!config.jwtSecretCode) throw new AppError("jwtSecretCode not found in config", 500);
+    if (!process.env.JWT_SECRET_CODE) throw new AppError("jwtSecretCode not found in config", 500);
 
-    const decoded = jwt.verify(token, config.jwtSecretCode) as {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_CODE) as {
       id: string;
       iat: number;
     };

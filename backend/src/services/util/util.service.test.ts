@@ -9,7 +9,7 @@ import {
   isValidMongoId,
   validateIds,
 } from "./util.service";
-import config from "../../config/index";
+require("dotenv").config();
 import nodemailer from "nodemailer";
 import { AppError } from "../error/error.service";
 
@@ -210,12 +210,13 @@ describe("Util Service", () => {
 
       await sendEmail(options);
 
+      const { EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT } = process.env;
       expect(transportMock).toBeCalledWith({
-        host: config.emailHost,
-        port: config.emailPort,
+        host: EMAIL_HOST,
+        port: Number(EMAIL_PORT),
         auth: {
-          user: config.emailUsername,
-          pass: config.emailPassword,
+          user: EMAIL_USERNAME,
+          pass: EMAIL_PASSWORD,
         },
       });
 

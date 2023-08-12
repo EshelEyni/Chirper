@@ -5,18 +5,19 @@ process.on("uncaughtException", (err: Error) => {
   process.exit(1);
 });
 
-import config from "./config";
+require("dotenv").config();
 import mongoose from "mongoose";
 import app from "./app";
 import { AppError } from "./services/error/error.service";
 
-const DB = config.dbURL;
-if (!DB) throw new AppError("DB URL is not defined.", 500);
+const { DB_URL } = process.env;
+if (!DB_URL) throw new AppError("DB_URL URL is not defined.", 500);
+
+const dbName =
+  process.env.NODE_ENV === "production" ? process.env.PROD_DB_NAME : process.env.DEV_DB_NAME;
 
 mongoose
-  .connect(DB, {
-    dbName: "chirper_db",
-  })
+  .connect(DB_URL, { dbName })
   .then(() => {
     logger.info("Connected to MongoDB.");
   })

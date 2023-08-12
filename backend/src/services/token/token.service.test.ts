@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request } from "express";
 import tokenService from "./token.service";
-import config from "../../config/index";
+require("dotenv").config();
 import { AppError } from "../error/error.service";
 
 jest.mock("jsonwebtoken");
@@ -41,24 +41,24 @@ describe("Token Service", () => {
     it("should sign and return a token", () => {
       (jwt.sign as jest.Mock).mockReturnValue("signed_token");
       const token = tokenService.signToken("test_id");
-      expect(jwt.sign).toHaveBeenCalledWith({ id: "test_id" }, config.jwtSecretCode, {
-        expiresIn: config.jwtExpirationTime,
+      expect(jwt.sign).toHaveBeenCalledWith({ id: "test_id" }, process.env.JWT_SECRET_CODE, {
+        expiresIn: process.env.JWT_EXPIRATION_TIME,
       });
       expect(token).toBe("signed_token");
     });
 
     it("should throw an error if jwtSecretCode is not in config", () => {
-      const temp = config.jwtSecretCode;
-      delete config.jwtSecretCode;
+      const temp = process.env.JWT_SECRET_CODE;
+      delete process.env.JWT_SECRET_CODE;
       expect(() => tokenService.signToken("test_id")).toThrow(AppError);
-      config.jwtSecretCode = temp;
+      process.env.JWT_SECRET_CODE = temp;
     });
 
     it("should throw an error if jwtExpirationTime is not in config", () => {
-      const temp = config.jwtExpirationTime;
-      delete config.jwtExpirationTime;
+      const temp = process.env.JWT_EXPIRATION_TIME;
+      delete process.env.JWT_EXPIRATION_TIME;
       expect(() => tokenService.signToken("test_id")).toThrow(AppError);
-      config.jwtExpirationTime = temp;
+      process.env.JWT_EXPIRATION_TIME = temp;
     });
   });
 
@@ -66,7 +66,7 @@ describe("Token Service", () => {
     it("should verify and return the payload of a token", async () => {
       (jwt.verify as jest.Mock).mockReturnValue({ id: "test_id", iat: 1234567890 });
       const payload = await tokenService.verifyToken("test_token");
-      expect(jwt.verify).toHaveBeenCalledWith("test_token", config.jwtSecretCode);
+      expect(jwt.verify).toHaveBeenCalledWith("test_token", process.env.JWT_SECRET_CODE);
       expect(payload).toEqual({ id: "test_id", timeStamp: 1234567890 });
     });
 
@@ -79,11 +79,11 @@ describe("Token Service", () => {
     });
 
     it("should return null if jwtSecretCode is not in config", async () => {
-      const temp = config.jwtSecretCode;
-      delete config.jwtSecretCode;
+      const temp = process.env.JWT_SECRET_CODE;
+      delete process.env.JWT_SECRET_CODE;
       const payload = await tokenService.verifyToken("test_token");
       expect(payload).toBeNull();
-      config.jwtSecretCode = temp;
+      process.env.JWT_SECRET_CODE = temp;
     });
   });
 });

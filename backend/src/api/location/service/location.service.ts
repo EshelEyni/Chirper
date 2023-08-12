@@ -1,4 +1,4 @@
-import config from "../../../config";
+require("dotenv").config();
 import {
   ClientResponse,
   GeocodingResult,
@@ -14,7 +14,7 @@ import { Location } from "../../../../../shared/interfaces/location.interface";
 type resultType = PlaceAutocompleteResult | PlaceSearchResult | GeocodingResult;
 
 const googleMapsClient = createClient({
-  key: config.googleApiKey || "",
+  key: process.env.GOOGLE_MAPS_API_KEY || "",
   Promise: Promise,
 });
 

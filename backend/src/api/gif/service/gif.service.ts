@@ -1,5 +1,5 @@
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
-import config from "../../../config";
+require("dotenv").config();
 import fetch from "cross-fetch";
 import { GifModel } from "../gif.model";
 import { APIFeatures } from "../../../services/util/util.service";
@@ -10,8 +10,9 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 (global as any).fetch = fetch;
 
 async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
-  if (!config.giphyApiKey) throw new AppError("Giphy API key not found", 500);
-  const gf = new GiphyFetch(config.giphyApiKey);
+  const { GIPHY_API_KEY } = process.env;
+  if (!GIPHY_API_KEY) throw new AppError("Giphy API key not found", 500);
+  const gf = new GiphyFetch(GIPHY_API_KEY);
   const { data: Fetchedgifs_1 } = await gf.search(searchTerm, {
     limit: 50,
     offset: 0,

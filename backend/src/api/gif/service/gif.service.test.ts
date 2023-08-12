@@ -1,7 +1,7 @@
 import { APIFeatures } from "../../../services/util/util.service";
 import gifService from "./gif.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import config from "../../../config";
+require("dotenv").config();
 import { AppError } from "../../../services/error/error.service";
 import { GifModel } from "../gif.model";
 
@@ -13,8 +13,8 @@ describe("Gif Service", () => {
   describe("getGifsBySearchTerm", () => {
     it("should throw an error if Giphy API key is not found", async () => {
       // Arrange
-      const originalApiKey = config.giphyApiKey;
-      config.giphyApiKey = "";
+      const originalApiKey = process.env.GIPHY_API_KEY;
+      process.env.GIPHY_API_KEY = "";
 
       // Act and Assert
       await expect(gifService.getGifsBySearchTerm("test")).rejects.toThrow(
@@ -22,7 +22,7 @@ describe("Gif Service", () => {
       );
 
       // Cleanup
-      config.giphyApiKey = originalApiKey;
+      process.env.GIPHY_API_KEY = originalApiKey;
     });
 
     it("should throw an error if fetching gifs from Giphy API fails", async () => {
@@ -80,7 +80,7 @@ describe("Gif Service", () => {
       const result = await gifService.getGifsBySearchTerm(searchTerm);
 
       // Assert
-      expect(GiphyFetch).toHaveBeenCalledWith(config.giphyApiKey);
+      expect(GiphyFetch).toHaveBeenCalledWith(process.env.GIPHY_API_KEY);
       expect(search).toHaveBeenCalledTimes(2);
       expect(search).toHaveBeenCalledWith(searchTerm, {
         limit: 50,

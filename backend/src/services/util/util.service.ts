@@ -1,6 +1,6 @@
 import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
-import config from "../../config/index";
+require("dotenv").config();
 import { AppError } from "../error/error.service";
 
 export interface QueryObj {
@@ -84,12 +84,16 @@ class APIFeatures<T> {
 }
 
 const sendEmail = async (options: { email: string; subject: string; message: string }) => {
+  const { EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT } = process.env;
+  if (!EMAIL_USERNAME || !EMAIL_PASSWORD || !EMAIL_HOST || !EMAIL_PORT)
+    throw new Error("Email config not found");
+
   const transporter = nodemailer.createTransport({
-    host: config.emailHost,
-    port: config.emailPort,
+    host: EMAIL_HOST,
+    port: Number(EMAIL_PORT),
     auth: {
-      user: config.emailUsername,
-      pass: config.emailPassword,
+      user: EMAIL_USERNAME,
+      pass: EMAIL_PASSWORD,
     },
   });
 

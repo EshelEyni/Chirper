@@ -68,7 +68,6 @@ export interface Post extends BasicPost {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  isBookmarked: boolean;
   repliesCount: number;
   repostsCount: number;
   likesCount: number;

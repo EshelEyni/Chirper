@@ -7,7 +7,7 @@
     "dev": "set NODE_ENV=development&& nodemon",
     "prod": "set NODE_ENV=production&& nodemon",
     "debug": "ndb --experimental-specifier-resolution=node --loader ts-node src/server.ts",
-    "test": "set NODE_ENV=test&& jest --watchAll --runInBand"
+    "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",

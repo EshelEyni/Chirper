@@ -1,13 +1,13 @@
-import { Post, NewPost, PostReplyResult } from "../../../../../shared/interfaces/post.interface";
-import { APIFeatures, QueryObj } from "../../../services/util/util.service";
-import { PostModel } from "../models/post.model";
-import { RepostModel } from "../models/repost.model";
+import { Post, NewPost, PostReplyResult } from "../../../../../../shared/interfaces/post.interface";
+import { APIFeatures, QueryObj } from "../../../../services/util/util.service";
+import { PostModel } from "../../models/post.model";
+import { RepostModel } from "../../models/repost.model";
 import mongoose, { Document } from "mongoose";
-import { AppError } from "../../../services/error/error.service";
-import { User } from "../../../../../shared/interfaces/user.interface";
-import followerService from "../../user/services/follower/follower.service";
-import postUtilService from "./util.service";
-import pollService from "./poll.service";
+import { AppError } from "../../../../services/error/error.service";
+import { User } from "../../../../../../shared/interfaces/user.interface";
+import followerService from "../../../user/services/follower/follower.service";
+import postUtilService from "../util/util.service";
+import pollService from "../poll/poll.service";
 
 async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find(), queryString)
@@ -44,10 +44,10 @@ async function query(queryString: QueryObj): Promise<Post[]> {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-  const setLoggedInUserActionStatePrms = posts.map(async post => {
-    await postUtilService.setLoggedInUserActionState(post);
+  const getLoggedInUserActionStatePrms = posts.map(async post => {
+    post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
   });
-  await Promise.all(setLoggedInUserActionStatePrms);
+  await Promise.all(getLoggedInUserActionStatePrms);
 
   const setIsFollowingPrms = posts.map(async post => {
     await followerService.populateIsFollowing(post.createdBy as unknown as User);
@@ -65,7 +65,7 @@ async function getById(postId: string): Promise<Post | null> {
   if (!postDoc) return null;
   const post = postDoc.toObject() as unknown as Post;
   await pollService.getLoggedInUserPollDetails(post);
-  await postUtilService.setLoggedInUserActionState(post);
+  post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
   await followerService.populateIsFollowing(post.createdBy as unknown as User);
   return post;
 }
@@ -75,7 +75,10 @@ async function add(post: NewPost): Promise<Post> {
   const postDoc = await PostModel.findById(savedPost.id).exec();
   if (!postDoc) throw new AppError("post not found", 404);
   const populatedPost = postDoc.toObject() as unknown as Post;
-  await postUtilService.setLoggedInUserActionState(populatedPost, { isDefault: true });
+  populatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+    populatedPost,
+    { isDefault: true }
+  );
   await followerService.populateIsFollowing(populatedPost.createdBy as unknown as User);
   return populatedPost as unknown as Post;
 }
@@ -99,7 +102,10 @@ async function addMany(posts: NewPost[]): Promise<Post> {
     const postDoc = await PostModel.findById(originalPost.id).exec();
     if (!postDoc) throw new AppError("post not found", 404);
     const populatedPost = postDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(populatedPost, { isDefault: true });
+    populatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      populatedPost,
+      { isDefault: true }
+    );
     populatedPost.createdBy.isFollowing = false;
     return populatedPost as unknown as Post;
   } catch (error) {
@@ -123,12 +129,16 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     if (!repliedToPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
     const updatedPost = repliedToPostDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(updatedPost);
+    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      updatedPost
+    );
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
     const replyDoc = await PostModel.findById(savedReply.id).exec();
     if (!replyDoc) throw new AppError("reply post not found", 404);
     const reply = replyDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(reply, { isDefault: true });
+    reply.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(reply, {
+      isDefault: true,
+    });
     reply.createdBy.isFollowing = false;
     return { updatedPost, reply };
   } catch (error) {
@@ -148,7 +158,9 @@ async function update(id: string, post: Post): Promise<Post> {
   if (!postDoc) throw new AppError("post not found", 404);
   const updatedPost = postDoc.toObject() as unknown as Post;
   await pollService.getLoggedInUserPollDetails(updatedPost);
-  await postUtilService.setLoggedInUserActionState(updatedPost);
+  updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+    updatedPost
+  );
   await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
   return updatedPost;
 }

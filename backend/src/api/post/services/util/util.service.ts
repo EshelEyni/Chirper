@@ -1,14 +1,21 @@
 import { ObjectId } from "mongodb";
-import { isValidMongoId, queryEntityExists } from "../../../services/util/util.service";
-import { RepostModel } from "../models/repost.model";
-import { PostLikeModel } from "../models/post-like.model";
-import { BookmarkedPostModel } from "../models/bookmark-post.model";
-import { PostStatsModel } from "../models/post-stats.model";
-import { Post, PostStatsBody } from "../../../../../shared/interfaces/post.interface";
-import { asyncLocalStorage } from "../../../services/als.service";
-import { alStoreType } from "../../../middlewares/setupAls/setupAls.middleware";
+import { isValidMongoId, queryEntityExists } from "../../../../services/util/util.service";
+import { RepostModel } from "../../models/repost.model";
+import { PostLikeModel } from "../../models/post-like.model";
+import { BookmarkedPostModel } from "../../models/bookmark-post.model";
+import { PostStatsModel } from "../../models/post-stats.model";
+import {
+  LoggedInUserActionState,
+  Post,
+  PostStatsBody,
+} from "../../../../../../shared/interfaces/post.interface";
+import { asyncLocalStorage } from "../../../../services/als.service";
+import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 
-async function setLoggedInUserActionState(post: Post, { isDefault = false } = {}) {
+async function getLoggedInUserActionState(
+  post: Post,
+  { isDefault = false } = {}
+): Promise<LoggedInUserActionState> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
 
@@ -28,10 +35,7 @@ async function setLoggedInUserActionState(post: Post, { isDefault = false } = {}
     isPostBookmarked: false,
   };
 
-  post.loggedInUserActionState = defaultState;
-
-  if (isDefault || !isValidMongoId(loggedInUserId)) return;
-
+  if (isDefault || !isValidMongoId(loggedInUserId)) return defaultState;
   const postId = new ObjectId(post.id);
   const userId = new ObjectId(loggedInUserId);
 
@@ -58,7 +62,7 @@ async function setLoggedInUserActionState(post: Post, { isDefault = false } = {}
       }
     : {};
 
-  post.loggedInUserActionState = {
+  return {
     ...defaultState,
     isReposted,
     isLiked,
@@ -84,4 +88,4 @@ function populateRepostedBy() {
   };
 }
 
-export default { setLoggedInUserActionState, populateRepostedBy };
+export default { getLoggedInUserActionState, populateRepostedBy };

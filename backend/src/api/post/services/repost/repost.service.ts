@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { RepostModel } from "../models/repost.model";
-import { PostModel } from "../models/post.model";
-import { AppError } from "../../../services/error/error.service";
-import followerService from "../../user/services/follower/follower.service";
-import { logger } from "../../../services/logger/logger.service";
-import { Post, PostRepostResult } from "../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../shared/interfaces/user.interface";
-import postUtilService from "./util.service";
+import { RepostModel } from "../../models/repost.model";
+import { PostModel } from "../../models/post.model";
+import { AppError } from "../../../../services/error/error.service";
+import followerService from "../../../user/services/follower/follower.service";
+import { logger } from "../../../../services/logger/logger.service";
+import { Post, PostRepostResult } from "../../../../../../shared/interfaces/post.interface";
+import { User } from "../../../../../../shared/interfaces/user.interface";
+import postUtilService from "../util/util.service";
 
 async function add(postId: string, loggedInUserId: string): Promise<PostRepostResult> {
   const session = await mongoose.startSession();
@@ -26,7 +26,9 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
     if (!repostedPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
     const updatedPost = repostedPostDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(updatedPost);
+    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      updatedPost
+    );
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     const repostDoc = await RepostModel.findById(savedRepost.id)
@@ -46,7 +48,7 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
       repostedBy,
     } as unknown as Post;
 
-    await postUtilService.setLoggedInUserActionState(repost);
+    repost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(repost);
 
     return { updatedPost, repost };
   } catch (error) {
@@ -76,7 +78,9 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(updatedPost);
+    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      updatedPost
+    );
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedInUserId}`);

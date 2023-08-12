@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { PostLikeModel } from "../models/post-like.model";
-import { PostModel } from "../models/post.model";
-import { AppError } from "../../../services/error/error.service";
-import { Post } from "../../../../../shared/interfaces/post.interface";
-import followerService from "../../user/services/follower/follower.service";
-import { User } from "../../../../../shared/interfaces/user.interface";
-import postUtilService from "./util.service";
+import { PostLikeModel } from "../../models/post-like.model";
+import { PostModel } from "../../models/post.model";
+import { AppError } from "../../../../services/error/error.service";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
+import followerService from "../../../user/services/follower/follower.service";
+import { User } from "../../../../../../shared/interfaces/user.interface";
+import postUtilService from "../util/util.service";
 
 async function add(postId: string, userId: string): Promise<Post> {
   const session = await mongoose.startSession();
@@ -26,7 +26,9 @@ async function add(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(updatedPost);
+    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      updatedPost
+    );
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;
@@ -58,7 +60,9 @@ async function remove(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    await postUtilService.setLoggedInUserActionState(updatedPost);
+    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
+      updatedPost
+    );
     await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
 
     return updatedPost;

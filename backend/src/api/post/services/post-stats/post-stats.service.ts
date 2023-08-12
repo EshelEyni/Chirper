@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
-import { PostStatsBody } from "../../../../../shared/interfaces/post.interface";
-import { PostLikeModel } from "../models/post-like.model";
-import { PostStatsModel } from "../models/post-stats.model";
-import { PostModel } from "../models/post.model";
-import { RepostModel } from "../models/repost.model";
+import { PostStatsBody } from "../../../../../../shared/interfaces/post.interface";
+import { PostLikeModel } from "../../models/post-like.model";
+import { PostStatsModel } from "../../models/post-stats.model";
+import { PostModel } from "../../models/post.model";
+import { RepostModel } from "../../models/repost.model";
 import mongoose from "mongoose";
 
 async function get(postId: string): Promise<PostStatsBody> {

@@ -39,9 +39,6 @@ describe("User Service", () => {
     const mockAPIFeatures = jest.fn().mockImplementation(() => mockQueryObj);
     (APIFeatures as jest.Mock).mockImplementation(mockAPIFeatures);
 
-    const populateIsFollowing = jest.fn();
-    (followerService.populateIsFollowing as jest.Mock).mockImplementation(populateIsFollowing);
-
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -60,7 +57,7 @@ describe("User Service", () => {
       expect(mockQueryObj.getQuery).toHaveBeenCalled();
       expect(mockQueryObj.exec).toHaveBeenCalled();
       expect(mockToObject).toHaveBeenCalledTimes(mockUsers.length);
-      expect(followerService.populateIsFollowing).toHaveBeenCalledTimes(mockUsers.length);
+      expect(followerService.getIsFollowing).toHaveBeenCalledTimes(mockUsers.length);
     });
   });
 });

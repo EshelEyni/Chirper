@@ -29,7 +29,10 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
     updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
       updatedPost
     );
-    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+
+    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+      updatedPost.createdBy as unknown as User
+    );
 
     const repostDoc = await RepostModel.findById(savedRepost.id)
       .populate("post")
@@ -81,7 +84,10 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
     updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
       updatedPost
     );
-    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+
+    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+      updatedPost.createdBy as unknown as User
+    );
 
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedInUserId}`);
 

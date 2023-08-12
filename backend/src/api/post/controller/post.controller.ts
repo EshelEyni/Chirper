@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
-import { QueryObj } from "../../services/util/util.service";
-import { NewPost, Post, PostRepostResult } from "../../../../shared/interfaces/post.interface";
-import postService from "./services/post/post.service";
+import { QueryObj, validateIds } from "../../../services/util/util.service";
+import { NewPost, Post, PostRepostResult } from "../../../../../shared/interfaces/post.interface";
+import postService from "../services/post/post.service";
 import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../services/error/error.service";
-import { deleteOne } from "../../services/factory/factory.service";
-import { PostModel } from "./models/post.model";
-import repostService from "./services/repost/repost.service";
-import likeService from "./services/like/like.service";
-import bookmarkService from "./services/bookmark/bookmark.service";
-import postStatsService from "./services/post-stats/post-stats.service";
-import pollService from "./services/poll/poll.service";
+} from "../../../services/error/error.service";
+import { deleteOne } from "../../../services/factory/factory.service";
+import { PostModel } from "../models/post.model";
+import repostService from "../services/repost/repost.service";
+import likeService from "../services/like/like.service";
+import bookmarkService from "../services/bookmark/bookmark.service";
+import postStatsService from "../services/post-stats/post-stats.service";
+import pollService from "../services/poll/poll.service";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -229,8 +229,9 @@ const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): P
 
 const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedInUserId } = req;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  const bookmarkedPosts = await bookmarkService.get(loggedInUserId);
+  validateIds({ id: loggedInUserId, entityName: "loggedInUser" });
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const bookmarkedPosts = await bookmarkService.get(loggedInUserId!);
 
   res.send({
     status: "success",
@@ -243,10 +244,14 @@ const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response)
 const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedInUserId } = req;
   const postId = req.params.id;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!postId) throw new AppError("No post id provided", 400);
 
-  const updatedPost = await bookmarkService.add(postId, loggedInUserId);
+  validateIds(
+    { id: postId, entityName: "post" },
+    { id: loggedInUserId, entityName: "loggedInUser" }
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const updatedPost = await bookmarkService.add(postId, loggedInUserId!);
 
   res.status(201).send({
     status: "success",
@@ -258,10 +263,14 @@ const removeBookmarkedPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
     const { loggedInUserId } = req;
     const postId = req.params.id;
-    if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-    if (!postId) throw new AppError("No post id provided", 400);
 
-    const updatedPost = await bookmarkService.remove(postId, loggedInUserId);
+    validateIds(
+      { id: postId, entityName: "post" },
+      { id: loggedInUserId, entityName: "loggedInUser" }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const updatedPost = await bookmarkService.remove(postId, loggedInUserId!);
 
     res.json({
       status: "success",

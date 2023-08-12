@@ -1,4 +1,4 @@
-import { Model, Query } from "mongoose";
+import { Model, Query, Types } from "mongoose";
 import {
   APIFeatures,
   AnyObject,
@@ -7,9 +7,11 @@ import {
   queryEntityExists,
   sendEmail,
   isValidMongoId,
+  validateIds,
 } from "./util.service";
 import config from "../../config/index";
 import nodemailer from "nodemailer";
+import { AppError } from "../error/error.service";
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn().mockReturnValue({
@@ -281,6 +283,60 @@ describe("Util Service", () => {
     it.each(invalidIds)("should return false if id is of type: $type", invalidId => {
       const result = isValidMongoId(invalidId.id);
       expect(result).toBe(false);
+    });
+  });
+
+  describe("validateIds", () => {
+    const validMongoId = new Types.ObjectId().toHexString();
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should throw an error if no ID is provided for an entity with a status of 400", () => {
+      expect(() => validateIds({ id: undefined, entityName: "post" })).toThrow(
+        new AppError("No post id provided", 400)
+      );
+    });
+
+    it("should throw an error if no ID is provided for loggedInUser with a status of 401", () => {
+      expect(() => validateIds({ id: undefined, entityName: "loggedInUser" })).toThrow(
+        new AppError("No loggedInUser id provided", 401)
+      );
+    });
+
+    it("should throw an error if an invalid Mongo ID is provided for an entity with a status of 400", () => {
+      expect(() => validateIds({ id: "invalidPostId", entityName: "post" })).toThrow(
+        new AppError("Invalid post id: invalidPostId", 400)
+      );
+    });
+
+    it("should throw an error if an invalid Mongo ID is provided for loggedInUser with a status of 401", () => {
+      expect(() => validateIds({ id: "invalidUserId", entityName: "loggedInUser" })).toThrow(
+        new AppError("Invalid loggedInUser id: invalidUserId", 401)
+      );
+    });
+
+    it("should not throw any error if a valid Mongo ID is provided for an entity", () => {
+      expect(() => validateIds({ id: validMongoId, entityName: "post" })).not.toThrow();
+
+      expect(() => validateIds({ id: validMongoId, entityName: "loggedInUser" })).not.toThrow();
+    });
+
+    it("should validate multiple ID entities at once", () => {
+      expect(() =>
+        validateIds(
+          { id: validMongoId, entityName: "post" },
+          { id: "invalidUserId", entityName: "loggedInUser" }
+        )
+      ).toThrow(new AppError("Invalid loggedInUser id: invalidUserId", 401));
+
+      expect(() =>
+        validateIds(
+          { id: "invalidPostId", entityName: "post" },
+          { id: validMongoId, entityName: "loggedInUser" }
+        )
+      ).toThrow(new AppError("Invalid post id: invalidPostId", 400));
     });
   });
 });

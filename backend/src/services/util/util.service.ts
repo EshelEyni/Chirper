@@ -121,8 +121,9 @@ interface IdEntity {
 
 function validateIds(...idEntities: IdEntity[]): void {
   idEntities.forEach(({ id, entityName }) => {
-    if (!id) throw new AppError(`No ${entityName} id provided`, 400);
-    if (!isValidMongoId(id)) throw new AppError(`Invalid ${entityName} id: ${id}`, 400);
+    const statusCode = entityName === "loggedInUser" ? 401 : 400;
+    if (!id) throw new AppError(`No ${entityName} id provided`, statusCode);
+    if (!isValidMongoId(id)) throw new AppError(`Invalid ${entityName} id: ${id}`, statusCode);
   });
 }
 

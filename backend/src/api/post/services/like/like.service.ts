@@ -29,7 +29,10 @@ async function add(postId: string, userId: string): Promise<Post> {
     updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
       updatedPost
     );
-    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+
+    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+      updatedPost.createdBy as unknown as User
+    );
 
     return updatedPost;
   } catch (error) {
@@ -63,7 +66,10 @@ async function remove(postId: string, userId: string): Promise<Post> {
     updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
       updatedPost
     );
-    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+
+    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+      updatedPost.createdBy as unknown as User
+    );
 
     return updatedPost;
   } catch (error) {

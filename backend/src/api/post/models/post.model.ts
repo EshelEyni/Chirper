@@ -182,13 +182,11 @@ postSchema.pre("save", function (this: Document, next: () => void) {
 postSchema.pre("save", function (this: Document, next: () => void) {
   // Trimming last occurence of videoUrl
   const videoUrl = this.get("videoUrl");
-
-  if (videoUrl) {
-    const postText = this.get("text");
-    const idx = postText.lastIndexOf(videoUrl);
-    const trimmedText = postText.slice(0, idx) + postText.slice(idx + videoUrl.length);
-    this.set("text", trimmedText);
-  }
+  if (!videoUrl) next();
+  const postText = this.get("text");
+  const idx = postText.lastIndexOf(videoUrl);
+  const trimmedText = postText.slice(0, idx) + postText.slice(idx + videoUrl.length);
+  this.set("text", trimmedText);
   next();
 });
 
@@ -222,19 +220,18 @@ function populateQuotedPost(doc: Document) {
   });
 }
 
-postSchema.post(/^find/, async function (doc) {
-  if (doc.length !== undefined) return;
+postSchema.post(/^find/, async function (this: Query<Document[], Post>, doc) {
+  const options = this.getOptions();
+  if (options.skipHooks || !doc || doc.length !== undefined) return;
   await populateCreatedBy(doc);
-  if (doc.get("quotedPostId")) {
-    await populateQuotedPost(doc);
-    if (doc.get("quotedPost")) {
-      await populateCreatedBy(doc.get("quotedPost"));
-    }
-  }
+  if (!doc.get("quotedPostId")) return;
+  await populateQuotedPost(doc);
+  if (doc.get("quotedPost")) await populateCreatedBy(doc.get("quotedPost"));
 });
 
-postSchema.post(/^find/, async function (docs) {
-  if (docs.length === undefined) return;
+postSchema.post(/^find/, async function (this: Query<Document[], Post>, docs) {
+  const options = this.getOptions();
+  if (options.skipHooks || !docs || docs.length === undefined) return;
   for (const doc of docs) {
     await populateCreatedBy(doc);
     if (doc.get("quotedPostId")) {

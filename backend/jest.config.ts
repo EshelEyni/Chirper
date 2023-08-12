@@ -2,8 +2,8 @@ import type { Config } from "@jest/types";
 
 const isGlobalTesting = false;
 
-// const currPath = "/api/post/services/util";
-const currPath = "/api/post";
+const currPath = "/api/location/router";
+// const currPath = "/api/post/controller";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`

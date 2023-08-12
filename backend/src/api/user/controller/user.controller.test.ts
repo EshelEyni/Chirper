@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
 import userService from "../services/user/user.service";
-import { User } from "../../../../../shared/interfaces/user.interface";
 import {
   addFollowings,
   addFollowingsFromPost,
@@ -12,17 +12,11 @@ import {
   removeLoggedInUser,
   updateLoggedInUser,
 } from "./user.controller";
-import { logger } from "../../../services/logger/logger.service";
 import followerService from "../services/follower/follower.service";
 import { Types } from "mongoose";
 
 jest.mock("../services/user/user.service");
 jest.mock("../services/follower/follower.service");
-jest.mock("../../../services/logger/logger.service", () => ({
-  logger: {
-    warn: jest.fn(),
-  },
-}));
 
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
@@ -69,7 +63,7 @@ describe("User Controller", () => {
         .fill(null)
         .map((_, i) => getMockedUser(i + 1));
 
-      jest.spyOn(userService, "query").mockResolvedValue(mockUsers as unknown as User[]);
+      (userService.query as jest.Mock).mockResolvedValue(mockUsers);
       req.query = { limit: "10", page: "1" };
 
       // Act
@@ -87,7 +81,7 @@ describe("User Controller", () => {
 
     it("should handle errors and pass them to next", async () => {
       const mockError = new Error("Test error");
-      jest.spyOn(userService, "query").mockImplementationOnce(() => {
+      (userService.query as jest.Mock).mockImplementationOnce(() => {
         throw mockError;
       });
       const sut = getUsers as any;
@@ -104,7 +98,7 @@ describe("User Controller", () => {
     });
 
     it("should handle empty result set", async () => {
-      jest.spyOn(userService, "query").mockResolvedValue([]);
+      (userService.query as jest.Mock).mockResolvedValue([]);
       const sut = getUsers as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
@@ -281,7 +275,6 @@ describe("User Controller", () => {
       const sut = removeLoggedInUser as any;
       await sut(req as Request, res as Response, nextMock);
       expect(userService.removeAccount).toHaveBeenCalledWith("12345");
-      expect(logger.warn).toHaveBeenCalledWith("User TestUser was deactivated");
       expect(res.status).toHaveBeenCalledWith(204);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
@@ -324,7 +317,7 @@ describe("User Controller", () => {
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "No loggedInUser id provided",
-          statusCode: 400,
+          statusCode: 401,
         })
       );
     });
@@ -410,7 +403,7 @@ describe("User Controller", () => {
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "No loggedInUser id provided",
-          statusCode: 400,
+          statusCode: 401,
         })
       );
     });
@@ -499,7 +492,7 @@ describe("User Controller", () => {
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "No loggedInUser id provided",
-          statusCode: 400,
+          statusCode: 401,
         })
       );
     });
@@ -612,7 +605,7 @@ describe("User Controller", () => {
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "No loggedInUser id provided",
-          statusCode: 400,
+          statusCode: 401,
         })
       );
     });

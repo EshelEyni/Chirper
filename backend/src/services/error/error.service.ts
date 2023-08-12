@@ -42,8 +42,8 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
   const isTestEnv = process.env.NODE_ENV === "test";
   if (isDevEnv || isTestEnv) _sendErrorDev(err, res);
   else _sendErrorProd(_refineErrorForProd(err), res);
-  // if (!isTestEnv) logger.error(err.message);
-  logger.error(err.message);
+  if (!isTestEnv) logger.error(err.message);
+  // logger.error(err.message);
 }
 
 function _refineErrorForProd(err: any) {

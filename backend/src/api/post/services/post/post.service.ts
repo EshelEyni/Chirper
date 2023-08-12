@@ -50,7 +50,9 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   await Promise.all(getLoggedInUserActionStatePrms);
 
   const setIsFollowingPrms = posts.map(async post => {
-    await followerService.populateIsFollowing(post.createdBy as unknown as User);
+    post.createdBy.isFollowing = await followerService.getIsFollowing(
+      post.createdBy as unknown as User
+    );
   });
   await Promise.all(setIsFollowingPrms);
 
@@ -66,7 +68,9 @@ async function getById(postId: string): Promise<Post | null> {
   const post = postDoc.toObject() as unknown as Post;
   await pollService.getLoggedInUserPollDetails(post);
   post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
-  await followerService.populateIsFollowing(post.createdBy as unknown as User);
+  post.createdBy.isFollowing = await followerService.getIsFollowing(
+    post.createdBy as unknown as User
+  );
   return post;
 }
 
@@ -79,7 +83,10 @@ async function add(post: NewPost): Promise<Post> {
     populatedPost,
     { isDefault: true }
   );
-  await followerService.populateIsFollowing(populatedPost.createdBy as unknown as User);
+
+  populatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+    populatedPost.createdBy as unknown as User
+  );
   return populatedPost as unknown as Post;
 }
 
@@ -132,7 +139,9 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
     updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
       updatedPost
     );
-    await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+      updatedPost.createdBy as unknown as User
+    );
     const replyDoc = await PostModel.findById(savedReply.id).exec();
     if (!replyDoc) throw new AppError("reply post not found", 404);
     const reply = replyDoc.toObject() as unknown as Post;
@@ -161,7 +170,10 @@ async function update(id: string, post: Post): Promise<Post> {
   updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
     updatedPost
   );
-  await followerService.populateIsFollowing(updatedPost.createdBy as unknown as User);
+
+  updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
+    updatedPost.createdBy as unknown as User
+  );
   return updatedPost;
 }
 

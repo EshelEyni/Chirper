@@ -12,6 +12,22 @@ import {
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 
+export const loggedInUserActionDefaultState: LoggedInUserActionState = {
+  isLiked: false,
+  isReposted: false,
+  isViewed: false,
+  isDetailedViewed: false,
+  isProfileViewed: false,
+  isFollowedFromPost: false,
+  isHashTagClicked: false,
+  isLinkClicked: false,
+  isBookmarked: false,
+  isPostLinkCopied: false,
+  isPostShared: false,
+  isPostSendInMessage: false,
+  isPostBookmarked: false,
+};
+
 async function getLoggedInUserActionState(
   post: Post,
   { isDefault = false } = {}
@@ -19,23 +35,7 @@ async function getLoggedInUserActionState(
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
 
-  const defaultState = {
-    isLiked: false,
-    isReposted: false,
-    isViewed: false,
-    isDetailedViewed: false,
-    isProfileViewed: false,
-    isFollowedFromPost: false,
-    isHashTagClicked: false,
-    isLinkClicked: false,
-    isBookmarked: false,
-    isPostLinkCopied: false,
-    isPostShared: false,
-    isPostSendInMessage: false,
-    isPostBookmarked: false,
-  };
-
-  if (isDefault || !isValidMongoId(loggedInUserId)) return defaultState;
+  if (isDefault || !isValidMongoId(loggedInUserId)) return loggedInUserActionDefaultState;
   const postId = new ObjectId(post.id);
   const userId = new ObjectId(loggedInUserId);
 
@@ -63,7 +63,7 @@ async function getLoggedInUserActionState(
     : {};
 
   return {
-    ...defaultState,
+    ...loggedInUserActionDefaultState,
     isReposted,
     isLiked,
     isBookmarked,
@@ -89,3 +89,5 @@ function populateRepostedBy() {
 }
 
 export default { getLoggedInUserActionState, populateRepostedBy };
+
+// Path: src\api\post\services\util\util.service.test.ts

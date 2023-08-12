@@ -27,7 +27,7 @@ jest.mock("../../../post/models/post-stats.model", () => ({
     findOneAndUpdate: jest.fn(),
   },
 }));
-jest.mock("../../../post/post.service");
+jest.mock("../../../post/services/post/post.service");
 jest.mock("../../../../services/util/util.service", () => ({
   isValidMongoId: jest.fn().mockReturnValue(true),
 }));
@@ -40,7 +40,7 @@ describe("Followers Service", () => {
       toObject: jest.fn().mockReturnThis(),
     };
   }
-  describe("populateIsFollowing", () => {
+  describe("getIsFollowing", () => {
     const mockUser = getMockUser("1");
 
     beforeEach(() => {
@@ -50,8 +50,8 @@ describe("Followers Service", () => {
     it("should set isFollowing to false if loggedInUserId is not valid", async () => {
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId: null });
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
-      const result = await followerService.populateIsFollowing(mockUser as any);
-      expect(result.isFollowing).toBe(false);
+      const result = await followerService.getIsFollowing(mockUser as any);
+      expect(result).toBe(false);
       expect(FollowerModel.exists).not.toHaveBeenCalled();
     });
 
@@ -60,20 +60,20 @@ describe("Followers Service", () => {
         loggedInUserId: "id",
       });
       (FollowerModel.exists as jest.Mock).mockResolvedValueOnce(true);
-      const result = await followerService.populateIsFollowing(mockUser as any);
+      const result = await followerService.getIsFollowing(mockUser as any);
       expect(FollowerModel.exists).toHaveBeenCalledWith({
         fromUserId: "id",
         toUserId: "1",
       });
-      expect(result.isFollowing).toBe(true);
+      expect(result).toBe(true);
 
       (FollowerModel.exists as jest.Mock).mockResolvedValueOnce(false);
-      const result2 = await followerService.populateIsFollowing(mockUser as any);
+      const result2 = await followerService.getIsFollowing(mockUser as any);
       expect(FollowerModel.exists).toHaveBeenCalledWith({
         fromUserId: "id",
         toUserId: "1",
       });
-      expect(result2.isFollowing).toBe(false);
+      expect(result2).toBe(false);
     });
   });
 

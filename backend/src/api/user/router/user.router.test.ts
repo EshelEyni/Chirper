@@ -7,7 +7,6 @@ import userService from "../services/user/user.service";
 import { Types } from "mongoose";
 import followerService from "../services/follower/follower.service";
 import { UserModel } from "../models/user.model";
-import { logger } from "../../../services/logger/logger.service";
 import { checkUserAuthentication } from "../../../middlewares/authGuards/authGuards.middleware";
 
 jest.mock("../../../middlewares/authGuards/authGuards.middleware", () => ({
@@ -47,12 +46,6 @@ jest.mock("../models/user.model", () => ({
     create: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     findByIdAndDelete: jest.fn(),
-  },
-}));
-
-jest.mock("../../../services/logger/logger.service", () => ({
-  logger: {
-    warn: jest.fn(),
   },
 }));
 
@@ -453,7 +446,6 @@ describe("User Router", () => {
       (userService.removeAccount as jest.Mock).mockResolvedValue(user);
       const res = await request(app).delete(`/loggedInUser`);
       expect(res.statusCode).toEqual(204);
-      expect(logger.warn).toHaveBeenCalledWith("User testUser was deactivated");
     });
 
     it("should return an error if user is not logged in", async () => {

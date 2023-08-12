@@ -24,17 +24,18 @@ type UpdatePostStatsAndReturnPostParams = {
   session: ClientSession;
 };
 
-async function populateIsFollowing(user: User): Promise<User> {
+async function getIsFollowing(user: User): Promise<boolean> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
-  if (!isValidMongoId(loggedInUserId)) {
-    user.isFollowing = false;
-    return user;
-  }
+  if (!isValidMongoId(loggedInUserId)) return false;
+  // {
+  //   user.isFollowing = false;
+  //   return user;
+  // }
 
   const isFollowing = await FollowerModel.exists({ fromUserId: loggedInUserId, toUserId: user.id });
-  user.isFollowing = !!isFollowing;
-  return user;
+  // user.isFollowing = !!isFollowing;
+  return !!isFollowing;
 }
 
 async function add(
@@ -114,25 +115,24 @@ async function _updateAndGetUsers({
   session,
   inc,
 }: UpdateAndGetUsersParams): Promise<FollowingResult> {
-  const updatedFollowerDoc = await UserModel.findByIdAndUpdate(
+  const updatedFollower = (await UserModel.findByIdAndUpdate(
     fromUserId,
     { $inc: { followingCount: inc } },
     { session, new: true }
-  );
-  if (!updatedFollowerDoc) throw new AppError("Follower not found", 404);
+  )) as User;
+  if (!updatedFollower) throw new AppError("Follower not found", 404);
 
-  const updatedFollowingDoc = await UserModel.findByIdAndUpdate(
-    toUserId,
-    { $inc: { followersCount: inc } },
-    { session, new: true }
-  );
-  if (!updatedFollowingDoc) throw new AppError("Following not found", 404);
-
+  const updatedFollowing = (
+    await UserModel.findByIdAndUpdate(
+      toUserId,
+      { $inc: { followersCount: inc } },
+      { session, new: true }
+    )
+  )?.toObject() as User;
+  if (!updatedFollowing) throw new AppError("Following not found", 404);
   await session.commitTransaction();
-
-  const updatedFollowing = updatedFollowingDoc.toObject() as User;
   updatedFollowing.isFollowing = inc > 0;
-  return { updatedFollower: updatedFollowerDoc as unknown as User, updatedFollowing };
+  return { updatedFollower, updatedFollowing };
 }
 
 async function _updatePostStatsAndReturnPost({
@@ -155,7 +155,7 @@ async function _updatePostStatsAndReturnPost({
 }
 
 export default {
-  populateIsFollowing,
+  getIsFollowing,
   add,
   remove,
 };

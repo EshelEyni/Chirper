@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import userService from "../services/user/user.service";
-import { logger } from "../../../services/logger/logger.service";
 import {
   asyncErrorCatcher,
   AppError,
@@ -62,8 +61,8 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { loggedInUserId } = req;
   if (!loggedInUserId) throw new AppError("User not logged in", 401);
-  const removedUser = await userService.removeAccount(loggedInUserId);
-  logger.warn(`User ${removedUser.username} was deactivated`);
+
+  await userService.removeAccount(loggedInUserId);
 
   res.status(204).send({
     status: "success",

@@ -4,6 +4,7 @@ import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util
 import { Document } from "mongoose";
 import followerService from "../follower/follower.service";
 import { AppError } from "../../../../services/error/error.service";
+import { logger } from "../../../../services/logger/logger.service";
 
 async function query(queryString: QueryObj): Promise<User[]> {
   const features = new APIFeatures(UserModel.find(), queryString)
@@ -16,7 +17,7 @@ async function query(queryString: QueryObj): Promise<User[]> {
   const users = await Promise.all(
     usersDocs.map(async userDoc => {
       const user = userDoc.toObject();
-      await followerService.populateIsFollowing(user);
+      user.isFollowing = await followerService.getIsFollowing(user);
       return user;
     })
   );
@@ -57,9 +58,13 @@ async function remove(userId: string): Promise<User> {
 }
 
 async function removeAccount(userId: string): Promise<User> {
-  const userRemoved = await UserModel.findByIdAndUpdate(userId, { active: false }).exec();
-  if (!userRemoved) throw new AppError("User not found", 404);
-  return userRemoved as unknown as User;
+  const removedUser = (await UserModel.findByIdAndUpdate(userId, {
+    active: false,
+  }).exec()) as unknown as User;
+  if (!removedUser) throw new AppError("User not found", 404);
+  logger.warn(`User ${removedUser.username} was deactivated`);
+
+  return removedUser as unknown as User;
 }
 
 export default {

@@ -11,7 +11,7 @@ import { requestLogger } from "./middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "./services/error/error.service";
 import setupAsyncLocalStorage from "./middlewares/setupAls/setupAls.middleware";
 import userRouter from "./api/user/router/user.router";
-import postRouter from "./api/post/post.router";
+import postRouter from "./api/post/router/post.router";
 import gifRouter from "./api/gif/router/gif.router";
 import locationRouter from "./api/location/router/location.router";
 import authRouter from "./api/auth/router/auth.router";

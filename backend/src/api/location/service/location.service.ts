@@ -65,6 +65,7 @@ function _getLocationFromResponse({
   const englishRegex = /^[A-Za-z0-9\s.,!?@()_\\-]+$/;
   const plusSignRegex = /\+/;
   const { results } = response.json;
+
   if (isSingleResult) {
     const result = (results as GeocodingResult[]).find(
       (location: GeocodingResult) =>
@@ -73,6 +74,7 @@ function _getLocationFromResponse({
     );
     return result ? _formatResultToLocationObj(result) : null;
   }
+
   return (results as PlaceSearchResult[])
     .filter((location: PlaceSearchResult) => englishRegex.test(location.name))
     .map(_formatResultToLocationObj);

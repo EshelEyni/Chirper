@@ -91,17 +91,17 @@ async function resetPassword(
   return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
+function _checkIsUserLocked(user: UserDoc) {
+  if (user?.lockedUntil < Date.now()) return;
+  const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
+  throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
+}
+
 async function _validateUserPassword(user: UserDoc, password: string) {
   const isValidPassword = await user.checkPassword(password, user.password);
   user.loginAttempts++;
   await user.save({ validateBeforeSave: false });
   if (!isValidPassword) throw new AppError("Incorrect password", 401);
-}
-
-function _checkIsUserLocked(user: UserDoc) {
-  if (user?.lockedUntil < Date.now()) return;
-  const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
-  throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
 }
 
 async function _checkLoginAttempts(user: UserDoc) {
@@ -113,7 +113,6 @@ async function _checkLoginAttempts(user: UserDoc) {
 }
 
 async function _resetLoginAttempts(user: UserDoc) {
-  if (!user.loginAttempts) return;
   user.loginAttempts = 0;
   user.lockedUntil = 0;
   await user.save({ validateBeforeSave: false });

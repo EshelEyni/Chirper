@@ -6,7 +6,7 @@ import { ClientSession, startSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
-import postService from "../../../post/post.service";
+import postService from "../../../post/services/post.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
 

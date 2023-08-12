@@ -90,7 +90,7 @@ describe("Auth Service", () => {
       await authService.login("username", "password");
       expect(user.loginAttempts).toBe(0);
       expect(user.lockedUntil).toBe(0);
-      expect(user.save).toHaveBeenCalled();
+      expect(user.save).toHaveBeenCalledTimes(2);
     });
 
     it("should throw an error if the signToken function fails", async () => {

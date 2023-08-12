@@ -2,7 +2,7 @@ import { asyncLocalStorage } from "../../../../services/als.service";
 import { FollowerModel } from "../../models/followers.model";
 import followerService from "./follower.service";
 import { UserModel } from "../../models/user.model";
-import postService from "../../../post/post.service";
+import postService from "../../../post/services/post.service";
 import * as mongoose from "mongoose";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import { PostStatsModel } from "../../../post/models/post-stats.model";

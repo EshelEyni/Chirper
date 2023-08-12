@@ -49,13 +49,22 @@ describe("Gif Service", () => {
           },
           title: "title1",
         },
+        {
+          id: "1",
+          images: {
+            original: { url: "url1", height: "100", width: "100" },
+            original_still: { url: "staticUrl1" },
+            preview_webp: { url: "placeholderUrl1" },
+            fixed_width_small_still: { url: "staticPlaceholderUrl1" },
+          },
+        },
       ];
 
       const expectedGifs = [...mockFecthedGifs, ...mockFecthedGifs].map(gif => ({
         id: gif.id,
         url: gif.images.original.url,
         staticUrl: gif.images.original_still.url,
-        description: gif.title,
+        description: gif.title || "No description",
         size: {
           height: gif.images.original.height,
           width: gif.images.original.width,

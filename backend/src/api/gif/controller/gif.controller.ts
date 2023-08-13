@@ -9,8 +9,9 @@ const getGifFromDB = getAll(GifModel);
 
 const getGifsBySearchTerm = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const searchTerm = req.query.searchTerm as string;
+    const { searchTerm } = req.query;
     if (!searchTerm) throw new AppError("No search term provided", 400);
+    if (typeof searchTerm !== "string") throw new AppError("Search term must be a string", 400);
 
     const categories = [
       "Agree",

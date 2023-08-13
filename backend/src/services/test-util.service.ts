@@ -1,6 +1,20 @@
+require("dotenv").config();
+import mongoose from "mongoose";
 import { LoggedInUserActionState, Post } from "../../../shared/interfaces/post.interface";
 import { MiniUser } from "../../../shared/interfaces/user.interface";
+import { PostModel } from "../api/post/models/post.model";
+import { UserModel } from "../api/user/models/user.model";
+import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
+import { logger } from "./logger/logger.service";
+import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
+
+async function connectToTestDB() {
+  const { LOCAL_DB_URL } = process.env;
+  if (!LOCAL_DB_URL) throw new AppError("LOCAL_DB_URL is not defined.", 500);
+  await mongoose.connect(LOCAL_DB_URL);
+  logger.info("Connected to MongoDB.");
+}
 
 function assertPost(post: Post) {
   expect(post).toEqual(
@@ -52,9 +66,66 @@ function assertMiniUser(miniUser: MiniUser) {
   );
 }
 
+function assertGifCategory(category: GifCategory) {
+  expect(category).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      name: expect.any(String),
+      imgUrl: expect.any(String),
+      sortOrder: expect.any(Number),
+    })
+  );
+}
+
+function assertGif(gif: Gif) {
+  expect(gif).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      url: expect.any(String),
+      staticUrl: expect.any(String),
+      description: expect.any(String),
+      size: expect.objectContaining({
+        height: expect.any(Number),
+        width: expect.any(Number),
+      }),
+      placeholderUrl: expect.any(String),
+      staticPlaceholderUrl: expect.any(String),
+    })
+  );
+}
+
 function getLoginTokenStrForTest(validUserId: string) {
   const token = tokenService.signToken(validUserId);
   return `loginToken=${token}`;
 }
 
-export { assertPost, getLoginTokenStrForTest };
+async function getValidUserId() {
+  const user = (await UserModel.findOne({})
+    .setOptions({ skipHooks: true })
+    .select("_id")
+    .lean()
+    .exec()) as unknown as { _id: any };
+  if (!user) throw new AppError("No user found in DB", 500);
+  return user._id.toHexString();
+}
+
+async function getValidPostId() {
+  const post = (await PostModel.findOne({})
+    .setOptions({ skipHooks: true })
+    .select("_id")
+    .lean()
+    .exec()) as unknown as { _id: any };
+
+  if (!post) throw new AppError("No post found in DB", 500);
+  return post._id.toHexString();
+}
+
+export {
+  connectToTestDB,
+  assertPost,
+  getLoginTokenStrForTest,
+  getValidUserId,
+  getValidPostId,
+  assertGifCategory,
+  assertGif,
+};

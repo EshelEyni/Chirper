@@ -22,7 +22,7 @@ jest.mock("../../models/bookmark-post.model", () => ({
 jest.mock("../../../user/services/follower/follower.service");
 jest.mock("../util/util.service");
 
-xdescribe("BookmarkService", () => {
+describe("BookmarkService", () => {
   function getMockBookmarkPost(): any {
     return {
       bookmarkOwnerId: new Types.ObjectId().toHexString(),
@@ -179,7 +179,7 @@ xdescribe("BookmarkService", () => {
     });
   });
 
-  fdescribe("remove", () => {
+  describe("remove", () => {
     const postId = new Types.ObjectId().toHexString();
     const userId = new Types.ObjectId().toHexString();
     const mockedBookMarkedPost = getMockBookmarkPost();

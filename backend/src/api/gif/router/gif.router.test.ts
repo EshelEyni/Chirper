@@ -83,29 +83,34 @@ describe("Gif Router", () => {
   describe("GET /search", () => {
     it("should get gifs by search term", async () => {
       const res = await request(app).get("/search").query({ searchTerm: "test" });
-      console.log(JSON.stringify(res.body, null, 2));
       expect(res.statusCode).toEqual(200);
+      expect(res.body.data).toEqual(expect.any(Array));
+      res.body.data.forEach(assertGif);
     });
 
-    xit("should return 400 if no search term is provided", async () => {
+    it("should return 400 if no search term is provided", async () => {
       const res = await request(app).get("/search");
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toEqual("No search term provided");
     });
 
-    xit("should return 200 and an empty array if no gifs match the search term", async () => {
+    it("should return 200 and an empty array if no gifs match the search term", async () => {
+      jest.spyOn(gifService, "getGifsBySearchTerm").mockReturnValueOnce(Promise.resolve([]));
       const res = await request(app).get("/search").query({ searchTerm: "nonexistent" });
       expect(res.statusCode).toEqual(200);
       expect(res.body.data).toEqual([]);
     });
 
-    xit("should return 200 and an array of gifs if gifs match the search term", async () => {
-      const searchTerm = "test";
-      const gifs = [{ id: "1", url: "http://example.com" }];
-      (gifService.getGifsBySearchTerm as jest.Mock).mockReturnValueOnce(gifs);
-      const res = await request(app).get("/search").query({ searchTerm });
+    it("should return 200 and an array of gifs from DB if search term maches one of the Gif categories", async () => {
+      const spy = jest.spyOn(gifService, "getGifFromDB");
+
+      const category = "Agree";
+      const res = await request(app).get("/search").query({ searchTerm: category });
+      expect(spy).toHaveBeenCalledWith(category);
       expect(res.statusCode).toEqual(200);
-      expect(res.body.data).toEqual(gifs);
+      expect(res.body.data).toEqual(expect.any(Array));
+      res.body.data.forEach(assertGif);
+      spy.mockRestore();
     });
   });
 

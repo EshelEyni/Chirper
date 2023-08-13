@@ -29,7 +29,7 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   const gifs = [];
 
   for (const gif of Fetchedgifs) {
-    if (!validateFetchedGif(gif)) continue;
+    if (!_validateFetchedGif(gif)) continue;
     const formattedGif = {
       id: gif.id.toString(),
       url: gif.images.original.url,
@@ -64,7 +64,7 @@ async function getGifFromDB(category: string): Promise<Gif[]> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateFetchedGif(gif: any) {
+function _validateFetchedGif(gif: any) {
   if (!gif) return false;
   if (!gif.id) return false;
   if (!gif.images) return false;

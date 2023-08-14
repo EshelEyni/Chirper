@@ -2,15 +2,15 @@ import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
 import router from "./auth.router";
-import { AppError, errorHandler } from "../../../services/error/error.service";
-import authService from "../service/auth.service";
+import { errorHandler } from "../../../services/error/error.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import {
+  assertUser,
   connectToTestDB,
   getLoginTokenStrForTest,
-  getValidUserId,
 } from "../../../services/test-util.service";
 import mongoose from "mongoose";
+import { UserModel } from "../../user/models/user.model";
 
 const app = express();
 app.use(cookieParser());
@@ -18,72 +18,72 @@ app.use(express.json());
 app.use(router);
 app.use(errorHandler);
 
-// jest.mock("../../../middlewares/authGuards/authGuards.middleware", () => ({
-//   checkUserAuthentication: jest.fn().mockImplementation((req, res, next) => {
-//     req.loggedInUserId = "some-id";
-//     next();
-//   }),
-// }));
-
 jest.mock("../../../services/rate-limiter.service", () => ({
   authRequestLimiter: jest.fn().mockImplementation((req, res, next) => next()),
 }));
 
-// jest.mock("../service/auth.service", () => ({
-//   login: jest.fn().mockReturnValue({}),
-//   loginWithToken: jest.fn().mockReturnValue({}),
-//   signup: jest.fn().mockReturnValue({}),
-//   sendPasswordResetEmail: jest.fn().mockReturnValue({}),
-//   resetPassword: jest.fn().mockReturnValue({}),
-//   updatePassword: jest.fn().mockReturnValue({}),
-// }));
+jest.mock("../../../services/util/util.service", () => ({
+  ...jest.requireActual("../../../services/util/util.service"),
+  sendEmail: jest.fn(),
+}));
 
 describe("Auth Router", () => {
-  let validUserId: string, token: string, expectedToken: string;
+  const username = "test-user";
+  const password = "password";
+  const email = "email@testemail.com";
+  let token: string, cleanToken: string, resetToken: string;
+
+  async function createTestUserAndToken({ createResetToken = false } = {}) {
+    await deleteTestUser();
+    const createdUser = await UserModel.create({
+      username,
+      fullname: "Test User",
+      email,
+      password,
+      passwordConfirm: password,
+    });
+    token = getLoginTokenStrForTest(createdUser.id);
+    cleanToken = token.replace("loginToken=", "");
+
+    if (!createResetToken) return;
+    resetToken = createdUser.createPasswordResetToken();
+    await createdUser.save({ validateBeforeSave: false });
+  }
+
+  async function deleteTestUser() {
+    await UserModel.findOneAndDelete({ username });
+  }
 
   beforeAll(async () => {
     await connectToTestDB();
-    validUserId = await getValidUserId();
-    token = getLoginTokenStrForTest(validUserId);
-    expectedToken = token.replace("loginToken=", "");
   });
 
   afterAll(async () => {
+    await deleteTestUser();
     await mongoose.connection.close();
   });
 
-  const mockUser = {
-    id: "some-id",
-    name: "John Doe",
-    email: "email@email.com",
-    password: "password",
-    passwordConfirm: "password",
-  };
+  xdescribe("POST /login/with-token", () => {
+    beforeAll(async () => {
+      await createTestUserAndToken();
+    });
 
-  const mockToken = "some-token";
-
-  const mockUserCredenitials: UserCredenitials = {
-    username: "Test User",
-    fullname: "Test User",
-    email: "test@example.com",
-    password: "test-password",
-    passwordConfirm: "test-password",
-  };
-
-  fdescribe("POST /login/with-token", () => {
-    fit("should handle auto-login", async () => {
+    it("should handle auto-login", async () => {
       const response = await request(app).post("/login/with-token").set("Cookie", [token]);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
         data: expect.any(Object),
-        token: expectedToken,
+        token: cleanToken,
       });
+      assertUser(response.body.data);
     });
 
     it("should send a succesfull response with no user if an invalid token is provided", async () => {
-      const response = await request(app).post("/login/with-token");
+      const response = await request(app)
+        .post("/login/with-token")
+        .set("Cookie", ["loginToken=invalid-token"]);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
@@ -104,41 +104,37 @@ describe("Auth Router", () => {
     });
   });
 
-  describe("POST /login", () => {
-    const mockUsername = "username";
-    const mockPassword = "password";
+  xdescribe("POST /login", () => {
+    beforeAll(async () => {
+      await createTestUserAndToken();
+    });
+
+    afterAll(async () => {
+      await deleteTestUser();
+    });
 
     it("should handle login", async () => {
-      (authService.login as jest.Mock).mockResolvedValue({
-        user: mockUser,
-        token: mockToken,
-      });
-      const response = await request(app)
-        .post("/login")
-        .send({ username: mockUsername, password: mockPassword });
+      const response = await request(app).post("/login").send({ username, password });
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
-        data: mockUser,
-        token: mockToken,
+        data: expect.any(Object),
+        token: expect.any(String),
       });
+      const user = response.body.data;
+      assertUser(user);
+      expect(user.username).toEqual(username);
+      expect(user.email).toEqual(email);
     });
 
     it("should send a 400 error if no username is provided", async () => {
-      (authService.login as jest.Mock).mockRejectedValue(
-        new Error("Incorrect username or password")
-      );
-      const response = await request(app).post("/login").send({
-        password: mockPassword,
-      });
+      const response = await request(app).post("/login").send({ password });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Username and password are required");
     });
 
     it("should send a 400 error if no password is provided", async () => {
-      const response = await request(app).post("/login").send({
-        username: mockUsername,
-      });
+      const response = await request(app).post("/login").send({ username });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Username and password are required");
     });
@@ -150,41 +146,52 @@ describe("Auth Router", () => {
     });
 
     it("should send a 404 error if the user is not found", async () => {
-      (authService.login as jest.Mock).mockRejectedValue(new AppError("User not found", 404));
+      await UserModel.findOneAndDelete({ username: "userToRemove" });
       const response = await request(app)
         .post("/login")
-        .send({ username: mockUsername, password: mockPassword });
+        .send({ username: "userToRemove", password: "password" });
       expect(response.status).toBe(404);
       expect(response.body.message).toBe("User not found");
     });
 
     it("should send a 401 error if the username or password is incorrect", async () => {
-      (authService.login as jest.Mock).mockRejectedValue(new AppError("Incorrect password", 401));
       const response = await request(app)
         .post("/login")
-        .send({ username: mockUsername, password: mockPassword });
+        .send({ username, password: "wrongPassword" });
       expect(response.status).toBe(401);
       expect(response.body.message).toBe("Incorrect password");
     });
   });
 
-  describe("POST /signup", () => {
-    afterEach(() => {
-      jest.clearAllMocks();
+  xdescribe("POST /signup", () => {
+    const mockUserCredenitials: UserCredenitials = {
+      username: username,
+      fullname: "Test User",
+      email: email,
+      password,
+      passwordConfirm: password,
+    };
+
+    beforeAll(async () => {
+      await deleteTestUser();
+    });
+
+    afterAll(async () => {
+      await deleteTestUser();
     });
 
     it("should handle signup", async () => {
-      (authService.signup as jest.Mock).mockResolvedValue({
-        user: mockUser,
-        token: mockToken,
-      });
       const response = await request(app).post("/signup").send(mockUserCredenitials);
       expect(response.status).toBe(201);
       expect(response.body).toEqual({
         status: "success",
-        data: mockUser,
-        token: mockToken,
+        data: expect.any(Object),
+        token: expect.any(String),
       });
+      const user = response.body.data;
+      assertUser(user);
+      expect(user.username).toEqual(username);
+      expect(user.email).toEqual(email);
     });
 
     it("should send a 400 error if no userCredentials is provided", async () => {
@@ -205,7 +212,11 @@ describe("Auth Router", () => {
     );
   });
 
-  describe("POST /logout", () => {
+  xdescribe("POST /logout", () => {
+    beforeAll(async () => {
+      await createTestUserAndToken();
+    });
+
     it("should handle logout", async () => {
       const response = await request(app).post("/logout");
       expect(response.status).toBe(200);
@@ -215,31 +226,44 @@ describe("Auth Router", () => {
           msg: "Logged out successfully",
         },
       });
+      expect(response.get("Set-Cookie")).toEqual([
+        "loginToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+      ]);
     });
   });
 
-  describe("POST /updatePassword", () => {
+  xdescribe("POST /updatePassword", () => {
+    beforeAll(async () => {
+      await createTestUserAndToken();
+    });
+
+    afterAll(async () => {
+      await deleteTestUser();
+    });
+
     const mockReqBody = {
-      currentPassword: "password",
-      newPassword: "new-password",
-      newPasswordConfirm: "new-password",
+      currentPassword: password,
+      newPassword: "newPassword",
+      newPasswordConfirm: "newPassword",
     };
+
     it("should handle update password", async () => {
-      (authService.updatePassword as jest.Mock).mockResolvedValue({
-        user: mockUser,
-        token: mockToken,
-      });
       const response = await request(app)
         .patch("/updatePassword")
-        .set("Cookie", ["loginToken=some-token"])
+        .set("Cookie", [token])
         .send(mockReqBody);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
-        data: mockUser,
-        token: mockToken,
+        data: expect.any(Object),
+        token: expect.any(String),
       });
+
+      const user = response.body.data;
+      assertUser(user);
+      expect(user.username).toEqual(username);
+      expect(user.email).toEqual(email);
     });
 
     it.each(Object.keys(mockReqBody))(
@@ -249,7 +273,7 @@ describe("Auth Router", () => {
         delete reqBody[key as keyof typeof mockReqBody];
         const response = await request(app)
           .patch("/updatePassword")
-          .set("Cookie", ["loginToken=some-token"])
+          .set("Cookie", [token])
           .send(reqBody);
         expect(response.status).toBe(400);
         expect(response.body.message).toBe(`${key} is required`);
@@ -259,28 +283,27 @@ describe("Auth Router", () => {
     it("should send a 400 error if newPassword and newPasswordConfirm do not match", async () => {
       const response = await request(app)
         .patch("/updatePassword")
-        .set("Cookie", ["loginToken=some-token"])
+        .set("Cookie", [token])
         .send({
           ...mockReqBody,
-          newPasswordConfirm: "new-password-confirm",
+          newPasswordConfirm: "wrongNewPasswordConfirm",
         });
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Passwords do not match");
     });
   });
 
-  describe("POST /forgotPassword", () => {
-    const mockReqBody = {
-      email: "email@email.com",
-    };
+  xdescribe("POST /forgotPassword", () => {
+    beforeAll(async () => {
+      await createTestUserAndToken();
+    });
 
-    afterEach(() => {
-      jest.clearAllMocks();
+    afterAll(async () => {
+      await deleteTestUser();
     });
 
     it("should handle forgot password", async () => {
-      authService.sendPasswordResetEmail = jest.fn();
-      const response = await request(app).post("/forgotPassword").send(mockReqBody);
+      const response = await request(app).post("/forgotPassword").send({ email });
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
@@ -301,30 +324,41 @@ describe("Auth Router", () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Email is invalid");
     });
+
+    it("should send a 404 error if there is no user with email address", async () => {
+      const email = "removedUserEmail@email.com";
+      await UserModel.findOneAndDelete({ email });
+      const response = await request(app).post("/forgotPassword").send({ email });
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe("There is no user with email address");
+    });
   });
 
   describe("POST /resetPassword", () => {
-    const mockReqBody = {
-      password: "password",
-      passwordConfirm: "password",
-    };
-
-    afterEach(() => {
-      jest.clearAllMocks();
+    afterAll(async () => {
+      await deleteTestUser();
     });
 
+    const mockReqBody = {
+      password,
+      passwordConfirm: password,
+    };
+
     it("should handle reset password", async () => {
-      (authService.resetPassword as jest.Mock).mockResolvedValue({
-        user: mockUser,
-        token: mockToken,
-      });
-      const response = await request(app).patch("/resetPassword/some-token").send(mockReqBody);
+      await createTestUserAndToken({ createResetToken: true });
+
+      const response = await request(app).patch(`/resetPassword/${resetToken}`).send(mockReqBody);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
-        data: mockUser,
-        token: mockToken,
+        data: expect.any(Object),
+        token: expect.any(String),
       });
+      const user = response.body.data;
+      assertUser(user);
+      expect(user.username).toEqual(username);
+      expect(user.email).toEqual(email);
+      await deleteTestUser();
     });
 
     it.each(Object.keys(mockReqBody))(

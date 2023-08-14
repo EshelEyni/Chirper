@@ -1,7 +1,7 @@
 require("dotenv").config();
 import mongoose from "mongoose";
 import { LoggedInUserActionState, Post } from "../../../shared/interfaces/post.interface";
-import { MiniUser } from "../../../shared/interfaces/user.interface";
+import { MiniUser, User } from "../../../shared/interfaces/user.interface";
 import { PostModel } from "../api/post/models/post.model";
 import { UserModel } from "../api/user/models/user.model";
 import { AppError } from "./error/error.service";
@@ -14,6 +14,25 @@ async function connectToTestDB() {
   if (!LOCAL_DB_URL) throw new AppError("LOCAL_DB_URL is not defined.", 500);
   await mongoose.connect(LOCAL_DB_URL);
   logger.info("Connected to MongoDB.");
+}
+
+function assertUser(user: User) {
+  expect(user).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      username: expect.any(String),
+      fullname: expect.any(String),
+      email: expect.any(String),
+      bio: expect.any(String),
+      imgUrl: expect.any(String),
+      isAdmin: expect.any(Boolean),
+      isVerified: expect.any(Boolean),
+      isApprovedLocation: expect.any(Boolean),
+      followingCount: expect.any(Number),
+      followersCount: expect.any(Number),
+      createdAt: expect.any(String),
+    })
+  );
 }
 
 function assertPost(post: Post) {
@@ -122,6 +141,7 @@ async function getValidPostId() {
 
 export {
   connectToTestDB,
+  assertUser,
   assertPost,
   getLoginTokenStrForTest,
   getValidUserId,

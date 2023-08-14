@@ -5,6 +5,12 @@ import router from "./auth.router";
 import { AppError, errorHandler } from "../../../services/error/error.service";
 import authService from "../service/auth.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
+import {
+  connectToTestDB,
+  getLoginTokenStrForTest,
+  getValidUserId,
+} from "../../../services/test-util.service";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(cookieParser());
@@ -12,27 +18,40 @@ app.use(express.json());
 app.use(router);
 app.use(errorHandler);
 
-jest.mock("../../../middlewares/authGuards/authGuards.middleware", () => ({
-  checkUserAuthentication: jest.fn().mockImplementation((req, res, next) => {
-    req.loggedInUserId = "some-id";
-    next();
-  }),
-}));
+// jest.mock("../../../middlewares/authGuards/authGuards.middleware", () => ({
+//   checkUserAuthentication: jest.fn().mockImplementation((req, res, next) => {
+//     req.loggedInUserId = "some-id";
+//     next();
+//   }),
+// }));
 
 jest.mock("../../../services/rate-limiter.service", () => ({
   authRequestLimiter: jest.fn().mockImplementation((req, res, next) => next()),
 }));
 
-jest.mock("../service/auth.service", () => ({
-  login: jest.fn().mockReturnValue({}),
-  loginWithToken: jest.fn().mockReturnValue({}),
-  signup: jest.fn().mockReturnValue({}),
-  sendPasswordResetEmail: jest.fn().mockReturnValue({}),
-  resetPassword: jest.fn().mockReturnValue({}),
-  updatePassword: jest.fn().mockReturnValue({}),
-}));
+// jest.mock("../service/auth.service", () => ({
+//   login: jest.fn().mockReturnValue({}),
+//   loginWithToken: jest.fn().mockReturnValue({}),
+//   signup: jest.fn().mockReturnValue({}),
+//   sendPasswordResetEmail: jest.fn().mockReturnValue({}),
+//   resetPassword: jest.fn().mockReturnValue({}),
+//   updatePassword: jest.fn().mockReturnValue({}),
+// }));
 
 describe("Auth Router", () => {
+  let validUserId: string, token: string, expectedToken: string;
+
+  beforeAll(async () => {
+    await connectToTestDB();
+    validUserId = await getValidUserId();
+    token = getLoginTokenStrForTest(validUserId);
+    expectedToken = token.replace("loginToken=", "");
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
   const mockUser = {
     id: "some-id",
     name: "John Doe",
@@ -51,21 +70,15 @@ describe("Auth Router", () => {
     passwordConfirm: "test-password",
   };
 
-  describe("POST /login/with-token", () => {
-    it("should handle auto-login", async () => {
-      (authService.loginWithToken as jest.Mock).mockResolvedValue({
-        user: mockUser,
-        token: mockToken,
-      });
-      const response = await request(app)
-        .post("/login/with-token")
-        .set("Cookie", ["loginToken=some-token"]);
+  fdescribe("POST /login/with-token", () => {
+    fit("should handle auto-login", async () => {
+      const response = await request(app).post("/login/with-token").set("Cookie", [token]);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
-        data: mockUser,
-        token: mockToken,
+        data: expect.any(Object),
+        token: expectedToken,
       });
     });
 

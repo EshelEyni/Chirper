@@ -197,8 +197,28 @@ describe("Util Service", () => {
     });
   });
 
-  describe("sendMail", () => {
+  fdescribe("sendMail", () => {
+    const requiredEmailConfig = ["EMAIL_USERNAME", "EMAIL_PASSWORD", "EMAIL_HOST", "EMAIL_PORT"];
+
+    it.each(requiredEmailConfig)("should throw an error if %s is not provided", async config => {
+      const originalConfig = process.env[config];
+      delete process.env[config];
+
+      const options = {
+        email: "test@test.com",
+        subject: "Test Subject",
+        message: "Test Message",
+      };
+
+      await expect(sendEmail(options)).rejects.toThrow(
+        new AppError(`Email config ${config} not found in .env file`, 500)
+      );
+
+      process.env[config] = originalConfig;
+    });
+
     it("should send email with provided options", async () => {
+      const { EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT } = process.env;
       const options = {
         email: "test@test.com",
         subject: "Test Subject",
@@ -210,7 +230,6 @@ describe("Util Service", () => {
 
       await sendEmail(options);
 
-      const { EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT } = process.env;
       expect(transportMock).toBeCalledWith({
         host: EMAIL_HOST,
         port: Number(EMAIL_PORT),

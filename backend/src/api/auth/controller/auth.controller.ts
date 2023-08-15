@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import authService from "../service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
@@ -10,22 +10,24 @@ const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   _sendUserTokenSuccessResponse(res, token, user);
 });
 
-const loginWithToken = asyncErrorCatcher(async (req: Request, res: Response) => {
+const loginWithToken = async (req: Request, res: Response, next: NextFunction) => {
   const sendFailedResponse = () => {
     res.send({
       status: "success",
       data: null,
     });
   };
-  const { loginToken } = req.cookies;
-  if (!loginToken || typeof loginToken !== "string") return sendFailedResponse();
   try {
+    const { loginToken } = req.cookies;
+    if (!loginToken || typeof loginToken !== "string") return sendFailedResponse();
     const { user, token } = await authService.loginWithToken(loginToken);
     _sendUserTokenSuccessResponse(res, token, user);
   } catch (err) {
+    const isProdEnv = process.env.NODE_ENV === "production";
+    if (!isProdEnv) next(err);
     return sendFailedResponse();
   }
-});
+};
 
 const signup = asyncErrorCatcher(async (req: Request, res: Response) => {
   const userCreds = req.body as unknown as UserCredenitials;

@@ -63,7 +63,7 @@ describe("Auth Router", () => {
     await mongoose.connection.close();
   });
 
-  xdescribe("POST /login/with-token", () => {
+  describe("POST /login/with-token", () => {
     beforeAll(async () => {
       await createTestUserAndToken();
     });
@@ -104,7 +104,7 @@ describe("Auth Router", () => {
     });
   });
 
-  xdescribe("POST /login", () => {
+  describe("POST /login", () => {
     beforeAll(async () => {
       await createTestUserAndToken();
     });
@@ -163,7 +163,7 @@ describe("Auth Router", () => {
     });
   });
 
-  xdescribe("POST /signup", () => {
+  describe("POST /signup", () => {
     const mockUserCredenitials: UserCredenitials = {
       username: username,
       fullname: "Test User",
@@ -212,7 +212,7 @@ describe("Auth Router", () => {
     );
   });
 
-  xdescribe("POST /logout", () => {
+  describe("POST /logout", () => {
     beforeAll(async () => {
       await createTestUserAndToken();
     });
@@ -232,7 +232,7 @@ describe("Auth Router", () => {
     });
   });
 
-  xdescribe("POST /updatePassword", () => {
+  describe("POST /updatePassword", () => {
     beforeAll(async () => {
       await createTestUserAndToken();
     });
@@ -293,7 +293,7 @@ describe("Auth Router", () => {
     });
   });
 
-  xdescribe("POST /forgotPassword", () => {
+  describe("POST /forgotPassword", () => {
     beforeAll(async () => {
       await createTestUserAndToken();
     });

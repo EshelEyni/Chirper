@@ -45,7 +45,6 @@ async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
 
     gifs.push(formattedGif);
   }
-
   return gifs;
 }
 
@@ -64,30 +63,30 @@ async function getGifFromDB(category: string): Promise<Gif[]> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function _validateFetchedGif(gif: any) {
-  if (!gif) return false;
-  if (!gif.id) return false;
-  if (!gif.images) return false;
-  if (!gif.images?.original) return false;
-
-  const requiredImageProps = [
-    "url",
-    "still.url",
-    "height",
-    "width",
-    "preview_webp.url",
-    "fixed_width_small_still.url",
-  ];
-
-  return requiredImageProps.every(prop => {
-    const props = prop.split(".");
-    let currentProp: any = gif.images;
-    for (const p of props) {
-      if (!currentProp[p]) return false;
-      currentProp = currentProp[p];
+function _validateFetchedGif(gif: Record<string, any>) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hasNestedProperty = (obj: Record<string, any>, propertyPath: string): boolean => {
+    const properties = propertyPath.split(".");
+    for (const property of properties) {
+      if (!obj || !Object.prototype.hasOwnProperty.call(obj, property)) {
+        return false;
+      }
+      obj = obj[property];
     }
     return true;
-  });
+  };
+
+  const requiredPaths = [
+    "id",
+    "images.original.url",
+    "images.original_still.url",
+    "images.original.height",
+    "images.original.width",
+    "images.preview_webp.url",
+    "images.fixed_width_small_still.url",
+  ];
+
+  return requiredPaths.every(path => hasNestedProperty(gif, path));
 }
 
 export default { getGifsBySearchTerm, getGifFromDB };

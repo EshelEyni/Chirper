@@ -158,6 +158,35 @@ describe("Auth Controller", () => {
       await sut(req as Request, res as Response, next);
       assertUserTokenSuccesRes();
     });
+
+    it("should return a succesfull response with no user if an error occurs in production environment", async () => {
+      process.env.NODE_ENV = "production";
+      req.cookies = { loginToken: mockToken };
+      (authService.loginWithToken as jest.Mock).mockRejectedValue(new Error("error"));
+
+      const sut = loginWithToken as any;
+      await sut(req as Request, res as Response, next);
+
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: "success",
+          data: null,
+        })
+      );
+      process.env.NODE_ENV = "test";
+    });
+
+    it("should throw an error if an error occurs in development environment", async () => {
+      process.env.NODE_ENV = "development";
+      req.cookies = { loginToken: mockToken };
+      (authService.loginWithToken as jest.Mock).mockRejectedValue(new Error("error"));
+
+      const sut = loginWithToken as any;
+      await sut(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      process.env.NODE_ENV = "test";
+    });
   });
 
   describe("signup", () => {

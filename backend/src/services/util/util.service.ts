@@ -85,8 +85,11 @@ class APIFeatures<T> {
 
 const sendEmail = async (options: { email: string; subject: string; message: string }) => {
   const { EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_HOST, EMAIL_PORT } = process.env;
-  if (!EMAIL_USERNAME || !EMAIL_PASSWORD || !EMAIL_HOST || !EMAIL_PORT)
-    throw new Error("Email config not found");
+  const requiredEmailConfig = ["EMAIL_USERNAME", "EMAIL_PASSWORD", "EMAIL_HOST", "EMAIL_PORT"];
+  requiredEmailConfig.forEach(config => {
+    if (!process.env[config])
+      throw new AppError(`Email config ${config} not found in .env file`, 500);
+  });
 
   const transporter = nodemailer.createTransport({
     host: EMAIL_HOST,

@@ -2,7 +2,7 @@ import { FollowingResult, User } from "../../../../../../shared/interfaces/user.
 import { UserModel } from "../../models/user.model";
 import { FollowerModel } from "../../models/followers.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
-import { ClientSession, startSession } from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
@@ -15,6 +15,7 @@ type UpdateAndGetUsersParams = {
   toUserId: string;
   session: ClientSession;
   inc: number;
+  commitTransaction: boolean;
 };
 
 type UpdatePostStatsAndReturnPostParams = {
@@ -28,13 +29,7 @@ async function getIsFollowing(user: User): Promise<boolean> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
   if (!isValidMongoId(loggedInUserId)) return false;
-  // {
-  //   user.isFollowing = false;
-  //   return user;
-  // }
-
   const isFollowing = await FollowerModel.exists({ fromUserId: loggedInUserId, toUserId: user.id });
-  // user.isFollowing = !!isFollowing;
   return !!isFollowing;
 }
 
@@ -43,16 +38,18 @@ async function add(
   toUserId: string,
   postId?: string
 ): Promise<FollowingResult | Post> {
-  const session = await startSession();
+  const session = await mongoose.startSession();
   session.startTransaction();
+
   try {
     await FollowerModel.create([{ fromUserId, toUserId }], { session });
 
-    const { updatedFollower, updatedFollowing } = await _updateAndGetUsers({
+    const { loggedInUser, followedUser } = await _updateAndGetUsers({
       fromUserId,
       toUserId,
       session,
       inc: 1,
+      commitTransaction: !postId,
     });
 
     if (postId)
@@ -63,7 +60,7 @@ async function add(
         session,
       });
 
-    return { updatedFollower, updatedFollowing };
+    return { loggedInUser, followedUser };
   } catch (err) {
     await session.abortTransaction();
     throw err;
@@ -77,7 +74,7 @@ async function remove(
   toUserId: string,
   postId?: string
 ): Promise<FollowingResult | Post> {
-  const session = await startSession();
+  const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const followLinkage = await FollowerModel.findOneAndDelete(
@@ -86,14 +83,15 @@ async function remove(
     );
     if (!followLinkage) throw new AppError("You are not following this User", 404);
 
-    const { updatedFollower, updatedFollowing } = await _updateAndGetUsers({
+    const { loggedInUser, followedUser } = await _updateAndGetUsers({
       fromUserId,
       toUserId,
       session,
       inc: -1,
+      commitTransaction: !postId,
     });
 
-    if (!postId) return { updatedFollower, updatedFollowing };
+    if (!postId) return { loggedInUser, followedUser };
 
     return await _updatePostStatsAndReturnPost({
       fromUserId,
@@ -114,25 +112,28 @@ async function _updateAndGetUsers({
   toUserId,
   session,
   inc,
+  commitTransaction,
 }: UpdateAndGetUsersParams): Promise<FollowingResult> {
-  const updatedFollower = (await UserModel.findByIdAndUpdate(
-    fromUserId,
-    { $inc: { followingCount: inc } },
-    { session, new: true }
-  )) as User;
-  if (!updatedFollower) throw new AppError("Follower not found", 404);
+  // const loggedInUser = (await UserModel.findByIdAndUpdate(
+  //   fromUserId,
+  //   { $inc: { followingCount: inc } },
+  //   { session, new: true }
+  // )) as User;
+  const loggedInUser = (await UserModel.findById(fromUserId).session(session)) as unknown as User;
+  if (!loggedInUser) throw new AppError("Follower not found", 404);
 
-  const updatedFollowing = (
-    await UserModel.findByIdAndUpdate(
-      toUserId,
-      { $inc: { followersCount: inc } },
-      { session, new: true }
-    )
-  )?.toObject() as User;
-  if (!updatedFollowing) throw new AppError("Following not found", 404);
-  await session.commitTransaction();
-  updatedFollowing.isFollowing = inc > 0;
-  return { updatedFollower, updatedFollowing };
+  // const followedUser = (
+  //   await UserModel.findByIdAndUpdate(
+  //     toUserId,
+  //     { $inc: { followersCount: inc } },
+  //     { session, new: true }
+  //   )
+  // )?.toObject() as User;
+  const followedUser = (await UserModel.findById(toUserId).session(session)) as unknown as User;
+  if (!followedUser) throw new AppError("Following not found", 404);
+  if (commitTransaction) await session.commitTransaction();
+  followedUser.isFollowing = inc > 0;
+  return { loggedInUser, followedUser };
 }
 
 async function _updatePostStatsAndReturnPost({

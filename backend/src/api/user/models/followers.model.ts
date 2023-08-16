@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
+import { UserModel } from "./user.model";
 
 const followerSchema = new mongoose.Schema(
   {
@@ -56,6 +57,19 @@ followerSchema.post(/^find/, async function (docs: any[]) {
   }
 });
 
+followerSchema.post("save", async function (doc, next) {
+  await UserModel.findByIdAndUpdate(doc.fromUserId, { $inc: { followingCount: 1 } });
+  await UserModel.findByIdAndUpdate(doc.toUserId, { $inc: { followersCount: 1 } });
+  next();
+});
+
+followerSchema.post("findOneAndDelete", async function (doc, next) {
+  await UserModel.findByIdAndUpdate(doc.fromUserId, { $inc: { followingCount: -1 } });
+  await UserModel.findByIdAndUpdate(doc.toUserId, { $inc: { followersCount: -1 } });
+
+  next();
+});
+
 interface IFollowerBase {
   fromUserId: string;
   toUserId: string;
@@ -65,6 +79,6 @@ interface IFollowerBase {
 
 export interface IFollower extends IFollowerBase, mongoose.Document {}
 
-const FollowerModel = mongoose.model<IFollower>("Follower", followerSchema, "followers");
+const FollowerModel = model<IFollower>("Follower", followerSchema, "followers");
 
 export { FollowerModel };

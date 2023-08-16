@@ -12,7 +12,7 @@ jest.mock("../../../../services/als.service");
 jest.mock("mongoose");
 jest.mock("../../models/user.model", () => ({
   UserModel: {
-    findByIdAndUpdate: jest.fn(),
+    findById: jest.fn(),
   },
 }));
 jest.mock("../../models/followers.model", () => ({
@@ -93,7 +93,7 @@ describe("Followers Service", () => {
     it("should add followings and return updated users", async () => {
       const [mockUser, mockUser2] = [getMockUser("1"), getMockUser("2")];
 
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
 
@@ -109,24 +109,24 @@ describe("Followers Service", () => {
         ],
         { session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledTimes(2);
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenCalledTimes(2);
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         1,
         "1",
         { $inc: { followingCount: 1 } },
         { new: true, session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         2,
         "2",
         { $inc: { followersCount: 1 } },
         { new: true, session: mockSession }
       );
       expect(mockSession.commitTransaction).toHaveBeenCalled();
-      expect(result.updatedFollower).toEqual(mockUser);
-      expect(result.updatedFollowing).toEqual(mockUser2);
-      expect(result.updatedFollowing.toObject).toHaveBeenCalled();
-      expect(result.updatedFollowing.isFollowing).toBe(true);
+      expect(result.loggedInUser).toEqual(mockUser);
+      expect(result.followedUser).toEqual(mockUser2);
+      expect(result.followedUser.toObject).toHaveBeenCalled();
+      expect(result.followedUser.isFollowing).toBe(true);
       expect(mockSession.endSession).toHaveBeenCalledTimes(1);
     });
 
@@ -140,7 +140,7 @@ describe("Followers Service", () => {
         },
       };
 
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
@@ -158,14 +158,14 @@ describe("Followers Service", () => {
         ],
         { session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledTimes(2);
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenCalledTimes(2);
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         1,
         "1",
         { $inc: { followingCount: 1 } },
         { new: true, session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         2,
         "2",
         { $inc: { followersCount: 1 } },
@@ -192,7 +192,7 @@ describe("Followers Service", () => {
     });
 
     it("should throw error if follower is not found", async () => {
-      (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValueOnce(null);
+      (UserModel.findById as jest.Mock).mockResolvedValueOnce(null);
 
       await expect(followerService.add("1", "2")).rejects.toThrow(
         new AppError("Follower not found", 404)
@@ -202,7 +202,7 @@ describe("Followers Service", () => {
     });
 
     it("should throw error if following is not found", async () => {
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(null);
 
@@ -216,7 +216,7 @@ describe("Followers Service", () => {
     it("should throw an error if post is not found", async () => {
       const [mockUser, mockUser2] = [getMockUser("1"), getMockUser("2")];
 
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(null);
@@ -246,7 +246,7 @@ describe("Followers Service", () => {
       const [mockUser, mockUser2] = [getMockUser("1"), getMockUser("2")];
 
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
 
@@ -260,24 +260,24 @@ describe("Followers Service", () => {
         },
         { session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledTimes(2);
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenCalledTimes(2);
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         1,
         "1",
         { $inc: { followingCount: -1 } },
         { new: true, session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         2,
         "2",
         { $inc: { followersCount: -1 } },
         { new: true, session: mockSession }
       );
       expect(mockSession.commitTransaction).toHaveBeenCalled();
-      expect(result.updatedFollower).toEqual(mockUser);
-      expect(result.updatedFollowing).toEqual(mockUser2);
-      expect(result.updatedFollowing.isFollowing).toBe(false);
-      expect(result.updatedFollowing.toObject).toHaveBeenCalled();
+      expect(result.loggedInUser).toEqual(mockUser);
+      expect(result.followedUser).toEqual(mockUser2);
+      expect(result.followedUser.isFollowing).toBe(false);
+      expect(result.followedUser.toObject).toHaveBeenCalled();
       expect(mockSession.endSession).toHaveBeenCalledTimes(1);
     });
 
@@ -292,7 +292,7 @@ describe("Followers Service", () => {
       };
 
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
       (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
@@ -307,14 +307,14 @@ describe("Followers Service", () => {
         },
         { session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenCalledTimes(2);
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenCalledTimes(2);
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         1,
         "1",
         { $inc: { followingCount: -1 } },
         { new: true, session: mockSession }
       );
-      expect(UserModel.findByIdAndUpdate).toHaveBeenNthCalledWith(
+      expect(UserModel.findById).toHaveBeenNthCalledWith(
         2,
         "2",
         { $inc: { followersCount: -1 } },
@@ -347,7 +347,7 @@ describe("Followers Service", () => {
 
     it("should throw error if follower is not found", async () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-      (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValueOnce(null);
+      (UserModel.findById as jest.Mock).mockResolvedValueOnce(null);
 
       await expect(followerService.remove("1", "2")).rejects.toThrow(
         new AppError("Follower not found", 404)
@@ -358,7 +358,7 @@ describe("Followers Service", () => {
 
     it("should throw error if following is not found", async () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(null);
 
@@ -371,7 +371,7 @@ describe("Followers Service", () => {
 
     it("should throw an error if post is not found", async () => {
       (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-      (UserModel.findByIdAndUpdate as jest.Mock)
+      (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(getMockUser("2"));
 

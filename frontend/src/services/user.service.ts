@@ -1,24 +1,7 @@
 import { Post } from "../../../shared/interfaces/post.interface";
-import { MiniUser, User, FollowingResult } from "../../../shared/interfaces/user.interface";
+import { User, FollowingResult } from "../../../shared/interfaces/user.interface";
 import httpService from "./http.service";
 import { handleServerResponse } from "./util/utils.service";
-
-function getMiniUser(user: User): MiniUser {
-  const miniUser = {
-    id: user.id,
-    username: user.username,
-    fullname: user.fullname,
-    imgUrl: user.imgUrl,
-    isAdmin: user.isAdmin,
-    isVerified: user.isVerified,
-    bio: user.bio,
-    followersCount: user.followersCount,
-    followingCount: user.followingCount,
-    isFollowing: user.isFollowing,
-  };
-
-  return miniUser;
-}
 
 function getDefaultUserImgUrl(): string {
   return "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png";
@@ -84,7 +67,6 @@ export default {
   query,
   getById,
   getByUsername,
-  getMiniUser,
   getDefaultUserImgUrl,
   followUser,
   unFollowUser,

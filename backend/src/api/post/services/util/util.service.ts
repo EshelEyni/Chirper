@@ -46,7 +46,6 @@ async function getLoggedInUserActionState(
   ]);
 
   const postStats = (await PostStatsModel.findOne({ postId, userId })) as unknown as PostStatsBody;
-
   const additionalState = postStats
     ? {
         isViewed: postStats.isViewed,

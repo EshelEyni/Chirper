@@ -9,10 +9,16 @@ import tokenService from "./token/token.service";
 import { logger } from "./logger/logger.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 
-async function connectToTestDB() {
-  const { LOCAL_DB_URL } = process.env;
+async function connectToTestDB({ isRemoteDB = false } = {}) {
+  const { DB_URL, TEST_DB_NAME, LOCAL_DB_URL } = process.env;
   if (!LOCAL_DB_URL) throw new AppError("LOCAL_DB_URL is not defined.", 500);
-  await mongoose.connect(LOCAL_DB_URL);
+  if (!DB_URL) throw new AppError("DB_URL is not defined.", 500);
+  if (!TEST_DB_NAME) throw new AppError("TEST_DB_NAME is not defined.", 500);
+
+  if (isRemoteDB) await mongoose.connect(DB_URL, { dbName: TEST_DB_NAME });
+  else {
+    await mongoose.connect(LOCAL_DB_URL);
+  }
   logger.info("Connected to MongoDB.");
 }
 

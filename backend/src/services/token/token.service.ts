@@ -9,7 +9,7 @@ function getTokenFromRequest(req: Request) {
     req.headers.authorization && req.headers.authorization.startsWith("Bearer");
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const tokenFromHeaders = isTokenInHeaders ? req.headers.authorization!.split(" ")[1] : null;
-  const token = cookies.loginToken || tokenFromHeaders;
+  const token = cookies?.loginToken || tokenFromHeaders;
   return token;
 }
 

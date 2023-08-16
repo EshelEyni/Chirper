@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon",
     "prod": "set NODE_ENV=production&& nodemon",
-    "debug": "ndb --experimental-specifier-resolution=node --loader ts-node src/server.ts",
-    "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles"
+    "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles",
+    "test:debug": "cross-env NODE_ENV=development jest --runInBand --inspect-brk",
+    "debug": "set NODE_ENV=development&& nodemon --inspect-brk"
   },
   "author": "",
   "license": "ISC",
@@ -52,6 +53,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
+    "cross-env": "^7.0.3",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",

@@ -14,10 +14,12 @@ import {
 } from "../../../services/test-util.service";
 import cookieParser from "cookie-parser";
 import bookmarkService from "../services/bookmark/bookmark.service";
+import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.all("*", setupAsyncLocalStorage);
 app.use(router);
 app.use(errorHandler);
 

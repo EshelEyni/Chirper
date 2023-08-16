@@ -33,6 +33,6 @@ export interface MiniUser {
 }
 
 export type FollowingResult = {
-  updatedFollower: User;
-  updatedFollowing: User;
+  loggedInUser: User;
+  followedUser: User;
 };

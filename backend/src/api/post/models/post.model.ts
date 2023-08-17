@@ -2,6 +2,7 @@ import mongoose, { Document, Query } from "mongoose";
 import { gifSchema } from "../../gif/gif.model";
 import { pollSchema } from "./poll.model";
 import { Post } from "../../../../../shared/interfaces/post.interface";
+import { FollowerModel } from "../../user/models/followers.model";
 
 const imgsSchema = new mongoose.Schema(
   {
@@ -190,8 +191,8 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   next();
 });
 
-function populateCreatedBy(doc: Document) {
-  return doc.populate("createdBy", {
+async function populateCreatedBy(doc: Document) {
+  const populatedDoc = await doc.populate("createdBy", {
     _id: 1,
     username: 1,
     fullname: 1,
@@ -202,6 +203,15 @@ function populateCreatedBy(doc: Document) {
     followersCount: 1,
     followingCount: 1,
   });
+  const userId = populatedDoc.get("createdById");
+  const followersCount = await FollowerModel.countDocuments({
+    toUserId: userId,
+  });
+  const followingCount = await FollowerModel.countDocuments({
+    fromUserId: userId,
+  });
+  populatedDoc.set("createdBy.followersCount", followersCount);
+  populatedDoc.set("createdBy.followingCount", followingCount);
 }
 
 function populateQuotedPost(doc: Document) {

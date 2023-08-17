@@ -15,7 +15,6 @@ type UpdateAndGetUsersParams = {
   toUserId: string;
   session: ClientSession;
   inc: number;
-  commitTransaction: boolean;
 };
 
 type UpdatePostStatsAndReturnPostParams = {
@@ -44,14 +43,6 @@ async function add(
   try {
     await FollowerModel.create([{ fromUserId, toUserId }], { session });
 
-    const { loggedInUser, followedUser } = await _updateAndGetUsers({
-      fromUserId,
-      toUserId,
-      session,
-      inc: 1,
-      commitTransaction: !postId,
-    });
-
     if (postId)
       return await _updatePostStatsAndReturnPost({
         fromUserId,
@@ -60,7 +51,12 @@ async function add(
         session,
       });
 
-    return { loggedInUser, followedUser };
+    return await _getUsers({
+      fromUserId,
+      toUserId,
+      session,
+      inc: 1,
+    });
   } catch (err) {
     await session.abortTransaction();
     throw err;
@@ -83,21 +79,19 @@ async function remove(
     );
     if (!followLinkage) throw new AppError("You are not following this User", 404);
 
-    const { loggedInUser, followedUser } = await _updateAndGetUsers({
+    if (postId)
+      return await _updatePostStatsAndReturnPost({
+        fromUserId,
+        postId,
+        isFollowedFromPost: false,
+        session,
+      });
+
+    return await _getUsers({
       fromUserId,
       toUserId,
       session,
       inc: -1,
-      commitTransaction: !postId,
-    });
-
-    if (!postId) return { loggedInUser, followedUser };
-
-    return await _updatePostStatsAndReturnPost({
-      fromUserId,
-      postId,
-      isFollowedFromPost: false,
-      session,
     });
   } catch (err) {
     await session.abortTransaction();
@@ -107,31 +101,18 @@ async function remove(
   }
 }
 
-async function _updateAndGetUsers({
+async function _getUsers({
   fromUserId,
   toUserId,
   session,
   inc,
-  commitTransaction,
 }: UpdateAndGetUsersParams): Promise<FollowingResult> {
-  // const loggedInUser = (await UserModel.findByIdAndUpdate(
-  //   fromUserId,
-  //   { $inc: { followingCount: inc } },
-  //   { session, new: true }
-  // )) as User;
-  const loggedInUser = (await UserModel.findById(fromUserId).session(session)) as unknown as User;
+  // TODO: use hooks instead of this to populate loggedInUser and followedUser
+  await session.commitTransaction();
+  const loggedInUser = (await UserModel.findById(fromUserId)) as unknown as User;
   if (!loggedInUser) throw new AppError("Follower not found", 404);
-
-  // const followedUser = (
-  //   await UserModel.findByIdAndUpdate(
-  //     toUserId,
-  //     { $inc: { followersCount: inc } },
-  //     { session, new: true }
-  //   )
-  // )?.toObject() as User;
-  const followedUser = (await UserModel.findById(toUserId).session(session)) as unknown as User;
+  const followedUser = (await UserModel.findById(toUserId)) as unknown as User;
   if (!followedUser) throw new AppError("Following not found", 404);
-  if (commitTransaction) await session.commitTransaction();
   followedUser.isFollowing = inc > 0;
   return { loggedInUser, followedUser };
 }
@@ -160,3 +141,5 @@ export default {
   add,
   remove,
 };
+
+// Path: src\api\user\services\follower\follower.service.ts

@@ -1,7 +1,8 @@
-import { Query, Schema, model } from "mongoose";
+import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../shared/interfaces/user.interface";
+import { FollowerModel } from "./followers.model";
 
 export interface IUser extends Document {
   username: string;
@@ -92,6 +93,7 @@ const userSchema: Schema<IUser> = new Schema(
     loginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Number, default: 0 },
     bio: { type: String, default: "" },
+    // TODO: delete followingCount and followersCount from userSchema and set them to be virtuals
     followingCount: { type: Number, default: 0 },
     followersCount: { type: Number, default: 0 },
   },
@@ -125,8 +127,25 @@ const userSchema: Schema<IUser> = new Schema(
 );
 
 userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
+  const options = this.getOptions();
+  if (options.active === false) return next();
   this.find({ active: { $ne: false } });
   next();
+});
+
+userSchema.post(/^(findById|findOne)$/, async function (this: Query<User[], User & Document>, doc) {
+  const options = this.getOptions();
+  if (!doc || options.skipHooks) return;
+  doc.followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id });
+  doc.followersCount = await FollowerModel.countDocuments({ toUserId: doc._id });
+});
+
+userSchema.post(/\bfind\b/, async function (this: Query<User[], User & Document>, docs) {
+  if (!docs || docs.length === undefined) return;
+  for (const doc of docs) {
+    doc.followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id });
+    doc.followersCount = await FollowerModel.countDocuments({ toUserId: doc._id });
+  }
 });
 
 userSchema.pre("save", async function (next) {

@@ -1,5 +1,6 @@
 import mongoose, { model } from "mongoose";
 import { UserModel } from "./user.model";
+import { AppError } from "../../../services/error/error.service";
 
 const followerSchema = new mongoose.Schema(
   {
@@ -49,25 +50,27 @@ followerSchema.virtual("toUser", {
   justOne: true,
 });
 
-followerSchema.post(/^find/, async function (docs: any[]) {
-  if (!docs?.length || docs.length === 0) return;
+followerSchema.pre("save", async function (next) {
+  const fromUserExists = await UserModel.exists({ _id: this.fromUserId })
+    .setOptions({ skipHooks: true })
+    .exec();
+  if (!fromUserExists) throw new AppError("Follower not found", 404);
+
+  const toUserExists = await UserModel.exists({ _id: this.toUserId })
+    .setOptions({ skipHooks: true })
+    .exec();
+
+  if (!toUserExists) throw new AppError("Following not found", 404);
+
+  next();
+});
+
+followerSchema.post("find", async function (docs: any[]) {
+  // if (!docs?.length || docs.length === 0) return;
   for (const doc of docs) {
     await doc.populate("fromUser");
     await doc.populate("toUser");
   }
-});
-
-followerSchema.post("save", async function (doc, next) {
-  await UserModel.findByIdAndUpdate(doc.fromUserId, { $inc: { followingCount: 1 } });
-  await UserModel.findByIdAndUpdate(doc.toUserId, { $inc: { followersCount: 1 } });
-  next();
-});
-
-followerSchema.post("findOneAndDelete", async function (doc, next) {
-  await UserModel.findByIdAndUpdate(doc.fromUserId, { $inc: { followingCount: -1 } });
-  await UserModel.findByIdAndUpdate(doc.toUserId, { $inc: { followersCount: -1 } });
-
-  next();
 });
 
 interface IFollowerBase {
@@ -82,3 +85,5 @@ export interface IFollower extends IFollowerBase, mongoose.Document {}
 const FollowerModel = model<IFollower>("Follower", followerSchema, "followers");
 
 export { FollowerModel };
+
+// Path: src\api\user\models\follower.model.ts

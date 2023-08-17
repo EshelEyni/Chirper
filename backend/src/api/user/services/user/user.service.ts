@@ -41,7 +41,15 @@ async function add(user: User): Promise<User> {
 }
 
 async function update(id: string, user: User): Promise<User> {
-  const allowedFields = ["username", "email", "fullname", "imgUrl", "email", "isApprovedLocation"];
+  const allowedFields = [
+    "username",
+    "email",
+    "fullname",
+    "imgUrl",
+    "email",
+    "isApprovedLocation",
+    "bio",
+  ];
   const filteredUser = filterObj(user, ...allowedFields);
 
   const updatedUser = await UserModel.findByIdAndUpdate(id, filteredUser, {

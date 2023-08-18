@@ -1,11 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { PostStats } from "../../../../../shared/interfaces/post.interface";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { AppDispatch } from "../../../store/types";
-import postService from "../../../services/post.service";
-import "./PostStats.scss";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostStatsPreviewContent } from "../../../components/Post/PostPreview/MiniPostPreview/PostStatsPreviewContent/PostStatsPreviewContent";
 import { MiniPostPreview } from "../../../components/Post/PostPreview/MiniPostPreview/MiniPostPreview";
@@ -13,49 +9,33 @@ import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { PostsStatsNonOwnerMsg } from "./NonOwnerMsg/PostsStatsNonOwnerMsg";
-import { PostStatsActionStatsList } from "./ActionStatsList/PostStatsActionStatsList";
-import { PostStatsDataStatsList } from "./DataStatsList/PostStatsDataStatsList";
-import { getPost, setPost } from "../../../store/slices/postSlice";
+import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
+import { PostStatsDetails } from "./PostStatsDetails/PostStatsDetails";
+import { ErrorMsg } from "../../../components/Msg/ErrorMsg/ErrorMsg";
+import "./PostStats.scss";
 
 const PostStatsPage = () => {
-  const [postStats, setPostStats] = useState<PostStats | null>(null);
   const [isLoggedInUserPost, setIsLoggedInUserPost] = useState(false);
-  const [openedModal, setOpenedModal] = useState<string>("");
 
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { post } = useSelector((state: RootState) => state.postModule);
 
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  const dispatch: AppDispatch = useDispatch();
   const { id } = params as { id: string };
-
-  const fetchPostStats = useCallback(async () => {
-    const stats = await postService.getPostStats(id);
-    setPostStats(stats);
-  }, [id]);
+  const { post, isLoading, isSuccess, isError } = useQueryPostById(params.id || "");
 
   function onGoBack() {
-    dispatch(setPost(null));
     const basePath = getBasePathName(location.pathname, "post-stats");
     navigate(basePath);
   }
 
   useEffect(() => {
-    if (post?.id !== id) dispatch(getPost(id));
-    return () => {
-      setOpenedModal("");
-    };
-  }, [dispatch, id, post?.id]);
-
-  useEffect(() => {
     if (loggedInUser && post) {
       const isLoggedInUserPost = loggedInUser.id === post.createdBy.id;
       setIsLoggedInUserPost(isLoggedInUserPost);
-      if (isLoggedInUserPost) fetchPostStats();
     }
-  }, [post, loggedInUser, dispatch, fetchPostStats]);
+  }, [post, loggedInUser]);
 
   return (
     <section className="post-stats">
@@ -63,27 +43,15 @@ const PostStatsPage = () => {
       <main className="post-stats-body">
         <BtnClose onClickBtn={onGoBack} />
         <div className="post-stats-main-container">
-          {!post ? (
-            <SpinnerLoader />
-          ) : !isLoggedInUserPost ? (
-            <PostsStatsNonOwnerMsg onGoBack={onGoBack} />
-          ) : (
+          {isLoading && <SpinnerLoader />}
+          {isError && <ErrorMsg msg="Couldn't get post. Please try again later." />}
+          {isSuccess && !isLoggedInUserPost && <PostsStatsNonOwnerMsg onGoBack={onGoBack} />}
+          {isSuccess && isLoggedInUserPost && (
             <div className="post-stats-content">
               <MiniPostPreview post={post!} type="post-stats-preview">
-                <PostStatsPreviewContent post={post} />
+                <PostStatsPreviewContent post={post!} />
               </MiniPostPreview>
-              {postStats ? (
-                <>
-                  <PostStatsActionStatsList postStats={postStats} />
-                  <PostStatsDataStatsList
-                    postStats={postStats}
-                    openedModal={openedModal}
-                    setOpenedModal={setOpenedModal}
-                  />
-                </>
-              ) : (
-                <SpinnerLoader />
-              )}
+              <PostStatsDetails postId={id} />
             </div>
           )}
         </div>

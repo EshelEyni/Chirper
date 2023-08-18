@@ -13,12 +13,10 @@ import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBt
 import "./PostPreviewActions.scss";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { NewPostType, setNewPostType, setNewPosts } from "../../../../store/slices/postEditSlice";
-import {
-  addLike,
-  addRepostAsync,
-  removeLike,
-  removeRepostAsync,
-} from "../../../../store/slices/postSlice";
+import { useCreateRepost } from "../../../../hooks/post/useCreateRepost";
+import { useRemoveRepost } from "../../../../hooks/post/useRemoveRepost";
+import { useAddLike } from "../../../../hooks/post/useAddLike";
+import { useRemoveLike } from "../../../../hooks/post/useRemoveLike";
 
 export type PostPreviewActionBtn = {
   name: string;
@@ -38,6 +36,10 @@ export const PostPreviewActions: React.FC = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
+  const { addRepost } = useCreateRepost();
+  const { removeRepost } = useRemoveRepost();
+  const { addLike } = useAddLike();
+  const { removeLike } = useRemoveLike();
 
   const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
     modalHeight: 175,
@@ -72,8 +74,8 @@ export const PostPreviewActions: React.FC = () => {
       count: post.likesCount,
       isClicked: isLiked,
       onClickFunc: () => {
-        if (isLiked) dispatch(removeLike(post.id));
-        else dispatch(addLike(post.id));
+        if (isLiked) removeLike(post.id);
+        else addLike(post.id);
       },
     },
     {
@@ -98,13 +100,13 @@ export const PostPreviewActions: React.FC = () => {
 
   async function onRepost() {
     const repostedPost = { ...post };
-    await dispatch(addRepostAsync(repostedPost));
+    addRepost(repostedPost);
     setIsRepostModalOpen(prev => !prev);
   }
 
   async function onRemoveRepost() {
     if (!loggedInUser) return;
-    await dispatch(removeRepostAsync(post.id, loggedInUser.id));
+    removeRepost(post.id);
     setIsRepostModalOpen(prev => !prev);
   }
 

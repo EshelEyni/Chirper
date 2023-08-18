@@ -1,6 +1,7 @@
 import { AppThunk } from "./../store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserMsg } from "../../../../shared/interfaces/system.interface";
+// TODO: maybe we don't need this slice
 
 interface SystemState {
   isPageLoading: boolean;

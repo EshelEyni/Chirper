@@ -179,7 +179,7 @@ const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promis
   const postId = req.params.id;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
-  const updatedPost = await likeService.add(postId, loggedInUserId);
+  const updatedPost = await likeService.remove(postId, loggedInUserId);
 
   res.send({
     status: "success",

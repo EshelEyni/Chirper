@@ -53,6 +53,7 @@ const _getDefaultNewPost = (
 };
 
 function _getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: NewPost } {
+  if (!repliedToPost) return { repliedToPost: null, reply: _getDefaultNewPost() };
   const {
     createdBy: { id: userId, username },
   } = repliedToPost;
@@ -66,12 +67,10 @@ function _getReply(repliedToPost: Post): { repliedToPost: Post | null; reply: Ne
     ? [...repliedToPost.repliedPostDetails, currRepliedPostDetails]
     : [currRepliedPostDetails];
 
-  return repliedToPost
-    ? {
-        repliedToPost: repliedToPost,
-        reply: _getDefaultNewPost(repliedPostDetails),
-      }
-    : { repliedToPost: null, reply: _getDefaultNewPost() };
+  return {
+    repliedToPost: repliedToPost,
+    reply: _getDefaultNewPost(repliedPostDetails),
+  };
 }
 
 function _getQuote(quotedPost: Post): { quotedPost: Post | null; quote: NewPost } {

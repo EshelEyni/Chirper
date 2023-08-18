@@ -1,25 +1,16 @@
-import { useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
-import { getPost } from "../../../store/slices/postSlice";
+import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
 
 const PostDetails = () => {
-  const { post } = useSelector((state: RootState) => state.postModule);
   const params = useParams<{ id: string }>();
-  const dispatch: AppDispatch = useDispatch();
-
-  useEffect(() => {
-    const { id } = params;
-    if (!id) return;
-    dispatch(getPost(id));
-  }, [dispatch, params]);
+  const { post, isLoading, isSuccess, isError } = useQueryPostById(params.id || "");
 
   return (
     <div style={{ width: "600px", overflow: "hidden" }}>
       <h1>Post Details Page</h1>
-      {post && <pre>{JSON.stringify(post, null, 2)}</pre>}
+      {isLoading && <p>Loading...</p>}
+      {isSuccess && post && <pre>{JSON.stringify(post, null, 2)}</pre>}
+      {isError && <p>Something went wrong</p>}
       <Outlet />
     </div>
   );

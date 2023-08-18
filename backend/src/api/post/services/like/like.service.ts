@@ -48,16 +48,16 @@ async function remove(postId: string, userId: string): Promise<Post> {
   session.startTransaction();
 
   try {
-    await PostLikeModel.findOneAndRemove({
+    await PostLikeModel.findOneAndDelete({
       postId,
       userId,
     }).session(session);
 
     const postDoc = await PostModel.findByIdAndUpdate(
       postId,
-      { $inc: { likesCount: -1 } },
-      { session, new: true }
-    );
+      { $inc: { likesCount: -1 } }
+      // { session, new: true }
+    ).session(session);
 
     if (!postDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();

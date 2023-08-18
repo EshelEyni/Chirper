@@ -1,10 +1,9 @@
 import { createContext, useContext, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Poll, Post } from "../../../shared/interfaces/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
-import { AppDispatch } from "../store/types";
-import { addFollowFromPost, removeFollowFromPost } from "../store/slices/postSlice";
+import useRemoveFollowFromPost from "../hooks/post/useRemoveFollowFromPost";
+import useAddFollowFromPost from "../hooks/post/useAddFollowFromPost";
 
 type PostPreviewContextType = {
   post: Post;
@@ -20,8 +19,9 @@ const PostPreviewContext = createContext<PostPreviewContextType | undefined>(und
 function PostPreviewProvider({ post, children }: { post: Post; children: React.ReactNode }) {
   const { isDetailedViewed, isProfileViewed } = post.loggedInUserActionState;
   const [poll, setPoll] = useState(post.poll || null);
-  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
+  const { addFollowFromPost } = useAddFollowFromPost();
+  const { removeFollowFromPost } = useRemoveFollowFromPost();
 
   async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
@@ -34,8 +34,16 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
   }
 
   function onToggleFollow() {
-    if (post.createdBy.isFollowing) dispatch(removeFollowFromPost(post.createdBy.id, post.id));
-    else dispatch(addFollowFromPost(post.createdBy.id, post.id));
+    if (post.createdBy.isFollowing)
+      removeFollowFromPost({
+        userId: post.createdBy.id,
+        postId: post.id,
+      });
+    else
+      addFollowFromPost({
+        userId: post.createdBy.id,
+        postId: post.id,
+      });
   }
 
   const value = {

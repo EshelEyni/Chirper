@@ -9,7 +9,8 @@ import postService from "../../../services/post.service";
 import "./PostShareOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
 import { setUserMsg } from "../../../store/slices/systemSlice";
-import { addBookmark, removeBookmark } from "../../../store/slices/postSlice";
+import { useRemoveBookmark } from "../../../hooks/post/useRemoveBookmark";
+import { useAddBookmark } from "../../../hooks/post/useAddBookmark";
 
 type PostShareOptionsModalProps = {
   post: Post;
@@ -24,6 +25,9 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
 }) => {
   const { isBookmarked } = post.loggedInUserActionState;
   const dispatch: AppDispatch = useDispatch();
+
+  const { removeBookmark } = useRemoveBookmark();
+  const { addBookmark } = useAddBookmark();
 
   const url = `${location.origin}/post/${post.id}`;
   const btns = [
@@ -62,13 +66,8 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
         <MdOutlineBookmarkAdd size={20} />
       ),
       onClickFunc: async () => {
-        if (isBookmarked) {
-          postService.updatePostStats(post.id, { isPostBookmarked: false });
-          dispatch(removeBookmark(post.id));
-        } else {
-          postService.updatePostStats(post.id, { isPostBookmarked: true });
-          dispatch(addBookmark(post.id));
-        }
+        if (isBookmarked) removeBookmark(post.id);
+        else addBookmark(post.id);
         onToggleModal();
       },
     },

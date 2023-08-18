@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import userService from "../../../services/user.service";
-import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
+import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
 
 const ProfileDetails = () => {
   const [wachedUser, setWachedUser] = useState<User | null>(null);

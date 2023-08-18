@@ -35,7 +35,6 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { addQuotePost, addReplyAsync } from "../../../store/slices/postSlice";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { useCreatePost } from "../../../hooks/post/useCreatePost";
 
@@ -115,7 +114,10 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
     await uploadImagesAndSetToPost(newPosts);
     await uploadVideoAndSetToPost(newPosts);
-    await dispatchPost(newPosts);
+    createPost({
+      posts: newPosts,
+      type: newPostType,
+    });
   }
 
   async function uploadImagesAndSetToPost(newPosts: NewPost[]) {
@@ -136,20 +138,6 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
       if (post.video.file) post.videoUrl = await uploadFileToCloudinary(post.video.file, "video");
       else post.videoUrl = post.video.url;
       delete post.video;
-    }
-  }
-
-  async function dispatchPost(newPosts: NewPost[]) {
-    switch (newPostType) {
-      case NewPostType.Quote:
-        await dispatch(addQuotePost(newPosts[0]));
-        break;
-      case NewPostType.Reply:
-        await dispatch(addReplyAsync(newPosts[0]));
-        break;
-      default:
-        createPost(newPosts);
-        break;
     }
   }
 

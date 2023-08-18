@@ -12,187 +12,100 @@ import { handleServerResponse } from "./util/utils.service";
 
 async function query(): Promise<Post[]> {
   const response = await httpService.get(
-    "post?sort=-createdAt&previousThreadPostId[exists]=false&limit=10"
+    "post?sort=-createdAt&previousThreadPostId[exists]=false&limit=51"
   );
   return handleServerResponse<Post[]>(response);
 }
 
 async function getById(postId: string): Promise<Post> {
-  try {
-    const response = await httpService.get(`post/${postId}`);
-    return handleServerResponse<Post>(response);
-  } catch (err) {
-    console.log("postService: Cannot get post");
-    throw err;
-  }
+  const response = await httpService.get(`post/${postId}`);
+  return handleServerResponse<Post>(response);
 }
 
 async function remove(postId: string) {
-  try {
-    await httpService.delete(`post/${postId}`);
-  } catch (err) {
-    console.log("postService: Cannot remove post");
-    throw err;
-  }
+  await httpService.delete(`post/${postId}`);
 }
 
 async function add(posts: NewPost[]): Promise<Post> {
-  try {
-    let res: JsendResponse | null = null;
-    if (posts) {
-      if (posts.length > 1) {
-        res = await httpService.post("post/thread", posts);
-      } else {
-        const [post] = posts;
-        res = await httpService.post("post", post);
-      }
-    }
-    if (!res) throw new Error("postService: Cannot add post");
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot add post");
-    throw err;
+  let res: JsendResponse | null = null;
+  if (posts.length > 1) {
+    res = await httpService.post("post/thread", posts);
+  } else {
+    const [post] = posts;
+    res = await httpService.post("post", post);
   }
+  if (!res) throw new Error("postService: Cannot add post");
+  return handleServerResponse<Post>(res);
 }
 
 async function addReply(reply: NewPost): Promise<PostReplyResult> {
-  try {
-    const res = await httpService.post("post/reply", reply);
-    return handleServerResponse<PostReplyResult>(res);
-  } catch (err) {
-    console.log("postService: Cannot add reply");
-    throw err;
-  }
+  const res = await httpService.post("post/reply", reply);
+  return handleServerResponse<PostReplyResult>(res);
 }
 
 async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
-  try {
-    const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
-    return handleServerResponse<PostRepostResult>(res);
-  } catch (err) {
-    console.log("postService: Cannot add repost");
-    throw err;
-  }
+  const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
+  return handleServerResponse<PostRepostResult>(res);
 }
 
 async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
-  try {
-    const res = await httpService.post("post/quote", post);
-    return handleServerResponse<Post | PostRepostResult>(res);
-  } catch (err) {
-    console.log("postService: Cannot add quote");
-    throw err;
-  }
+  const res = await httpService.post("post/quote", post);
+  return handleServerResponse<Post | PostRepostResult>(res);
 }
 
 async function removeRepost(repostedPostId: string): Promise<Post> {
-  try {
-    const res = await httpService.delete(`post/repost?postId=${repostedPostId}`);
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot remove repost");
-    throw err;
-  }
+  const res = await httpService.delete(`post/repost?postId=${repostedPostId}`);
+  return handleServerResponse<Post>(res);
 }
 
 async function update(post: Post) {
-  try {
-    const updatedPost = await httpService.patch(`post/${post.id}`, post);
-    return updatedPost;
-  } catch (err) {
-    console.log("postService: Cannot update post");
-    throw err;
-  }
+  const updatedPost = await httpService.patch(`post/${post.id}`, post);
+  return updatedPost;
 }
-
 async function savePollVote(postId: string, optionIdx: number) {
-  try {
-    return await httpService.post("post/poll/vote", { postId, optionIdx });
-  } catch (err) {
-    console.log("postService: Cannot save poll vote", err);
-  }
+  return await httpService.post("post/poll/vote", { postId, optionIdx });
 }
 
 async function addLike(postId: string): Promise<Post> {
-  try {
-    const res = await httpService.post(`post/${postId}/like`);
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot add like", err);
-    throw err;
-  }
+  const res = await httpService.post(`post/${postId}/like`);
+  return handleServerResponse<Post>(res);
 }
 
 async function removeLike(postId: string): Promise<Post> {
-  try {
-    const res = await httpService.delete(`post/${postId}/like`);
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot remove like", err);
-    throw err;
-  }
+  const res = await httpService.delete(`post/${postId}/like`);
+  return handleServerResponse<Post>(res);
 }
 
 async function getPostStats(postId: string): Promise<PostStats> {
-  try {
-    const res = await httpService.get(`post/${postId}/stats`);
-    return handleServerResponse<PostStats>(res);
-  } catch (err) {
-    console.log("postService: Cannot get post stats", err);
-    throw err;
-  }
+  const res = await httpService.get(`post/${postId}/stats`);
+  return handleServerResponse<PostStats>(res);
 }
 
 async function addImpression(postId: string) {
-  try {
-    await httpService.post(`post/${postId}/stats`);
-  } catch (err) {
-    console.log("postService: Cannot add impression", err);
-    // throw err;
-  }
+  await httpService.post(`post/${postId}/stats`);
 }
 
 async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
-  try {
-    await httpService.patch(`post/${postId}/stats`, stats);
-  } catch (err) {
-    console.log("postService: Cannot update post stats", err);
-    throw err;
-  }
+  await httpService.patch(`post/${postId}/stats`, stats);
 }
 
 async function getBookmarkedPosts(): Promise<Post[]> {
-  try {
-    const res = await httpService.get("post/bookmark");
-    return handleServerResponse<Post[]>(res);
-  } catch (err) {
-    console.log("postService: Cannot get bookmarked posts", err);
-    throw err;
-  }
+  const res = await httpService.get("post/bookmark");
+  return handleServerResponse<Post[]>(res);
 }
 
 async function addBookmark(postId: string): Promise<Post> {
-  try {
-    const res = await httpService.post(`post/${postId}/bookmark`);
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot add bookmarked post", err);
-    throw err;
-  }
+  const res = await httpService.post(`post/${postId}/bookmark`);
+  return handleServerResponse<Post>(res);
 }
 
 async function removeBookmark(postId: string): Promise<Post> {
-  try {
-    const res = await httpService.delete(`post/${postId}/bookmark`);
-    return handleServerResponse<Post>(res);
-  } catch (err) {
-    console.log("postService: Cannot remove bookmarked post", err);
-    throw err;
-  }
+  const res = await httpService.delete(`post/${postId}/bookmark`);
+  return handleServerResponse<Post>(res);
 }
 
-const getPostAddedMsg = ({ postId, date }: { postId?: string; date?: Date }): UserMsg => {
-  let text = "";
+const getPostAddedMsg = ({ postId, date }: { postId: string; date?: Date }): UserMsg => {
+  let text = "Your Chirp has been sent!";
 
   if (date) {
     const dateStr = new Intl.DateTimeFormat("en-US", {
@@ -202,8 +115,6 @@ const getPostAddedMsg = ({ postId, date }: { postId?: string; date?: Date }): Us
     }).format(date);
 
     text = `Your Chirp will be sent on ${dateStr}`;
-  } else if (postId) {
-    text = `Your Chirp has been sent!`;
   }
 
   return {

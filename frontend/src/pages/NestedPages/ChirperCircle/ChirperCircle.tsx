@@ -1,9 +1,7 @@
-import { useEffect } from "react";
+import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
 
 const ChirperCirclePage = () => {
-  useEffect(() => {
-    document.title = "Chirper Circle / Chirper";
-  }, []);
+  useDocumentTitle("Chirper Circle / Chirper");
 
   return (
     <div>

@@ -78,18 +78,6 @@ export const {
 
 export default postSlice.reducer;
 
-export function getPosts(): AppThunk {
-  return async dispatch => {
-    try {
-      const posts = await postService.query();
-      dispatch(setPosts(posts));
-    } catch (err) {
-      dispatch(_displayErrorMsg("Couldn't get posts. Please try again later."));
-      console.log("PostActions: err in getPosts", err);
-    }
-  };
-}
-
 export function getPost(postId: string): AppThunk {
   return async dispatch => {
     try {
@@ -314,3 +302,5 @@ function _displayErrorMsg(text = defaultErrorMsg) {
     text,
   });
 }
+
+// Path: src\store\slices\postSlice.ts

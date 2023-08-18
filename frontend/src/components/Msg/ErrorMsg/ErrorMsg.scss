@@ -1,0 +1,11 @@
+@import "../../../styles/setup/functions";
+
+.error-msg {
+  text-align: center;
+  padding: rem(20px);
+  font-weight: 500;
+  font-size: rem(16px);
+  color: var(--color-danger);
+  border-radius: rem(10px);
+  font-style: oblique;
+}

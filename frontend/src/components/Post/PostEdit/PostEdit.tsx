@@ -36,6 +36,7 @@ import {
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
 import { addPostAsync, addQuotePost, addReplyAsync } from "../../../store/slices/postSlice";
+import { getBasePathName } from "../../../services/util/utils.service";
 
 function checkPostTextValidity(newPostText: string): boolean {
   return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
@@ -164,7 +165,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     setArePostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
     const { pathname } = location;
-    if (pathname === "/compose") navigate("/home");
+    if (!pathname.includes("compose")) return;
+    const basePath = getBasePathName(pathname, "compose");
+    navigate(basePath);
   }
 
   function openPicker() {

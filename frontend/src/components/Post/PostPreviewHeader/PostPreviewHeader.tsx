@@ -65,7 +65,9 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
             {post.createdBy.isVerified && (
               <BlueCheckMark className="post-preview-blue-check-mark" />
             )}
-            {post.createdBy.isAdmin && <Logo />}
+            {post.createdBy.isAdmin && (
+              <Logo options={{ staticLogo: true, autoAnimate: false, width: 18, height: 18 }} />
+            )}
           </div>
           <span
             className="post-preview-header-username"

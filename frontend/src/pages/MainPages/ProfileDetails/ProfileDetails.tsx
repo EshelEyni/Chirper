@@ -4,17 +4,15 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import userService from "../../../services/user.service";
+import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
 
 const ProfileDetails = () => {
   const [wachedUser, setWachedUser] = useState<User | null>(null);
+  useDocumentTitle(`${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`);
 
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const params = useParams();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = `${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`;
-  }, [wachedUser]);
 
   const getUser = useCallback(async () => {
     const { username } = params;

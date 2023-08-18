@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import postService from "../../../services/post.service";
 import { Outlet } from "react-router-dom";
+import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
 
 const BookmarksPage = () => {
+  useDocumentTitle("Bookmarks / Chirper");
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
 
   const getBookmarkedPosts = async () => {
@@ -12,7 +14,6 @@ const BookmarksPage = () => {
   };
 
   useEffect(() => {
-    document.title = "Bookmarks / Chirper";
     getBookmarkedPosts();
 
     return () => {

@@ -52,9 +52,8 @@ describe("User Router", () => {
     return (await UserModel.create(user)).toObject() as unknown as User;
   }
 
-  async function deleteTestUser(id?: string) {
-    const idToDelete = id || mockedUserID;
-    await UserModel.findByIdAndDelete(idToDelete).setOptions({ active: false });
+  async function deleteTestUser(id: string) {
+    await UserModel.findByIdAndDelete(id).setOptions({ active: false });
   }
 
   async function createTestPost() {
@@ -112,7 +111,6 @@ describe("User Router", () => {
   });
 
   afterAll(async () => {
-    await deleteTestUser();
     await mongoose.connection.close();
   });
 
@@ -787,7 +785,6 @@ describe("User Router", () => {
 
     afterAll(async () => {
       await deleteTestUser(mockId);
-      await deleteTestUser();
     });
 
     it("should successfully delete a user by ID", async () => {

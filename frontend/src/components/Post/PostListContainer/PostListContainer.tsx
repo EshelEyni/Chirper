@@ -1,23 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import { AppDispatch } from "../../../store/types";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
-import { setPosts } from "../../../store/slices/postSlice";
-import { useQueryPosts } from "../../../hooks/useQueryPost";
-import { useEffect } from "react";
+import { useQueryPosts } from "../../../hooks/post/useQueryPost";
 import "./PostListContainer.scss";
 import { ErrorMsg } from "../../Msg/ErrorMsg/ErrorMsg";
 
 export const PostListContainer = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const { posts } = useSelector((state: RootState) => state.postModule);
-  const { posts: fechedPosts, isLoading, isSuccess, isError } = useQueryPosts();
-  const isPostsEmpty = fechedPosts && fechedPosts.length === 0;
-
-  useEffect(() => {
-    if (fechedPosts) dispatch(setPosts(fechedPosts));
-  }, [fechedPosts, dispatch]);
+  const { posts, isLoading, isSuccess, isError } = useQueryPosts();
+  const isPostsEmpty = posts && posts.length === 0;
 
   return (
     <div className="post-list-container">

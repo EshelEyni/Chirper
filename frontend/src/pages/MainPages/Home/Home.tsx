@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
 import { PostListContainer } from "../../../components/Post/PostListContainer/PostListContainer";
-import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
+import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
 import "./Home.scss";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 

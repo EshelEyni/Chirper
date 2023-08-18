@@ -1,3 +1,5 @@
+// TODO: check if needed after transition to React Query
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NewPost, Post, PostRepostResult } from "../../../../shared/interfaces/post.interface";
 import { AppThunk } from "../store";
@@ -78,6 +80,18 @@ export const {
 
 export default postSlice.reducer;
 
+// export function getPosts(): AppThunk {
+//   return async dispatch => {
+//     try {
+//       const posts = await postService.query();
+//       dispatch(setPosts(posts));
+//     } catch (err) {
+//       dispatch(_displayErrorMsg("Couldn't get posts. Please try again later."));
+//       console.log("PostActions: err in getPosts", err);
+//     }
+//   };
+// }
+
 export function getPost(postId: string): AppThunk {
   return async dispatch => {
     try {
@@ -108,23 +122,23 @@ export function removePostAsync(postId: string): AppThunk {
   };
 }
 
-export function addPostAsync(posts: NewPost[]): AppThunk {
-  return async dispatch => {
-    try {
-      const addedPost = await postService.add(posts);
-      dispatch(addPost(addedPost));
+// export function addPostAsync(posts: NewPost[]): AppThunk {
+//   return async dispatch => {
+//     try {
+//       const addedPost = await postService.add(posts);
+//       dispatch(addPost(addedPost));
 
-      const msg = postService.getPostAddedMsg({
-        postId: addedPost.id,
-        date: addedPost.schedule,
-      });
-      dispatch(displayUserMsg(msg));
-    } catch (err) {
-      dispatch(_displayErrorMsg());
-      console.log("PostActions: err in addPost", err);
-    }
-  };
-}
+//       const msg = postService.getPostAddedMsg({
+//         postId: addedPost.id,
+//         date: addedPost.schedule,
+//       });
+//       dispatch(displayUserMsg(msg));
+//     } catch (err) {
+//       dispatch(_displayErrorMsg());
+//       console.log("PostActions: err in addPost", err);
+//     }
+//   };
+// }
 
 export function updatePostAsync(post: Post): AppThunk {
   return async dispatch => {

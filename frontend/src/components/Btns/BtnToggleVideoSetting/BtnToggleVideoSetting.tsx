@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { PlaybackRatePickerModal } from "../../Modals/PlaybackRatePickerModal/PlaybackRatePickerModal";
-import { useModalPosition } from "../../../hooks/useModalPosition";
+import { useModalPosition } from "../../../hooks/app/useModalPosition";
 import { IoSettingsOutline } from "react-icons/io5";
 import "./BtnToggleVideoSetting.scss";
 import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";

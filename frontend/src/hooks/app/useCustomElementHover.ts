@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { debounce } from "../services/util/utils.service";
+import { debounce } from "../../services/util/utils.service";
 
 type ElementsHoverState = {
   [elementName: string]: boolean;

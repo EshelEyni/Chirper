@@ -3,12 +3,12 @@ import { AiOutlineRetweet } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../store/store";
 import "./RepostDisplay.scss";
-import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
+import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
 import {
   PostPreviewUserModal,
   UserPreviewModalPosition,
 } from "../../../../Modals/PostPreviewUserModal/PostPreviewUserModal";
-import { useModalPosition } from "../../../../../hooks/useModalPosition";
+import { useModalPosition } from "../../../../../hooks/app/useModalPosition";
 import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 
 export const RepostDisplay: FC = () => {

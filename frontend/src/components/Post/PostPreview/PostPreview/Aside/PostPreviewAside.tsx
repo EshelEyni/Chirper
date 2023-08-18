@@ -4,8 +4,8 @@ import {
   PostPreviewUserModal,
   UserPreviewModalPosition,
 } from "../../../../Modals/PostPreviewUserModal/PostPreviewUserModal";
-import { useModalPosition } from "../../../../../hooks/useModalPosition";
-import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
+import { useModalPosition } from "../../../../../hooks/app/useModalPosition";
+import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
 import "./PostPreviewAside.scss";
 import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 

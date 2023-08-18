@@ -3,7 +3,7 @@ import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { useInView } from "react-intersection-observer";
 import { GifDescriptionModal } from "../../Modals/GifDescriptionModal/GifDescriptionModal";
 import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
-import { useModalPosition } from "../../../hooks/useModalPosition";
+import { useModalPosition } from "../../../hooks/app/useModalPosition";
 import "./GifDisplay.scss";
 import { gifPlaceholderBcg } from "../../../services/gif.service";
 

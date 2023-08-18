@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
@@ -35,8 +35,9 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { addPostAsync, addQuotePost, addReplyAsync } from "../../../store/slices/postSlice";
+import { addQuotePost, addReplyAsync } from "../../../store/slices/postSlice";
 import { getBasePathName } from "../../../services/util/utils.service";
+import { useCreatePost } from "../../../hooks/post/useCreatePost";
 
 function checkPostTextValidity(newPostText: string): boolean {
   return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
@@ -83,7 +84,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   } = usePostEdit();
   const { postEdit } = useSelector((state: RootState) => state);
   const { sideBar, homePage, reply, quote, newPostType } = postEdit;
-  const [postSaveInProgress, setPostSaveInProgress] = useState<boolean>(false);
+  const { isCreating, createPost } = useCreatePost({ onSuccessFn: resetState });
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -111,16 +112,10 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
 
   async function onAddPost() {
     if (!currNewPost || !loggedInUser) return;
-    try {
-      setPostSaveInProgress(true);
-      const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
-      await uploadImagesAndSetToPost(newPosts);
-      await uploadVideoAndSetToPost(newPosts);
-      await dispatchPost(newPosts);
-      resetState();
-    } catch (err) {
-      setPostSaveInProgress(false);
-    }
+    const newPosts = [...preCurrNewPostList, currNewPost, ...postCurrNewPostList];
+    await uploadImagesAndSetToPost(newPosts);
+    await uploadVideoAndSetToPost(newPosts);
+    await dispatchPost(newPosts);
   }
 
   async function uploadImagesAndSetToPost(newPosts: NewPost[]) {
@@ -153,7 +148,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         await dispatch(addReplyAsync(newPosts[0]));
         break;
       default:
-        await dispatch(addPostAsync(newPosts));
+        createPost(newPosts);
         break;
     }
   }
@@ -161,7 +156,6 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   function resetState() {
     dispatch(clearNewPosts());
     setIsPickerShown(false);
-    setPostSaveInProgress(false);
     setArePostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
     const { pathname } = location;
@@ -239,12 +233,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
 
   if (!currNewPost) return null;
   return (
-    <section
-      className={"post-edit" + (postSaveInProgress ? " save-mode" : "")}
-      onClick={openPicker}
-    >
+    <section className={"post-edit" + (isCreating ? " save-mode" : "")} onClick={openPicker}>
       {!!onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
-      {postSaveInProgress && <span className="progress-bar" />}
+      {isCreating && <span className="progress-bar" />}
       {isPreCurrNewPostListShown && <PostList newPosts={preCurrNewPostList} />}
       {isReplyPostShown && (
         <MiniPostPreview type={"replied-post"}>

@@ -1,5 +1,5 @@
 import { Post } from "../../../../../../../shared/interfaces/post.interface";
-import { useCustomElementHover } from "../../../../../hooks/useCustomElementHover";
+import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
 import { formatNumToK } from "../../../../../services/util/utils.service";
 import { PostShareOptionsModal } from "../../../../Modals/PostShareOptionsModal/PostShareOptionsModal";
 import { RepostOptionsModal } from "../../../../Modals/RepostOptionsModal/RepostOptionsModal";

@@ -1,6 +1,6 @@
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
-import { useCustomElementHover } from "../../../hooks/useCustomElementHover";
+import { useCustomElementHover } from "../../../hooks/app/useCustomElementHover";
 import { useState } from "react";
 import {
   formatDateToCleanString,

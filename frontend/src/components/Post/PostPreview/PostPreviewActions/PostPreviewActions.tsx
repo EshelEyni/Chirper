@@ -8,7 +8,7 @@ import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
 import { useState } from "react";
-import { useModalPosition } from "../../../../hooks/useModalPosition";
+import { useModalPosition } from "../../../../hooks/app/useModalPosition";
 import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBtn";
 import "./PostPreviewActions.scss";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";

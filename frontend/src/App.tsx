@@ -3,16 +3,15 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
 import { AppDispatch } from "./store/types";
-import "./styles/main.scss";
 import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
-import { UserMsg } from "./components/Msg/UserMsg/UserMsg";
 import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 import { AuthGuard } from "./guards/AuthGuard";
 import { loginWithToken } from "./store/slices/authSlice";
 const PageNotFound = lazy(() => import("./pages/MainPages/PageNotFound/PageNotFound"));
+import "./styles/main.scss";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
@@ -59,7 +58,6 @@ function App() {
             </Routes>
           </Suspense>
           {!loggedInUser && <LoginSignupMsg />}
-          <UserMsg />
         </div>
       )}
     </div>

@@ -133,7 +133,7 @@ userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   next();
 });
 
-userSchema.post(/^(findById|findOne)$/, async function (this: Query<User[], User & Document>, doc) {
+userSchema.post(/^find/, async function (this: Query<User[], User & Document>, doc) {
   const options = this.getOptions();
   if (!doc || options.skipHooks) return;
   doc.followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id });

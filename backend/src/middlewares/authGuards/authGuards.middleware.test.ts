@@ -161,7 +161,7 @@ describe("Auth Guards Middleware", () => {
       (UserModel.findById as jest.Mock).mockResolvedValue(user);
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
-        expect(err).toEqual(expect.objectContaining({ message: "User not authorized" }));
+        expect(err).toEqual(expect.objectContaining({ message: "You do not have permission to perform this action" }));
         done();
       });
       checkAdminAuthorization(req as Request, res as Response, next);

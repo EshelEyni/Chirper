@@ -13,13 +13,18 @@ import {
   connectToTestDB,
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
-import { User } from "../../../../../shared/interfaces/user.interface";
+import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { FollowerModel } from "../models/followers.model";
 import cookieParser from "cookie-parser";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { PostModel } from "../../post/models/post.model";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../post/models/post-stats.model";
+
+type CreateTestUserOptions = {
+  id: string;
+  isAdmin?: boolean;
+};
 
 const app = express();
 app.use(cookieParser());
@@ -34,21 +39,16 @@ describe("User Router", () => {
 
   let testLoggedInUser: User, validUser: User, token: string, testPost: Post;
 
-  async function createTestUserAndToken({ isAdmin = false } = {}) {
-    await UserModel.findByIdAndDelete(mockedUserID).setOptions({ active: false });
-    const password = "password";
-    testLoggedInUser = (
-      await UserModel.create({
-        _id: mockedUserID,
-        username: "test-user-router",
-        fullname: "Test User",
-        email: "userRouter@testemail.com",
-        password,
-        isAdmin,
-        passwordConfirm: password,
-      })
-    ).toObject() as unknown as User;
+  async function createAndSetTestLoggedInUserAndToken({ isAdmin = false } = {}) {
+    testLoggedInUser = (await createTestUser({ id: mockedUserID, isAdmin })) as User;
     token = getLoginTokenStrForTest(testLoggedInUser.id);
+  }
+
+  async function createTestUser({ id, isAdmin = false }: CreateTestUserOptions): Promise<User> {
+    await UserModel.findByIdAndDelete(id).setOptions({ active: false });
+    const user = createValidUserCreds(id) as User;
+    if (isAdmin) user.isAdmin = true;
+    return (await UserModel.create(user)).toObject() as unknown as User;
   }
 
   async function deleteTestUser(id?: string) {
@@ -88,6 +88,20 @@ describe("User Router", () => {
   async function getValidUser(): Promise<User> {
     const user = await UserModel.findOne();
     return user?.toObject() as unknown as User;
+  }
+
+  function createValidUserCreds(id: string): UserCredenitials {
+    const ranNum = Math.floor(Math.random() * 1000);
+    const username = "testUserRouter_" + ranNum;
+    const password = "password";
+    return {
+      _id: id,
+      username: username,
+      fullname: "Test User",
+      email: `${username}@testemail.com`,
+      password,
+      passwordConfirm: password,
+    } as UserCredenitials;
   }
 
   beforeAll(async () => {
@@ -215,7 +229,7 @@ describe("User Router", () => {
 
     beforeEach(async () => {
       await FollowerModel.deleteMany({});
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     afterEach(async () => {
@@ -224,11 +238,19 @@ describe("User Router", () => {
 
     it("should return 200 and the updated users data when following is added", async () => {
       const res = await request(app).post(`/${validUser.id}/following`).set("Cookie", [token]);
+      const followingLinkage = await FollowerModel.findOne({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+      });
+
+      expect(followingLinkage).toBeTruthy();
 
       expect(res.statusCode).toEqual(200);
+
       const users = Object.values(res.body.data) as User[];
       expect(users.length).toEqual(2);
       users.forEach(assertUser);
+
       const [loggedInUser, followedUser] = users;
       expect(loggedInUser.id).toEqual(testLoggedInUser.id);
       expect(followedUser.id).toEqual(validUser.id);
@@ -252,7 +274,6 @@ describe("User Router", () => {
     });
 
     it("should return 500 if an error occurs", async () => {
-      // (followerService.add as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
       jest.spyOn(followerService, "add").mockRejectedValueOnce(new Error("Test error"));
       const res = await request(app).post(`/${id}/following`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
@@ -262,7 +283,7 @@ describe("User Router", () => {
   describe("DELETE /:id/following", () => {
     beforeAll(async () => {
       await FollowerModel.deleteMany({});
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     afterAll(async () => {
@@ -314,7 +335,7 @@ describe("User Router", () => {
 
   describe("POST /:userId/following/:postId/fromPost", () => {
     beforeAll(async () => {
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     beforeEach(async () => {
@@ -420,7 +441,7 @@ describe("User Router", () => {
 
   describe("DELETE /:userId/following/:postId/fromPost", () => {
     beforeAll(async () => {
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     afterEach(async () => {
@@ -493,7 +514,7 @@ describe("User Router", () => {
 
   describe("PATCH /loggedInUser", () => {
     beforeAll(async () => {
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     it("should successfully update logged in user", async () => {
@@ -570,7 +591,7 @@ describe("User Router", () => {
     }
 
     beforeAll(async () => {
-      await createTestUserAndToken();
+      await createAndSetTestLoggedInUserAndToken();
     });
 
     afterEach(() => {
@@ -612,17 +633,8 @@ describe("User Router", () => {
     const requiredUserProps = ["username", "fullname", "email", "password", "passwordConfirm"];
 
     const id = new Types.ObjectId().toHexString();
-    const newUser = {
-      _id: id,
-      username: "testUser",
-      fullname: "Test User",
-      email: "test@example.com",
-      password: "password",
-      passwordConfirm: "password",
-    };
-
     beforeAll(async () => {
-      await createTestUserAndToken({ isAdmin: true });
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
     });
 
     afterEach(() => {
@@ -630,53 +642,60 @@ describe("User Router", () => {
     });
 
     it("should successfully add a new user", async () => {
+      const userCreds = createValidUserCreds(id);
       await deleteTestUser(id);
-      const res = await request(app).post(`/`).send(newUser).set("Cookie", [token]);
-
+      const res = await request(app).post(`/`).send(userCreds).set("Cookie", [token]);
       expect(res.statusCode).toEqual(201); // 201 Created
       expect(res.body.status).toEqual("success");
       const user = res.body.data;
 
       assertUser(user);
-      expect(user.username).toEqual(newUser.username);
-      expect(user.fullname).toEqual(newUser.fullname);
-      expect(user.email).toEqual(newUser.email);
+      expect(user.username).toEqual(userCreds.username);
+      expect(user.fullname).toEqual(userCreds.fullname);
+      expect(user.email).toEqual(userCreds.email);
 
       await deleteTestUser(id);
     });
 
+    it("should return 401 if the user is not logged in", async () => {
+      const userCreds = createValidUserCreds(id);
+      const res = await request(app).post(`/`).send(userCreds);
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.message).toEqual("You are not logged in! Please log in to get access.");
+    });
+
+    it("should return 403 if the user is not an admin", async () => {
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: false });
+      const userCreds = createValidUserCreds(id);
+      const res = await request(app).post(`/`).send(userCreds).set("Cookie", [token]);
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.message).toEqual("You do not have permission to perform this action");
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
+    });
+
     it.each(requiredUserProps)("should return 400 if %s is not provided", async (prop: string) => {
-      const invalidUser = { ...newUser };
-      delete invalidUser[prop as keyof typeof invalidUser];
-      const res = await request(app).post(`/`).send(invalidUser).set("Cookie", [token]);
+      const invalidUserCreds = createValidUserCreds(id);
+      delete invalidUserCreds[prop as keyof typeof invalidUserCreds];
+      const res = await request(app).post(`/`).send(invalidUserCreds).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
       expect(res.body.message).toContain(`User validation failed:`);
     });
 
     it("should return an error if there's an unexpected issue during user creation", async () => {
-      const newUser = {
-        username: "testUser",
-        email: "test@example.com",
-      };
-
+      const newUser = createValidUserCreds(id);
       jest.spyOn(UserModel, "create").mockRejectedValueOnce(new Error("Database error"));
-
       const res = await request(app).post(`/`).send(newUser).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500); // Internal Server Error
       expect(res.body.message).toEqual("Database error");
     });
   });
 
-  // TODO: Fix this test
-  fdescribe("User Router - PATCH /:id", () => {
+  describe("User Router - PATCH /:id", () => {
     beforeAll(async () => {
-      await createTestUserAndToken({ isAdmin: true });
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
     });
 
-    const updateData = {
-      username: "updatedUsername",
-      email: "updatedEmail@example.com",
-    };
+    const updateData = { bio: "test bio" };
 
     afterEach(() => {
       jest.clearAllMocks();
@@ -684,75 +703,135 @@ describe("User Router", () => {
 
     it("should successfully update a user by id", async () => {
       const userId = new Types.ObjectId().toHexString();
+      const testUser = await createTestUser({ id: userId });
+      testUser.bio = "test bio";
 
-      const res = await request(app).patch(`/${userId}`).send(updateData).set("Cookie", [token]);
+      const res = await request(app).patch(`/${userId}`).send(testUser).set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
-      expect(res.body.data.username).toEqual(updateData.username);
-      expect(res.body.data.email).toEqual(updateData.email);
+      const user = res.body.data as User;
+      expect(user.id).toEqual(userId);
+      expect(user.bio).toEqual(testUser.bio);
+      await deleteTestUser(userId);
+    });
+
+    it("should return 401 if the user is not logged in", async () => {
+      const userId = new Types.ObjectId().toHexString();
+      const testUser = await createTestUser({ id: userId });
+
+      const res = await request(app).patch(`/${userId}`).send(testUser);
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.message).toEqual("You are not logged in! Please log in to get access.");
+      await deleteTestUser(userId);
+    });
+
+    it("should return 403 if the user is not an admin", async () => {
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: false });
+      const userId = new Types.ObjectId().toHexString();
+      const testUser = await createTestUser({ id: userId });
+
+      const res = await request(app).patch(`/${userId}`).send(testUser).set("Cookie", [token]);
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.message).toEqual("You do not have permission to perform this action");
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
+      await deleteTestUser(userId);
     });
 
     it("should return 400 if provided id is not a valid MongoDB ObjectId", async () => {
       const invalidUserId = "invalidId";
-      const res = await request(app).patch(`/${invalidUserId}`).send(updateData);
+
+      const res = await request(app)
+        .patch(`/${invalidUserId}`)
+        .send(updateData)
+        .set("Cookie", [token]);
+
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id: invalidId");
     });
 
     it("should return 404 if user with provided id is not found", async () => {
       const nonExistentUserId = new Types.ObjectId().toHexString();
-      (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
-      const res = await request(app).patch(`/${nonExistentUserId}`).send(updateData);
+      await deleteTestUser(nonExistentUserId);
+
+      const res = await request(app)
+        .patch(`/${nonExistentUserId}`)
+        .send(updateData)
+        .set("Cookie", [token]);
+
       expect(res.statusCode).toEqual(404);
       expect(res.body.message).toContain(`No user was found with the id: ${nonExistentUserId}`);
     });
 
     it("should return 500 if an internal server error occurs", async () => {
       const userId = new Types.ObjectId().toHexString();
-      (UserModel.findByIdAndUpdate as jest.Mock).mockImplementation(() => {
+
+      jest.spyOn(UserModel, "findByIdAndUpdate").mockImplementationOnce(() => {
         throw new Error("Internal server error");
       });
 
-      const res = await request(app).patch(`/${userId}`).send(updateData);
+      const res = await request(app).patch(`/${userId}`).send(updateData).set("Cookie", [token]);
+
       expect(res.statusCode).toEqual(500);
       expect(res.body.message).toContain("Internal server error");
     });
   });
 
-  xdescribe("DELETE /:id", () => {
+  describe("DELETE /:id", () => {
     const mockId = new Types.ObjectId().toHexString();
-    afterEach(() => {
-      jest.clearAllMocks();
+    beforeAll(async () => {
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
+    });
+
+    afterAll(async () => {
+      await deleteTestUser(mockId);
+      await deleteTestUser();
     });
 
     it("should successfully delete a user by ID", async () => {
-      (UserModel.findByIdAndDelete as jest.Mock).mockResolvedValue(mockId);
+      await createTestUser({ id: mockId });
 
-      const res = await request(app).delete(`/${mockId}`);
+      const res = await request(app).delete(`/${mockId}`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(204);
     });
 
-    it("should return 404 if user is not found", async () => {
-      (UserModel.findByIdAndDelete as jest.Mock).mockResolvedValue(null);
-
+    it("should return 401 if the user is not logged in", async () => {
       const res = await request(app).delete(`/${mockId}`);
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.message).toEqual("You are not logged in! Please log in to get access.");
+    });
+
+    it("should return 403 if the user is not an admin", async () => {
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: false });
+      const res = await request(app).delete(`/${mockId}`).set("Cookie", [token]);
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.message).toEqual("You do not have permission to perform this action");
+      await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
+    });
+
+    it("should return 404 if user is not found", async () => {
+      await deleteTestUser(mockId);
+
+      const res = await request(app).delete(`/${mockId}`).set("Cookie", [token]);
+
       expect(res.statusCode).toEqual(404);
       expect(res.body.message).toEqual(`No user was found with the id: ${mockId}`);
     });
 
     it("should return 400 for invalid MongoDB ID", async () => {
       const invalidId = "invalidId";
-      const res = await request(app).delete(`/${invalidId}`);
+      const res = await request(app).delete(`/${invalidId}`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toEqual(`Invalid user id: ${invalidId}`);
     });
 
     it("should handle unexpected errors", async () => {
-      (UserModel.findByIdAndDelete as jest.Mock).mockImplementation(() => {
+      jest.spyOn(UserModel, "findByIdAndDelete").mockImplementationOnce(() => {
         throw new Error("Unexpected error");
       });
 
-      const res = await request(app).delete(`/${mockId}`);
+      const res = await request(app).delete(`/${mockId}`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
     });
   });

@@ -31,7 +31,7 @@ const checkAdminAuthorization = asyncErrorCatcher(
     if (!loggedInUserId) throw new AppError("User not logged in", 401);
     const user = await UserModel.findById(loggedInUserId);
     if (!user) throw new AppError("User not found", 404);
-    if (!user.isAdmin) throw new AppError("User not authorized", 403);
+    if (!user.isAdmin) throw new AppError("You do not have permission to perform this action", 403);
     next();
   }
 );

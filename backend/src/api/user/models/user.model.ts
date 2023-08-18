@@ -16,6 +16,7 @@ export interface IUser extends Document {
   imgUrl: string;
   isAdmin: boolean;
   isVerified: boolean;
+  isBot: boolean;
   isApprovedLocation: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -88,6 +89,7 @@ const userSchema: Schema<IUser> = new Schema(
     },
     isAdmin: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
+    isBot: { type: Boolean, default: false },
     isApprovedLocation: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     loginAttempts: { type: Number, default: 0 },

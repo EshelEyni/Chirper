@@ -1,13 +1,19 @@
 require("dotenv").config();
 import mongoose from "mongoose";
 import { LoggedInUserActionState, Post } from "../../../shared/interfaces/post.interface";
-import { MiniUser, User } from "../../../shared/interfaces/user.interface";
+import { MiniUser, User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { PostModel } from "../api/post/models/post.model";
 import { UserModel } from "../api/user/models/user.model";
 import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
 import { logger } from "./logger/logger.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
+
+type CreateTestUserOptions = {
+  id: string;
+  isAdmin?: boolean;
+  isBot?: boolean;
+};
 
 async function connectToTestDB({ isRemoteDB = false } = {}) {
   const { DB_URL, TEST_DB_NAME, LOCAL_DB_URL } = process.env;
@@ -119,6 +125,35 @@ function assertGif(gif: Gif) {
   );
 }
 
+function createValidUserCreds(id: string): UserCredenitials {
+  const ranNum = Math.floor(Math.random() * 1000);
+  const username = "testUser_" + ranNum;
+  const password = "password";
+  return {
+    _id: id,
+    username: username,
+    fullname: "Test User",
+    email: `${username}@testemail.com`,
+    password,
+    passwordConfirm: password,
+  } as UserCredenitials;
+}
+
+async function createTestUser({
+  id,
+  isAdmin = false,
+  isBot = false,
+}: CreateTestUserOptions): Promise<User> {
+  await UserModel.findByIdAndDelete(id).setOptions({ active: false });
+  const user = createValidUserCreds(id) as User;
+  if (isAdmin) user.isAdmin = true;
+  if (isBot) user.isBot = true;
+  return (await UserModel.create(user)).toObject() as unknown as User;
+}
+
+async function deleteTestUser(id: string) {
+  await UserModel.findByIdAndDelete(id).setOptions({ active: false });
+}
 function getLoginTokenStrForTest(validUserId: string) {
   const token = tokenService.signToken(validUserId);
   return `loginToken=${token}`;
@@ -154,4 +189,6 @@ export {
   getValidPostId,
   assertGifCategory,
   assertGif,
+  createTestUser,
+  deleteTestUser,
 };

@@ -44,6 +44,7 @@ describe("User Router", () => {
     token = getLoginTokenStrForTest(testLoggedInUser.id);
   }
 
+  // TODO: import this from test-util.service.ts
   async function createTestUser({ id, isAdmin = false }: CreateTestUserOptions): Promise<User> {
     await UserModel.findByIdAndDelete(id).setOptions({ active: false });
     const user = createValidUserCreds(id) as User;

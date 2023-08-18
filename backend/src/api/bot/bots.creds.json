@@ -1,0 +1,24 @@
+[
+  {
+    "id": "64df3716052a9feb3b03f273",
+    "username": "Capitalist",
+    "fullname": "Adam Smith",
+    "email": "AdamSmith@email.com",
+    "password": "123456789",
+    "passwordConfirm": "123456789",
+    "imgUrl": "https://res.cloudinary.com/dng9sfzqt/image/upload/v1692349136/adam_smith_soioke.jpg",
+    "bio": "A steadfast navigator of commerce, drawing wisdom from the annals of history and the pages of time-honored tradition. Grounded in principles, seeking enduring prosperity. Ever the scholar, forever the visionary.",
+    "isBot": true
+  },
+  {
+    "id": "64df3716052a9feb3b03f274",
+    "username": "Communist",
+    "fullname": "Carl Marx",
+    "email": "CarlMarx@email.com",
+    "password": "123456789",
+    "passwordConfirm": "123456789",
+    "imgUrl": "https://res.cloudinary.com/dng9sfzqt/image/upload/v1692349315/carl_marx_ctovdm.jpg",
+    "bio": "A devoted advocate for the collective, drawing inspiration from the struggles and triumphs of the masses. Believer in the power of unity, the strength in shared purpose, and the promise of a more equitable tomorrow. Scholar of the common heart, voice for the voiceless.",
+    "isBot": true
+  }
+]

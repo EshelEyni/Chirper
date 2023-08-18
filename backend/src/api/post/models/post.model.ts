@@ -32,6 +32,7 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // TODO: Check if this is needed to be required
     isPublic: {
       type: Boolean,
       required: true,

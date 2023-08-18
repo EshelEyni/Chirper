@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import postService from "../../../services/post.service";
 import { Outlet } from "react-router-dom";
-import { useDocumentTitle } from "../../../hooks/useDocumentTitle";
+import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
 
 const BookmarksPage = () => {
   useDocumentTitle("Bookmarks / Chirper");

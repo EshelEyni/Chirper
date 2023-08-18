@@ -1,4 +1,4 @@
-import { JsendResponse } from "../../../../shared/interfaces/system.interface";
+import { JsendResponse, UserMsg } from "../../../../shared/interfaces/system.interface";
 type AnyFunction = (...args: any[]) => any;
 
 function formatDateToRelativeTime(currDate: Date): string {
@@ -164,6 +164,13 @@ function getBasePathName(path: string, currNestedPath: string): string {
   return basePath;
 }
 
+function getDefaultErrorMsg(): UserMsg {
+  return {
+    type: "error",
+    text: "Something went wrong, but don’t fret — let’s give it another shot.",
+  };
+}
+
 export {
   formatDateToRelativeTime,
   formatNumToK,
@@ -177,4 +184,5 @@ export {
   formatDateToCleanString,
   readAsDataURL,
   getBasePathName,
+  getDefaultErrorMsg,
 };

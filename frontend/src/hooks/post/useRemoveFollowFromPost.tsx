@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import reactQueryService from "../../services/reactQuery/reactQuery.service";
 import userService from "../../services/user.service";
 import { UserMsg } from "../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
+import { getDefaultErrorMsg } from "../../services/util/utils.service";
 
 export default function useRemoveFollowFromPost() {
   const queryClient = useQueryClient();
@@ -17,10 +17,7 @@ export default function useRemoveFollowFromPost() {
       reactQueryService.setUpdatePostIntoQueryData(post, queryClient);
     },
     onError: () => {
-      const msg = {
-        type: "error",
-        text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      } as TypeOfUserMsg;
+      const msg = getDefaultErrorMsg();
       toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
   });

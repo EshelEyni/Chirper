@@ -1,16 +1,16 @@
-import { useDispatch } from "react-redux";
 import { AiOutlineLink } from "react-icons/ai";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../services/util/utils.service";
-import { AppDispatch } from "../../../store/types";
 import postService from "../../../services/post.service";
 import "./PostShareOptionsModal.scss";
 import { Modal } from "../Modal/Modal";
-import { setUserMsg } from "../../../store/slices/systemSlice";
 import { useRemoveBookmark } from "../../../hooks/post/useRemoveBookmark";
 import { useAddBookmark } from "../../../hooks/post/useAddBookmark";
+import { toast } from "react-hot-toast";
+import { UserMsg } from "../../Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
 
 type PostShareOptionsModalProps = {
   post: Post;
@@ -24,7 +24,6 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
   onToggleModal,
 }) => {
   const { isBookmarked } = post.loggedInUserActionState;
-  const dispatch: AppDispatch = useDispatch();
 
   const { removeBookmark } = useRemoveBookmark();
   const { addBookmark } = useAddBookmark();
@@ -38,12 +37,11 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
         postService.updatePostStats(post.id, { isPostLinkCopied: true });
         copyToClipboard(url);
         onToggleModal();
-        dispatch(
-          setUserMsg({
-            type: "info",
-            text: "Copied to clipboard",
-          })
-        );
+        const msg = {
+          type: "info",
+          text: "Copied to clipboard",
+        } as TypeOfUserMsg;
+        toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
       },
     },
     {

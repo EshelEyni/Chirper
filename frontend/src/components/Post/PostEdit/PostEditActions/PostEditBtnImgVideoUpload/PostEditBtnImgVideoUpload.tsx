@@ -5,8 +5,10 @@ import { RootState } from "../../../../../store/store";
 import { readAsDataURL } from "../../../../../services/util/utils.service";
 import { PostEditActionBtn } from "../PostEditActions/PostEditActions";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
-import { setUserMsg } from "../../../../../store/slices/systemSlice";
 import { updateNewPost } from "../../../../../store/slices/postEditSlice";
+import { toast } from "react-hot-toast";
+import { UserMsg } from "../../../../Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../../../shared/interfaces/system.interface";
 
 type PostEditBtnImgAndVideoUploadProps = {
   btn: PostEditActionBtn;
@@ -42,12 +44,12 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
       fileType => fileType === "image" || fileType === "video"
     );
     if (!isValidFileType) {
-      dispatch(
-        setUserMsg({
-          type: "info",
-          text: "Only images and videos are allowed.",
-        })
-      );
+      const msg = {
+        type: "info",
+        text: "Only images and videos are allowed.",
+      } as TypeOfUserMsg;
+      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+
       return { isValid: false };
     }
     const isVideoType = fileTypes.some(fileType => fileType === "video");
@@ -58,12 +60,12 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
   function validateVideoFile(files: File[]): { isValid: boolean; type?: string } {
     const isMoreThanOneVideoFile = files.length > 1;
     if (isMoreThanOneVideoFile) {
-      dispatch(
-        setUserMsg({
-          type: "info",
-          text: "Only one video is allowed.",
-        })
-      );
+      const msg = {
+        type: "info",
+        text: "Only one video is allowed.",
+      } as TypeOfUserMsg;
+      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+
       return { isValid: false };
     }
     const videoFile = [...files].at(0)!;
@@ -71,12 +73,12 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { isVerified } = loggedInUser!;
     if (!isVerified && isVideoGreaterThan10MB) {
-      dispatch(
-        setUserMsg({
-          type: "info",
-          text: "Only verified users can upload videos larger than 10MB.",
-        })
-      );
+      const msg = {
+        type: "info",
+        text: "Only verified users can upload videos larger than 10MB.",
+      } as TypeOfUserMsg;
+      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+
       return { isValid: false };
     }
     return { isValid: true, type: "video" };
@@ -85,12 +87,12 @@ export const PostEditBtnImgAndVideoUpload: FC<PostEditBtnImgAndVideoUploadProps>
   function validateImgFiles(files: File[]): { isValid: boolean; type?: string } {
     const isImagesGreaterThan4 = [...files].length + currNewPost!.imgs.length > 4;
     if (isImagesGreaterThan4) {
-      dispatch(
-        setUserMsg({
-          type: "info",
-          text: "Please choose either 1 GIF or up to 4 photos.",
-        })
-      );
+      const msg = {
+        type: "info",
+        text: "Please choose either 1 GIF or up to 4 photos.",
+      } as TypeOfUserMsg;
+      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+
       return { isValid: false };
     }
     return { isValid: true, type: "image" };

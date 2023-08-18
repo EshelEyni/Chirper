@@ -28,7 +28,10 @@ import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
-import { displayUserMsg } from "../../../store/slices/systemSlice";
+import { toast } from "react-hot-toast";
+import { UserMsg } from "../../Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+
 import {
   NewPostType,
   addNewPostToThread,
@@ -167,13 +170,14 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
       dispatch(addNewPostToThread(newPostType));
       navigate("compose", { relative: "path" });
     } else {
-      if (threadLength === threadLimit - 1)
-        dispatch(
-          displayUserMsg({
-            type: "info",
-            text: "You can add more Chirps to this thread after sending these.",
-          })
-        );
+      if (threadLength === threadLimit - 1) {
+        const msg = {
+          type: "info",
+          text: "You can add more Chirps to this thread after sending these.",
+        } as TypeOfUserMsg;
+        toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      }
+
       dispatch(addNewPostToThread(newPostType));
       textAreaRef.current?.focus();
     }

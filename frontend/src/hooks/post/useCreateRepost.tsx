@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import postService from "../../services/post.service";
 import { Post, PostRepostResult } from "../../../../shared/interfaces/post.interface";
+import { UserMsg } from "../../components/Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
 
 export function useCreateRepost() {
   const queryClient = useQueryClient();
@@ -20,9 +22,12 @@ export function useCreateRepost() {
       ];
       queryClient.setQueryData(["posts"], updatedPosts);
     },
-    onError: err => {
-      const errMessage = err instanceof Error ? err.message : "An error occurred";
-      toast.error(errMessage);
+    onError: () => {
+      const msg = {
+        type: "error",
+        text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      } as TypeOfUserMsg;
+      toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
   });
 

@@ -9,7 +9,7 @@ import {
   PostRepostResult,
 } from "../../../../shared/interfaces/post.interface";
 import { NewPostType } from "../../store/slices/postEditSlice";
-import { UserMsg as TypeofUserMsg } from "../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
 
 type OnCreatePostProps = {
   posts: NewPost[];
@@ -36,7 +36,7 @@ export function useCreatePost({ onSuccessFn }: useCreatePostProps = {}) {
     }
   }
 
-  function getMessage(data: Post | PostReplyResult): TypeofUserMsg {
+  function getMessage(data: Post | PostReplyResult): TypeOfUserMsg {
     const postId = isReply(data) ? data.reply.id : data.id;
     const isAddedToSchedule = "schedule" in data;
     return postService.getPostAddedMsg({
@@ -67,9 +67,12 @@ export function useCreatePost({ onSuccessFn }: useCreatePostProps = {}) {
       const msg = getMessage(data);
       toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
-    onError: err => {
-      const errMessage = err instanceof Error ? err.message : "An error occurred";
-      toast.error(errMessage);
+    onError: () => {
+      const msg = {
+        type: "error",
+        text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      } as TypeOfUserMsg;
+      toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
   });
 

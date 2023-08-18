@@ -15,8 +15,10 @@ import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
 import { GifPickerModal } from "../../../../Modals/GifPickerModal/GifPickerModal";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
-import { setUserMsg } from "../../../../../store/slices/systemSlice";
 import { updateNewPost } from "../../../../../store/slices/postEditSlice";
+import { toast } from "react-hot-toast";
+import { UserMsg } from "../../../../Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../../../shared/interfaces/system.interface";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {
@@ -143,13 +145,12 @@ export const PostEditActions: FC = () => {
       navigate("post-location", { relative: "path" });
       return;
     }
-    const msg = "Please set your location in your profile first.";
-    dispatch(
-      setUserMsg({
-        type: "info",
-        text: msg,
-      })
-    );
+
+    const msg = {
+      type: "info",
+      text: "Please set your location in your profile first.",
+    } as TypeOfUserMsg;
+    toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
   }
 
   function onEmojiPicked(emoji: Emoji) {

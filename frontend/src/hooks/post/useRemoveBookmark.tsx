@@ -25,9 +25,12 @@ export function useRemoveBookmark() {
 
       toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
-    onError: err => {
-      const errMessage = err instanceof Error ? err.message : "An error occurred";
-      toast.error(errMessage);
+    onError: () => {
+      const msg = {
+        type: "error",
+        text: "Something went wrong, but don’t fret — let’s give it another shot.",
+      } as TypeOfUserMsg;
+      toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
     },
   });
 

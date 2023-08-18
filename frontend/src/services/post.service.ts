@@ -12,7 +12,7 @@ import { handleServerResponse } from "./util/utils.service";
 
 async function query(): Promise<Post[]> {
   const response = await httpService.get(
-    "post?sort=-createdAt&previousThreadPostId[exists]=false&limit=51"
+    "post?sort=-createdAt&previousThreadPostId[exists]=false&limit=5"
   );
   return handleServerResponse<Post[]>(response);
 }

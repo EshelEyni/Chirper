@@ -17,6 +17,7 @@ import {
   setNewPostType,
   setNewPosts,
 } from "../../../store/slices/postEditSlice";
+import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
@@ -27,6 +28,7 @@ const ComposePage = () => {
   const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.postEdit);
+  const { outsideClickRef } = useOutsideClick<HTMLDivElement>(onGoBack);
 
   async function discardPostThread() {
     switch (newPostType) {
@@ -81,12 +83,14 @@ const ComposePage = () => {
 
   return (
     <main className="compose">
-      <MainScreen onClickFn={onGoBack} mode="light" zIndex={2000} />
-      <PostEditProvider>
-        <Suspense fallback={<SpinnerLoader />}>
-          <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
-        </Suspense>
-      </PostEditProvider>
+      <MainScreen mode="light" zIndex={2000} />
+      <div ref={outsideClickRef}>
+        <PostEditProvider>
+          <Suspense fallback={<SpinnerLoader />}>
+            <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+          </Suspense>
+        </PostEditProvider>
+      </div>
       {isSavePostDraftModalOpen && (
         <SavePostDraftModal
           onCloseModal={onCloseModal}

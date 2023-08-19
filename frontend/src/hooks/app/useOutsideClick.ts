@@ -2,15 +2,15 @@ import { useEffect, useRef, MutableRefObject } from "react";
 
 type OutsideClickHandler = () => void;
 
-type OutsideClickRef = {
-  outsideClickRef: MutableRefObject<HTMLElement | null>;
+type OutsideClickRef<T extends HTMLElement> = {
+  outsideClickRef: MutableRefObject<T | null>;
 };
 
-export function useOutsideClick(
+export function useOutsideClick<T extends HTMLElement>(
   handler: OutsideClickHandler,
   listenCapturing = true
-): OutsideClickRef {
-  const ref = useRef<HTMLElement | null>(null);
+): OutsideClickRef<T> {
+  const ref = useRef<T | null>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

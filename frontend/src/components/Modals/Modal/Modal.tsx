@@ -2,6 +2,7 @@ import { FC, useState, createContext, useContext, cloneElement } from "react";
 import { createPortal } from "react-dom";
 import { MainScreen } from "../../App/MainScreen/MainScreen";
 import "./Modal.scss";
+import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 
 type ModalProps = {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ type WindowProps = {
   children: React.ReactElement[];
   name: string;
   className: string;
-  mainScreenMode?: "dark" | "light";
+  mainScreenMode: "dark" | "light";
   mainScreenZIndex: number;
   elementId: string;
 };
@@ -74,13 +75,18 @@ const Window: FC<WindowProps> = ({
   elementId,
 }) => {
   const { openedModalName, close } = useContext(ModalContext)!;
+  const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
 
   if (name !== openedModalName) return null;
 
   return createPortal(
     <>
-      <MainScreen onClickFn={close} mode={mainScreenMode} zIndex={mainScreenZIndex} />
-      <section className={`modal ${className}`} style={{ zIndex: mainScreenZIndex + 1 }}>
+      <MainScreen mode={mainScreenMode} zIndex={mainScreenZIndex} />
+      <section
+        className={`modal ${className}`}
+        style={{ zIndex: mainScreenZIndex + 1 }}
+        ref={outsideClickRef}
+      >
         {children}
       </section>
     </>,

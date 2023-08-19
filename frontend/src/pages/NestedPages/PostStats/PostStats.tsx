@@ -13,6 +13,7 @@ import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
 import { PostStatsDetails } from "./PostStatsDetails/PostStatsDetails";
 import { ErrorMsg } from "../../../components/Msg/ErrorMsg/ErrorMsg";
 import "./PostStats.scss";
+import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 
 const PostStatsPage = () => {
   const [isLoggedInUserPost, setIsLoggedInUserPost] = useState(false);
@@ -24,6 +25,7 @@ const PostStatsPage = () => {
   const params = useParams();
   const { id } = params as { id: string };
   const { post, isLoading, isSuccess, isError } = useQueryPostById(params.id || "");
+  const { outsideClickRef } = useOutsideClick<HTMLElement>(onGoBack);
 
   function onGoBack() {
     const basePath = getBasePathName(location.pathname, "post-stats");
@@ -39,8 +41,8 @@ const PostStatsPage = () => {
 
   return (
     <section className="post-stats">
-      <MainScreen onClickFn={onGoBack} mode="dark" />
-      <main className="post-stats-body">
+      <MainScreen mode="dark" />
+      <main className="post-stats-body" ref={outsideClickRef}>
         <BtnClose onClickBtn={onGoBack} />
         <div className="post-stats-main-container">
           {isLoading && <SpinnerLoader />}

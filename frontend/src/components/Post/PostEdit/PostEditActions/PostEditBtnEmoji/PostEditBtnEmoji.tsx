@@ -7,7 +7,7 @@ import {
   PostEditActionBtn,
   UIElement,
 } from "../PostEditActions/PostEditActions";
-import { MainScreen } from "../../../../App/MainScreen/MainScreen";
+import { useOutsideClick } from "../../../../../hooks/app/useOutsideClick";
 
 type PostEditBtnEmojiProps = {
   btn: PostEditActionBtn;
@@ -22,6 +22,10 @@ export const PostEditBtnEmoji: FC<PostEditBtnEmojiProps> = ({
   onToggleElementVisibility,
   onEmojiPicked,
 }) => {
+  const { outsideClickRef } = useOutsideClick<HTMLDivElement>(() =>
+    onToggleElementVisibility("emojiPicker")
+  );
+
   return (
     <div className="emoji-button-container">
       <button
@@ -33,8 +37,7 @@ export const PostEditBtnEmoji: FC<PostEditBtnEmojiProps> = ({
       </button>
       {elementVisibility.emojiPicker && (
         <div className="emoji-picker-container">
-          <MainScreen onClickFn={() => onToggleElementVisibility("emojiPicker")} />
-          <div className="emoji-post-edit-option-container">
+          <div className="emoji-post-edit-option-container" ref={outsideClickRef}>
             <Picker data={data} onEmojiSelect={onEmojiPicked} />
           </div>
         </div>

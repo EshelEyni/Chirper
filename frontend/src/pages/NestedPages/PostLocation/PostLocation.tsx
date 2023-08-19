@@ -13,6 +13,7 @@ import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { useMemo } from "react";
 import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
+import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 
 const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -24,6 +25,7 @@ const PostLocation = () => {
   const navigate = useNavigate();
   const { postEdit } = useSelector((state: RootState) => state);
   const { newPostType } = postEdit;
+  const { outsideClickRef } = useOutsideClick(onGoBack);
 
   const currNewPost = useMemo(() => {
     switch (newPostType) {
@@ -80,8 +82,8 @@ const PostLocation = () => {
 
   return (
     <>
-      <MainScreen onClickFn={onGoBack} mode="light" />
-      <section className="post-location">
+      <MainScreen mode="light" />
+      <section className="post-location" ref={outsideClickRef}>
         <header className="post-location-header">
           <div className="post-location-header-close-btn-title-container">
             <div className="btn-close-container">

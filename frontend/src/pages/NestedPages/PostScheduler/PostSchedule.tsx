@@ -11,6 +11,7 @@ import { PostScheduleTimeInputs } from "./TimeInputs/PostScheduleTimeInputs";
 import { TimeZoneDisplay } from "./TimeZoneDisplay/TimeZoneDisplay";
 import { Footer } from "../../../components/App/Footer/Footer";
 import { NewPostType } from "../../../store/slices/postEditSlice";
+import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 
 export type invalidDateStatus = {
   status: boolean;
@@ -21,6 +22,7 @@ const PostSchedule = () => {
   const navigate = useNavigate();
   const { postEdit } = useSelector((state: RootState) => state);
   const { newPostType } = postEdit;
+  const { outsideClickRef } = useOutsideClick<HTMLElement>(onGoBack);
 
   const currNewPost = useMemo(() => {
     switch (newPostType) {
@@ -69,8 +71,8 @@ const PostSchedule = () => {
 
   return (
     <>
-      <MainScreen onClickFn={onGoBack} mode="light" />
-      <section className="post-schedule">
+      <MainScreen mode="light" />
+      <section className="post-schedule" ref={outsideClickRef}>
         <PostScheduleHeader
           currNewPost={currNewPost!}
           schedule={schedule}

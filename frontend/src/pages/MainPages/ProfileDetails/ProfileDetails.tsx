@@ -1,44 +1,38 @@
-import { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { RootState } from "../../../store/store";
-import { User } from "../../../../../shared/interfaces/user.interface";
-import userService from "../../../services/user.service";
+import { Outlet, useParams } from "react-router-dom";
 import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
+import "./ProfileDetails.scss";
+import { useQueryUserWithPosts } from "../../../hooks/user/useQueryUserWithPosts";
+import { PostList } from "../../../components/Post/PostList/PostList";
 
 const ProfileDetails = () => {
-  const [wachedUser, setWachedUser] = useState<User | null>(null);
-  useDocumentTitle(`${wachedUser?.fullname} (${wachedUser?.username}) / Chirper`);
-
-  const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const params = useParams();
-  const navigate = useNavigate();
-
-  const getUser = useCallback(async () => {
-    const { username } = params;
-    if (!username) {
-      navigate("/home");
-      return;
-    }
-    if (loggedInUser?.username === username) {
-      setWachedUser(loggedInUser);
-      return;
-    } else {
-      const user = await userService.getByUsername(username);
-      setWachedUser(user);
-    }
-  }, [loggedInUser, params, navigate]);
-
-  useEffect(() => {
-    getUser();
-  }, [getUser]);
+  const { username } = params;
+  const { user, posts, isLoading, isSuccess, isError } = useQueryUserWithPosts(username || "");
+  useDocumentTitle(`${user?.fullname} (${user?.username}) / Chirper`);
 
   return (
-    <div>
+    <main className="profile-details">
       <h1>Profile Details Page</h1>
-      <pre>{JSON.stringify(wachedUser, null, 2)}</pre>
+      {isLoading && <p>Loading...</p>}
+      {isSuccess && user && (
+        <>
+          <div className="profile-details__user">
+            <img className="profile-details__user-avatar" src={user.imgUrl} alt="user-avatar" />
+            <div className="profile-details__user-info">
+              <h2 className="profile-details__user-fullname">{user.fullname}</h2>
+              <p className="profile-details__user-username">@{user.username}</p>
+            </div>
+          </div>
+          <div className="profile-details__user-posts">
+            <PostList posts={posts} />
+          </div>
+        </>
+      )}
+
+      {isError && <p>Something went wrong</p>}
+
       <Outlet />
-    </div>
+    </main>
   );
 };
 

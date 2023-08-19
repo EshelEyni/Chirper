@@ -9,98 +9,102 @@ import {
 } from "../../../shared/interfaces/post.interface";
 import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
 import { handleServerResponse } from "./util/utils.service";
+import qs from "qs";
 
-async function query(): Promise<Post[]> {
+const BASE_URL = "post";
+
+async function query(queryObj?: any): Promise<Post[]> {
+  const queryString = queryObj ? "&" + qs.stringify(queryObj) : "";
   const response = await httpService.get(
-    "post?sort=-createdAt&previousThreadPostId[exists]=false&limit=5"
+    `${BASE_URL}?sort=-createdAt&previousThreadPostId[exists]=false&limit=35${queryString}`
   );
   return handleServerResponse<Post[]>(response);
 }
 
 async function getById(postId: string): Promise<Post> {
-  const response = await httpService.get(`post/${postId}`);
+  const response = await httpService.get(`${BASE_URL}/${postId}`);
   return handleServerResponse<Post>(response);
 }
 
 async function remove(postId: string) {
-  await httpService.delete(`post/${postId}`);
+  await httpService.delete(`${BASE_URL}/${postId}`);
 }
 
 async function add(posts: NewPost[]): Promise<Post> {
   let res: JsendResponse | null = null;
   if (posts.length > 1) {
-    res = await httpService.post("post/thread", posts);
+    res = await httpService.post(`${BASE_URL}/thread`, posts);
   } else {
     const [post] = posts;
-    res = await httpService.post("post", post);
+    res = await httpService.post(`${BASE_URL}`, post);
   }
   if (!res) throw new Error("postService: Cannot add post");
   return handleServerResponse<Post>(res);
 }
 
 async function addReply(reply: NewPost): Promise<PostReplyResult> {
-  const res = await httpService.post("post/reply", reply);
+  const res = await httpService.post(`${BASE_URL}/reply`, reply);
   return handleServerResponse<PostReplyResult>(res);
 }
 
 async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
-  const res = await httpService.post(`post/repost?postId=${repostedPost.id}`);
+  const res = await httpService.post(`${BASE_URL}/repost?postId=${repostedPost.id}`);
   return handleServerResponse<PostRepostResult>(res);
 }
 
 async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
-  const res = await httpService.post("post/quote", post);
+  const res = await httpService.post(`${BASE_URL}/quote`, post);
   return handleServerResponse<Post | PostRepostResult>(res);
 }
 
 async function removeRepost(repostedPostId: string): Promise<Post> {
-  const res = await httpService.delete(`post/repost?postId=${repostedPostId}`);
+  const res = await httpService.delete(`${BASE_URL}/repost?postId=${repostedPostId}`);
   return handleServerResponse<Post>(res);
 }
 
 async function update(post: Post) {
-  const updatedPost = await httpService.patch(`post/${post.id}`, post);
+  const updatedPost = await httpService.patch(`${BASE_URL}/${post.id}`, post);
   return updatedPost;
 }
 async function savePollVote(postId: string, optionIdx: number) {
-  return await httpService.post("post/poll/vote", { postId, optionIdx });
+  return await httpService.post(`${BASE_URL}/poll/vote`, { postId, optionIdx });
 }
 
 async function addLike(postId: string): Promise<Post> {
-  const res = await httpService.post(`post/${postId}/like`);
+  const res = await httpService.post(`${BASE_URL}/${postId}/like`);
   return handleServerResponse<Post>(res);
 }
 
 async function removeLike(postId: string): Promise<Post> {
-  const res = await httpService.delete(`post/${postId}/like`);
+  const res = await httpService.delete(`${BASE_URL}/${postId}/like`);
   return handleServerResponse<Post>(res);
 }
 
 async function getPostStats(postId: string): Promise<PostStats> {
-  const res = await httpService.get(`post/${postId}/stats`);
+  const res = await httpService.get(`${BASE_URL}/${postId}/stats`);
   return handleServerResponse<PostStats>(res);
 }
 
 async function addImpression(postId: string) {
-  await httpService.post(`post/${postId}/stats`);
+  await httpService.post(`${BASE_URL}/${postId}/stats`);
 }
 
 async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
-  await httpService.patch(`post/${postId}/stats`, stats);
+  await httpService.patch(`${BASE_URL}/${postId}/stats`, stats);
 }
 
 async function getBookmarkedPosts(): Promise<Post[]> {
-  const res = await httpService.get("post/bookmark");
+  const res = await httpService.get(`${BASE_URL}/bookmark`);
   return handleServerResponse<Post[]>(res);
 }
 
 async function addBookmark(postId: string): Promise<Post> {
-  const res = await httpService.post(`post/${postId}/bookmark`);
+  const res = await httpService.post(`${BASE_URL}/${postId}/bookmark`);
   return handleServerResponse<Post>(res);
 }
 
 async function removeBookmark(postId: string): Promise<Post> {
-  const res = await httpService.delete(`post/${postId}/bookmark`);
+  const res = await httpService.delete(`${BASE_URL}/${postId}/bookmark`);
   return handleServerResponse<Post>(res);
 }
 

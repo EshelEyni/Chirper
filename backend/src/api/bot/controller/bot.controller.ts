@@ -14,12 +14,29 @@ const getBots = asyncErrorCatcher(async (req: Request, res: Response) => {
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { schedule } = req.body;
-  const post = await botService.createPost({ botId: id, schedule });
+  const { prompt, schedule, numOfPosts, numberOfImages, isImg, isImgOnly } = req.body;
+  const post = await botService.createPost({
+    botId: id,
+    prompt,
+    schedule,
+    numOfPosts: Number(numOfPosts),
+    numberOfImages: Number(numberOfImages),
+    isImg,
+    isImgOnly,
+  });
   res.send({
     status: "success",
     data: post,
   });
 });
 
-export { getBots, addPost };
+const addBotPrompt = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const { botId, prompt, type } = req.body;
+  const botPrompt = await botService.addBotPrompt({ botId, prompt, type });
+  res.send({
+    status: "success",
+    data: botPrompt,
+  });
+});
+
+export { getBots, addPost, addBotPrompt };

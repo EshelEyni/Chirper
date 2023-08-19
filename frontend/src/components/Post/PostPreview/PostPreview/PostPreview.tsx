@@ -23,8 +23,12 @@ import { BtnShowThread } from "../../../Btns/BtnShowThread/BtnShowThread";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../../contexts/VideoPlayerContext";
 import "./PostPreview.scss";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getBasePathName } from "../../../../services/util/utils.service";
 
 export const PostPreview: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { post, poll } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
@@ -39,6 +43,12 @@ export const PostPreview: React.FC = () => {
     threshold: 0,
     triggerOnce: true,
   });
+
+  function onImgClick(idx: number) {
+    const { pathname } = location;
+    const basePath = getBasePathName(pathname, "imgs");
+    navigate(`${basePath}/post/${post.id}/imgs/${idx + 1}`);
+  }
 
   useEffect(() => {
     const shouldSaveImpression = inView && !post.loggedInUserActionState.isViewed && loggedInUser;
@@ -56,13 +66,15 @@ export const PostPreview: React.FC = () => {
           <PostPreviewHeader />
           <PostPreviewBody>
             {isRepliedToUserListShown && <PostRepliedToUsersList />}
-            <PostPreviewText
-              text={post.text}
-              isPlainText={false}
-              postId={post.id}
-              loggedInUserActionState={post.loggedInUserActionState}
-            />
-            {post.imgs?.length > 0 && <PostImg imgs={post.imgs} />}
+            {post.text && (
+              <PostPreviewText
+                text={post.text}
+                isPlainText={false}
+                postId={post.id}
+                loggedInUserActionState={post.loggedInUserActionState}
+              />
+            )}
+            {post.imgs?.length > 0 && <PostImg imgs={post.imgs} onImgClick={onImgClick} />}
             {post.videoUrl && (
               <VideoPlayerProvider>
                 <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />

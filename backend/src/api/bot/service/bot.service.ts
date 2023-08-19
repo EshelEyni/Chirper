@@ -1,11 +1,12 @@
-import { User } from "../../../../../shared/interfaces/user.interface";
 import { UserModel } from "../../user/models/user.model";
-import fs from "fs";
-import path from "path";
 import { Configuration, OpenAIApi } from "openai";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post.interface";
 import { BotPromptModel } from "../model/bot-options.model";
-import { PostModel } from "../../post/models/post.model";
+import ansiColors from "ansi-colors";
+import postService from "../../post/services/post/post.service";
+import { AppError } from "../../../services/error/error.service";
+import { v2 as cloudinary } from "cloudinary";
+import axios from "axios";
 require("dotenv").config();
 
 const configuration = new Configuration({
@@ -14,50 +15,95 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
 async function getBots() {
   const bots = await UserModel.find({ isBot: true });
   return bots;
 }
 
-async function addBots(): Promise<User[]> {
-  const bots = _getBotsFromJson();
-  return (await UserModel.create(bots)) as unknown as User[];
+async function createPost({
+  botId,
+  prompt,
+  schedule,
+  numOfPosts,
+  numberOfImages = 1,
+  isImg = false,
+  isImgOnly = false,
+}: {
+  botId: string;
+  prompt?: string;
+  schedule?: Date;
+  numOfPosts: number;
+  numberOfImages?: number;
+  isImg?: boolean;
+  isImgOnly?: boolean;
+}): Promise<Post[]> {
+  const posts = [];
+
+  for (let i = 0; i < numOfPosts; i++) {
+    const post = {
+      audience: "everyone",
+      repliersType: "everyone",
+      isPublic: true,
+      createdById: botId,
+    } as NewPost;
+
+    if (isImg) {
+      const p = prompt ? prompt : await _getBotPrompt(botId, "image");
+      if (!p) throw new AppError("prompt is undefined", 500);
+      const imgs = await _getPostImgsFromOpenOpenAI(p, numberOfImages);
+      if (!imgs) throw new AppError("imgs is undefined", 500);
+
+      post["imgs"] = imgs as any as NewPostImg[];
+    }
+
+    if (!isImgOnly) {
+      const p = prompt ? prompt : await _getBotPrompt(botId);
+      if (!p) throw new AppError("prompt is undefined", 500);
+      const text = await _getPostTextFromOpenAI(p);
+      if (!text) throw new AppError("text is undefined", 500);
+
+      post["text"] = text;
+    }
+
+    if (schedule) post["schedule"] = schedule;
+
+    const p = await postService.add(post as NewPost);
+
+    // eslint-disable-next-line no-console
+    console.log(ansiColors.bgGreen(`Created post ${i + 1} of ${numOfPosts}`));
+    // eslint-disable-next-line no-console
+    console.log(ansiColors.italic(ansiColors.yellow(JSON.stringify(p, null, 2))));
+    posts.push(p);
+  }
+
+  return posts;
 }
 
-async function removeBots(): Promise<void> {
-  const bots = _getBotsFromJson();
-  const botIds = bots.map(bot => bot.id);
-  for (const botId of botIds) await UserModel.findByIdAndDelete(botId);
+async function addBotPrompt({
+  botId,
+  prompt,
+  type = "text",
+}: {
+  botId: string;
+  prompt: string;
+  type: string;
+}) {
+  return await BotPromptModel.create({ botId, prompt, type });
 }
 
-function _getBotsFromJson(): User[] {
-  const botsJSON = fs.readFileSync(path.resolve(__dirname, "bots.creds.json"), "utf-8");
-  const bots = JSON.parse(botsJSON) as unknown as User[];
-  return bots;
-}
-
-async function createPost({ botId, schedule }: { botId: string; schedule?: Date }): Promise<Post> {
-  const prompt = await _getBotPrompt(botId);
-  const text = await _getPostTextFromOpenAI(prompt);
-  const post = {
-    audience: "everyone",
-    repliersType: "everyone",
-    isPublic: true,
-    text,
-    createdById: botId,
-  } as Post;
-
-  if (schedule) post["schedule"] = schedule;
-
-  return (await PostModel.create(post)) as unknown as Post;
-}
-
-async function _getBotPrompt(botId: string): Promise<string> {
-  const count = await BotPromptModel.countDocuments({ botId });
+async function _getBotPrompt(botId: string, type = "text"): Promise<string> {
+  const count = await BotPromptModel.countDocuments({ botId, type });
   const random = Math.floor(Math.random() * count);
-  const botPrompt = await BotPromptModel.findOne({ botId }).skip(random).exec();
+  const botPrompt = await BotPromptModel.findOne({ botId, type }).skip(random).exec();
   if (!botPrompt) throw new Error("prompt is undefined");
-  return botPrompt.prompt as string;
+  return (botPrompt.prompt as string) + "\n" + "Limit Tweet to 247 characters.";
 }
 
 async function _getPostTextFromOpenAI(prompt: string, model = "default"): Promise<string> {
@@ -80,6 +126,42 @@ async function _getPostTextFromOpenAI(prompt: string, model = "default"): Promis
   }
 }
 
-export default { getBots, addBots, removeBots, createPost };
+async function uploadToCloudinary(imageBuffer: any) {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ resource_type: "image" }, (error, result) => {
+        if (error) reject(error);
+        else resolve(result?.url);
+      })
+      .end(imageBuffer);
+  });
+}
+
+async function _getPostImgsFromOpenOpenAI(prompt: string, numberOfImages = 1) {
+  const response = await openai.createImage({
+    prompt,
+    n: numberOfImages,
+    size: "512x512",
+  });
+
+  const imagePromises = response.data.data.map(async data => {
+    if (!data.url) throw new Error("data.url is undefined");
+    const response = await axios.get(data.url, {
+      responseType: "arraybuffer",
+    });
+    const cloudinaryUrl = await uploadToCloudinary(response.data);
+    return cloudinaryUrl;
+  });
+
+  const cloudinaryUrls = await Promise.all(imagePromises);
+
+  const imgs = cloudinaryUrls.map((url, i) => ({ url, sortOrder: i }));
+  return imgs;
+
+  // const imgs = response.data.data.map((data, i) => ({ url: data.url, sortOrder: i }));
+  // return imgs;
+}
+
+export default { getBots, addBotPrompt, createPost };
 
 // Path: src\services\bot\bot.service.ts

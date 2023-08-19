@@ -10,7 +10,7 @@ export function useQueryPosts() {
     isError,
   } = useQuery({
     queryKey: ["posts"],
-    queryFn: postService.query,
+    queryFn: async () => postService.query(),
   });
 
   return { posts, error, isLoading, isSuccess, isError };

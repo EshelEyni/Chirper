@@ -1,0 +1,14 @@
+@import "../../../styles/setup/functions";
+
+.profile-details {
+  max-width: 650px;
+  overflow: hidden;
+
+  .profile-details__user-avatar{
+    height: rem(85px);
+    width: rem(85px);
+
+    border-radius: 50%;
+
+  }
+}

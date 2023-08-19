@@ -1,4 +1,5 @@
 import { LazyExoticComponent, lazy, FC } from "react";
+
 const Homepage = lazy(() => import("./pages/MainPages/Home/Home"));
 const BookmarksPage = lazy(() => import("./pages/MainPages/Bookmarks/Bookmarks"));
 const ExplorePage = lazy(() => import("./pages/MainPages/Explore/Explore"));
@@ -12,6 +13,7 @@ const DisplayPage = lazy(() => import("./pages/NestedPages/Display/Display"));
 const PostLocation = lazy(() => import("./pages/NestedPages/PostLocation/PostLocation"));
 const PostSchedule = lazy(() => import("./pages/NestedPages/PostScheduler/PostSchedule"));
 const PostStatsPage = lazy(() => import("./pages/NestedPages/PostStats/PostStats"));
+const PostImgPage = lazy(() => import("./pages/NestedPages/PostImg/PostImgPage"));
 
 export interface Route {
   path: string;
@@ -90,6 +92,11 @@ const nestedRoutes: Route[] = [
     path: "chirper-circle",
     component: ChirperCirclePage,
     authRequired: true,
+  },
+  {
+    path: "post/:id/imgs/:idx",
+    component: PostImgPage,
+    authRequired: false,
   },
 ];
 

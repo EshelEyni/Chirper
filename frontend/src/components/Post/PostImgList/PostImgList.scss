@@ -5,6 +5,10 @@
   gap: rem(2px);
   margin-bottom: rem(5px);
 
+  .post-img {
+    cursor: pointer;
+  }
+
   &.grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

@@ -14,6 +14,7 @@ import userRouter from "./api/user/router/user.router";
 import postRouter from "./api/post/router/post.router";
 import gifRouter from "./api/gif/router/gif.router";
 import locationRouter from "./api/location/router/location.router";
+import botRouter from "./api/bot/router/bot.router";
 import authRouter from "./api/auth/router/auth.router";
 import { requestLimiter } from "./services/rate-limiter.service";
 const isProdEnv = process.env.NODE_ENV === "production";
@@ -64,6 +65,7 @@ app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/location", locationRouter);
+app.use("/api/bot", botRouter);
 app.use("/api/auth", authRouter);
 
 app.get("/**", (req: Request, res: Response) => {

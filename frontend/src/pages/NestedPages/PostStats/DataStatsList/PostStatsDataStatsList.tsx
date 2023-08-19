@@ -1,20 +1,13 @@
 import { FC } from "react";
-import { GoInfo } from "react-icons/go";
-import { PostStatsInfoModal } from "../../../../components/Modals/PostStatInfoModal/PostStatInfoModal";
+import { BtnTogglePostStatsInfoModal } from "../../../../components/Btns/BtnTogglePostStatsInfoModal/BtnTogglePostStatsInfoModal";
 import "./PostStatsDataStatsList.scss";
 import { PostStats } from "../../../../../../shared/interfaces/post.interface";
 
 type PostStatsDataStatsListProps = {
   postStats: PostStats;
-  openedModal: string;
-  setOpenedModal: (modal: string) => void;
 };
 
-export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({
-  postStats,
-  openedModal,
-  setOpenedModal,
-}) => {
+export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({ postStats }) => {
   const postStatsData = [
     {
       name: "Impressions",
@@ -54,16 +47,10 @@ export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({
     },
   ];
 
-  function onOpenModal(name: string) {
-    setOpenedModal(name);
-  }
-
-  function onCloseModal() {
-    setOpenedModal("");
-  }
   return (
     <div className="post-stats-data">
-      {postStatsData.map(data => {
+      {postStatsData.map((data, i) => {
+        const elementId = `posts-stat-data-item-${i + 1}`;
         const { name, count, desc, grid } = data;
         const { row, column } = grid;
         return (
@@ -74,12 +61,7 @@ export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({
           >
             <div className="post-stats-data-item-title">
               <span className="post-stats-data-item-name">{name}</span>
-              <div className="btn-post-stats-data-item-info-container">
-                {openedModal === name && (
-                  <PostStatsInfoModal onCloseModal={onCloseModal} name={name} desc={desc} />
-                )}
-                <GoInfo onClick={() => onOpenModal(name)} />
-              </div>
+              <BtnTogglePostStatsInfoModal elementId={elementId} name={name} desc={desc} />
             </div>
             <h1 className="post-stats-data-item-count">{count}</h1>
           </div>

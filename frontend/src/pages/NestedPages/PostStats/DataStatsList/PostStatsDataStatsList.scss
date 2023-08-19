@@ -13,17 +13,19 @@
     gap: rem(5px);
     height: rem(100px);
     width: 100%;
+
     .post-stats-data-item-title {
       display: flex;
       align-items: center;
       gap: rem(5px);
       color: var(--color-text-gray);
 
-      .btn-post-stats-data-item-info-container {
+      .btn-post-stats-data-item-info {
+        color: var(--color-text-gray);
+        position: relative;
         display: flex;
         align-items: flex-end;
         cursor: pointer;
-        position: relative;
       }
     }
   }

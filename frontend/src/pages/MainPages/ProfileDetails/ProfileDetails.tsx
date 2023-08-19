@@ -3,6 +3,9 @@ import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
 import "./ProfileDetails.scss";
 import { useQueryUserWithPosts } from "../../../hooks/user/useQueryUserWithPosts";
 import { PostList } from "../../../components/Post/PostList/PostList";
+import { Post } from "../../../../../shared/interfaces/post.interface";
+import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
+import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
 
 const ProfileDetails = () => {
   const params = useParams();
@@ -24,7 +27,14 @@ const ProfileDetails = () => {
             </div>
           </div>
           <div className="profile-details__user-posts">
-            <PostList posts={posts} />
+            <PostList
+              posts={posts as Post[]}
+              render={(post: Post) => (
+                <PostPreviewProvider post={post} key={`${post.id}-${post.createdAt}`}>
+                  <PostPreview />
+                </PostPreviewProvider>
+              )}
+            />{" "}
           </div>
         </>
       )}

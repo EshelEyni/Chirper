@@ -40,6 +40,7 @@ import {
 } from "../../../store/slices/postEditSlice";
 import { getBasePathName } from "../../../services/util/utils.service";
 import { useCreatePost } from "../../../hooks/post/useCreatePost";
+import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 
 function checkPostTextValidity(newPostText: string): boolean {
   return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
@@ -228,7 +229,16 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     <section className={"post-edit" + (isCreating ? " save-mode" : "")} onClick={openPicker}>
       {!!onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {isCreating && <span className="progress-bar" />}
-      {isPreCurrNewPostListShown && <PostList newPosts={preCurrNewPostList} />}
+      {isPreCurrNewPostListShown && (
+        <PostList
+          posts={preCurrNewPostList as NewPost[]}
+          render={(post: NewPost) => (
+            <MiniPostPreview key={post.tempId} newPost={post} type={"new-post"}>
+              <NewPostContent newPost={post} />
+            </MiniPostPreview>
+          )}
+        />
+      )}
       {isReplyPostShown && (
         <MiniPostPreview type={"replied-post"}>
           <RepliedPostContent />
@@ -280,7 +290,16 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           </div>
         </main>
       </div>
-      {isPostCurrNewPostListShown && <PostList newPosts={postCurrNewPostList} />}
+      {isPostCurrNewPostListShown && (
+        <PostList
+          posts={postCurrNewPostList as NewPost[]}
+          render={(post: NewPost) => (
+            <MiniPostPreview key={post.tempId} newPost={post} type={"new-post"}>
+              <NewPostContent newPost={post} />
+            </MiniPostPreview>
+          )}
+        />
+      )}
     </section>
   );
 };

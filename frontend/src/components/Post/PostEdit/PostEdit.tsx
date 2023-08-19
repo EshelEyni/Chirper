@@ -41,30 +41,7 @@ import {
 import { getBasePathName } from "../../../services/util/utils.service";
 import { useCreatePost } from "../../../hooks/post/useCreatePost";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
-
-function checkPostTextValidity(newPostText: string): boolean {
-  return !!newPostText && newPostText.length > 0 && newPostText.length <= 247;
-}
-
-function checkPostPollValidity(post: NewPost): boolean {
-  return post.poll!.options.every(option => option.text.length > 0);
-}
-
-function checkPostValidity(post: NewPost | null, newPostText: string): boolean {
-  if (!post) return false;
-  if (post.poll) return checkPostPollValidity(post) && checkPostTextValidity(newPostText);
-  return (
-    checkPostTextValidity(newPostText) ||
-    post.imgs.length > 0 ||
-    !!post.gif ||
-    !!post.video ||
-    !!post.quotedPostId
-  );
-}
-
-function checkPostArrayValidity(newPosts: NewPost[], newPostText: string): boolean {
-  return newPosts.every(post => checkPostValidity(post, newPostText));
-}
+import postService from "../../../services/post.service";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -109,9 +86,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     !isFirstPostInThread &&
     !isHomePage &&
     (newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar) &&
-    !checkPostValidity(currNewPost, newPostText);
+    !postService.checkPostValidity(currNewPost, newPostText);
   const isIndicatorAndAddThreadBtnShown =
-    checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
+    postService.checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
 
   async function onAddPost() {
     if (!currNewPost || !loggedInUser) return;
@@ -198,7 +175,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   }
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
-    const isValid = checkPostArrayValidity(postArray, newPostText);
+    const isValid = postService.checkPostArrayValidity(postArray, newPostText);
     if (isValid !== arePostsValid) setArePostsValid(isValid);
   }, [
     preCurrNewPostList,

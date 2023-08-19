@@ -12,6 +12,17 @@ const getBots = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
+const getBotPrompts = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const { botId } = req.query;
+  const prompts = await botService.getBotPrompts(botId as string);
+  res.send({
+    status: "success",
+    requestedAt: new Date().toISOString(),
+    results: prompts.length,
+    data: prompts,
+  });
+});
+
 const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { prompt, schedule, numOfPosts, numberOfImages, isImg, isImgOnly } = req.body;
@@ -39,4 +50,4 @@ const addBotPrompt = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
-export { getBots, addPost, addBotPrompt };
+export { getBots, getBotPrompts, addPost, addBotPrompt };

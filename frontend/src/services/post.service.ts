@@ -128,6 +128,33 @@ const getPostAddedMsg = ({ postId, date }: { postId: string; date?: Date }): Use
   };
 };
 
+/*  
+newPostText is the text of the new post from the textarea, that has own state,
+due to the fact that we don't want to dispatch to redux store on every keystroke
+*/
+
+function checkPostValidity(post: NewPost | null, newPostText: string): boolean {
+  const checkPostTextValidity = (text: string): boolean =>
+    !!text && text.length > 0 && text.length <= 247;
+
+  const checkPostPollValidity = (post: NewPost): boolean =>
+    post.poll!.options.every(option => option.text.length > 0);
+
+  if (!post) return false;
+  if (post.poll) return checkPostPollValidity(post) && checkPostTextValidity(newPostText);
+  return (
+    checkPostTextValidity(newPostText) ||
+    post.imgs.length > 0 ||
+    !!post.gif ||
+    !!post.video ||
+    !!post.quotedPostId
+  );
+}
+
+function checkPostArrayValidity(newPosts: NewPost[], newPostText: string): boolean {
+  return newPosts.every(post => checkPostValidity(post, newPostText));
+}
+
 export default {
   query,
   getById,
@@ -148,4 +175,6 @@ export default {
   addBookmark,
   removeBookmark,
   getPostAddedMsg,
+  checkPostValidity,
+  checkPostArrayValidity,
 };

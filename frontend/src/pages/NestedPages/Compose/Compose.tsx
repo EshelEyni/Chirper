@@ -1,14 +1,10 @@
 import { useState, lazy, Suspense } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import postService from "../../../services/post.service";
-import { SavePostDraftModal } from "../../../components/Modals/SavePostDraftModal/SavePostDraftModal";
-import { ConfirmDeletePostDraftModal } from "../../../components/Modals/ConfirmDeletePostDraftModal/ConfirmDeletePostDraftModal";
 import "./Compose.scss";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
-import { getBasePathName } from "../../../services/util/utils.service";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import {
@@ -18,17 +14,27 @@ import {
   setNewPosts,
 } from "../../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
+import { useGoBack } from "../../../hooks/app/useGoBack";
+import { Modal } from "../../../components/Modals/Modal/Modal";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
-  const [isSavePostDraftModalOpen, setIsSavePostDraftModalOpen] = useState(false);
-  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [openedModalName, setOpenedModalName] = useState("");
 
-  const navigate = useNavigate();
-  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
-  const { sideBar, homePage, newPostType } = useSelector((state: RootState) => state.postEdit);
-  const { outsideClickRef } = useOutsideClick<HTMLDivElement>(onGoBack);
+  const { postEdit } = useSelector((state: RootState) => state);
+  const { newPostType } = postEdit;
+  const { goBack } = useGoBack("compose");
+  const { outsideClickRef } = useOutsideClick<HTMLDivElement>(onClickBtnClose);
+
+  function onGoBack() {
+    goBack();
+  }
+
+  async function discardPostThreadAndGoBack() {
+    await discardPostThread();
+    onGoBack();
+  }
 
   async function discardPostThread() {
     switch (newPostType) {
@@ -49,61 +55,97 @@ const ComposePage = () => {
         break;
     }
     dispatch(setNewPostType(NewPostType.HomePage));
-    const basePath = getBasePathName(location.pathname, "compose");
-    navigate(basePath);
   }
 
   async function onSavePostDraft() {
-    const postToSave =
-      newPostType === "homePage" ? { ...homePage.posts[0] } : { ...sideBar.posts[0] };
+    const isThreadType =
+      newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
+    if (!isThreadType) return discardPostThreadAndGoBack();
+    const postToSave = postEdit[newPostType].posts[0];
     if (!postToSave) return;
     postToSave.isDraft = true;
     await postService.add([postToSave]);
-    discardPostThread();
+    discardPostThreadAndGoBack();
   }
 
-  async function onGoBack() {
-    const isThread = homePage.posts.length > 1 || sideBar.posts.length > 1;
-    if (isThread) {
-      setIsConfirmDeleteModalOpen(true);
-    } else {
-      const currPost =
-        newPostType === "homePage" ? { ...homePage.posts[0] } : { ...sideBar.posts[0] };
-      const isValidPost =
-        currPost.text || currPost.imgs.length > 0 || currPost.video || currPost.gif;
-      if (isValidPost) setIsSavePostDraftModalOpen(true);
-      else discardPostThread();
+  async function onClickBtnClose() {
+    const isThreadType =
+      newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar;
+    if (!isThreadType) return discardPostThreadAndGoBack();
+
+    const isThread = isThreadType ? postEdit[newPostType].posts.length > 1 : false;
+    if (isThread) return setOpenedModalName("confirm-delete-post-thread");
+
+    const currPost = postEdit[newPostType].posts[0];
+    if (postService.checkPostValidity(currPost, currPost.text)) {
+      return setOpenedModalName("save-post-draft");
     }
-  }
 
-  function onCloseModal() {
-    if (isSavePostDraftModalOpen) setIsSavePostDraftModalOpen(false);
-    if (isConfirmDeleteModalOpen) setIsConfirmDeleteModalOpen(false);
+    discardPostThreadAndGoBack();
   }
 
   return (
-    <main className="compose">
+    <main className="compose" id="compose">
       <MainScreen mode="light" zIndex={2000} />
       <div ref={outsideClickRef}>
         <PostEditProvider>
           <Suspense fallback={<SpinnerLoader />}>
-            <PostEdit onClickBtnClose={onGoBack} isHomePage={false} />
+            <PostEdit onClickBtnClose={onClickBtnClose} isHomePage={false} />
           </Suspense>
         </PostEditProvider>
       </div>
-      {isSavePostDraftModalOpen && (
-        <SavePostDraftModal
-          onCloseModal={onCloseModal}
-          onSavePostDraft={onSavePostDraft}
-          discardPostThread={discardPostThread}
-        />
-      )}
-      {isConfirmDeleteModalOpen && (
-        <ConfirmDeletePostDraftModal
-          onCloseModal={onCloseModal}
-          discardPostThread={discardPostThread}
-        />
-      )}
+      <Modal
+        externalStateControl={{
+          externalOpenedModalName: openedModalName,
+          setExternalOpenedModalName: setOpenedModalName,
+        }}
+      >
+        <Modal.Window
+          name="save-post-draft"
+          mainScreenMode="dark"
+          mainScreenZIndex={3000}
+          elementId="app"
+        >
+          <div className="modal-header">
+            <span className="modal-title">Save Chirp?</span>
+            <p className="modal-description">You can save this to send later from your drafts.</p>
+          </div>
+
+          <div className="modal-btns-container">
+            <button className="btn btn-save-post-draft" onClick={onSavePostDraft}>
+              <span>Save</span>
+            </button>
+            <Modal.CloseBtn onClickFn={discardPostThreadAndGoBack}>
+              <button className="btn btn-close-modal">
+                <span>Discard</span>
+              </button>
+            </Modal.CloseBtn>
+          </div>
+        </Modal.Window>
+
+        <Modal.Window
+          name="confirm-delete-post-thread"
+          mainScreenMode="dark"
+          mainScreenZIndex={3000}
+          elementId="app"
+        >
+          <div className="modal-header">
+            <span className="modal-title">Discard thread?</span>
+            <p className="modal-description">This can’t be undone and you’ll lose your draft.</p>
+          </div>
+
+          <div className="modal-btns-container">
+            <button className="btn btn-discard-post-thread" onClick={discardPostThreadAndGoBack}>
+              <span>Discard</span>
+            </button>
+            <Modal.CloseBtn>
+              <button className="btn btn-close-modal">
+                <span>Cancel</span>
+              </button>
+            </Modal.CloseBtn>
+          </div>
+        </Modal.Window>
+      </Modal>
     </main>
   );
 };

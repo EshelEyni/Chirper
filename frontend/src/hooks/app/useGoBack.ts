@@ -5,10 +5,10 @@ export function useGoBack(currNestedPath: string) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function onGoBack() {
+  function goBack() {
     const basePath = getBasePathName(location.pathname, currNestedPath);
     navigate(basePath);
   }
 
-  return { onGoBack };
+  return { goBack };
 }

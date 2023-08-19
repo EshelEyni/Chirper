@@ -9,11 +9,11 @@ const PostImgPage = () => {
   const idx = Number(params.idx);
   const [currImgIdx, setCurrImgIdx] = React.useState(idx || 0);
   const { post, isLoading, isSuccess, isError } = useQueryPostById(params.id || "");
-  const { onGoBack } = useGoBack("post");
+  const { goBack } = useGoBack("post");
 
   return (
     <>
-      <main className="post-img-page" onClick={onGoBack}>
+      <main className="post-img-page" onClick={goBack}>
         {isLoading && <p>Loading...</p>}
         {isSuccess && post && (
           <div className="post-img-container">

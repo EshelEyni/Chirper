@@ -66,3 +66,76 @@
     }
   }
 }
+
+.modal.save-post-draft,
+.modal.confirm-delete-post-thread {
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+
+    .modal-title {
+      font-size: rem(20px);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: rem(10px);
+    }
+
+    .modal-description {
+      font-size: rem(15px);
+      font-weight: 400;
+      color: var(--color-text-gray);
+    }
+  }
+
+  .modal-btns-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: rem(100px);
+
+    .btn {
+      width: 100%;
+      height: rem(45px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 25px;
+      font-size: rem(15px);
+      font-weight: 700;
+      color: white;
+      transition: all 0.2s ease-in-out;
+
+      span {
+        font-size: rem(15px);
+        font-weight: 700;
+        color: white;
+      }
+    }
+
+    .btn-discard-post-thread {
+      background-color: var(--color-danger);
+    }
+
+    .btn-close-modal {
+      background-color: white;
+      border: 1px solid var(--color-border);
+
+      span {
+        color: black;
+      }
+
+      &:hover {
+        background-color: var(--color-hover-light);
+      }
+    }
+
+    .btn-save-post-draft {
+      background-color: black;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}

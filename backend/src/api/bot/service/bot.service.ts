@@ -27,6 +27,11 @@ async function getBots() {
   return bots;
 }
 
+async function getBotPrompts(botId: string) {
+  const prompts = await BotPromptModel.find({ botId });
+  return prompts;
+}
+
 async function createPost({
   botId,
   prompt,
@@ -162,6 +167,6 @@ async function _getPostImgsFromOpenOpenAI(prompt: string, numberOfImages = 1) {
   // return imgs;
 }
 
-export default { getBots, addBotPrompt, createPost };
+export default { getBots, getBotPrompts, addBotPrompt, createPost };
 
 // Path: src\services\bot\bot.service.ts

@@ -2,6 +2,7 @@ import { FC } from "react";
 import "./GifDescriptionModal.scss";
 import { Modal } from "../Modal/Modal";
 import { Tippy } from "../../App/Tippy/Tippy";
+import { createPortal } from "react-dom";
 
 type GifDescriptionModalProps = {
   description: string;
@@ -14,7 +15,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
   onToggleDescription,
   isModalAbove,
 }) => {
-  return (
+  return createPortal(
     <Modal
       className="gif-description"
       onClickMainScreen={onToggleDescription as () => void}
@@ -29,6 +30,7 @@ export const GifDescriptionModal: FC<GifDescriptionModalProps> = ({
       <button className="btn-close-image-description" onClick={onToggleDescription}>
         Dismiss
       </button>
-    </Modal>
+    </Modal>,
+    document.getElementById("app")!
   );
 };

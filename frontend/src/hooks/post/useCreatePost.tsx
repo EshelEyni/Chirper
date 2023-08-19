@@ -58,7 +58,7 @@ export function useCreatePost({ onSuccessFn }: useCreatePostProps = {}) {
     onSuccess: data => {
       const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];
       const addedPost = isRepost(data) ? data.repost : isReply(data) ? data.reply : data;
-      const updatedPosts = [...currentPosts, addedPost];
+      const updatedPosts = [addedPost, ...currentPosts];
       queryClient.setQueryData(["posts"], updatedPosts);
       if (onSuccessFn) onSuccessFn();
 

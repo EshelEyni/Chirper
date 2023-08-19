@@ -44,7 +44,7 @@ function App() {
   }, [loggedInUser, dispatch]);
 
   return (
-    <div className="app">
+    <div id="app" className="app">
       {isPageLoading ? (
         <PageLoader isBirdLoader={true} />
       ) : (

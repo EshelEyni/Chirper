@@ -1,19 +1,22 @@
 import React from "react";
 import "./PostImgPage.scss";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
-import { useGoBack } from "../../../hooks/app/useGoBack";
 
 const PostImgPage = () => {
   const params = useParams();
   const idx = Number(params.idx);
   const [currImgIdx, setCurrImgIdx] = React.useState(idx || 0);
   const { post, isLoading, isSuccess, isError } = useQueryPostById(params.id || "");
-  const { goBack } = useGoBack("post");
+  const navigate = useNavigate();
+
+  function onGoBack() {
+    navigate(-1);
+  }
 
   return (
     <>
-      <main className="post-img-page" onClick={goBack}>
+      <main className="post-img-page" onClick={onGoBack}>
         {isLoading && <p>Loading...</p>}
         {isSuccess && post && (
           <div className="post-img-container">

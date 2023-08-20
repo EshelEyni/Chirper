@@ -50,4 +50,19 @@ const addBotPrompt = asyncErrorCatcher(async (req: Request, res: Response) => {
   });
 });
 
-export { getBots, getBotPrompts, addPost, addBotPrompt };
+const addBotManyPrompt = asyncErrorCatcher(async (req: Request, res: Response) => {
+  const { botId, prompts, type } = req.body;
+  const botPrompts = [];
+  for (let i = 0; i < prompts.length; i++) {
+    const prompt = prompts[i];
+    const botPrompt = await botService.addBotPrompt({ botId, prompt, type });
+    botPrompts.push(botPrompt);
+  }
+
+  res.send({
+    status: "success",
+    data: botPrompts,
+  });
+});
+
+export { getBots, getBotPrompts, addBotManyPrompt, addPost, addBotPrompt };

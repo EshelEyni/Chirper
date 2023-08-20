@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
 import { NewPost, NewPostImg } from "../../../../../shared/interfaces/post.interface";
 import { AppDispatch } from "../../../store/types";
@@ -38,10 +38,10 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { getBasePathName } from "../../../services/util/utils.service";
 import { useCreatePost } from "../../../hooks/post/useCreatePost";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 import postService from "../../../services/post.service";
+import { useGoBack } from "../../../hooks/app/useGoBack";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -65,12 +65,11 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   const { postEdit } = useSelector((state: RootState) => state);
   const { sideBar, homePage, reply, quote, newPostType } = postEdit;
   const { isCreating, createPost } = useCreatePost({ onSuccessFn: resetState });
-
+  const { goBack } = useGoBack("compose");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const threadLength = preCurrNewPostList.length + postCurrNewPostList.length + 1;
   const threadLimit = 10;
@@ -127,10 +126,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     setIsPickerShown(false);
     setArePostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
-    const { pathname } = location;
-    if (!pathname.includes("compose")) return;
-    const basePath = getBasePathName(pathname, "compose");
-    navigate(basePath);
+    if (isHomePage) return;
+    goBack();
   }
 
   function openPicker() {

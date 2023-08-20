@@ -2,7 +2,7 @@ import { FC } from "react";
 import "./MainScreen.scss";
 
 type MainScreenProps = {
-  mode: "light" | "dark";
+  mode: "light" | "dark" | "transparent";
   zIndex?: number;
 };
 

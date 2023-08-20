@@ -96,8 +96,8 @@ const ComposePage = () => {
       </div>
       <Modal
         externalStateControl={{
-          externalOpenedModalName: openedModalName,
-          setExternalOpenedModalName: setOpenedModalName,
+          openedModalName: openedModalName,
+          setOpenedModalName: setOpenedModalName,
         }}
       >
         <Modal.Window

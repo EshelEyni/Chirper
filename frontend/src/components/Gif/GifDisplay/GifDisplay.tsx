@@ -6,6 +6,8 @@ import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
 import { useModalPosition } from "../../../hooks/app/useModalPosition";
 import "./GifDisplay.scss";
 import { gifPlaceholderBcg } from "../../../services/gif.service";
+import { Modal } from "../../Modals/Modal/Modal";
+import { Tippy } from "../../App/Tippy/Tippy";
 
 interface GifDisplayProps {
   gif: Gif;
@@ -64,16 +66,29 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
         <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={14} />
         <span className="gif-title">GIF</span>
         <div className="description-container">
-          <button className="btn-open-description" onClick={onToggleDescription} ref={elementRef}>
-            ALT
-          </button>
-          {isDescriptionShown && (
-            <GifDescriptionModal
-              isModalAbove={isModalAbove}
-              description={description}
-              onToggleDescription={onToggleDescription}
-            />
-          )}
+          <Modal>
+            <Modal.OpenBtn modalName="gif-description" setPositionByRef={true} modalHeight={364}>
+              <button className="btn-open-description">ALT</button>
+            </Modal.OpenBtn>
+
+            <Modal.Window
+              name="gif-description"
+              className="gif-description"
+              mainScreenMode="transparent"
+              mainScreenZIndex={1000}
+              elementId="app"
+              includeTippy={true}
+            >
+              <div className="gif-description-title-text-container">
+                <h1>Image description</h1>
+                <p>{description}</p>
+              </div>
+
+              <Modal.CloseBtn>
+                <button className="btn-close-image-description">Dismiss</button>
+              </Modal.CloseBtn>
+            </Modal.Window>
+          </Modal>
         </div>
       </div>
     </article>

@@ -24,6 +24,13 @@ async function query(queryString: QueryObj): Promise<User[]> {
   return users as unknown as User[];
 }
 
+async function getUsers(...userIds: string[]): Promise<User[]> {
+  const users = await UserModel.find({ _id: { $in: userIds } })
+    .lean()
+    .exec();
+  return users as unknown as User[];
+}
+
 async function getById(userId: string): Promise<User> {
   const user = await UserModel.findById(userId).exec();
   return user as unknown as User;
@@ -83,4 +90,5 @@ export default {
   update,
   remove,
   removeAccount,
+  getUsers,
 };

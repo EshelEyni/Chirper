@@ -6,7 +6,6 @@ import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import { PostStatsModel } from "../../models/post-stats.model";
 import {
   LoggedInUserActionState,
-  Post,
   PostStatsBody,
 } from "../../../../../../shared/interfaces/post.interface";
 import { asyncLocalStorage } from "../../../../services/als.service";
@@ -28,15 +27,12 @@ export const loggedInUserActionDefaultState: LoggedInUserActionState = {
   isPostBookmarked: false,
 };
 
-async function getLoggedInUserActionState(
-  post: Post,
-  { isDefault = false } = {}
-): Promise<LoggedInUserActionState> {
+async function getPostLoggedInUserActionState(id: string): Promise<LoggedInUserActionState> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
 
-  if (isDefault || !isValidMongoId(loggedInUserId)) return loggedInUserActionDefaultState;
-  const postId = new ObjectId(post.id);
+  if (!isValidMongoId(loggedInUserId)) return loggedInUserActionDefaultState;
+  const postId = new ObjectId(id);
   const userId = new ObjectId(loggedInUserId);
 
   const [isReposted, isLiked, isBookmarked] = await Promise.all([
@@ -87,6 +83,6 @@ function populateRepostedBy() {
   };
 }
 
-export default { getLoggedInUserActionState, populateRepostedBy };
+export default { getPostLoggedInUserActionState, populateRepostedBy };
 
 // Path: src\api\post\services\util\util.service.test.ts

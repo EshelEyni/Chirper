@@ -83,7 +83,7 @@ describe("BookmarkService", () => {
       });
 
       mockActionStates.forEach((actionState, index) => {
-        (postUtilService.getLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
+        (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
           actionState
         );
         mockedBookMarkedPosts[index].post.loggedInUserActionState = actionState;
@@ -91,7 +91,7 @@ describe("BookmarkService", () => {
 
       const res = await bookmarkService.get(userId);
 
-      expect(postUtilService.getLoggedInUserActionState).toHaveBeenCalledTimes(
+      expect(postUtilService.getPostLoggedInUserActionState).toHaveBeenCalledTimes(
         mockedBookMarkedPosts.length
       );
       res.forEach((post, index) => {
@@ -130,7 +130,7 @@ describe("BookmarkService", () => {
 
     it("should add a bookmarked post", async () => {
       (BookmarkedPostModel.create as jest.Mock).mockResolvedValueOnce(mockedBookMarkedPost);
-      (postUtilService.getLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({});
+      (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({});
       (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce(false);
 
       const res = await bookmarkService.add(postId, userId);
@@ -144,12 +144,12 @@ describe("BookmarkService", () => {
       };
 
       (BookmarkedPostModel.create as jest.Mock).mockResolvedValueOnce(mockedBookMarkedPost);
-      (postUtilService.getLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
+      (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
         mockActionState
       );
 
       const res = await bookmarkService.add(postId, userId);
-      expect(postUtilService.getLoggedInUserActionState).toHaveBeenCalledTimes(1);
+      expect(postUtilService.getPostLoggedInUserActionState).toHaveBeenCalledTimes(1);
       expect(res.loggedInUserActionState).toEqual(mockActionState);
     });
 
@@ -210,12 +210,12 @@ describe("BookmarkService", () => {
       (BookmarkedPostModel.findOneAndRemove as jest.Mock).mockResolvedValueOnce(
         mockedBookMarkedPost
       );
-      (postUtilService.getLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
+      (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce(
         mockActionState
       );
 
       const res = await bookmarkService.remove(postId, userId);
-      expect(postUtilService.getLoggedInUserActionState).toHaveBeenCalledTimes(1);
+      expect(postUtilService.getPostLoggedInUserActionState).toHaveBeenCalledTimes(1);
       expect(res.loggedInUserActionState).toEqual(mockActionState);
     });
 

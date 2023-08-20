@@ -26,8 +26,8 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
     if (!repostedPostDoc) throw new AppError("post not found", 404);
     await session.commitTransaction();
     const updatedPost = repostedPostDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
-      updatedPost
+    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
+      updatedPost.id
     );
 
     updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
@@ -51,7 +51,9 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
       repostedBy,
     } as unknown as Post;
 
-    repost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(repost);
+    repost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
+      repost.id
+    );
 
     return { updatedPost, repost };
   } catch (error) {
@@ -81,8 +83,8 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
-      updatedPost
+    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
+      updatedPost.id
     );
 
     updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(

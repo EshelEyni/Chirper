@@ -33,7 +33,7 @@ jest.mock("../../models/post-stats.model", () => ({
 }));
 
 xdescribe("Post Util Service", () => {
-  describe("getLoggedInUserActionState", () => {
+  describe("getPostLoggedInUserActionState", () => {
     const mockPost = { id: new Types.ObjectId().toHexString() };
     const postId = new Types.ObjectId(mockPost.id);
     const userId = new Types.ObjectId(new Types.ObjectId().toHexString());
@@ -48,7 +48,7 @@ xdescribe("Post Util Service", () => {
     });
 
     it("should return default state when isDefault is true", async () => {
-      const result = await postUtilService.getLoggedInUserActionState(mockPost as Post, {
+      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post, {
         isDefault: true,
       });
       expect(result).toEqual(loggedInUserActionDefaultState);
@@ -58,13 +58,13 @@ xdescribe("Post Util Service", () => {
     it("should return default state when loggedInUserId is not valid", async () => {
       (asyncLocalStorage.getStore as jest.Mock).mockReset();
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({});
-      const result = await postUtilService.getLoggedInUserActionState(mockPost as Post);
+      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
       expect(result).toEqual(loggedInUserActionDefaultState);
       expect(asyncLocalStorage.getStore).toHaveBeenCalled();
     });
 
     it("should query the database for current user's post action state", async () => {
-      await postUtilService.getLoggedInUserActionState(mockPost as Post);
+      await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
       expect(asyncLocalStorage.getStore).toHaveBeenCalled();
       expect(asyncLocalStorage.getStore).toHaveBeenCalledTimes(1);
       expect(queryEntityExists).toHaveBeenCalled();
@@ -109,7 +109,7 @@ xdescribe("Post Util Service", () => {
 
       (PostStatsModel.findOne as jest.Mock).mockReturnValueOnce(postStats);
 
-      const result = await postUtilService.getLoggedInUserActionState(mockPost as Post);
+      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
 
       expect(result).toEqual({
         ...loggedInUserActionDefaultState,

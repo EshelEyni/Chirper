@@ -1,22 +1,34 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { FC, useState, createContext, useContext, cloneElement } from "react";
+import {
+  FC,
+  useState,
+  createContext,
+  useContext,
+  cloneElement,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { createPortal } from "react-dom";
 import { MainScreen } from "../../App/MainScreen/MainScreen";
 import "./Modal.scss";
 import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
+import { Tippy } from "../../App/Tippy/Tippy";
 
 type ModalProps = {
   children: React.ReactNode;
   style?: React.CSSProperties;
   externalStateControl?: {
-    externalOpenedModalName: string;
-    setExternalOpenedModalName: React.Dispatch<React.SetStateAction<string>>;
+    openedModalName: string;
+    setOpenedModalName: React.Dispatch<React.SetStateAction<string>>;
   };
 };
 
 type OpenBtnProps = {
   children: React.ReactElement;
   modalName: string;
+  setPositionByRef?: boolean;
+  modalHeight?: number;
 };
 
 type CloseBtnProps = {
@@ -27,15 +39,21 @@ type CloseBtnProps = {
 type WindowProps = {
   children: React.ReactElement[];
   name: string;
-  mainScreenMode: "dark" | "light";
+  className?: string;
+  mainScreenMode: "dark" | "light" | "transparent";
   mainScreenZIndex: number;
   elementId: string;
+  includeTippy?: boolean;
 };
 
 type ModalContextType = {
   openedModalName: string;
   close: () => void;
   open: (name: string) => void;
+  position: any | null;
+  setPosition: React.Dispatch<React.SetStateAction<any | null>>;
+  isModalAbove: boolean;
+  setIsModalAbove: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -45,36 +63,81 @@ export const Modal: FC<ModalProps> & {
   Window: FC<WindowProps>;
   CloseBtn: FC<CloseBtnProps>;
 } = ({ children, externalStateControl }) => {
-  const [internalOpenedModalName, internalSetOpenedModalName] = useState("");
+  const [openedModalName, setOpenedModalName] = useState("");
+  const [position, setPosition] = useState(null);
+  const [isModalAbove, setIsModalAbove] = useState(false);
 
   const close = () => {
     if (externalStateControl) {
-      externalStateControl.setExternalOpenedModalName("");
+      externalStateControl.setOpenedModalName("");
       return;
     }
-    internalSetOpenedModalName("");
+    setOpenedModalName("");
   };
   const open = (name: string) => {
     if (externalStateControl) {
-      externalStateControl.setExternalOpenedModalName(name);
+      externalStateControl.setOpenedModalName(name);
       return;
     }
-    internalSetOpenedModalName(name);
+    setOpenedModalName(name);
   };
 
-  const openedModalName = externalStateControl?.externalOpenedModalName || internalOpenedModalName;
+  const value = {
+    openedModalName: externalStateControl?.openedModalName || openedModalName,
+    close,
+    open,
+    position,
+    setPosition,
+    isModalAbove,
+    setIsModalAbove,
+  };
 
-  return (
-    <ModalContext.Provider value={{ openedModalName, close, open }}>
-      {children}
-    </ModalContext.Provider>
-  );
+  return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
 };
 
-const OpenBtn: FC<OpenBtnProps> = ({ children, modalName }) => {
-  const { open } = useContext(ModalContext)!;
+const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, modalHeight }) => {
+  const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const calculatePosition = useCallback(() => {
+    console.log("calculatePosition");
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect || !modalHeight) return;
+    const windowHeight = window.innerHeight;
+    const isModalPositionUp = windowHeight - rect.top < modalHeight;
+    const bottomPosition = { top: rect.bottom + rect.height / 2 + window.scrollY };
+    const topPosition = { bottom: window.innerHeight - rect.top + rect.height / 2 };
+    setIsModalAbove(isModalPositionUp);
+    setPosition({
+      ...(!isModalPositionUp ? bottomPosition : topPosition),
+      left: rect.left + rect.width / 2 + window.scrollX,
+    });
+  }, [modalHeight, setIsModalAbove, setPosition]);
+
+  const handleClick = () => {
+    if (setPositionByRef) calculatePosition();
+
+    open(modalName);
+  };
+
+  useEffect(() => {
+    if (!setPositionByRef) return;
+
+    const events = ["wheel", "scroll", "resize"];
+    events.forEach(event => {
+      window.addEventListener(event, calculatePosition);
+    });
+
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, calculatePosition);
+      });
+    };
+  }, [setPositionByRef, calculatePosition]);
+
   return cloneElement(children, {
-    onClick: () => open(modalName),
+    onClick: handleClick,
+    ref,
   });
 };
 
@@ -91,23 +154,24 @@ const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
 const Window: FC<WindowProps> = ({
   children,
   name,
+  className,
   mainScreenMode,
   mainScreenZIndex,
   elementId,
+  includeTippy = false,
 }) => {
-  const { openedModalName, close } = useContext(ModalContext)!;
+  const { openedModalName, close, position, isModalAbove } = useContext(ModalContext)!;
   const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
-
   if (name !== openedModalName) return null;
-
   return createPortal(
     <>
       <MainScreen mode={mainScreenMode} zIndex={mainScreenZIndex} />
       <section
-        className={`modal ${name}`}
-        style={{ zIndex: mainScreenZIndex + 1 }}
+        className={`modal ${className ? className : name}`}
+        style={{ zIndex: mainScreenZIndex + 1, ...position }}
         ref={outsideClickRef}
       >
+        {includeTippy && <Tippy isModalAbove={!!isModalAbove} />}
         {children}
       </section>
     </>,

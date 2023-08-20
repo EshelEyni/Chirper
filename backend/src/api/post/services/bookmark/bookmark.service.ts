@@ -19,7 +19,7 @@ async function get(loggedInUserId: string): Promise<Post[]> {
 
   const prms = bookmarkedPostsDocs.map(async doc => {
     const { post } = doc as unknown as bookmarkedPostDoc;
-    post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
+    post.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(post.id);
     post.createdBy.isFollowing = await followerService.getIsFollowing(
       post.createdBy as unknown as User
     );
@@ -38,7 +38,7 @@ async function add(postId: string, loggedInUserId: string): Promise<Post> {
   ).toObject() as unknown as bookmarkedPostDoc;
 
   const { post } = bookmarkPost;
-  post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
+  post.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(post.id);
   post.createdBy.isFollowing = await followerService.getIsFollowing(
     post.createdBy as unknown as User
   );
@@ -56,7 +56,7 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
 
   if (!bookmarkPost) throw new AppError("This Post is not Bookmarked", 404);
   const { post } = bookmarkPost;
-  post.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(post);
+  post.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(post.id);
   post.createdBy.isFollowing = await followerService.getIsFollowing(
     post.createdBy as unknown as User
   );

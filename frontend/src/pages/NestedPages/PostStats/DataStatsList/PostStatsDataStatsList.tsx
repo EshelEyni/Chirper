@@ -1,7 +1,9 @@
 import { FC } from "react";
-import { BtnTogglePostStatsInfoModal } from "../../../../components/Btns/BtnTogglePostStatsInfoModal/BtnTogglePostStatsInfoModal";
 import "./PostStatsDataStatsList.scss";
 import { PostStats } from "../../../../../../shared/interfaces/post.interface";
+import { Modal } from "../../../../components/Modals/Modal/Modal";
+import { GoInfo } from "react-icons/go";
+import { Tippy } from "../../../../components/App/Tippy/Tippy";
 
 type PostStatsDataStatsListProps = {
   postStats: PostStats;
@@ -61,7 +63,31 @@ export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({ postSt
           >
             <div className="post-stats-data-item-title">
               <span className="post-stats-data-item-name">{name}</span>
-              <BtnTogglePostStatsInfoModal elementId={elementId} name={name} desc={desc} />
+              <Modal>
+                <Modal.OpenBtn modalName={name}>
+                  <span className="btn-post-stats-data-item-info" id={elementId}>
+                    <GoInfo size={15} />
+                  </span>
+                </Modal.OpenBtn>
+                <Modal.Window
+                  name={name}
+                  className="post-stats-info"
+                  mainScreenMode="dark"
+                  mainScreenZIndex={1000}
+                  elementId={elementId}
+                >
+                  <div className="post-stats-info-text">
+                    <h1>{name}</h1>
+                    <p>{desc}</p>
+                  </div>
+                  <Modal.CloseBtn>
+                    <button className="btn-go-back">
+                      <span>OK</span>
+                    </button>
+                  </Modal.CloseBtn>
+                  <Tippy isModalAbove={true} />
+                </Modal.Window>
+              </Modal>
             </div>
             <h1 className="post-stats-data-item-count">{count}</h1>
           </div>

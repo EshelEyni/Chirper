@@ -45,3 +45,32 @@
     }
   }
 }
+
+.modal.gif-description {
+  .gif-description-title-text-container {
+    width: 100%;
+
+    h1 {
+      font-size: rem(26px);
+    }
+
+    p {
+      font-size: rem(15px);
+      padding: rem(8px) 0 rem(15px) 0;
+      color: var(--color-text-gray);
+    }
+  }
+
+  .btn-close-image-description {
+    padding: rem(16px) rem(32px);
+    font-weight: 700;
+    border: 1px solid var(--color-border);
+    border-radius: 25px;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--color-hover);
+    }
+  }
+}

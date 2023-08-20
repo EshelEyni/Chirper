@@ -26,8 +26,8 @@ async function add(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
-      updatedPost
+    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
+      updatedPost.id
     );
 
     updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
@@ -63,8 +63,8 @@ async function remove(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getLoggedInUserActionState(
-      updatedPost
+    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
+      updatedPost.id
     );
 
     updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(

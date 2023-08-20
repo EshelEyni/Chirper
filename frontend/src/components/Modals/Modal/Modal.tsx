@@ -29,11 +29,14 @@ type OpenBtnProps = {
   modalName: string;
   setPositionByRef?: boolean;
   modalHeight?: number;
+  onClickFn?: () => void;
+  isCallInnerFn?: boolean;
 };
 
 type CloseBtnProps = {
   children: React.ReactElement;
   onClickFn?: () => void;
+  isCallInnerFn?: boolean;
 };
 
 type WindowProps = {
@@ -42,7 +45,7 @@ type WindowProps = {
   className?: string;
   mainScreenMode: "dark" | "light" | "transparent";
   mainScreenZIndex: number;
-  elementId: string;
+  elementId?: string;
   includeTippy?: boolean;
 };
 
@@ -95,12 +98,18 @@ export const Modal: FC<ModalProps> & {
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
 };
 
-const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, modalHeight }) => {
+const OpenBtn: FC<OpenBtnProps> = ({
+  children,
+  modalName,
+  setPositionByRef,
+  modalHeight,
+  onClickFn,
+  isCallInnerFn = true,
+}) => {
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
 
   const calculatePosition = useCallback(() => {
-    console.log("calculatePosition");
     const rect = ref.current?.getBoundingClientRect();
     if (!rect || !modalHeight) return;
     const windowHeight = window.innerHeight;
@@ -116,8 +125,8 @@ const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, moda
 
   const handleClick = () => {
     if (setPositionByRef) calculatePosition();
-
-    open(modalName);
+    onClickFn?.();
+    if (isCallInnerFn) open(modalName);
   };
 
   useEffect(() => {
@@ -141,12 +150,12 @@ const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, moda
   });
 };
 
-const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
+const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn, isCallInnerFn = true }) => {
   const { close } = useContext(ModalContext)!;
   return cloneElement(children, {
     onClick: () => {
       onClickFn?.();
-      close();
+      if (isCallInnerFn) close();
     },
   });
 };
@@ -157,7 +166,7 @@ const Window: FC<WindowProps> = ({
   className,
   mainScreenMode,
   mainScreenZIndex,
-  elementId,
+  elementId = "app",
   includeTippy = false,
 }) => {
   const { openedModalName, close, position, isModalAbove } = useContext(ModalContext)!;

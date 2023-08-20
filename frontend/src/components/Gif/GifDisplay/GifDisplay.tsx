@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { useInView } from "react-intersection-observer";
-import { GifDescriptionModal } from "../../Modals/GifDescriptionModal/GifDescriptionModal";
 import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
-import { useModalPosition } from "../../../hooks/app/useModalPosition";
 import "./GifDisplay.scss";
 import { gifPlaceholderBcg } from "../../../services/gif.service";
 import { Modal } from "../../Modals/Modal/Modal";
-import { Tippy } from "../../App/Tippy/Tippy";
 
 interface GifDisplayProps {
   gif: Gif;
@@ -23,12 +20,8 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   },
   isAutoPlay = true,
 }) => {
-  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
-    modalHeight: 364,
-  });
   const [isPlaying, setIsPlaying] = useState<boolean>(isAutoPlay);
   const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
-  const [isDescriptionShown, setIsDescriptionShown] = useState<boolean>(false);
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
@@ -36,12 +29,6 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   function onTogglePlay() {
     setIsPlaying(prev => !prev);
     setIsUserPaused(prev => !prev);
-  }
-
-  function onToggleDescription(e: React.MouseEvent) {
-    e.stopPropagation();
-    updateModalPosition();
-    setIsDescriptionShown(!isDescriptionShown);
   }
 
   useEffect(() => {
@@ -76,7 +63,6 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
               className="gif-description"
               mainScreenMode="transparent"
               mainScreenZIndex={1000}
-              elementId="app"
               includeTippy={true}
             >
               <div className="gif-description-title-text-container">

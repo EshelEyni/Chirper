@@ -13,12 +13,12 @@ import "./PostEditActions.scss";
 import { PostEditBtnImgAndVideoUpload } from "../PostEditBtnImgVideoUpload/PostEditBtnImgVideoUpload";
 import { PostEditBtnEmoji } from "../PostEditBtnEmoji/PostEditBtnEmoji";
 import { PostEditActionBtn } from "../PostEditActionBtn/PostEditActionBtn";
-import { GifPickerModal } from "../../../../Modals/GifPickerModal/GifPickerModal";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../../../store/slices/postEditSlice";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../../../Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../../../../../shared/interfaces/system.interface";
+import { PostEditBtnGif } from "../PostEditBtnGif/PostEditBtnGif";
 
 export type UIElement = "gifPicker" | "emojiPicker" | "scheduleModal" | "locationModal";
 export type PostEditActionBtn = {
@@ -29,7 +29,9 @@ export type PostEditActionBtn = {
   onClickFn?: () => void;
 };
 
-export type ElementVisibility = Record<UIElement, boolean>;
+export type ElementVisibility = {
+  emojiPicker: boolean;
+};
 
 export const PostEditActions: FC = () => {
   const { newPostText, setNewPostText, isPickerShown, currNewPost } = usePostEdit();
@@ -41,13 +43,8 @@ export const PostEditActions: FC = () => {
   const [isMultiple, setIsMultiple] = useState(true);
 
   const [elementVisibility, setElementVisibility] = useState<ElementVisibility>({
-    gifPicker: false,
     emojiPicker: false,
-    scheduleModal: true,
-    locationModal: false,
   });
-
-  const isGifModalShown = elementVisibility.gifPicker && currNewPost;
 
   const btns: PostEditActionBtn[] = [
     {
@@ -68,7 +65,7 @@ export const PostEditActions: FC = () => {
         !!currNewPost?.gif ||
         !!currNewPost?.poll ||
         !!currNewPost?.video,
-      onClickFn: handleBtnGifClick,
+      onClickFn: undefined,
     },
     {
       name: "poll",
@@ -106,11 +103,6 @@ export const PostEditActions: FC = () => {
     },
   ];
 
-  function handleBtnGifClick() {
-    if (!isPickerShown) return;
-    onToggleElementVisibility("gifPicker");
-  }
-
   function handleBtnPollClick() {
     if (!isPickerShown || !currNewPost) return;
     const defaultPoll: Poll = {
@@ -131,7 +123,7 @@ export const PostEditActions: FC = () => {
 
   function handleBtnEmojiClick() {
     if (!isPickerShown) return;
-    onToggleElementVisibility("emojiPicker");
+    setElementVisibility({ ...elementVisibility, emojiPicker: !elementVisibility.emojiPicker });
   }
 
   function handleBtnScheduleClick() {
@@ -161,13 +153,6 @@ export const PostEditActions: FC = () => {
     dispatch(updateNewPost({ newPost: { ...currNewPost, text: newText }, newPostType }));
   }
 
-  function onToggleElementVisibility(elementName: UIElement) {
-    setElementVisibility({
-      ...elementVisibility,
-      [elementName]: !elementVisibility[elementName],
-    });
-  }
-
   useEffect(() => {
     if (!currNewPost) return;
     if (currNewPost.imgs.length < 3) setIsMultiple(true);
@@ -178,32 +163,36 @@ export const PostEditActions: FC = () => {
     <>
       <section className="post-edit-action-btns">
         {btns.map(btn => {
-          if (btn.name === "img-video-upload") {
-            return (
-              <PostEditBtnImgAndVideoUpload
-                btn={btn}
-                isMultiple={isMultiple}
-                isPickerShown={isPickerShown}
-                key={btn.name}
-              />
-            );
-          } else if (btn.name === "emoji") {
-            return (
-              <PostEditBtnEmoji
-                btn={btn}
-                elementVisibility={elementVisibility}
-                onToggleElementVisibility={onToggleElementVisibility}
-                onEmojiPicked={onEmojiPicked}
-                key={btn.name}
-              />
-            );
-          } else {
-            return <PostEditActionBtn btn={btn} key={btn.name} />;
+          switch (btn.name) {
+            case "img-video-upload":
+              return (
+                <PostEditBtnImgAndVideoUpload
+                  btn={btn}
+                  isMultiple={isMultiple}
+                  isPickerShown={isPickerShown}
+                  key={btn.name}
+                />
+              );
+            case "emoji":
+              return (
+                <PostEditBtnEmoji
+                  btn={btn}
+                  elementVisibility={elementVisibility}
+                  onToggleElementVisibility={() =>
+                    setElementVisibility({ ...elementVisibility, emojiPicker: false })
+                  }
+                  onEmojiPicked={onEmojiPicked}
+                  key={btn.name}
+                />
+              );
+
+            case "gif-upload":
+              return <PostEditBtnGif btn={btn} key={btn.name} />;
+            default:
+              return <PostEditActionBtn btn={btn} key={btn.name} />;
           }
         })}
       </section>
-
-      {isGifModalShown && <GifPickerModal onToggleElementVisibility={onToggleElementVisibility} />}
     </>
   );
 };

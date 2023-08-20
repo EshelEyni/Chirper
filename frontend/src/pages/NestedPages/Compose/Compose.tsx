@@ -100,12 +100,7 @@ const ComposePage = () => {
           setOpenedModalName: setOpenedModalName,
         }}
       >
-        <Modal.Window
-          name="save-post-draft"
-          mainScreenMode="dark"
-          mainScreenZIndex={3000}
-          elementId="app"
-        >
+        <Modal.Window name="save-post-draft" mainScreenMode="dark" mainScreenZIndex={3000}>
           <div className="modal-header">
             <span className="modal-title">Save Chirp?</span>
             <p className="modal-description">You can save this to send later from your drafts.</p>
@@ -127,7 +122,6 @@ const ComposePage = () => {
           name="confirm-delete-post-thread"
           mainScreenMode="dark"
           mainScreenZIndex={3000}
-          elementId="app"
         >
           <div className="modal-header">
             <span className="modal-title">Discard thread?</span>

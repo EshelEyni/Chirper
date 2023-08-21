@@ -95,6 +95,10 @@ export type LoggedInUserActionState = {
   isPostBookmarked: boolean;
 };
 
+export type LoggedInUserActionStates = {
+  [key: string]: LoggedInUserActionState;
+};
+
 export type PollOption = {
   text: string;
   voteCount: number;

@@ -4,7 +4,6 @@ import { PostModel } from "../../models/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import followerService from "../../../user/services/follower/follower.service";
-import { User } from "../../../../../../shared/interfaces/user.interface";
 import postUtilService from "../util/util.service";
 
 async function add(postId: string, userId: string): Promise<Post> {
@@ -26,13 +25,14 @@ async function add(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
-      updatedPost.id
-    );
 
-    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
-      updatedPost.createdBy as unknown as User
-    );
+    const res = await postUtilService.getPostLoggedInUserActionState(updatedPost.id);
+    const currLoggedInActionState = res[updatedPost.id];
+
+    updatedPost.loggedInUserActionState = currLoggedInActionState;
+
+    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     return updatedPost;
   } catch (error) {
@@ -63,13 +63,13 @@ async function remove(postId: string, userId: string): Promise<Post> {
     await session.commitTransaction();
 
     const updatedPost = postDoc.toObject() as unknown as Post;
-    updatedPost.loggedInUserActionState = await postUtilService.getPostLoggedInUserActionState(
-      updatedPost.id
-    );
 
-    updatedPost.createdBy.isFollowing = await followerService.getIsFollowing(
-      updatedPost.createdBy as unknown as User
-    );
+    const res = await postUtilService.getPostLoggedInUserActionState(updatedPost.id);
+    const currLoggedInActionState = res[updatedPost.id];
+    updatedPost.loggedInUserActionState = currLoggedInActionState;
+
+    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     return updatedPost;
   } catch (error) {

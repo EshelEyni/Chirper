@@ -24,12 +24,32 @@ type UpdatePostStatsAndReturnPostParams = {
   session: ClientSession;
 };
 
-async function getIsFollowing(user: User): Promise<boolean> {
+export type isFollowingMap = {
+  [key: string]: boolean;
+};
+
+async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
-  if (!isValidMongoId(loggedInUserId)) return false;
-  const isFollowing = await FollowerModel.exists({ fromUserId: loggedInUserId, toUserId: user.id });
-  return !!isFollowing;
+  if (!isValidMongoId(loggedInUserId)) {
+    const res = ids.reduce((acc, id) => ({ ...acc, [id]: false }), {});
+    return res;
+  }
+  const isFollowing = await FollowerModel.find({
+    fromUserId: loggedInUserId,
+    toUserId: { $in: ids },
+  })
+    .select({ toUserId: 1 })
+    .exec();
+
+  const isFollowingMap = isFollowing.reduce(
+    (acc, { toUserId }) => ({ ...acc, [toUserId]: true }),
+    {}
+  ) as isFollowingMap;
+
+  const res = ids.reduce((acc, id) => ({ ...acc, [id]: isFollowingMap[id] || false }), {});
+
+  return res;
 }
 
 async function add(

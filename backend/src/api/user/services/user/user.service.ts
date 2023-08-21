@@ -17,7 +17,9 @@ async function query(queryString: QueryObj): Promise<User[]> {
   const users = await Promise.all(
     usersDocs.map(async userDoc => {
       const user = userDoc.toObject();
-      user.isFollowing = await followerService.getIsFollowing(user);
+
+      const isFollowingMap = await followerService.getIsFollowing(user.id);
+      user.isFollowing = isFollowingMap[user.id];
       return user;
     })
   );

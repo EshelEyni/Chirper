@@ -2,8 +2,8 @@ import { createContext, useContext, useState } from "react";
 import { Poll, Post } from "../../../shared/interfaces/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
-import useRemoveFollowFromPost from "../hooks/post/useRemoveFollowFromPost";
-import useAddFollowFromPost from "../hooks/post/useAddFollowFromPost";
+import useRemoveFollowFromPost from "../hooks/reactQuery/post/useRemoveFollowFromPost";
+import useAddFollowFromPost from "../hooks/reactQuery/post/useAddFollowFromPost";
 
 type PostPreviewContextType = {
   post: Post;

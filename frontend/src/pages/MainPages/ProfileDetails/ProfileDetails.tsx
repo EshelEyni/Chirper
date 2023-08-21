@@ -1,7 +1,7 @@
 import { Outlet, useParams } from "react-router-dom";
 import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
 import "./ProfileDetails.scss";
-import { useQueryUserWithPosts } from "../../../hooks/user/useQueryUserWithPosts";
+import { useQueryUserWithPosts } from "../../../hooks/reactQuery/user/useQueryUserWithPosts";
 import { PostList } from "../../../components/Post/PostList/PostList";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";

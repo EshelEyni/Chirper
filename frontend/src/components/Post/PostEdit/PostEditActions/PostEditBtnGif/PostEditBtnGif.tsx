@@ -10,6 +10,8 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { GifSearchBar } from "../../../../Gif/GifSearchBar/GifSearchBar";
 import "./PostEditBtnGif.scss";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
+import { useQueryGifs } from "../../../../../hooks/reactQuery/gif/useQueryGifs";
+import { ErrorMsg } from "../../../../Msg/ErrorMsg/ErrorMsg";
 
 type PostEditBtnGifProps = {
   btn: TypeOfPostEditActionBtn;
@@ -17,21 +19,21 @@ type PostEditBtnGifProps = {
 
 export const PostEditBtnGif: FC<PostEditBtnGifProps> = ({ btn }) => {
   const { isPickerShown } = usePostEdit();
-  const [gifs, setGifs] = useState<Gif[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchBarInputRef = useRef<HTMLInputElement>(null);
   const [openedModalName, setOpenedModalName] = useState("");
 
+  const { gifs, isLoading, isSuccess, isError, isEmpty } = useQueryGifs(searchTerm);
+
   function resetState() {
-    setGifs([]);
     setSearchTerm("");
     if (!searchBarInputRef.current) return;
     searchBarInputRef.current.value = "";
   }
 
   function handleBtnCloseClick() {
+    if (searchTerm) return setSearchTerm("");
     setOpenedModalName("");
-    if (!gifs.length) return setOpenedModalName("");
     resetState();
   }
 
@@ -46,41 +48,38 @@ export const PostEditBtnGif: FC<PostEditBtnGifProps> = ({ btn }) => {
 
   return (
     <Modal externalStateControl={{ openedModalName, setOpenedModalName }}>
-      <Modal.OpenBtn modalName="gif-picker" onClickFn={handleBtnOpenClick} isCallInnerFn={false}>
-        <button
-          disabled={btn.isDisabled}
-          className={"post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")}
-        >
-          <div className="post-edit-action-icon-container">{btn.icon}</div>
-        </button>
-      </Modal.OpenBtn>
+      <button
+        disabled={btn.isDisabled}
+        className={"post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")}
+        onClick={handleBtnOpenClick}
+      >
+        <div className="post-edit-action-icon-container">{btn.icon}</div>
+      </button>
 
       <Modal.Window name="gif-picker" mainScreenMode="dark" mainScreenZIndex={100}>
         <header className="gif-picker-header">
-          <Modal.CloseBtn onClickFn={handleBtnCloseClick} isCallInnerFn={false}>
-            <button className="gif-picker-header-btn">
-              {!gifs.length ? <AiOutlineClose /> : <IoArrowBackSharp />}
-            </button>
-          </Modal.CloseBtn>
+          <button className="gif-picker-header-btn" onClick={handleBtnCloseClick}>
+            {searchTerm ? <IoArrowBackSharp /> : <AiOutlineClose />}
+          </button>
           <GifSearchBar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            setGifs={setGifs}
             SearchBarInputRef={searchBarInputRef}
           />
         </header>
 
-        {gifs.length > 0 ? (
-          <GifList onToggleElementVisibility={setOpenedModalName} gifs={gifs} />
-        ) : (
-          <SpinnerLoader />
+        {searchTerm && (
+          <>
+            {isLoading && <SpinnerLoader />}
+            {isSuccess && !isEmpty && (
+              <GifList onToggleElementVisibility={setOpenedModalName} gifs={gifs as Gif[]} />
+            )}
+            {isSuccess && isEmpty && <p className="no-res-msg">no gifs to show</p>}
+            {isError && <ErrorMsg msg={"Couldn't get gifs. Please try again later."} />}
+          </>
         )}
 
-        <GifCategoryList
-          currCategory={searchTerm}
-          setCurrCategory={setSearchTerm}
-          setGifs={setGifs}
-        />
+        {!searchTerm && <GifCategoryList setCurrCategory={setSearchTerm} />}
       </Modal.Window>
     </Modal>
   );

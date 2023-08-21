@@ -1,55 +1,45 @@
 import { useEffect, useState } from "react";
 import { SlMagnifier } from "react-icons/sl";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { Gif } from "../../../../../shared/interfaces/gif.interface";
-import gifService from "../../../services/gif.service";
 import { debounce } from "../../../services/util/utils.service";
 import "./GifSearchBar.scss";
 
 interface GifSearchBarProps {
   searchTerm: string;
   setSearchTerm: (searchTerm: string) => void;
-  setGifs: (gifs: Gif[]) => void;
+  // setGifs: (gifs: Gif[]) => void;
   SearchBarInputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const GifSearchBar: React.FC<GifSearchBarProps> = ({
   searchTerm,
   setSearchTerm,
-  setGifs,
   SearchBarInputRef,
 }) => {
   const [isSearchBarFocused, setIsSearchBarFocused] = useState<boolean>(false);
-
-  async function getgifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
-    const gifs = await gifService.getGifsBySearchTerm(searchTerm);
-    return gifs as Gif[];
-  }
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const inputValue = e.target.value;
     if (!inputValue) {
       setSearchTerm("");
-      setGifs([]);
       return;
     }
-    setGifs([]);
-    const gifs = await getgifsBySearchTerm(inputValue);
-    setGifs(gifs);
     setSearchTerm(inputValue);
   }
 
   function onClearSearch() {
     setSearchTerm("");
-    setGifs([]);
-    SearchBarInputRef.current!.value = "";
+    if (!SearchBarInputRef.current) return;
+    SearchBarInputRef.current.value = "";
   }
 
   useEffect(() => {
-    SearchBarInputRef.current!.value = searchTerm;
-    SearchBarInputRef.current!.focus();
+    if (!searchTerm) return;
     setIsSearchBarFocused(true);
-  }, [searchTerm]);
+    if (!SearchBarInputRef.current) return;
+    SearchBarInputRef.current.value = searchTerm;
+    SearchBarInputRef.current.focus();
+  }, [searchTerm, SearchBarInputRef]);
 
   return (
     <div className={"gif-search-bar" + (isSearchBarFocused ? " focused" : "")}>

@@ -1,5 +1,5 @@
 import { Outlet, useParams } from "react-router-dom";
-import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
+import { useQueryPostById } from "../../../hooks/reactQuery/post/useQueryPostById";
 import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
 

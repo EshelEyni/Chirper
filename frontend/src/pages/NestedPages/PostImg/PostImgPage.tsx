@@ -1,7 +1,7 @@
 import React from "react";
 import "./PostImgPage.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
+import { useQueryPostById } from "../../../hooks/reactQuery/post/useQueryPostById";
 
 const PostImgPage = () => {
   const params = useParams();

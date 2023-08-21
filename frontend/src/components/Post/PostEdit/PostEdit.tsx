@@ -38,7 +38,7 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { useCreatePost } from "../../../hooks/post/useCreatePost";
+import { useCreatePost } from "../../../hooks/reactQuery/post/useCreatePost";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 import postService from "../../../services/post.service";
 import { useGoBack } from "../../../hooks/app/useGoBack";

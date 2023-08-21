@@ -30,17 +30,15 @@ type OpenBtnProps = {
   setPositionByRef?: boolean;
   modalHeight?: number;
   onClickFn?: () => void;
-  isCallInnerFn?: boolean;
 };
 
 type CloseBtnProps = {
   children: React.ReactElement;
   onClickFn?: () => void;
-  isCallInnerFn?: boolean;
 };
 
 type WindowProps = {
-  children: React.ReactElement[];
+  children: React.ReactNode;
   name: string;
   className?: string;
   mainScreenMode: "dark" | "light" | "transparent";
@@ -104,7 +102,6 @@ const OpenBtn: FC<OpenBtnProps> = ({
   setPositionByRef,
   modalHeight,
   onClickFn,
-  isCallInnerFn = true,
 }) => {
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
@@ -126,7 +123,7 @@ const OpenBtn: FC<OpenBtnProps> = ({
   const handleClick = () => {
     if (setPositionByRef) calculatePosition();
     onClickFn?.();
-    if (isCallInnerFn) open(modalName);
+    open(modalName);
   };
 
   useEffect(() => {
@@ -150,12 +147,12 @@ const OpenBtn: FC<OpenBtnProps> = ({
   });
 };
 
-const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn, isCallInnerFn = true }) => {
+const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
   const { close } = useContext(ModalContext)!;
   return cloneElement(children, {
     onClick: () => {
       onClickFn?.();
-      if (isCallInnerFn) close();
+      close();
     },
   });
 };

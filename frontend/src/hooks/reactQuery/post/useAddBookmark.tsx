@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../../services/post.service";
-import reactQueryService from "../../services/reactQuery/reactQuery.service";
-import { UserMsg } from "../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
-import { getDefaultErrorMsg } from "../../services/util/utils.service";
+import postService from "../../../services/post.service";
+import reactQueryService from "../../../services/reactQuery/reactQuery.service";
+import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
 export function useAddBookmark() {
   const queryClient = useQueryClient();

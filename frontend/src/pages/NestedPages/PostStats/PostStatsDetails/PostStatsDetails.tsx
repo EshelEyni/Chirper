@@ -1,6 +1,6 @@
 import { SpinnerLoader } from "../../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { ErrorMsg } from "../../../../components/Msg/ErrorMsg/ErrorMsg";
-import { useQueryPostStats } from "../../../../hooks/post/useQueryPostStats";
+import { useQueryPostStats } from "../../../../hooks/reactQuery/post/useQueryPostStats";
 import { PostStatsActionStatsList } from "../ActionStatsList/PostStatsActionStatsList";
 import { PostStatsDataStatsList } from "../DataStatsList/PostStatsDataStatsList";
 import { FC } from "react";

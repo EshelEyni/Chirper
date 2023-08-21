@@ -8,7 +8,7 @@ import { MiniPostPreview } from "../../../components/Post/PostPreview/MiniPostPr
 import { BtnClose } from "../../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../../components/App/MainScreen/MainScreen";
 import { PostsStatsNonOwnerMsg } from "./NonOwnerMsg/PostsStatsNonOwnerMsg";
-import { useQueryPostById } from "../../../hooks/post/useQueryPostById";
+import { useQueryPostById } from "../../../hooks/reactQuery/post/useQueryPostById";
 import { PostStatsDetails } from "./PostStatsDetails/PostStatsDetails";
 import { ErrorMsg } from "../../../components/Msg/ErrorMsg/ErrorMsg";
 import "./PostStats.scss";

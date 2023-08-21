@@ -13,10 +13,10 @@ import { PostPreviewActionBtn } from "./PostPreviewActionBtn/PostPreviewActionBt
 import "./PostPreviewActions.scss";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { NewPostType, setNewPostType, setNewPosts } from "../../../../store/slices/postEditSlice";
-import { useCreateRepost } from "../../../../hooks/post/useCreateRepost";
-import { useRemoveRepost } from "../../../../hooks/post/useRemoveRepost";
-import { useAddLike } from "../../../../hooks/post/useAddLike";
-import { useRemoveLike } from "../../../../hooks/post/useRemoveLike";
+import { useCreateRepost } from "../../../../hooks/reactQuery/post/useCreateRepost";
+import { useRemoveRepost } from "../../../../hooks/reactQuery/post/useRemoveRepost";
+import { useAddLike } from "../../../../hooks/reactQuery/post/useAddLike";
+import { useRemoveLike } from "../../../../hooks/reactQuery/post/useRemoveLike";
 
 export type PostPreviewActionBtn = {
   name: string;

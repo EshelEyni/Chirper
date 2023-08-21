@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../../services/post.service";
-import { UserMsg } from "../../components/Msg/UserMsg/UserMsg";
+import postService from "../../../services/post.service";
+import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
 import {
   NewPost,
   Post,
   PostReplyResult,
   PostRepostResult,
-} from "../../../../shared/interfaces/post.interface";
-import { NewPostType } from "../../store/slices/postEditSlice";
-import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
+} from "../../../../../shared/interfaces/post.interface";
+import { NewPostType } from "../../../store/slices/postEditSlice";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
 
 type OnCreatePostProps = {
   posts: NewPost[];

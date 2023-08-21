@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import reactQueryService from "../../services/reactQuery/reactQuery.service";
-import userService from "../../services/user.service";
-import { UserMsg } from "../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../shared/interfaces/system.interface";
+import reactQueryService from "../../../services/reactQuery/reactQuery.service";
+import userService from "../../../services/user.service";
+import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
 
 export default function useAddFollowFromPost() {
   const queryClient = useQueryClient();

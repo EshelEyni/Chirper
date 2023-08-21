@@ -48,7 +48,7 @@ function App() {
       {isPageLoading ? (
         <PageLoader isBirdLoader={true} />
       ) : (
-        <div className="app-content">
+        <div className="app-content" id="app-content">
           <SideBar />
           <Suspense fallback={<PageLoader />}>
             <Routes>

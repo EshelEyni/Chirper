@@ -5,40 +5,18 @@ import queryString from "query-string";
 import { handleServerResponse } from "./util/utils.service";
 
 async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
-  try {
-    const query = queryString.stringify({ searchTerm });
-    const response = (await httpService.get(`gif/search?${query}`)) as unknown as JsendResponse;
-    return handleServerResponse<Gif[]>(response);
-  } catch (err) {
-    console.log("gifService: Cannot get gifs");
-    throw err;
-  }
+  const query = queryString.stringify({ searchTerm });
+  const response = (await httpService.get(`gif/search?${query}`)) as unknown as JsendResponse;
+  return handleServerResponse<Gif[]>(response);
 }
 
 async function getGifCategroies(): Promise<GifCategory[]> {
-  try {
-    const response = (await httpService.get(
-      `gif/categories?sort=sortOrder`
-    )) as unknown as JsendResponse;
-    return handleServerResponse<GifCategory[]>(response);
-  } catch (err) {
-    console.log("gifService: Cannot get gifs");
-    throw err;
-  }
+  const response = (await httpService.get(
+    `gif/categories?sort=sortOrder`
+  )) as unknown as JsendResponse;
+  return handleServerResponse<GifCategory[]>(response);
 }
 
-async function getGifByCategory(category: string): Promise<Gif[]> {
-  try {
-    const response = await httpService.get(
-      `gif?category=${category}&sort=sortOrder&fields=url,staticUrl,description,placeholderUrl,staticPlaceholderUrl,size`
-    );
-    return handleServerResponse<Gif[]>(response);
-  } catch (err) {
-    console.log("gifService: Cannot get gifs");
-    throw err;
-  }
-}
-
-export default { getGifsBySearchTerm, getGifCategroies, getGifByCategory };
+export default { getGifsBySearchTerm, getGifCategroies };
 
 export const gifPlaceholderBcg = ["#00BFFF", "#0BDA51", "#FFD700", "#FF00FF"];

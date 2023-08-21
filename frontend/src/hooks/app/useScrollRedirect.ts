@@ -5,15 +5,17 @@ export function useScrollRedirect() {
 
   useEffect(() => {
     const redirectScroll = (e: WheelEvent) => {
-      if (scrollTargetRef.current) {
-        scrollTargetRef.current.scrollTop += e.deltaY * 0.4;
-      }
+      if (!scrollTargetRef.current) return;
+      scrollTargetRef.current.scrollTop += e.deltaY * 0.4;
     };
 
-    window.addEventListener("wheel", redirectScroll);
+    const appContent = document.getElementById("app-content");
+    if (!appContent) return;
+
+    appContent.addEventListener("wheel", redirectScroll);
 
     return () => {
-      window.removeEventListener("wheel", redirectScroll);
+      appContent.removeEventListener("wheel", redirectScroll);
     };
   }, []);
 

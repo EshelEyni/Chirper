@@ -88,6 +88,49 @@
       align-items: center;
       justify-content: center;
       gap: rem(15px);
+
+      .btn-toggle-video-setting {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.modal .playback-rate-picker-main-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  h1 {
+    font-size: rem(20px);
+    letter-spacing: 0.5px;
+    margin-bottom: rem(10px);
+  }
+
+  .playback-rate-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .playback-rate-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+
+      &:hover {
+        .checkbox.unchecked {
+          box-shadow: 0 0 0 7.5px var(--color-text-light);
+        }
+      }
+
+      .playback-rate-list-item-label {
+        font-size: rem(15px);
+        letter-spacing: 0.5px;
+      }
     }
   }
 }

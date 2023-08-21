@@ -1,6 +1,9 @@
 import { useRef, useEffect } from "react";
+import { RootState } from "../../store/store";
+import { useSelector } from "react-redux";
 
 export function useScrollRedirect() {
+  const { isScrollRedirectActive } = useSelector((state: RootState) => state.system);
   const scrollTargetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -9,15 +12,13 @@ export function useScrollRedirect() {
       scrollTargetRef.current.scrollTop += e.deltaY * 0.4;
     };
 
-    const appContent = document.getElementById("app-content");
-    if (!appContent) return;
-
-    appContent.addEventListener("wheel", redirectScroll);
+    if (isScrollRedirectActive) document.addEventListener("wheel", redirectScroll);
+    else document.removeEventListener("wheel", redirectScroll);
 
     return () => {
-      appContent.removeEventListener("wheel", redirectScroll);
+      document.removeEventListener("wheel", redirectScroll);
     };
-  }, []);
+  }, [isScrollRedirectActive]);
 
   return { scrollTargetRef };
 }

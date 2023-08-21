@@ -22,6 +22,8 @@ type ModalProps = {
     openedModalName: string;
     setOpenedModalName: React.Dispatch<React.SetStateAction<string>>;
   };
+  onOpen?: () => void;
+  onClose?: () => void;
 };
 
 type OpenBtnProps = {
@@ -29,12 +31,10 @@ type OpenBtnProps = {
   modalName: string;
   setPositionByRef?: boolean;
   modalHeight?: number;
-  onClickFn?: () => void;
 };
 
 type CloseBtnProps = {
   children: React.ReactElement;
-  onClickFn?: () => void;
 };
 
 type WindowProps = {
@@ -63,12 +63,13 @@ export const Modal: FC<ModalProps> & {
   OpenBtn: FC<OpenBtnProps>;
   Window: FC<WindowProps>;
   CloseBtn: FC<CloseBtnProps>;
-} = ({ children, externalStateControl }) => {
+} = ({ children, externalStateControl, onClose, onOpen }) => {
   const [openedModalName, setOpenedModalName] = useState("");
   const [position, setPosition] = useState(null);
   const [isModalAbove, setIsModalAbove] = useState(false);
 
   const close = () => {
+    onClose?.();
     if (externalStateControl) {
       externalStateControl.setOpenedModalName("");
       return;
@@ -76,6 +77,7 @@ export const Modal: FC<ModalProps> & {
     setOpenedModalName("");
   };
   const open = (name: string) => {
+    onOpen?.();
     if (externalStateControl) {
       externalStateControl.setOpenedModalName(name);
       return;
@@ -96,13 +98,7 @@ export const Modal: FC<ModalProps> & {
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
 };
 
-const OpenBtn: FC<OpenBtnProps> = ({
-  children,
-  modalName,
-  setPositionByRef,
-  modalHeight,
-  onClickFn,
-}) => {
+const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, modalHeight }) => {
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
 
@@ -115,14 +111,13 @@ const OpenBtn: FC<OpenBtnProps> = ({
     const topPosition = { bottom: window.innerHeight - rect.top + rect.height / 2 };
     setIsModalAbove(isModalPositionUp);
     setPosition({
-      ...(!isModalPositionUp ? bottomPosition : topPosition),
+      ...(isModalPositionUp ? topPosition : bottomPosition),
       left: rect.left + rect.width / 2 + window.scrollX,
     });
   }, [modalHeight, setIsModalAbove, setPosition]);
 
   const handleClick = () => {
     if (setPositionByRef) calculatePosition();
-    onClickFn?.();
     open(modalName);
   };
 
@@ -147,13 +142,10 @@ const OpenBtn: FC<OpenBtnProps> = ({
   });
 };
 
-const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
+const CloseBtn: FC<CloseBtnProps> = ({ children }) => {
   const { close } = useContext(ModalContext)!;
   return cloneElement(children, {
-    onClick: () => {
-      onClickFn?.();
-      close();
-    },
+    onClick: close,
   });
 };
 

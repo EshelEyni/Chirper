@@ -12,12 +12,16 @@ import "./PostEditBtnGif.scss";
 import { usePostEdit } from "../../../../../contexts/PostEditContext";
 import { useQueryGifs } from "../../../../../hooks/reactQuery/gif/useQueryGifs";
 import { ErrorMsg } from "../../../../Msg/ErrorMsg/ErrorMsg";
+import { AppDispatch } from "../../../../../store/types";
+import { useDispatch } from "react-redux";
+import { setIsScrollRedirectActive } from "../../../../../store/slices/systemSlice";
 
 type PostEditBtnGifProps = {
   btn: TypeOfPostEditActionBtn;
 };
 
 export const PostEditBtnGif: FC<PostEditBtnGifProps> = ({ btn }) => {
+  const dispatch: AppDispatch = useDispatch();
   const { isPickerShown } = usePostEdit();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchBarInputRef = useRef<HTMLInputElement>(null);
@@ -33,12 +37,14 @@ export const PostEditBtnGif: FC<PostEditBtnGifProps> = ({ btn }) => {
 
   function handleBtnCloseClick() {
     if (searchTerm) return setSearchTerm("");
+    dispatch(setIsScrollRedirectActive(true));
     setOpenedModalName("");
     resetState();
   }
 
   function handleBtnOpenClick() {
     if (!isPickerShown) return;
+    dispatch(setIsScrollRedirectActive(false));
     setOpenedModalName("gif-picker");
   }
 
@@ -47,7 +53,10 @@ export const PostEditBtnGif: FC<PostEditBtnGifProps> = ({ btn }) => {
   }, [openedModalName]);
 
   return (
-    <Modal externalStateControl={{ openedModalName, setOpenedModalName }}>
+    <Modal
+      externalStateControl={{ openedModalName, setOpenedModalName }}
+      onClose={() => dispatch(setIsScrollRedirectActive(true))}
+    >
       <button
         disabled={btn.isDisabled}
         className={"post-edit-action-btn" + (btn.isDisabled ? " disabled" : "")}

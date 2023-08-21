@@ -99,6 +99,7 @@ const ComposePage = () => {
           openedModalName: openedModalName,
           setOpenedModalName: setOpenedModalName,
         }}
+        onClose={discardPostThreadAndGoBack}
       >
         <Modal.Window name="save-post-draft" mainScreenMode="dark" mainScreenZIndex={3000}>
           <div className="modal-header">
@@ -110,7 +111,7 @@ const ComposePage = () => {
             <button className="btn btn-save-post-draft" onClick={onSavePostDraft}>
               <span>Save</span>
             </button>
-            <Modal.CloseBtn onClickFn={discardPostThreadAndGoBack}>
+            <Modal.CloseBtn>
               <button className="btn btn-close-modal">
                 <span>Discard</span>
               </button>

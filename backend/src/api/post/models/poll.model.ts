@@ -11,9 +11,6 @@ const pollOptionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    isLoggedInUserVoted: {
-      type: Boolean,
-    },
   },
   {
     _id: false,
@@ -48,7 +45,6 @@ const pollSchema = new mongoose.Schema(
     options: [pollOptionSchema],
     length: {
       type: pollLengthSchema,
-      required: true,
     },
   },
   {

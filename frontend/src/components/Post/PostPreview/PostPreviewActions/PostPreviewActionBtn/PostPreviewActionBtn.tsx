@@ -1,9 +1,8 @@
-import { Post } from "../../../../../../../shared/interfaces/post.interface";
-import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
+// import { Post } from "../../../../../../../shared/interfaces/post.interface";
+// import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
 import { formatNumToK } from "../../../../../services/util/utils.service";
-import { PostShareOptionsModal } from "../../../../Modals/PostShareOptionsModal/PostShareOptionsModal";
 import { RepostOptionsModal } from "../../../../Modals/RepostOptionsModal/RepostOptionsModal";
-import { ElementTitle } from "../../../../App/ElementTitle/ElementTitle";
+// import { ElementTitle } from "../../../../App/ElementTitle/ElementTitle";
 import { PostPreviewActionBtn as PostPreviewActionBtnType } from "../PostPreviewActions";
 import "./PostPreviewActionBtn.scss";
 
@@ -28,10 +27,18 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
   onRemoveRepost,
   onQuotePost,
 }) => {
-  const { name, title, isClicked, icon, count, onClickFunc } = btn;
-  const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
-    btnActionContainer: false,
-  });
+  const {
+    name,
+    //  title,
+    isClicked,
+    icon,
+    count,
+    onClickFunc,
+  } = btn;
+
+  // const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
+  //   btnActionContainer: false,
+  // });
 
   return (
     <div

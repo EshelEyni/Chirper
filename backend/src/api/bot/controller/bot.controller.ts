@@ -25,7 +25,8 @@ const getBotPrompts = asyncErrorCatcher(async (req: Request, res: Response) => {
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { prompt, schedule, numOfPosts, numberOfImages, isImg, isImgOnly } = req.body;
+  const { prompt, schedule, numOfPosts, numberOfImages, isImg, isImgOnly, isPoll, isPollOnly } =
+    req.body;
   const post = await botService.createPost({
     botId: id,
     prompt,
@@ -34,6 +35,8 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
     numberOfImages: Number(numberOfImages),
     isImg,
     isImgOnly,
+    isPoll,
+    isPollOnly,
   });
   res.send({
     status: "success",

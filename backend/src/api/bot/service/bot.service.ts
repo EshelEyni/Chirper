@@ -1,6 +1,6 @@
 import { UserModel } from "../../user/models/user.model";
 import { Configuration, OpenAIApi } from "openai";
-import { NewPost, NewPostImg, Post } from "../../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg, Poll, Post } from "../../../../../shared/interfaces/post.interface";
 import { BotPromptModel } from "../model/bot-options.model";
 import ansiColors from "ansi-colors";
 import postService from "../../post/services/post/post.service";
@@ -40,6 +40,8 @@ async function createPost({
   numberOfImages = 1,
   isImg = false,
   isImgOnly = false,
+  isPoll = false,
+  isPollOnly = false,
 }: {
   botId: string;
   prompt?: string;
@@ -48,6 +50,8 @@ async function createPost({
   numberOfImages?: number;
   isImg?: boolean;
   isImgOnly?: boolean;
+  isPoll?: boolean;
+  isPollOnly?: boolean;
 }): Promise<Post[]> {
   const posts = [];
 
@@ -68,7 +72,17 @@ async function createPost({
       post["imgs"] = imgs as any as NewPostImg[];
     }
 
-    if (!isImgOnly) {
+    if (isPoll) {
+      const p = prompt ? prompt : await _getBotPrompt(botId, "poll");
+      if (!p) throw new AppError("prompt is undefined", 500);
+      const { text, poll } = await _getAndSetPostPollFromOpenAI(p);
+      if (!poll) throw new AppError("poll is undefined", 500);
+
+      post["text"] = text;
+      post["poll"] = poll;
+    }
+
+    if (!isImgOnly && !isPollOnly) {
       const p = prompt ? prompt : await _getBotPrompt(botId);
       if (!p) throw new AppError("prompt is undefined", 500);
       const text = await _getPostTextFromOpenAI(p);
@@ -108,7 +122,17 @@ async function _getBotPrompt(botId: string, type = "text"): Promise<string> {
   const random = Math.floor(Math.random() * count);
   const botPrompt = await BotPromptModel.findOne({ botId, type }).skip(random).exec();
   if (!botPrompt) throw new Error("prompt is undefined");
-  return (botPrompt.prompt as string) + "\n" + "Limit Tweet to 247 characters.";
+  if (type === "text")
+    return (botPrompt.prompt as string) + "\n" + "Limit Tweet to 247 characters.";
+  if (type === "poll") return _getPollPrompt(botPrompt.prompt as string);
+  return botPrompt.prompt as string;
+}
+
+function _getPollPrompt(prompt: string) {
+  const start = "Generate a Poll about ";
+  const end =
+    " return a json object with the question in one property and the options in another property in an array.";
+  return start + prompt + end;
 }
 
 async function _getPostTextFromOpenAI(prompt: string, model = "default"): Promise<string> {
@@ -129,6 +153,41 @@ async function _getPostTextFromOpenAI(prompt: string, model = "default"): Promis
     const { text } = completion.data.choices[0];
     return text as string;
   }
+}
+
+async function _getAndSetPostPollFromOpenAI(prompt: string): Promise<{ text: string; poll: Poll }> {
+  const completion = await openai.createChatCompletion({
+    model: "gpt-4",
+    messages: [{ role: "user", content: prompt }],
+  });
+  const { message } = completion.data.choices[0];
+  if (!message) throw new AppError("message is undefined", 500);
+  const parsedRes = JSON.parse(message.content as string);
+  const { question, options } = parsedRes;
+  if (!question || !options) throw new AppError("question or options is undefined", 500);
+  for (const option of options) {
+    if (!option) throw new AppError("option is undefined", 500);
+    if (typeof option !== "string") throw new AppError("option is not a string", 500);
+  }
+  if (options.length < 2) throw new AppError("options must be at least 2", 500);
+
+  const text = question;
+  const poll = {
+    options: options.map((option: string) => ({
+      text: option,
+      voteCount: 0,
+      isLoggedInUserVoted: false,
+    })),
+    length: {
+      days: 3,
+      hours: 0,
+      minutes: 0,
+    },
+    isVotingOff: false,
+    createdAt: Date.now(),
+  } as Poll;
+
+  return { text, poll };
 }
 
 async function uploadToCloudinary(imageBuffer: any) {

@@ -26,7 +26,7 @@ export const PollOptionsList: FC = () => {
   }
 
   function onAddChoice() {
-    if (!currNewPost || currNewPost.poll!.options.length > 5) return;
+    if (!currNewPost || currNewPost.poll!.options.length >= 5) return;
     const defaultOption = getDefaultOption();
     const newPost = {
       ...currNewPost,

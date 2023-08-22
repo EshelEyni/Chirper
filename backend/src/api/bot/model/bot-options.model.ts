@@ -26,7 +26,7 @@ const botPromptSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["text", "image"],
+      enum: ["text", "image", "poll"],
       default: "text",
     },
   },

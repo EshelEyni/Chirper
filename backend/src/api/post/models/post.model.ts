@@ -163,7 +163,8 @@ function validateContent(post: Document) {
 }
 
 function validatePoll(poll: Document) {
-  return poll.get("options").length > 1 && poll.get("options").length <= 4;
+  const options = poll.get("options");
+  return options.length > 1 && options.length <= 5;
 }
 
 function validateSchedule(post: Document) {
@@ -181,12 +182,13 @@ postSchema.index({ userId: 1 });
 postSchema.index({ schedule: 1 }, { partialFilterExpression: { schedule: { $exists: true } } });
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
+  const poll = this.get("poll");
   if (!validateContent(this)) {
     const err = new Error("At least one of text, gif, imgs, or poll is required");
     err.name = "ValidationError";
     next(err);
-  } else if (this.get("poll") && !validatePoll(this.get("poll"))) {
-    const err = new Error("Poll must have at least 2 options and at most 4 options");
+  } else if (poll && !validatePoll(poll)) {
+    const err = new Error("Poll must have at least 2 options and at most 5 options");
     err.name = "ValidationError";
     next(err);
   } else if (this.get("schedule")) {

@@ -17,6 +17,7 @@ import { useCreateRepost } from "../../../../hooks/reactQuery/post/useCreateRepo
 import { useRemoveRepost } from "../../../../hooks/reactQuery/post/useRemoveRepost";
 import { useAddLike } from "../../../../hooks/reactQuery/post/useAddLike";
 import { useRemoveLike } from "../../../../hooks/reactQuery/post/useRemoveLike";
+import { PostShareActionBtn } from "./PostShareActionBtn/PostShareActionBtn";
 
 export type PostPreviewActionBtn = {
   name: string;
@@ -31,7 +32,7 @@ export const PostPreviewActions: React.FC = () => {
   const { post } = usePostPreview();
   const { isReposted, isLiked } = post.loggedInUserActionState;
   const [isRepostModalOpen, setIsRepostModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  // const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
@@ -41,9 +42,9 @@ export const PostPreviewActions: React.FC = () => {
   const { addLike } = useAddLike();
   const { removeLike } = useRemoveLike();
 
-  const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
-    modalHeight: 175,
-  });
+  // const { elementRef, isModalAbove, updateModalPosition } = useModalPosition<HTMLButtonElement>({
+  //   modalHeight: 175,
+  // });
 
   const btns: PostPreviewActionBtn[] = [
     {
@@ -92,8 +93,8 @@ export const PostPreviewActions: React.FC = () => {
       title: "Share",
       icon: <FiUpload />,
       onClickFunc: () => {
-        updateModalPosition();
-        setIsShareModalOpen(prev => !prev);
+        // updateModalPosition();
+        // setIsShareModalOpen(prev => !prev);
       },
     },
   ];
@@ -120,21 +121,19 @@ export const PostPreviewActions: React.FC = () => {
   return (
     <div className="post-preview-action-btns">
       {btns.map((btn, idx) => {
+        if (btn.name === "share") return <PostShareActionBtn key={idx} btn={btn} post={post} />;
+
         return (
           <PostPreviewActionBtn
             key={idx}
             btn={btn}
-            btnRef={elementRef}
-            post={post}
+            // btnRef={elementRef}
             isRepostModalOpen={isRepostModalOpen}
             setIsRepostModalOpen={setIsRepostModalOpen}
-            isShareModalOpen={isShareModalOpen}
-            setIsShareModalOpen={setIsShareModalOpen}
             onRepost={onRepost}
             onRemoveRepost={onRemoveRepost}
             onQuotePost={onQuotePost}
             isReposted={isReposted}
-            isModalAbove={isModalAbove}
           />
         );
       })}

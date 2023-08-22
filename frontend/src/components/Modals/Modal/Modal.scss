@@ -68,11 +68,15 @@
   }
 
   &.post-edit-option {
+    .post-edit-option-title {
+      font-size: 20px;
+      padding: rem(4px) rem(16px);
+    }
+
     border-radius: 25px;
     width: rem(260px);
     top: 100%;
     left: 25%;
-    margin-top: rem(8px);
     padding: rem(18px) 0;
     z-index: 300;
 
@@ -84,7 +88,6 @@
 
   &.post-share-options,
   &.repost-options {
-    top: 0;
     width: max-content;
     box-shadow: 0 0 10px 1px var(--color-border);
     z-index: 2000;

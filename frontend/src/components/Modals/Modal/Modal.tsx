@@ -17,7 +17,6 @@ import { Tippy } from "../../App/Tippy/Tippy";
 
 type ModalProps = {
   children: React.ReactNode;
-  style?: React.CSSProperties;
   externalStateControl?: {
     openedModalName: string;
     setOpenedModalName: React.Dispatch<React.SetStateAction<string>>;
@@ -42,7 +41,8 @@ type WindowProps = {
   children: React.ReactNode;
   name: string;
   className?: string;
-  mainScreenMode: "dark" | "light" | "transparent";
+  style?: React.CSSProperties;
+  mainScreenMode?: "dark" | "light" | "transparent";
   mainScreenZIndex: number;
   elementId?: string;
   includeTippy?: boolean;
@@ -71,10 +71,7 @@ export const Modal: FC<ModalProps> & {
 
   const close = () => {
     onClose?.();
-    if (externalStateControl) {
-      externalStateControl.setOpenedModalName("");
-      return;
-    }
+    if (externalStateControl) return externalStateControl.setOpenedModalName("");
     setOpenedModalName("");
   };
   const open = (name: string) => {
@@ -99,13 +96,18 @@ export const Modal: FC<ModalProps> & {
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
 };
 
-const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, modalHeight }) => {
+const OpenBtn: FC<OpenBtnProps> = ({
+  children,
+  modalName,
+  setPositionByRef = false,
+  modalHeight = 0,
+}) => {
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
 
   const calculatePosition = useCallback(() => {
     const rect = ref.current?.getBoundingClientRect();
-    if (!rect || !modalHeight) return;
+    if (!rect) return;
     const windowHeight = window.innerHeight;
     const isModalPositionUp = windowHeight - rect.top < modalHeight;
     const bottomPosition = { top: rect.bottom + rect.height / 2 + window.scrollY };
@@ -145,9 +147,9 @@ const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, moda
 
 const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
   const { close } = useContext(ModalContext)!;
+
   return cloneElement(children, {
     onClick: () => {
-      console.log("close");
       onClickFn?.();
       close();
     },
@@ -158,10 +160,11 @@ const Window: FC<WindowProps> = ({
   children,
   name,
   className,
-  mainScreenMode,
+  mainScreenMode = "transparent",
   mainScreenZIndex,
   elementId = "app",
   includeTippy = false,
+  style = {},
 }) => {
   const { openedModalName, close, position, isModalAbove } = useContext(ModalContext)!;
   const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
@@ -171,7 +174,7 @@ const Window: FC<WindowProps> = ({
       <MainScreen mode={mainScreenMode} zIndex={mainScreenZIndex} />
       <section
         className={`modal ${className ? className : name}`}
-        style={{ zIndex: mainScreenZIndex + 1, ...position }}
+        style={{ ...style, zIndex: mainScreenZIndex + 1, ...position }}
         ref={outsideClickRef}
       >
         {includeTippy && <Tippy isModalAbove={!!isModalAbove} />}

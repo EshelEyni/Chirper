@@ -6,21 +6,16 @@ import "./PostEditOption.scss";
 
 type PostEditOptionProps = {
   option: TypeOfPostEditOption;
-  onOptionClick: (value: string) => void;
 };
 
-export const PostEditOption: FC<PostEditOptionProps> = ({ option, onOptionClick }) => {
+export const PostEditOption: FC<PostEditOptionProps> = ({ option }) => {
   return (
-    <li
-      key={option.title}
-      className="post-edit-option-preview"
-      onClick={() => onOptionClick(option.value)}
-    >
+    <button key={option.title} className="post-edit-option-preview">
       <div className="post-edit-option-main-content">
         <div className="post-edit-option-icon-container">{option.icon}</div>
         <div className="post-edit-option-text">{option.title}</div>
       </div>
       {option.isSelected && <AiOutlineCheck className="check-icon" />}
-    </li>
+    </button>
   );
 };

@@ -1,28 +1,25 @@
 import { AiOutlineLink } from "react-icons/ai";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../../shared/interfaces/post.interface";
 import { FiUpload } from "react-icons/fi";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
-import { copyToClipboard } from "../../../services/util/utils.service";
-import postService from "../../../services/post.service";
-import "./PostShareOptionsModal.scss";
-import { Modal } from "../Modal/Modal";
-import { useRemoveBookmark } from "../../../hooks/reactQuery/post/useRemoveBookmark";
-import { useAddBookmark } from "../../../hooks/reactQuery/post/useAddBookmark";
+import { copyToClipboard } from "../../../../../services/util/utils.service";
+import postService from "../../../../../services/post.service";
+import "./PostShareActionBtn.scss";
+import { Modal } from "../../../../Modals/Modal/Modal";
+import { useRemoveBookmark } from "../../../../../hooks/reactQuery/post/useRemoveBookmark";
+import { useAddBookmark } from "../../../../../hooks/reactQuery/post/useAddBookmark";
 import { toast } from "react-hot-toast";
-import { UserMsg } from "../../Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg } from "../../../../Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../../../shared/interfaces/system.interface";
+import { PostPreviewActionBtn as PostPreviewActionBtnType } from "../PostPreviewActions";
+import { PostPreviewActionBtn } from "../PostPreviewActionBtn/PostPreviewActionBtn";
 
-type PostShareOptionsModalProps = {
+type PostShareActionBtnProps = {
+  btn: PostPreviewActionBtnType;
   post: Post;
-  isModalAbove: boolean;
-  onToggleModal: () => void;
 };
 
-export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
-  post,
-  isModalAbove,
-  onToggleModal,
-}) => {
+export const PostShareActionBtn: React.FC<PostShareActionBtnProps> = ({ post, btn }) => {
   const { isBookmarked } = post.loggedInUserActionState;
 
   const { removeBookmark } = useRemoveBookmark();
@@ -36,7 +33,6 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       onClickFunc: () => {
         postService.updatePostStats(post.id, { isPostLinkCopied: true });
         copyToClipboard(url);
-        onToggleModal();
         const msg = {
           type: "info",
           text: "Copied to clipboard",
@@ -49,7 +45,6 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       icon: <FiUpload size={20} />,
       onClickFunc: () => {
         postService.updatePostStats(post.id, { isPostShared: true });
-        onToggleModal();
         navigator
           .share({ title: "Chirp", text: post.text, url })
           .then(() => console.log("Successful share"))
@@ -66,22 +61,32 @@ export const PostShareOptionsModal: React.FC<PostShareOptionsModalProps> = ({
       onClickFunc: async () => {
         if (isBookmarked) removeBookmark(post.id);
         else addBookmark(post.id);
-        onToggleModal();
       },
     },
   ];
 
   return (
-    <Modal
-      className="post-share-options"
-      onClickMainScreen={onToggleModal}
-      style={isModalAbove ? { bottom: "30px" } : { top: "30px" }}
-    >
-      {btns.map(btn => (
-        <button className="btn-share-option" key={btn.title} onClick={btn.onClickFunc}>
-          {btn.icon} <span>{btn.title}</span>
-        </button>
-      ))}
+    <Modal>
+      <Modal.OpenBtn modalName="share" setPositionByRef={true}>
+        <div>
+          <PostPreviewActionBtn btn={btn} />
+        </div>
+      </Modal.OpenBtn>
+      <Modal.Window
+        name="share"
+        className="post-share-options"
+        mainScreenMode="transparent"
+        mainScreenZIndex={1000}
+        style={{ transform: "translate(-90%,-30%)" }}
+      >
+        {btns.map(btn => (
+          <Modal.CloseBtn key={btn.title}>
+            <button className="btn-share-option" onClick={btn.onClickFunc}>
+              {btn.icon} <span>{btn.title}</span>
+            </button>
+          </Modal.CloseBtn>
+        ))}
+      </Modal.Window>
     </Modal>
   );
 };

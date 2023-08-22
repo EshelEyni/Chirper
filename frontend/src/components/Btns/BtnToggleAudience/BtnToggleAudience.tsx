@@ -1,44 +1,39 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper-circle-solid.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
-import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOptionModal";
-import { PostEditOption } from "../../../types/app.types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modals/Modal/Modal";
+import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
+import { PostEditOption } from "../../Modals/Modal/PostEditOption/PostEditOption";
 
 export const BtnToggleAudience: FC = () => {
-  const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
-
   const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
 
   const { currNewPost } = usePostEdit();
   if (!currNewPost) return null;
-  const title = getTitle(currNewPost.audience);
+  const { audience } = currNewPost;
+  const title = getTitle(audience);
 
-  const options: PostEditOption[] = [
+  const options: TypeOfPostEditOption[] = [
     {
       title: "Everyone",
       icon: <GoGlobe />,
       value: "everyone",
-      isSelected: currNewPost.audience === "everyone",
+      isSelected: audience === "everyone",
     },
     {
       title: "Chirper Circle",
       icon: <ChirperCircleIcon />,
       value: "chirper-circle",
-      isSelected: currNewPost.audience === "chirper-circle",
+      isSelected: audience === "chirper-circle",
     },
   ];
-
-  function toggleModal() {
-    setIsAudienceOpen(!isAudienceOpen);
-  }
 
   function getTitle(value: string) {
     switch (value) {
@@ -54,26 +49,32 @@ export const BtnToggleAudience: FC = () => {
   function onOptionClick(option: string) {
     if (!currNewPost) return;
     dispatch(updateNewPost({ newPost: { ...currNewPost, audience: option }, newPostType }));
-    toggleModal();
   }
 
   return (
     <div className="btn-toggle-audience-cotnainer">
       <Modal>
-        <Modal.OpenBtn modalName="audience">
+        <Modal.OpenBtn modalName="audience" setPositionByRef={true} modalHeight={200}>
           <button className="btn-toggle-audience">
             <span>{title}</span>
             <IoChevronDownOutline />
           </button>
         </Modal.OpenBtn>
-        {isAudienceOpen && (
-          <PostEditOptionModal
-            title="Choose audience"
-            options={options}
-            onOptionClick={onOptionClick}
-            toggleModal={toggleModal}
-          />
-        )}
+        <Modal.Window
+          name="audience"
+          className="post-edit-option"
+          mainScreenMode="transparent"
+          mainScreenZIndex={1000}
+        >
+          <h1 className="post-edit-option-title">Choose audience</h1>
+          {options.map(option => (
+            <Modal.CloseBtn onClickFn={() => onOptionClick(option.value)} key={option.value}>
+              <div>
+                <PostEditOption option={option} />
+              </div>
+            </Modal.CloseBtn>
+          ))}
+        </Modal.Window>
       </Modal>
     </div>
   );

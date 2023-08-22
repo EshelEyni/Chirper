@@ -35,6 +35,7 @@ type OpenBtnProps = {
 
 type CloseBtnProps = {
   children: React.ReactElement;
+  onClickFn?: () => void;
 };
 
 type WindowProps = {
@@ -142,10 +143,14 @@ const OpenBtn: FC<OpenBtnProps> = ({ children, modalName, setPositionByRef, moda
   });
 };
 
-const CloseBtn: FC<CloseBtnProps> = ({ children }) => {
+const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
   const { close } = useContext(ModalContext)!;
   return cloneElement(children, {
-    onClick: close,
+    onClick: () => {
+      console.log("close");
+      onClickFn?.();
+      close();
+    },
   });
 };
 

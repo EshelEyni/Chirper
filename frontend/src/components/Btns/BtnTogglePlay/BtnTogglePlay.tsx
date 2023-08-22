@@ -9,13 +9,12 @@ type BtnTogglePlayProps = {
 };
 
 export const BtnTogglePlay: FC<BtnTogglePlayProps> = ({ isPlaying, setIsPlaying, size }) => {
-  function onTogglePlay(e: React.MouseEvent) {
-    e.stopPropagation();
+  function onTogglePlay() {
     setIsPlaying(prev => !prev);
   }
 
   return (
-    <button className="btn-toggle-play" onClick={e => onTogglePlay(e)}>
+    <button className="btn-toggle-play" onClick={onTogglePlay}>
       {isPlaying ? <IoIosPause size={size} /> : <IoPlaySharp size={size} />}
     </button>
   );

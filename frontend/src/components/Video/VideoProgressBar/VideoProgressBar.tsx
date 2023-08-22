@@ -12,10 +12,11 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({ videoPlayerRef }) 
   const { progress, setProgress } = useVideoPlayer();
   const { isVolumeHover } = useVideoCustomControls();
 
-  function handleChange(e: Event, newValue: number) {
-    e.stopPropagation();
+  function handleChange(_: Event, newValue: number | number[]) {
     if (!videoPlayerRef.current) return;
-    videoPlayerRef.current.seekTo((newValue * videoPlayerRef.current.getDuration()) / 100);
+    videoPlayerRef.current.seekTo(
+      ((newValue as number) * videoPlayerRef.current.getDuration()) / 100
+    );
     setProgress(newValue as number);
   }
 
@@ -25,7 +26,7 @@ export const VideoProgressBar: FC<VideoProgressBarProps> = ({ videoPlayerRef }) 
       step={1}
       min={0}
       max={100}
-      onChange={(e, value) => handleChange(e, value as number)}
+      onChange={handleChange}
       sx={{
         color: "white",
         width: "100%",

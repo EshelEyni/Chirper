@@ -22,7 +22,6 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({ size }) => {
   }
 
   function onToggleVolumeHover(e: React.MouseEvent, isHover: boolean) {
-    e.stopPropagation();
     const isExternalClick =
       btnRef.current &&
       e.relatedTarget instanceof Node &&

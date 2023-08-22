@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect } from "react";
+import { FC, useRef, useEffect, MouseEvent } from "react";
 import ReactPlayer from "react-player";
 import storageService from "../../../services/storage.service";
 import { useInView } from "react-intersection-observer";
@@ -35,7 +35,11 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
     playbackRate,
   } = useVideoPlayer();
 
-  function onHandlePlayerClick() {
+  function onHandlePlayerClick(e: MouseEvent) {
+    const isVideoCustomControlsClick = (e.target as HTMLElement).closest(
+      ".video-custom-controls-main-container"
+    );
+    if (isVideoCustomControlsClick) return;
     if (!isCustomControls) return;
     if (isMuted) {
       setIsMuted(prev => !prev);

@@ -9,6 +9,7 @@ import { PostEditOptionModal } from "../../Modals/PostEditOptionModal/PostEditOp
 import { PostEditOption } from "../../../types/app.types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { Modal } from "../../Modals/Modal/Modal";
 
 export const BtnToggleAudience: FC = () => {
   const [isAudienceOpen, setIsAudienceOpen] = useState<boolean>(false);
@@ -58,18 +59,22 @@ export const BtnToggleAudience: FC = () => {
 
   return (
     <div className="btn-toggle-audience-cotnainer">
-      <button className="btn-toggle-audience" onClick={() => toggleModal()}>
-        <span>{title}</span>
-        <IoChevronDownOutline />
-      </button>
-      {isAudienceOpen && (
-        <PostEditOptionModal
-          title="Choose audience"
-          options={options}
-          onOptionClick={onOptionClick}
-          toggleModal={toggleModal}
-        />
-      )}
+      <Modal>
+        <Modal.OpenBtn modalName="audience">
+          <button className="btn-toggle-audience">
+            <span>{title}</span>
+            <IoChevronDownOutline />
+          </button>
+        </Modal.OpenBtn>
+        {isAudienceOpen && (
+          <PostEditOptionModal
+            title="Choose audience"
+            options={options}
+            onOptionClick={onOptionClick}
+            toggleModal={toggleModal}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

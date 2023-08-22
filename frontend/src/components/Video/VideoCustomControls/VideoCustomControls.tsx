@@ -21,7 +21,7 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
   videoPlayerRef,
   playerWrapperRef,
 }) => {
-  const [openedModalName, setOpenedModalName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { isPlaying, setIsPlaying, playbackRate, setPlaybackRate } = useVideoPlayer();
 
@@ -33,20 +33,20 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
       className={
         "video-cutom-controls" +
         (isFullScreen ? " full-screen" : "") +
-        (openedModalName ? " playback-rate-picker-shown" : "")
+        (isModalOpen ? " playback-rate-picker-shown" : "")
       }
     >
-      <div className="video-custom-controls-main-container" onClick={e => e.stopPropagation()}>
+      <div className="video-custom-controls-main-container">
         <VideoProgressBar videoPlayerRef={videoPlayerRef} />
         <div className="video-custom-controls-actions-container">
           <BtnTogglePlay isPlaying={isPlaying} setIsPlaying={setIsPlaying} size={20} />
           <div className="video-custom-controls-actions-main-container">
             <VideoTimer isCountDown={false} />
             <BtnToggleVolume size={20} />
-            <Modal externalStateControl={{ openedModalName, setOpenedModalName }}>
+            <Modal onClose={() => setIsModalOpen(false)} onOpen={() => setIsModalOpen(true)}>
               <Modal.OpenBtn
                 modalName="playback-rate-picker"
-                modalHeight={200}
+                modalHeight={250}
                 setPositionByRef={true}
               >
                 <button className="btn-toggle-video-setting">
@@ -65,17 +65,12 @@ export const VideoCustomControls: FC<VideoCustomControlsProps> = ({
 
                   <ul className="playback-rate-list">
                     {playbackRates.map(rate => (
-                      <li
-                        key={rate}
-                        className="playback-rate-list-item"
-                        onClick={() => {
-                          setPlaybackRate(rate);
-                          setOpenedModalName("");
-                        }}
-                      >
-                        <span className="playback-rate-list-item-label">{rate}x</span>
-                        <Checkbox isChecked={playbackRate === rate} />
-                      </li>
+                      <Modal.CloseBtn onClickFn={() => setPlaybackRate(rate)} key={rate}>
+                        <li className="playback-rate-list-item">
+                          <span className="playback-rate-list-item-label">{rate}x</span>
+                          <Checkbox isChecked={playbackRate === rate} />
+                        </li>
+                      </Modal.CloseBtn>
                     ))}
                   </ul>
                 </div>

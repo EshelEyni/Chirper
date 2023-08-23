@@ -8,6 +8,7 @@ import followerService from "../../../user/services/follower/follower.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
 import { UserModel } from "../../../user/models/user.model";
+import { RepostModel } from "../../models/repost.model";
 
 async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find({}), queryString)
@@ -16,8 +17,30 @@ async function query(queryString: QueryObj): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  const posts = (await features.getQuery().lean().exec()) as unknown as any[];
+  const postsDocs = (await features.getQuery().lean().exec()) as unknown as any[];
   // TODO: Add Reposts
+
+  const repostDocs = await RepostModel.find({})
+    .populate("post")
+    .lean()
+    .populate(postUtilService.populateRepostedBy())
+    .exec();
+
+  // TODO: refactor this, can be in one map function
+  // repostDocs = repostDocs.map(doc => doc.toObject());
+
+  const reposts = repostDocs.map((repost: any) => {
+    const { createdAt, updatedAt, post, repostedBy } = repost;
+
+    return {
+      ...post,
+      repostedBy,
+      createdAt,
+      updatedAt,
+    };
+  });
+
+  const posts = [...postsDocs, ...reposts];
 
   const userIds = [];
   const postIds = [];

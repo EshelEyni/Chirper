@@ -1,31 +1,35 @@
 @import "../../../../../styles/setup/functions";
 
-.post-preview-repost-container {
+.repost-display {
   position: relative;
-  display: flex;
-  align-items: center;
   padding: rem(12px) rem(16px) rem(5px) rem(16px);
-  gap: rem(10px);
 
   & * {
     color: var(--color-text-gray);
   }
 
-  .repost-icon-container {
+  .repost-display-details-container {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    width: rem(50px);
-    height: rem(20px);
-  }
+    gap: rem(10px);
+    width: fit-content;
 
-  .post-preview-repost-user {
-    font-size: rem(14px);
-    font-weight: 700;
-    cursor: pointer;
+    .repost-icon-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: rem(50px);
+      height: rem(20px);
+    }
 
-    &:hover {
-      text-decoration: underline;
+    .post-preview-repost-user {
+      font-size: rem(14px);
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }

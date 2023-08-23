@@ -80,8 +80,8 @@ export const PostShareActionBtn: React.FC<PostShareActionBtnProps> = ({ post, bt
         style={{ transform: "translate(-90%,-30%)" }}
       >
         {btns.map(btn => (
-          <Modal.CloseBtn key={btn.title}>
-            <button className="btn-share-option" onClick={btn.onClickFunc}>
+          <Modal.CloseBtn key={btn.title} onClickFn={btn.onClickFunc}>
+            <button className="btn-share-option">
               {btn.icon} <span>{btn.title}</span>
             </button>
           </Modal.CloseBtn>

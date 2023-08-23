@@ -1,32 +1,13 @@
-// import { Post } from "../../../../../../../shared/interfaces/post.interface";
-// import { useCustomElementHover } from "../../../../../hooks/app/useCustomElementHover";
 import { formatNumToK } from "../../../../../services/util/utils.service";
-import { RepostOptionsModal } from "../../../../Modals/RepostOptionsModal/RepostOptionsModal";
-// import { ElementTitle } from "../../../../App/ElementTitle/ElementTitle";
 import { PostPreviewActionBtn as PostPreviewActionBtnType } from "../PostPreviewActions";
 import "./PostPreviewActionBtn.scss";
 
 type PostPreviewActionBtnProps = {
   btn: PostPreviewActionBtnType;
   btnRef?: React.RefObject<HTMLButtonElement>;
-  isRepostModalOpen?: boolean;
-  setIsRepostModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  isReposted?: boolean;
-  onRepost?: () => void;
-  onRemoveRepost?: () => void;
-  onQuotePost?: () => void;
 };
 
-export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
-  btn,
-  btnRef,
-  isRepostModalOpen,
-  setIsRepostModalOpen,
-  isReposted,
-  onRepost,
-  onRemoveRepost,
-  onQuotePost,
-}) => {
+export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({ btn, btnRef }) => {
   const {
     name,
     //  title,
@@ -62,24 +43,6 @@ export const PostPreviewActionBtn: React.FC<PostPreviewActionBtnProps> = ({
           customTop="35px"
           customLeft={count !== undefined && count !== 0 ? "0" : undefined}
           customTransform={count !== undefined && count !== 0 ? "none" : undefined}
-        />
-      )} */}
-
-      {name === "rechirp" && isRepostModalOpen && (
-        <RepostOptionsModal
-          onToggleModal={() => setIsRepostModalOpen!(prev => !prev)}
-          onRepost={onRepost!}
-          onRemoveRepost={onRemoveRepost!}
-          onQuotePost={onQuotePost!}
-          isReposted={isReposted!}
-        />
-      )}
-
-      {/* {name === "share" && isShareModalOpen && (
-        <PostShareOptionsModal
-          post={post}
-          onToggleModal={() => setIsShareModalOpen(prev => !prev)}
-          isModalAbove={isModalAbove}
         />
       )} */}
     </div>

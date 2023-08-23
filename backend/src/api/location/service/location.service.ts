@@ -14,7 +14,7 @@ import { Location } from "../../../../../shared/interfaces/location.interface";
 type resultType = PlaceAutocompleteResult | PlaceSearchResult | GeocodingResult;
 
 const googleMapsClient = createClient({
-  key: process.env.GOOGLE_MAPS_API_KEY || "",
+  key: process.env.GOOGLE_API_KEY || "",
   Promise: Promise,
 });
 

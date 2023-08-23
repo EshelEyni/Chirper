@@ -42,6 +42,8 @@ async function createPost({
   isImgOnly = false,
   isPoll = false,
   isPollOnly = false,
+  isVideo = false,
+  isVideoOnly = false,
 }: {
   botId: string;
   prompt?: string;
@@ -52,6 +54,8 @@ async function createPost({
   isImgOnly?: boolean;
   isPoll?: boolean;
   isPollOnly?: boolean;
+  isVideo?: boolean;
+  isVideoOnly?: boolean;
 }): Promise<Post[]> {
   const posts = [];
 
@@ -82,7 +86,19 @@ async function createPost({
       post["poll"] = poll;
     }
 
-    if (!isImgOnly && !isPollOnly) {
+    if (isVideo) {
+      const p = prompt ? prompt : await _getBotPrompt(botId, "video");
+      if (!p) throw new AppError("prompt is undefined", 500);
+      const promptString =
+        "Please choose one song from the artist or genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'songName' and 'review'. Limit Review to 247 characters.";
+      const { videoUrl, text } = await getVideoPost(p + " " + promptString);
+      if (!videoUrl) throw new AppError("videoUrl is undefined", 500);
+
+      post["videoUrl"] = videoUrl;
+      post["text"] = text;
+    }
+
+    if (!isImgOnly && !isPollOnly && !isVideoOnly) {
       const p = prompt ? prompt : await _getBotPrompt(botId);
       if (!p) throw new AppError("prompt is undefined", 500);
       const text = await _getPostTextFromOpenAI(p);
@@ -221,9 +237,34 @@ async function _getPostImgsFromOpenOpenAI(prompt: string, numberOfImages = 1) {
 
   const imgs = cloudinaryUrls.map((url, i) => ({ url, sortOrder: i }));
   return imgs;
+}
 
-  // const imgs = response.data.data.map((data, i) => ({ url: data.url, sortOrder: i }));
-  // return imgs;
+async function getVideoPost(prompt: string) {
+  const completion = await openai.createChatCompletion({
+    model: "gpt-4",
+    messages: [{ role: "user", content: prompt }],
+  });
+  const { message } = completion.data.choices[0];
+  if (!message) throw new AppError("message is undefined", 500);
+  const parsedRes = JSON.parse(message.content as string);
+
+  if (!parsedRes.songName) throw new AppError("songName is undefined", 500);
+  if (!parsedRes.review) throw new AppError("review is undefined", 500);
+
+  const { songName, review } = parsedRes;
+
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) throw new Error("GOOGLE_API_KEY is undefined");
+
+  const apiStr = `https://www.googleapis.com/youtube/v3/search?part=snippet&videoCategoryId=10&videoEmbeddable=true&type=video&maxResults=1&key=${apiKey}&q=${songName}`;
+  const response = await axios.get(apiStr);
+  const songs = response.data.items;
+  const videoUrl = `https://www.youtube.com/watch?v=${songs[0].id.videoId}`;
+
+  return {
+    videoUrl,
+    text: review,
+  };
 }
 
 export default { getBots, getBotPrompts, addBotPrompt, createPost };

@@ -5,7 +5,7 @@ import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { copyToClipboard } from "../../../../../services/util/utils.service";
 import postService from "../../../../../services/post.service";
 import "./PostShareActionBtn.scss";
-import { Modal } from "../../../../Modals/Modal/Modal";
+import { Modal } from "../../../../Modal/Modal";
 import { useRemoveBookmark } from "../../../../../hooks/reactQuery/post/useRemoveBookmark";
 import { useAddBookmark } from "../../../../../hooks/reactQuery/post/useAddBookmark";
 import { toast } from "react-hot-toast";

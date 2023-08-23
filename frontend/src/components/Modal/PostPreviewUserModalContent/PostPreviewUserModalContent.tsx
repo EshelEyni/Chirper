@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import "./PostPreviewUserModal.scss";
 import { useSelector } from "react-redux";
 import { MiniUser } from "../../../../../shared/interfaces/user.interface";
 import { formatNumToK } from "../../../services/util/utils.service";
@@ -10,40 +9,31 @@ import { BtnToggleFollow } from "../../Btns/BtnToggleFollow/BtnToggleFollow";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
+import "./PostPreviewUserModalContent.scss";
 
-export type UserPreviewModalPosition = {
-  top?: string;
-  bottom?: string;
-  left?: string;
-};
-
-type UserPreviewModalProps = {
-  userPreviewModalPosition?: any;
-  handleMouseLeave: () => void;
-};
-
-export const PostPreviewUserModal: FC<UserPreviewModalProps> = ({
-  userPreviewModalPosition,
-  handleMouseLeave,
-}) => {
+export const PostPreviewUserModalContent: FC = () => {
   const { post, onNavigateToProfile, onToggleFollow } = usePostPreview();
   const user = post.createdBy as MiniUser;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const followingStats = [
-    { title: "Followers", count: user.followersCount, link: `/profile/${user.username}/followers` },
-    { title: "Following", count: user.followingCount, link: `/profile/${user.username}/following` },
+    {
+      title: "Followers",
+      count: user.followersCount,
+      link: `/profile/${user.username}/followers`,
+    },
+    {
+      title: "Following",
+      count: user.followingCount,
+      link: `/profile/${user.username}/following`,
+    },
   ];
 
   return (
-    <section
-      className="user-preview-modal"
-      style={userPreviewModalPosition}
-      onMouseLeave={handleMouseLeave}
-    >
+    <>
       <div className="user-preview-modal-header">
         <UserImg
           imgUrl={user.imgUrl}
-          onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
+          onNavigateToProfile={() => onNavigateToProfile(user.username)}
         />
         {loggedInUser?.id !== user.id && (
           <BtnToggleFollow user={user} handleBtnClick={onToggleFollow} />
@@ -73,6 +63,6 @@ export const PostPreviewUserModal: FC<UserPreviewModalProps> = ({
       <div style={{ backgroundColor: "yellow" }}>
         {" TODO: followers_you_follow link, and following/followers link"}
       </div>
-    </section>
+    </>
   );
 };

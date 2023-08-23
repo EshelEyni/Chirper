@@ -8,7 +8,7 @@ import { BtnToggleVolume } from "../../Btns/BtnToggleVolume/BtnToggleVolume";
 import { BtnToggleVideoFullScreen } from "../../Btns/BtnToggleVideoFullScreen/BtnToggleVideoFullScreen";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";
-import { Modal } from "../../Modals/Modal/Modal";
+import { Modal } from "../../Modal/Modal";
 import { IoSettingsOutline } from "react-icons/io5";
 import { Checkbox } from "../../App/Checkbox/Checkbox";
 

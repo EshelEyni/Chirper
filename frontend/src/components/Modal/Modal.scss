@@ -1,5 +1,5 @@
-@import "../../../styles/setup/functions";
-@import "../../../styles/setup/mixins";
+@import "../../styles/setup/functions";
+@import "../../styles/setup/mixins";
 
 .modal {
   display: flex;
@@ -11,6 +11,12 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   padding: rem(32px);
   transform: translateX(-50%);
+
+  .modal-hover-guard-zone{
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
 
   &.confirm-delete-post-thread,
   &.save-post-draft {
@@ -101,7 +107,6 @@
 
   &.post-stats-info {
     gap: rem(20px);
-    bottom: rem(30px);
     cursor: default;
     width: rem(320px);
     padding: rem(20px);

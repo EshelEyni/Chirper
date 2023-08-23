@@ -10,12 +10,12 @@ import {
   useCallback,
 } from "react";
 import { createPortal } from "react-dom";
-import { MainScreen } from "../../App/MainScreen/MainScreen";
+import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
-import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
-import { Tippy } from "../../App/Tippy/Tippy";
-import { useOutsideHover } from "../../../hooks/app/useOusideHover";
-import { useInsideHover } from "../../../hooks/app/useInsideHover";
+import { useOutsideClick } from "../../hooks/app/useOutsideClick";
+import { Tippy } from "../App/Tippy/Tippy";
+import { useOutsideHover } from "../../hooks/app/useOusideHover";
+import { useInsideHover } from "../../hooks/app/useInsideHover";
 
 type UserPreviewModalPosition = {
   top?: number;
@@ -48,6 +48,7 @@ type CloseBtnProps = {
 type ModalHoverActivatorProps = {
   children: React.ReactNode;
   modalName: string;
+  modalHeight?: number;
 };
 
 type WindowProps = {
@@ -70,6 +71,13 @@ type ModalContextType = {
   setPosition: React.Dispatch<React.SetStateAction<UserPreviewModalPosition | null>>;
   isModalAbove: boolean;
   setIsModalAbove: React.Dispatch<React.SetStateAction<boolean>>;
+  modalHoverGuardZone: ModalHoverGuardZone | null;
+  setModalHoverGuardZone: React.Dispatch<React.SetStateAction<ModalHoverGuardZone | null>>;
+};
+
+type ModalHoverGuardZone = {
+  height: number;
+  width: number;
 };
 
 function calculatePositionByRef<T extends HTMLElement>(
@@ -82,13 +90,13 @@ function calculatePositionByRef<T extends HTMLElement>(
   const isModalPositionUp = windowHeight - rect.top < modalHeight;
   const bottomPosition = { top: rect.bottom + rect.height / 2 + window.scrollY };
   const topPosition = { bottom: window.innerHeight - rect.top + rect.height / 2 };
-
   return {
     isModalAbove: isModalPositionUp,
     position: {
       ...(isModalPositionUp ? topPosition : bottomPosition),
       left: rect.left + rect.width / 2 + window.scrollX,
     },
+    rect,
   };
 }
 
@@ -101,9 +109,18 @@ export const Modal: FC<ModalProps> & {
   ModalHoverOpen: FC<ModalHoverActivatorProps>;
 } = ({ children, externalStateControl, onClose, onOpen }) => {
   const [openedModalName, setOpenedModalName] = useState("");
-  // const [position, setPosition] = useState(null);
   const [position, setPosition] = useState<UserPreviewModalPosition | null>(null);
 
+  /*
+   * ModalHoverGuardZone is a CSS pseudo element that is used to prevent the modal from closing
+   * when the user hovers over the ModalHoverOpen component.
+   * The ModalHoverGuardZone is positioned relative to the ModalHoverOpen component.
+   * And the Guard Zone's size is equal to the ModalHoverOpen component's size.
+   * And make the Mouse Leave event of the ModalHoverOpen component to be triggered when the mouse
+   * leaves the ModalHoverGuardZone.
+   */
+
+  const [modalHoverGuardZone, setModalHoverGuardZone] = useState<ModalHoverGuardZone | null>(null);
   const [isModalAbove, setIsModalAbove] = useState(false);
 
   const close = () => {
@@ -128,6 +145,8 @@ export const Modal: FC<ModalProps> & {
     setPosition,
     isModalAbove,
     setIsModalAbove,
+    modalHoverGuardZone,
+    setModalHoverGuardZone,
   };
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
@@ -142,22 +161,15 @@ const OpenBtn: FC<OpenBtnProps> = ({
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
 
-  const calculatePositionByRef = useCallback(() => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const windowHeight = window.innerHeight;
-    const isModalPositionUp = windowHeight - rect.top < modalHeight;
-    const bottomPosition = { top: rect.bottom + rect.height / 2 + window.scrollY };
-    const topPosition = { bottom: window.innerHeight - rect.top + rect.height / 2 };
-    setIsModalAbove(isModalPositionUp);
-    setPosition({
-      ...(isModalPositionUp ? topPosition : bottomPosition),
-      left: rect.left + rect.width / 2 + window.scrollX,
-    });
+  const calculatePosition = useCallback(() => {
+    const res = calculatePositionByRef(ref, modalHeight);
+    const { isModalAbove, position } = res!;
+    setIsModalAbove(isModalAbove);
+    setPosition(position);
   }, [modalHeight, setIsModalAbove, setPosition]);
 
   const handleClick = () => {
-    if (setPositionByRef) calculatePositionByRef();
+    if (setPositionByRef) calculatePosition();
     open(modalName);
   };
 
@@ -166,15 +178,15 @@ const OpenBtn: FC<OpenBtnProps> = ({
 
     const events = ["wheel", "scroll", "resize"];
     events.forEach(event => {
-      window.addEventListener(event, calculatePositionByRef);
+      window.addEventListener(event, calculatePosition);
     });
 
     return () => {
       events.forEach(event => {
-        window.removeEventListener(event, calculatePositionByRef);
+        window.removeEventListener(event, calculatePosition);
       });
     };
-  }, [setPositionByRef, calculatePositionByRef]);
+  }, [setPositionByRef, calculatePosition]);
 
   return cloneElement(children, {
     onClick: handleClick,
@@ -193,15 +205,20 @@ const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
   });
 };
 
-const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName }) => {
-  const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
+const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName, modalHeight = 0 }) => {
+  const { open, setPosition, setIsModalAbove, setModalHoverGuardZone } = useContext(ModalContext)!;
   const { insideHoverRef } = useInsideHover<HTMLDivElement>(setPositionAndOpen);
 
   function setPositionAndOpen() {
-    const res = calculatePositionByRef(insideHoverRef, 300);
+    const res = calculatePositionByRef(insideHoverRef, modalHeight);
     if (!res) return;
     setPosition(res.position);
     setIsModalAbove(res.isModalAbove);
+    setModalHoverGuardZone({
+      height: res.rect.height,
+      width: res.rect.width,
+    });
+    // debugger
     open(modalName);
   }
 
@@ -223,7 +240,8 @@ const Window: FC<WindowProps> = ({
   style = {},
   closeOnHover = false,
 }) => {
-  const { openedModalName, close, position, isModalAbove } = useContext(ModalContext)!;
+  const { openedModalName, close, position, isModalAbove, modalHoverGuardZone } =
+    useContext(ModalContext)!;
   const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
   const { outsideHoverRef } = useOutsideHover<HTMLDivElement>(close);
 
@@ -238,6 +256,16 @@ const Window: FC<WindowProps> = ({
       >
         {includeTippy && <Tippy isModalAbove={!!isModalAbove} />}
         {children}
+
+        {closeOnHover && modalHoverGuardZone && (
+          <div
+            className="modal-hover-guard-zone"
+            style={{
+              top: isModalAbove ? "100%" : `-${modalHoverGuardZone.height}px`,
+              height: `${modalHoverGuardZone.height}px` || "10%",
+            }}
+          />
+        )}
       </section>
     </>,
     document.getElementById(elementId)!

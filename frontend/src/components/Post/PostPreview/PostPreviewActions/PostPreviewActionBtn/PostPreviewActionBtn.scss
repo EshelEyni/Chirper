@@ -70,34 +70,34 @@
     }
   }
 
-  &.reply,
-  &.rechirp {
-    .element-title-container {
-      left: 0;
-      transform: translateX(-15%);
-    }
-  }
+  // &.reply,
+  // &.rechirp {
+  //   .element-title-container {
+  //     left: 0;
+  //     transform: translateX(-15%);
+  //   }
+  // }
 
-  &.like {
-    .element-title-container {
-      left: 0;
-      transform: translateX(5%);
-    }
-  }
+  // &.like {
+  //   .element-title-container {
+  //     left: 0;
+  //     transform: translateX(5%);
+  //   }
+  // }
 
-  &.view {
-    .element-title-container {
-      left: 0;
-      transform: translateX(-5%);
-    }
-  }
+  // &.view {
+  //   .element-title-container {
+  //     left: 0;
+  //     transform: translateX(-5%);
+  //   }
+  // }
 
-  &.share {
-    .element-title-container {
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
+  // &.share {
+  //   .element-title-container {
+  //     left: 50%;
+  //     transform: translateX(-50%);
+  //   }
+  // }
 
   &.reply,
   &.view,

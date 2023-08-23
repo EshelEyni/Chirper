@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../../store/store";
 import "./RepostDisplay.scss";
 import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
-import { Modal } from "../../../../Modals/Modal/Modal";
-import { PostPreviewUserModal } from "../../../../Modals/PostPreviewUserModal/PostPreviewUserModal";
+import { Modal } from "../../../../Modal/Modal";
+import { PostPreviewUserModalContent } from "../../../../Modal/PostPreviewUserModalContent/PostPreviewUserModalContent";
 
 export const RepostDisplay: FC = () => {
   const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();
@@ -31,12 +31,8 @@ export const RepostDisplay: FC = () => {
         </Modal.ModalHoverOpen>
       </div>
 
-      <Modal.Window name="respostDetails" closeOnHover={true}>
-        <PostPreviewUserModal
-          handleMouseLeave={() => {
-            console.log("handleMouseLeave");
-          }}
-        />
+      <Modal.Window name="respostDetails" className="user-preview-modal" closeOnHover={true}>
+        <PostPreviewUserModalContent />
       </Modal.Window>
     </Modal>
   );

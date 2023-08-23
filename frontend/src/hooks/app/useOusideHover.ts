@@ -17,13 +17,15 @@ export function useOutsideHover<T extends HTMLElement>(
 
   useEffect(() => {
     function handleHover(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) debouncedFunc();
+      if (e.target === ref.current) debouncedFunc();
     }
 
-    document.addEventListener("mouseleave", handleHover, listenCapturing);
+    const element = ref.current;
+
+    element?.addEventListener("mouseleave", handleHover, listenCapturing);
 
     return () => {
-      document.removeEventListener("mouseleave", handleHover, listenCapturing);
+      element?.removeEventListener("mouseleave", handleHover, listenCapturing);
     };
   }, [handler, listenCapturing, debouncedFunc]);
 

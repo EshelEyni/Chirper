@@ -1,5 +1,5 @@
 import { FC, useState, useRef, useEffect } from "react";
-import { Modal } from "../../../../Modals/Modal/Modal";
+import { Modal } from "../../../../Modal/Modal";
 import { PostEditActionBtn as TypeOfPostEditActionBtn } from "../PostEditActions/PostEditActions";
 import { GifCategoryList } from "../../../../Gif/GifCategoryList/GifCategoryList";
 import { SpinnerLoader } from "../../../../Loaders/SpinnerLoader/SpinnerLoader";

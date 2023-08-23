@@ -4,7 +4,7 @@ import { useInView } from "react-intersection-observer";
 import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
 import "./GifDisplay.scss";
 import { gifPlaceholderBcg } from "../../../services/gif.service";
-import { Modal } from "../../Modals/Modal/Modal";
+import { Modal } from "../../Modal/Modal";
 
 interface GifDisplayProps {
   gif: Gif;

@@ -1,20 +1,16 @@
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
-import { useCustomElementHover } from "../../../hooks/app/useCustomElementHover";
-import { useState } from "react";
 import {
   formatDateToCleanString,
   formatDateToRelativeTime,
 } from "../../../services/util/utils.service";
-import {
-  PostPreviewUserModal,
-  UserPreviewModalPosition,
-} from "../../Modals/PostPreviewUserModal/PostPreviewUserModal";
+import { PostPreviewUserModalContent } from "../../Modal/PostPreviewUserModalContent/PostPreviewUserModalContent";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
-import { ElementTitle } from "../../App/ElementTitle/ElementTitle";
 import "./PostPreviewHeader.scss";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
+import { Modal } from "../../Modal/Modal";
+import { Tooltip } from "react-tooltip";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
@@ -22,79 +18,59 @@ type PostPreviewHeaderProps = {
 
 export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPreview = false }) => {
   const { post, onNavigateToProfile, onNavigateToPostDetails } = usePostPreview();
-  const [userPreviewModalPosition, setUserPreviewModalPosition] =
-    useState<UserPreviewModalPosition>({});
 
-  const { elementsHoverState, handleMouseEnter, handleMouseLeave } = useCustomElementHover({
-    postTime: false,
-    userInfo: false,
-  });
-
-  function handleMouseEnterInUserInfo(e: React.MouseEvent) {
-    const container = e.currentTarget.closest(".post-preview-header-user-info");
-    const containerRect = container?.getBoundingClientRect();
-    const targetRect = e.currentTarget.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    const isModalPositionUp = windowHeight - targetRect.top < 300;
-    e.currentTarget.classList.add(isModalPositionUp ? "modal-above" : "modal-below");
-    const leftPosition = targetRect.left - containerRect!.left + targetRect.width / 2;
-    setUserPreviewModalPosition({
-      top: isModalPositionUp ? "unset" : "24px",
-      bottom: isModalPositionUp ? "24px" : "unset",
-      left: `${leftPosition}px`,
-    });
-    handleMouseEnter("userInfo");
-  }
-
-  function handleMouseLeaveInUserInfo() {
-    setUserPreviewModalPosition({});
-    handleMouseLeave("userInfo");
-  }
-
+  const user = post.createdBy;
+  const logoOptions = { staticLogo: true, autoAnimate: false, width: 18, height: 18 };
   return (
     <header className="post-preview-header">
       <div className="post-preview-header-main">
-        <div className="post-preview-header-user-info" onMouseLeave={handleMouseLeaveInUserInfo}>
-          {isMiniPreview && <UserImg imgUrl={post.createdBy.imgUrl} />}
-          <div
-            className="post-preview-header-details-container"
-            onClick={() => onNavigateToProfile(post.createdBy.username)}
-            onMouseEnter={handleMouseEnterInUserInfo}
-          >
-            <span className="post-preview-header-full-name">{post.createdBy.fullname}</span>
-            {post.createdBy.isVerified && (
-              <BlueCheckMark className="post-preview-blue-check-mark" />
-            )}
-            {post.createdBy.isAdmin && (
-              <Logo options={{ staticLogo: true, autoAnimate: false, width: 18, height: 18 }} />
-            )}
+        <Modal>
+          <div className="post-preview-header-user-info">
+            {isMiniPreview && <UserImg imgUrl={user.imgUrl} />}
+            <Modal.ModalHoverOpen modalName="userPreview/fullname" modalHeight={200}>
+              <div
+                className="post-preview-header-details-container"
+                onClick={() => onNavigateToProfile(user.username)}
+              >
+                <span className="post-preview-header-full-name">{user.fullname}</span>
+                {user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
+                {user.isAdmin && <Logo options={logoOptions} />}
+              </div>
+            </Modal.ModalHoverOpen>
+            <Modal.ModalHoverOpen modalName="userPreview/fullname" modalHeight={200}>
+              <span
+                className="post-preview-header-username"
+                onClick={() => onNavigateToProfile(user.username)}
+              >
+                @{user.username}
+              </span>
+            </Modal.ModalHoverOpen>
           </div>
-          <span
-            className="post-preview-header-username"
-            onMouseEnter={handleMouseEnterInUserInfo}
-            onClick={() => onNavigateToProfile(post.createdBy.username)}
+
+          <Modal.Window
+            name="userPreview/fullname"
+            className="user-preview-modal"
+            closeOnHover={true}
           >
-            @{post.createdBy.username}
-          </span>
-          {elementsHoverState?.userInfo && (
-            <PostPreviewUserModal
-              userPreviewModalPosition={userPreviewModalPosition}
-              handleMouseLeave={handleMouseLeaveInUserInfo}
-            />
-          )}
-        </div>
+            <PostPreviewUserModalContent />
+          </Modal.Window>
+        </Modal>
         <span>·</span>
         <div className="post-time">
           <span
             onClick={onNavigateToPostDetails}
-            onMouseEnter={() => handleMouseEnter("postTime")}
-            onMouseLeave={() => handleMouseLeave("postTime")}
+            data-tooltip-id={`postTime-${post.id}`}
+            data-tooltip-content={formatDateToCleanString(post.createdAt)}
+            data-tooltip-place="bottom"
           >
             {formatDateToRelativeTime(post.createdAt)}
-            {elementsHoverState?.postTime && (
-              <ElementTitle title={formatDateToCleanString(post.createdAt)} />
-            )}
           </span>
+          <Tooltip
+            id={`postTime-${post.id}`}
+            offset={5}
+            noArrow={true}
+            style={{ fontSize: "14px", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          />
         </div>
       </div>
       {!isMiniPreview && (

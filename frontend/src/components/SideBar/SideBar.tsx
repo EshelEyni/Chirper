@@ -13,7 +13,7 @@ import { GiFeather } from "react-icons/gi";
 import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-circle-outline.svg";
 import "./SideBar.scss";
 import { IoIosBrush } from "react-icons/io";
-import { Modal } from "../Modals/Modal/Modal";
+import { Modal } from "../Modal/Modal";
 
 export const SideBar = () => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);

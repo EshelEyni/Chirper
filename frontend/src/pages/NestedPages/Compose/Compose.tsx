@@ -15,7 +15,7 @@ import {
 } from "../../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../../hooks/app/useOutsideClick";
 import { useGoBack } from "../../../hooks/app/useGoBack";
-import { Modal } from "../../../components/Modals/Modal/Modal";
+import { Modal } from "../../../components/Modal/Modal";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import "./RepostActionBtn.scss";
-import { Modal } from "../../../../Modals/Modal/Modal";
+import { Modal } from "../../../../Modal/Modal";
 import { useRemoveRepost } from "../../../../../hooks/reactQuery/post/useRemoveRepost";
 import { useCreateRepost } from "../../../../../hooks/reactQuery/post/useCreateRepost";
 import { PostPreviewActionBtn as TypeOfPostPreviewActionBtn } from "../PostPreviewActions";

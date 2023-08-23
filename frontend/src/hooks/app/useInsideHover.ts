@@ -17,13 +17,14 @@ export function useInsideHover<T extends HTMLElement>(
 
   useEffect(() => {
     function handleHover(e: MouseEvent) {
-      if (ref.current && ref.current.contains(e.target as Node)) debouncedFunc();
+      if (e.target === ref.current) debouncedFunc();
     }
 
-    document.addEventListener("mouseenter", handleHover, listenCapturing);
+    const element = ref.current;
+    element?.addEventListener("mouseenter", handleHover, listenCapturing);
 
     return () => {
-      document.removeEventListener("mouseenter", handleHover, listenCapturing);
+      element?.removeEventListener("mouseenter", handleHover, listenCapturing);
     };
   }, [handler, listenCapturing, debouncedFunc]);
 

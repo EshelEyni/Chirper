@@ -5,9 +5,9 @@ import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
-import { Modal } from "../../Modals/Modal/Modal";
+import { Modal } from "../../Modal/Modal";
 import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
-import { PostEditOption } from "../../Modals/Modal/PostEditOption/PostEditOption";
+import { PostEditOption } from "../../Modal/PostEditOption/PostEditOption";
 
 export const BtnToggleRepliers: FC = () => {
   const { currNewPost } = usePostEdit();

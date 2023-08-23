@@ -1,6 +1,6 @@
 import { FC } from "react";
 import "./PostEditOption.scss";
-import { PostEditOption as TypeOfPostEditOption } from "../../../../types/app.types";
+import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
 import { AiOutlineCheck } from "react-icons/ai";
 import "./PostEditOption.scss";
 

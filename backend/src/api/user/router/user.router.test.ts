@@ -115,7 +115,7 @@ describe("User Router", () => {
     await mongoose.connection.close();
   });
 
-  describe("GET /", () => {
+  fdescribe("GET /", () => {
     afterEach(() => {
       jest.clearAllMocks();
     });

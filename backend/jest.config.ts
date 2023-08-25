@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const isGlobalTesting = false;
 
-const currPath = "/api/user/models/user";
+const currPath = "/api/user/router";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`

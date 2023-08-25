@@ -77,6 +77,9 @@ export interface Post extends BasicPost {
   createdBy: MiniUser;
   repostedBy?: MiniUser;
   loggedInUserActionState: LoggedInUserActionState;
+  isPromotional?: boolean;
+  linkToSite?: string;
+  linkToRepo?: string;
 }
 
 export type LoggedInUserActionState = {

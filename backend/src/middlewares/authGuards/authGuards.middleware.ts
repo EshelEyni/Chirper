@@ -14,7 +14,7 @@ const checkUserAuthentication = asyncErrorCatcher(
     const { id, timeStamp } = verifiedToken;
 
     if (!isValidMongoId(id)) return next(new AppError("Invalid User Id", 401));
-    const currentUser = await UserModel.findById(id);
+    const currentUser = await UserModel.findById(id).setOptions({ skipHooks: true }).exec();
     if (!currentUser)
       return next(new AppError("The user belonging to this token does not exist.", 401));
     const changedPasswordAfter = currentUser.changedPasswordAfter(timeStamp);
@@ -29,7 +29,7 @@ const checkAdminAuthorization = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
     const { loggedInUserId } = req;
     if (!loggedInUserId) throw new AppError("User not logged in", 401);
-    const user = await UserModel.findById(loggedInUserId);
+    const user = await UserModel.findById(loggedInUserId).setOptions({ skipHooks: true }).exec();
     if (!user) throw new AppError("User not found", 404);
     if (!user.isAdmin) throw new AppError("You do not have permission to perform this action", 403);
     next();

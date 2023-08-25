@@ -63,10 +63,9 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // TODO: Check if this is needed to be required
     isPublic: {
       type: Boolean,
-      required: true,
+      default: true,
     },
     isDraft: {
       type: Boolean,
@@ -237,15 +236,17 @@ async function populateCreatedBy(doc: Document) {
     followersCount: 1,
     followingCount: 1,
   });
-  const userId = populatedDoc.get("createdById");
-  const followersCount = await FollowerModel.countDocuments({
-    toUserId: userId,
-  });
-  const followingCount = await FollowerModel.countDocuments({
-    fromUserId: userId,
-  });
-  populatedDoc.set("createdBy.followersCount", followersCount);
-  populatedDoc.set("createdBy.followingCount", followingCount);
+  // const userId = populatedDoc.get("createdById");
+  // const followersCount = await FollowerModel.countDocuments({
+  //   toUserId: userId,
+  // });
+  // const followingCount = await FollowerModel.countDocuments({
+  //   fromUserId: userId,
+  // });
+  // populatedDoc.followersCount = followersCount;
+  // populatedDoc.followingCount = followingCount;
+  // populatedDoc.set("createdBy.followersCount", followersCount);
+  // populatedDoc.set("createdBy.followingCount", followingCount);
 }
 
 async function populateQuotedPost(doc: Document) {
@@ -310,4 +311,4 @@ postSchema.pre(/^find/, function (this: Query<Document, Post>, next: (err?: Erro
 
 const PostModel = mongoose.model("Post", postSchema);
 
-export { PostModel };
+export { PostModel, postSchema };

@@ -9,6 +9,7 @@ import postUtilService, { loggedInUserActionDefaultState } from "../util/util.se
 import pollService from "../poll/poll.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { RepostModel } from "../../models/repost.model";
+import promotionalPostsService from "../promotional-posts/promotional-posts.service";
 
 async function query(queryString: QueryObj): Promise<Post[]> {
   const features = new APIFeatures(PostModel.find({}), queryString)
@@ -39,8 +40,24 @@ async function query(queryString: QueryObj): Promise<Post[]> {
       updatedAt,
     };
   });
+  const promotionalPosts = await promotionalPostsService.get();
 
-  const posts = [...postsDocs, ...reposts];
+  // const posts = [...postsDocs, ...reposts, ...promotionalPosts];
+
+  const combinedPosts = [...postsDocs, ...reposts];
+  combinedPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  // Insert promotional posts every 10 items
+  const posts = [];
+  for (let i = 0; i < combinedPosts.length; i++) {
+    posts.push(combinedPosts[i]);
+    if ((i + 1) % 10 === 0 && promotionalPosts.length > 0) {
+      const promoPost = promotionalPosts.shift();
+      if (promoPost) posts.push(promoPost);
+    }
+  }
+
+  // posts.push(...promotionalPosts);
 
   const userIds = [];
   const postIds = [];

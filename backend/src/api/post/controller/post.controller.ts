@@ -7,13 +7,15 @@ import {
   AppError,
   validatePatchRequestBody,
 } from "../../../services/error/error.service";
-import { deleteOne } from "../../../services/factory/factory.service";
+import { deleteOne, getAll } from "../../../services/factory/factory.service";
 import { PostModel } from "../models/post.model";
 import repostService from "../services/repost/repost.service";
 import likeService from "../services/like/like.service";
 import bookmarkService from "../services/bookmark/bookmark.service";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
+import { PromotionalPostModel } from "../models/promitional-post.model";
+import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -279,6 +281,21 @@ const removeBookmarkedPost = asyncErrorCatcher(
   }
 );
 
+const getPromotionalPosts = getAll(PromotionalPostModel);
+
+const addPromotionalPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const { loggedInUserId } = req;
+  const post = req.body as unknown as NewPost;
+  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
+  post.createdById = loggedInUserId;
+  const savedPost = await promotionalPostsService.add(post);
+
+  res.status(201).send({
+    status: "success",
+    data: savedPost,
+  });
+});
+
 export {
   getPosts,
   getPostById,
@@ -299,4 +316,6 @@ export {
   getBookmarkedPosts,
   addBookmarkedPost,
   removeBookmarkedPost,
+  getPromotionalPosts,
+  addPromotionalPost,
 };

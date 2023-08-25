@@ -1,5 +1,8 @@
 import express from "express";
-import { checkUserAuthentication } from "../../../middlewares/authGuards/authGuards.middleware";
+import {
+  checkUserAuthentication,
+  checkAdminAuthorization,
+} from "../../../middlewares/authGuards/authGuards.middleware";
 import {
   getPosts,
   getPostById,
@@ -20,6 +23,8 @@ import {
   getBookmarkedPosts,
   addBookmarkedPost,
   removeBookmarkedPost,
+  addPromotionalPost,
+  getPromotionalPosts,
 } from "../controller/post.controller";
 
 const router = express.Router();
@@ -47,5 +52,9 @@ router.patch("/:id", updatePost);
 router.delete("/:id", removePost);
 
 router.post("/poll/vote", savePollVote);
+
+router.use(checkAdminAuthorization);
+router.get("/promotional", getPromotionalPosts);
+router.post("/promotional", addPromotionalPost);
 
 export default router;

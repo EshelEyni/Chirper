@@ -23,12 +23,10 @@ import { BtnShowThread } from "../../../Btns/BtnShowThread/BtnShowThread";
 import { usePostPreview } from "../../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../../contexts/VideoPlayerContext";
 import "./PostPreview.scss";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getBasePathName } from "../../../../services/util/utils.service";
+import { ExternalLink } from "../../../App/ExternalLink/ExternalLink";
+import { FaGithub } from "react-icons/fa";
 
 export const PostPreview: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { post, poll } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
@@ -43,12 +41,6 @@ export const PostPreview: React.FC = () => {
     threshold: 0,
     triggerOnce: true,
   });
-
-  function onImgClick(idx: number) {
-    const { pathname } = location;
-    const basePath = getBasePathName(pathname, "imgs");
-    navigate(`${basePath}/post/${post.id}/imgs/${idx + 1}`);
-  }
 
   useEffect(() => {
     const shouldSaveImpression = inView && !post.loggedInUserActionState.isViewed && loggedInUser;
@@ -74,7 +66,12 @@ export const PostPreview: React.FC = () => {
                 loggedInUserActionState={post.loggedInUserActionState}
               />
             )}
-            {post.imgs?.length > 0 && <PostImg imgs={post.imgs} onImgClick={onImgClick} />}
+            {post.imgs?.length > 0 && <PostImg post={post} />}
+            {post.linkToRepo && (
+              <ExternalLink link={post.linkToRepo}>
+                <FaGithub size={18} color="var(--color-text-gray)" /> <span>Promoted</span>
+              </ExternalLink>
+            )}
             {post.videoUrl && (
               <VideoPlayerProvider>
                 <VideoPlayer videoUrl={post.videoUrl} isCustomControls={true} />

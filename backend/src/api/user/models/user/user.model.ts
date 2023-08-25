@@ -167,9 +167,12 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     // Iterate through the documents and set the counts and following status
     for (const doc of docs) {
       const userId = doc._id.toString();
-      doc.set("followingCount", followingCountMap[userId] ?? 0);
-      doc.set("followersCount", followersCountMap[userId] ?? 0);
-      doc.set("isFollowing", isFollowingMap[userId]);
+      doc.followingCount = followingCountMap[userId] ?? 0;
+      doc.followersCount = followersCountMap[userId] ?? 0;
+      doc.isFollowing = isFollowingMap[userId];
+      // doc.set("followingCount", followingCountMap[userId] ?? 0);
+      // doc.set("followersCount", followersCountMap[userId] ?? 0);
+      // doc.set("isFollowing", isFollowingMap[userId]);
     }
   } else {
     const doc = res;
@@ -181,9 +184,12 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
       skipHooks: true,
     });
     const isFollowingMap = await followerService.getIsFollowing(userId);
-    doc.set("followingCount", followingCount);
-    doc.set("followersCount", followersCount);
-    doc.set("isFollowing", isFollowingMap[userId]);
+    doc.followingCount = followingCount;
+    doc.followersCount = followersCount;
+    doc.isFollowing = isFollowingMap[userId];
+    // doc.set("followingCount", followingCount);
+    // doc.set("followersCount", followersCount);
+    // doc.set("isFollowing", isFollowingMap[userId]);
   }
 });
 

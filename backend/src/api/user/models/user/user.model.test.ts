@@ -355,13 +355,14 @@ describe("User Model", () => {
   });
 
   describe("User Model Pre-save Hook", () => {
-    const spyHashPassword = jest.spyOn(bcrypt, "hash");
+    // beforeAll(() => {
+    //   spyHashPassword.mockRestore();
+    // });
 
-    afterAll(() => {
-      spyHashPassword.mockRestore();
-    });
+    // // afterAll(() => {});
 
     it("should hash password before saving if password was modified", async () => {
+      const spyHashPassword = jest.spyOn(bcrypt, "hash");
       const userCreds = createValidUserCreds();
       const user = new UserModel(userCreds);
 
@@ -372,9 +373,11 @@ describe("User Model", () => {
       expect(user.password).not.toEqual(userCreds.password);
       expect(user.passwordConfirm).toEqual("");
       await UserModel.findByIdAndDelete(user._id);
+      spyHashPassword.mockRestore();
     });
 
     it("should not hash password before saving if password was not modified", async () => {
+      const spyHashPassword = jest.spyOn(bcrypt, "hash");
       const userCreds = createValidUserCreds();
       const user = new UserModel(userCreds);
 
@@ -386,10 +389,11 @@ describe("User Model", () => {
       expect(user.password).not.toEqual(userCreds.password);
       expect(user.passwordConfirm).toEqual("");
       await UserModel.findByIdAndDelete(user._id);
+      spyHashPassword.mockRestore();
     });
   });
 
-  fdescribe("User Model Methods", () => {
+  describe("User Model Methods", () => {
     describe("User Model Methods - checkPassword", () => {
       it("should return true if the candidate password matches the user password", async () => {
         const candidatePassword = "password123";

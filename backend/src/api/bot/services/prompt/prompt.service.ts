@@ -18,4 +18,10 @@ function _getPollPrompt(prompt: string) {
   return start + prompt + end;
 }
 
+export const postImgTextPrompt =
+  "I am Using AI to Generate Images for my tweeter Clone, And I need the text for the tweet with the image." +
+  "\n " +
+  "I will give the prompt i used to generate the image, and you will generate the text" +
+  "\n\nPrompt: ";
+
 export default { getBotPrompt };

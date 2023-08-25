@@ -4,7 +4,7 @@ import userService from "./user.service";
 import followerService from "../follower/follower.service";
 
 jest.mock("../../../../services/util/util.service");
-jest.mock("../../models/user.model");
+jest.mock("../../models/user/user.model");
 jest.mock("../follower/follower.service");
 
 describe("User Service", () => {

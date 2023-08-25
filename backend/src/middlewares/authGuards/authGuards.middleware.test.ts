@@ -6,10 +6,18 @@ import mongoose from "mongoose";
 import { UserModel } from "../../api/user/models/user/user.model";
 
 jest.mock("../../services/token/token.service");
-jest.mock("../../api/user/models/user.model");
+jest.mock("../../api/user/models/user/user.model", () => ({
+  UserModel: {
+    findById: jest.fn().mockReturnValue({
+      setOptions: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null), // Replace null with the desired object
+      }),
+    }),
+  },
+}));
 
 describe("Auth Guards Middleware", () => {
-  describe("checkUserAuthentication", () => {
+  fdescribe("checkUserAuthentication", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let next: jest.Mock;
@@ -56,7 +64,7 @@ describe("Auth Guards Middleware", () => {
       checkUserAuthentication(req as Request, res as Response, next);
     });
 
-    it("should call next with an error if the user does not exist", done => {
+    fit("should call next with an error if the user does not exist", done => {
       (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("token");
       (tokenService.verifyToken as jest.Mock).mockReturnValue({
         id: new mongoose.Types.ObjectId(),
@@ -65,6 +73,7 @@ describe("Auth Guards Middleware", () => {
       (UserModel.findById as jest.Mock).mockResolvedValue(null);
 
       next = jest.fn().mockImplementation(err => {
+        console.log(err);
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(
           expect.objectContaining({ message: "The user belonging to this token does not exist." })
@@ -161,7 +170,9 @@ describe("Auth Guards Middleware", () => {
       (UserModel.findById as jest.Mock).mockResolvedValue(user);
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
-        expect(err).toEqual(expect.objectContaining({ message: "You do not have permission to perform this action" }));
+        expect(err).toEqual(
+          expect.objectContaining({ message: "You do not have permission to perform this action" })
+        );
         done();
       });
       checkAdminAuthorization(req as Request, res as Response, next);

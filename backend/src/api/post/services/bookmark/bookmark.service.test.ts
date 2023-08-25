@@ -9,6 +9,12 @@ jest.mock("../../models/post.model", () => ({
   PostModel: {
     findById: jest.fn(),
   },
+  postSchema: {
+    obj: {},
+  },
+  PromotionalPostModel: {
+    find: jest.fn(),
+  },
 }));
 
 jest.mock("../../models/bookmark-post.model", () => ({

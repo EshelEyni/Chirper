@@ -11,9 +11,9 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
     botId,
     prompt,
     schedule,
-    numOfPosts: Number(numOfPosts),
+    numOfPosts: Number(numOfPosts) || 1,
     postType,
-    numberOfImages: Number(numberOfImages),
+    numberOfImages: Number(numberOfImages) || 1,
     addTextToContent,
   });
   res.send({

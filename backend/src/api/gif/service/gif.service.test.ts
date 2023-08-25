@@ -28,7 +28,7 @@ type MockedFetchedGif = {
 };
 
 jest.mock("@giphy/js-fetch-api");
-jest.mock("../gif.model");
+jest.mock("../model/gif.model");
 jest.mock("../../../services/util/util.service");
 
 describe("Gif Service", () => {

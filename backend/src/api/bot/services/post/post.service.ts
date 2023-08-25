@@ -124,16 +124,17 @@ async function createPostImage({
   prompt,
   numberOfImages = 1,
   addTextToContent = false,
-}: PostImageOptions): Promise<{ text?: string; imgs: NewPostImg[] }> {
+}: PostImageOptions): Promise<{ text: string; imgs: NewPostImg[] }> {
   const p = prompt ? prompt : await promptService.getBotPrompt(botId, "image");
   if (!p) throw new AppError("prompt is undefined", 500);
-  const imgs = (await openAIService.getImgsFromOpenOpenAI(
+  const { imgs, text } = await openAIService.getImgsFromOpenOpenAI(
     p,
-    numberOfImages
-  )) as unknown as NewPostImg[];
+    numberOfImages,
+    addTextToContent
+  );
   if (!imgs) throw new AppError("imgs is undefined", 500);
 
-  return { text: addTextToContent ? await createPostText({ botId, prompt }) : undefined, imgs };
+  return { text, imgs };
 }
 
 async function createPostVideo({

@@ -32,8 +32,6 @@ jest.mock("cloudinary", () => ({
 
 jest.mock("axios");
 
-const _uploadToCloudinary = jest.fn();
-
 describe("Open AI Service", () => {
   const configuration = new Configuration({
     organization: process.env.OPEN_AI_ORGANIZATION,
@@ -84,7 +82,7 @@ describe("Open AI Service", () => {
       expect(result).toEqual("Sample response from default model");
     });
 
-    it("should throw an error if message is undefined for gpt-4 model", async () => {
+    it("should throw an error if message is falsey for gpt-4 model", async () => {
       const prompt = "Sample prompt";
       const response = {
         data: {
@@ -95,11 +93,11 @@ describe("Open AI Service", () => {
       openai.createChatCompletion = jest.fn().mockResolvedValue(response);
 
       await expect(openAIService.getTextFromOpenAI(prompt, "gpt-4")).rejects.toThrow(
-        "message is undefined"
+        "message is falsey"
       );
     });
 
-    it("should throw an error if message is undefined for default model", async () => {
+    it("should throw an error if message is falsey for default model", async () => {
       const prompt = "Sample prompt";
       const response = {
         data: {
@@ -109,11 +107,11 @@ describe("Open AI Service", () => {
 
       openai.createCompletion = jest.fn().mockResolvedValue(response);
 
-      await expect(openAIService.getTextFromOpenAI(prompt)).rejects.toThrow("text is undefined");
+      await expect(openAIService.getTextFromOpenAI(prompt)).rejects.toThrow("text is falsey");
     });
   });
 
-  describe("getAndSetPostPollFromOpenAI function", () => {
+  describe("getAndSetPostPollFromOpenAI", () => {
     const getResponse = (choices: any) => ({ data: { choices } });
 
     beforeEach(() => {
@@ -257,7 +255,9 @@ describe("Open AI Service", () => {
     });
   });
 
-  fdescribe("getImgsFromOpenOpenAI", () => {
+  describe("getImgsFromOpenOpenAI", () => {
+    const prompt = "Sample prompt";
+
     function mockOpenAICreateImg(...dataUrls: string[]) {
       openai.createImage = jest.fn().mockResolvedValueOnce({
         data: {
@@ -267,14 +267,18 @@ describe("Open AI Service", () => {
     }
 
     function mockCloudinaryUpload(...cloudinaryUrls: string[]) {
-      (cloudinary.uploader.upload_stream as jest.Mock).mockImplementation((options, callback) => {
-        const fakeStream = {
-          end: () => {
-            callback(null, { url: cloudinaryUrls[0] });
-          },
-        };
-        return fakeStream;
-      });
+      for (let i = 0; i < cloudinaryUrls.length; i++) {
+        (cloudinary.uploader.upload_stream as jest.Mock).mockImplementationOnce(
+          (options, callback) => {
+            const fakeStream = {
+              end: () => {
+                callback(null, { url: cloudinaryUrls[i] });
+              },
+            };
+            return fakeStream;
+          }
+        );
+      }
     }
 
     function getUrls(num: number) {
@@ -290,55 +294,99 @@ describe("Open AI Service", () => {
     beforeEach(() => {
       jest.resetAllMocks();
 
-      axios.get = jest.fn().mockResolvedValueOnce({
+      axios.get = jest.fn().mockResolvedValue({
         data: "Sample image data",
       });
     });
 
     it("should return a single image URL", async () => {
-      const prompt = "Sample prompt";
       const numberOfImages = 1;
       const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
       mockOpenAICreateImg(...dataUrls);
       mockCloudinaryUpload(...cloudinaryUrls);
 
       const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
-      assertPostImgs(...result);
+
+      expect(result.text).toEqual("");
+      expect(result.imgs.length).toEqual(1);
+      assertPostImgs(...result.imgs);
     });
 
-    // it("should return multiple image URLs", async () => {
-    //   // Similar to the above, but mock multiple images in response
-    // });
+    it("should return multiple image URLs", async () => {
+      const numberOfImages = 3;
+      const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
+      mockOpenAICreateImg(...dataUrls);
+      mockCloudinaryUpload(...cloudinaryUrls);
 
-    // it("should throw an error if data.url is undefined", async () => {
-    //   openai.createImage.mockResolvedValue({
-    //     data: {
-    //       data: [{ url: undefined }],
-    //     },
-    //   });
+      const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
 
-    //   await expect(getImgsFromOpenOpenAI("Sample prompt")).rejects.toThrow("data.url is undefined");
-    // });
+      expect(result.text).toEqual("");
+      expect(result.imgs.length).toEqual(3);
+      assertPostImgs(...result.imgs);
+    });
 
-    // it("should handle failed image download", async () => {
-    //   openai.createImage.mockResolvedValue({
-    //     /* ... */
-    //   });
-    //   axios.get.mockRejectedValue(new Error("Failed to download"));
+    it("should throw an error if data.url is undefined", async () => {
+      mockOpenAICreateImg(undefined as any);
+      await expect(openAIService.getImgsFromOpenOpenAI(prompt)).rejects.toThrow(
+        "data.url is undefined"
+      );
+    });
 
-    //   await expect(getImgsFromOpenOpenAI("Sample prompt")).rejects.toThrow("Failed to download");
-    // });
+    it("should handle failed image download", async () => {
+      const numberOfImages = 1;
+      const { dataUrls } = getUrls(numberOfImages);
+      mockOpenAICreateImg(...dataUrls);
 
-    // it("should handle failed upload to Cloudinary", async () => {
-    //   openai.createImage.mockResolvedValue({
-    //     /* ... */
-    //   });
-    //   axios.get.mockResolvedValue({
-    //     /* ... */
-    //   });
-    //   _uploadToCloudinary.mockRejectedValue(new Error("Failed to upload"));
+      axios.get = jest.fn().mockRejectedValue(new Error("Failed to download"));
 
-    //   await expect(getImgsFromOpenOpenAI("Sample prompt")).rejects.toThrow("Failed to upload");
-    // });
+      await expect(openAIService.getImgsFromOpenOpenAI(prompt)).rejects.toThrow(
+        "Failed to download"
+      );
+    });
+
+    it("should handle failed upload to Cloudinary", async () => {
+      const numberOfImages = 1;
+      const { dataUrls } = getUrls(numberOfImages);
+      mockOpenAICreateImg(...dataUrls);
+      (cloudinary.uploader.upload_stream as jest.Mock).mockImplementation(() => {
+        throw new Error("Failed to upload");
+      });
+      await expect(openAIService.getImgsFromOpenOpenAI(prompt)).rejects.toThrow("Failed to upload");
+    });
+
+    it("should handle bad url from returning from Cloudinary", async () => {
+      const numberOfImages = 5;
+      const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
+      mockOpenAICreateImg(...dataUrls);
+      mockCloudinaryUpload(null as any, undefined as any, ...cloudinaryUrls);
+
+      const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
+
+      expect(result.text).toEqual("");
+      expect(result.imgs.length).toEqual(3);
+      assertPostImgs(...result.imgs);
+    });
+
+    it("should return text and image URLs, when addedTextToContent is true", async () => {
+      const numberOfImages = 1;
+      const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
+      mockOpenAICreateImg(...dataUrls);
+      mockCloudinaryUpload(...cloudinaryUrls);
+
+      const response = {
+        data: {
+          choices: [
+            { message: { content: "Sample response from gpt-4, for Post Image with Text" } },
+          ],
+        },
+      };
+
+      openai.createChatCompletion = jest.fn().mockResolvedValue(response);
+      const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages, true);
+
+      expect(result.text).toEqual("Sample response from gpt-4, for Post Image with Text");
+      expect(result.imgs.length).toEqual(1);
+      assertPostImgs(...result.imgs);
+    });
   });
 });

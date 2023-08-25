@@ -2,7 +2,8 @@ import { Configuration, OpenAIApi } from "openai";
 import { AppError } from "../../../../services/error/error.service";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
-import { Poll } from "../../../../../../shared/interfaces/post.interface";
+import { NewPostImg, Poll } from "../../../../../../shared/interfaces/post.interface";
+import { postImgTextPrompt } from "../prompt/prompt.service";
 
 require("dotenv").config();
 
@@ -26,7 +27,7 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
       messages: [{ role: "user", content: prompt }],
     });
     const { message } = completion.data.choices[0];
-    if (!message) throw new AppError("message is undefined", 500);
+    if (!message) throw new AppError("message is falsey", 500);
     return message.content as string;
   }
 
@@ -36,7 +37,7 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
     max_tokens: 4000,
   });
   const { text } = completion.data.choices[0];
-  if (!text) throw new AppError("text is undefined", 500);
+  if (!text) throw new AppError("text is falsey", 500);
   return text as string;
 }
 
@@ -61,7 +62,11 @@ async function getAndSetPostPollFromOpenAI(prompt: string): Promise<{ text: stri
   return { text, poll };
 }
 
-async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1) {
+async function getImgsFromOpenOpenAI(
+  prompt: string,
+  numberOfImages = 1,
+  addTextToContent = false
+): Promise<{ imgs: NewPostImg[]; text: string }> {
   const response = await openai.createImage({
     prompt,
     n: numberOfImages,
@@ -69,18 +74,33 @@ async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1) {
   });
 
   const imagePromises = response.data.data.map(async data => {
-    if (!data.url) throw new Error("data.url is undefined");
+    if (!data.url) throw new AppError("data.url is undefined", 500);
     const response = await axios.get(data.url, {
       responseType: "arraybuffer",
     });
+
     const cloudinaryUrl = await _uploadToCloudinary(response.data);
+
     return cloudinaryUrl;
   });
 
   const cloudinaryUrls = await Promise.all(imagePromises);
+  const imgs = cloudinaryUrls
+    .filter(url => typeof url === "string")
+    .map((url, i) => ({ url, sortOrder: i })) as unknown as NewPostImg[];
 
-  const imgs = cloudinaryUrls.map((url, i) => ({ url, sortOrder: i }));
-  return imgs;
+  if (addTextToContent) {
+    const p = postImgTextPrompt + prompt;
+    const postImgText = await getTextFromOpenAI(p, "gpt-4");
+
+    if (postImgText)
+      return {
+        imgs,
+        text: postImgText,
+      };
+  }
+
+  return { imgs, text: "" };
 }
 
 async function getVideoAndTextFromYoutubeAndOpenAI(prompt: string) {

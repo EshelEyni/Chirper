@@ -17,7 +17,7 @@ const botPromptSchema = new mongoose.Schema(
           if (!bot) return false;
           return bot.isBot;
         },
-        message: "Post must have no more than 4 images.",
+        message: "Bot not found",
       },
     },
     prompt: {

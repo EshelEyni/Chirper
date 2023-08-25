@@ -1,6 +1,6 @@
 require("dotenv").config();
 import mongoose from "mongoose";
-import { LoggedInUserActionState, Post } from "../../../shared/interfaces/post.interface";
+import { LoggedInUserActionState, Poll, Post } from "../../../shared/interfaces/post.interface";
 import { MiniUser, User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { PostModel } from "../api/post/models/post.model";
 import { UserModel } from "../api/user/models/user/user.model";
@@ -10,7 +10,7 @@ import { logger } from "./logger/logger.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 
 type CreateTestUserOptions = {
-  id: string;
+  id?: string;
   isAdmin?: boolean;
   isBot?: boolean;
 };
@@ -126,6 +126,49 @@ function assertGif(gif: Gif) {
   );
 }
 
+function assertPoll(poll: Poll) {
+  expect(poll).toEqual(
+    expect.objectContaining({
+      options: expect.any(Array),
+      isVotingOff: expect.any(Boolean),
+      createdAt: expect.anything(),
+    })
+  );
+
+  for (const option of poll.options) {
+    expect(option).toEqual(
+      expect.objectContaining({
+        text: expect.any(String),
+        voteCount: expect.any(Number),
+        isLoggedInUserVoted: expect.any(Boolean),
+      })
+    );
+  }
+
+  expect(poll.options.length).toBeGreaterThanOrEqual(2);
+  expect(poll.options.length).toBeLessThanOrEqual(5);
+
+  const timeStamp = new Date(poll.createdAt).getTime();
+  expect(timeStamp).toBeLessThanOrEqual(Date.now());
+
+  expect(poll.length).toEqual({
+    days: expect.any(Number),
+    hours: expect.any(Number),
+    minutes: expect.any(Number),
+  });
+}
+
+function assertPostImgs(...postImgs: any) {
+  for (const postImg of postImgs) {
+    expect(postImg).toEqual(
+      expect.objectContaining({
+        url: expect.any(String),
+        sortOrder: expect.any(Number),
+      })
+    );
+  }
+}
+
 function createValidUserCreds(id?: string): UserCredenitials {
   const ranNum = Math.floor(Math.random() * 100000);
   const username = "testUser_" + ranNum;
@@ -145,8 +188,9 @@ async function createTestUser({
   isAdmin = false,
   isBot = false,
 }: CreateTestUserOptions): Promise<User> {
-  await UserModel.findByIdAndDelete(id).setOptions({ active: false });
-  const user = createValidUserCreds(id) as User;
+  const validId = id || getMongoId();
+  await UserModel.findByIdAndDelete(validId).setOptions({ active: false });
+  const user = createValidUserCreds(validId) as User;
   if (isAdmin) user.isAdmin = true;
   if (isBot) user.isBot = true;
   return (await UserModel.create(user)).toObject() as unknown as User;
@@ -184,7 +228,25 @@ async function getValidPostId() {
 function getMongoId() {
   return new mongoose.Types.ObjectId().toHexString();
 }
-
+function getMockedUser({
+  id,
+  isBot = false,
+}: {
+  id?: string | mongoose.Types.ObjectId;
+  isBot?: boolean;
+} = {}) {
+  return {
+    _id: id?.toString() || getMongoId(),
+    username: "test1",
+    email: "email@email.com",
+    fullname: "fullname1",
+    imgUrl: "imgUrl1",
+    isApprovedLocation: true,
+    active: true,
+    isBot,
+    toObject: jest.fn().mockReturnThis(),
+  };
+}
 export {
   connectToTestDB,
   assertUser,
@@ -199,4 +261,7 @@ export {
   deleteTestUser,
   assertLoggedInUserState,
   getMongoId,
+  getMockedUser,
+  assertPoll,
+  assertPostImgs,
 };

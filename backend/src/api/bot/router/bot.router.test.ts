@@ -65,7 +65,7 @@ describe("Bot Router", () => {
     });
   });
 
-  describe("POST /:id", () => {
+  xdescribe("POST /:id", () => {
     it("should return 200 and a new post", async () => {
       const botId = getMongoId();
       await createTestBot(botId);

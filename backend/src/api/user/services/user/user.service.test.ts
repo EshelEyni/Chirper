@@ -1,5 +1,5 @@
 import { APIFeatures } from "../../../../services/util/util.service";
-import { UserModel } from "../../models/user.model";
+import { UserModel } from "../../models/user/user.model";
 import userService from "./user.service";
 import followerService from "../follower/follower.service";
 

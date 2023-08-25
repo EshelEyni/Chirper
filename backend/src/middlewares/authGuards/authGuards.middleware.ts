@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError, asyncErrorCatcher } from "../../services/error/error.service";
-import { UserModel } from "../../api/user/models/user.model";
+import { UserModel } from "../../api/user/models/user/user.model";
 import tokenService from "../../services/token/token.service";
 import { isValidMongoId } from "../../services/util/util.service";
 

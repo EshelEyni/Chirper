@@ -1,5 +1,5 @@
 import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
-import { UserModel } from "../../models/user.model";
+import { UserModel } from "../../models/user/user.model";
 import { FollowerModel } from "../../models/follower/follower.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";

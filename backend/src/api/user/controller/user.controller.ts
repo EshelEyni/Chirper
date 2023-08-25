@@ -6,7 +6,7 @@ import {
   validatePatchRequestBody,
 } from "../../../services/error/error.service";
 import { getOne, createOne, updateOne, deleteOne } from "../../../services/factory/factory.service";
-import { UserModel } from "../models/user.model";
+import { UserModel } from "../models/user/user.model";
 import { QueryObj, validateIds } from "../../../services/util/util.service";
 import followerService from "../services/follower/follower.service";
 

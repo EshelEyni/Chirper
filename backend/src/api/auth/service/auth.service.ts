@@ -1,5 +1,5 @@
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
-import { IUser, UserModel } from "../../user/models/user.model";
+import { IUser, UserModel } from "../../user/models/user/user.model";
 import { AppError } from "../../../services/error/error.service";
 import { isValidMongoId, sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";

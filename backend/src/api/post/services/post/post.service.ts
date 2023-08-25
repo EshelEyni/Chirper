@@ -7,7 +7,7 @@ import { MiniUser } from "../../../../../../shared/interfaces/user.interface";
 import followerService from "../../../user/services/follower/follower.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
-import { UserModel } from "../../../user/models/user.model";
+import { UserModel } from "../../../user/models/user/user.model";
 import { RepostModel } from "../../models/repost.model";
 
 async function query(queryString: QueryObj): Promise<Post[]> {

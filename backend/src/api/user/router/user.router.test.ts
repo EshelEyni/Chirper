@@ -6,7 +6,7 @@ import { AppError, errorHandler } from "../../../services/error/error.service";
 import userService from "../services/user/user.service";
 import mongoose, { Types } from "mongoose";
 import followerService from "../services/follower/follower.service";
-import { UserModel } from "../models/user.model";
+import { UserModel } from "../models/user/user.model";
 import {
   assertPost,
   assertUser,

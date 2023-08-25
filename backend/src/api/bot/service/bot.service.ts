@@ -1,4 +1,4 @@
-import { UserModel } from "../../user/models/user.model";
+import { UserModel } from "../../user/models/user/user.model";
 import { Configuration, OpenAIApi } from "openai";
 import { NewPost, NewPostImg, Poll, Post } from "../../../../../shared/interfaces/post.interface";
 import { BotPromptModel } from "../model/bot-options.model";

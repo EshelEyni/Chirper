@@ -1,9 +1,9 @@
 import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { User } from "../../../../../shared/interfaces/user.interface";
-import { FollowerModel } from "./follower/follower.model";
-import followerService from "../services/follower/follower.service";
+import { User } from "../../../../../../shared/interfaces/user.interface";
+import { FollowerModel } from "../follower/follower.model";
+import followerService from "../../services/follower/follower.service";
 
 export interface IUser extends Document {
   username: string;
@@ -36,7 +36,7 @@ const userSchema: Schema<IUser> = new Schema(
   {
     username: {
       type: String,
-      required: true,
+      required: [true, "Please provide a username"],
       unique: true,
       trim: true,
       validate: {
@@ -48,7 +48,7 @@ const userSchema: Schema<IUser> = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Please provide a password"],
       validate: {
         validator: function (v: string): boolean {
           return v.length >= 8 && v.length <= 20;
@@ -66,15 +66,7 @@ const userSchema: Schema<IUser> = new Schema(
         message: "passwords must match",
       },
     },
-    passwordChangedAt: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-    fullname: { type: String, required: [true, "Please provide you full name"] },
-    imgUrl: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
-    },
+    fullname: { type: String, required: [true, "Please provide your full name"] },
     email: {
       type: String,
       required: [true, "Please provide your email"],
@@ -86,14 +78,22 @@ const userSchema: Schema<IUser> = new Schema(
         message: "Please provide a valid email",
       },
     },
+    imgUrl: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png",
+    },
+    bio: { type: String, default: "" },
+    active: { type: Boolean, default: true },
     isAdmin: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     isBot: { type: Boolean, default: false },
     isApprovedLocation: { type: Boolean, default: false },
-    active: { type: Boolean, default: true },
     loginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Number, default: 0 },
-    bio: { type: String, default: "" },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     toObject: {
@@ -124,6 +124,10 @@ const userSchema: Schema<IUser> = new Schema(
   }
 );
 
+userSchema.virtual("followingCount").get(() => 0);
+userSchema.virtual("followersCount").get(() => 0);
+userSchema.virtual("isFollowing").get(() => false);
+
 userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   const options = this.getOptions();
   if (options.active === false) return next();
@@ -138,6 +142,8 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
 
   if (isResArray) {
     const docs = res;
+    if (!docs.length) return;
+
     // Extract all user IDs
     const userIds = docs.map((doc: User & Document) => doc._id.toString());
 
@@ -161,9 +167,9 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     // Iterate through the documents and set the counts and following status
     for (const doc of docs) {
       const userId = doc._id.toString();
-      doc.set("followingCount", followingCountMap[userId] ?? 0, { strict: false });
-      doc.set("followersCount", followersCountMap[userId] ?? 0, { strict: false });
-      doc.set("isFollowing", isFollowingMap[userId], { strict: false });
+      doc.set("followingCount", followingCountMap[userId] ?? 0);
+      doc.set("followersCount", followersCountMap[userId] ?? 0);
+      doc.set("isFollowing", isFollowingMap[userId]);
     }
   } else {
     const doc = res;
@@ -175,23 +181,19 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
       skipHooks: true,
     });
     const isFollowingMap = await followerService.getIsFollowing(userId);
-    doc.set("followingCount", followingCount, { strict: false });
-    doc.set("followersCount", followersCount, { strict: false });
-    doc.set("isFollowing", isFollowingMap[userId], { strict: false });
+    doc.set("followingCount", followingCount);
+    doc.set("followersCount", followersCount);
+    doc.set("isFollowing", isFollowingMap[userId]);
   }
 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  // Password is only modified when creating a new user or updating the password after a reset
+  const isPasswordModified = this.isModified("password");
+  if (!isPasswordModified) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = "";
   next();
-});
-
-userSchema.post("save", async function (doc: User & Document) {
-  doc.set("followingCount", 0, { strict: false });
-  doc.set("followersCount", 0, { strict: false });
-  doc.set("isFollowing", false, { strict: false });
 });
 
 userSchema.methods.checkPassword = async function (

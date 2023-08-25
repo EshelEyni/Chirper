@@ -10,7 +10,7 @@ import {
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
 import mongoose from "mongoose";
-import { UserModel } from "../../user/models/user.model";
+import { UserModel } from "../../user/models/user/user.model";
 
 const app = express();
 app.use(cookieParser());

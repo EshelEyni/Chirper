@@ -1,5 +1,5 @@
 import mongoose, { model } from "mongoose";
-import { UserModel } from "../user.model";
+import { UserModel } from "../user/user.model";
 
 const followerSchema = new mongoose.Schema(
   {

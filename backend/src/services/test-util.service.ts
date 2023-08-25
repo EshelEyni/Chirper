@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { LoggedInUserActionState, Post } from "../../../shared/interfaces/post.interface";
 import { MiniUser, User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { PostModel } from "../api/post/models/post.model";
-import { UserModel } from "../api/user/models/user.model";
+import { UserModel } from "../api/user/models/user/user.model";
 import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
 import { logger } from "./logger/logger.service";
@@ -126,12 +126,12 @@ function assertGif(gif: Gif) {
   );
 }
 
-function createValidUserCreds(id: string): UserCredenitials {
-  const ranNum = Math.floor(Math.random() * 1000);
+function createValidUserCreds(id?: string): UserCredenitials {
+  const ranNum = Math.floor(Math.random() * 100000);
   const username = "testUser_" + ranNum;
   const password = "password";
   return {
-    _id: id,
+    _id: id || getMongoId(),
     username: username,
     fullname: "Test User",
     email: `${username}@testemail.com`,
@@ -195,6 +195,7 @@ export {
   assertGifCategory,
   assertGif,
   createTestUser,
+  createValidUserCreds,
   deleteTestUser,
   assertLoggedInUserState,
   getMongoId,

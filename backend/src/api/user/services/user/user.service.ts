@@ -1,5 +1,5 @@
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { UserModel } from "../../models/user.model";
+import { UserModel } from "../../models/user/user.model";
 import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
 import { Document } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";

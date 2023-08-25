@@ -1,7 +1,7 @@
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { FollowerModel } from "../../models/follower/follower.model";
 import followerService from "./follower.service";
-import { UserModel } from "../../models/user.model";
+import { UserModel } from "../../models/user/user.model";
 import postService from "../../../post/services/post/post.service";
 import * as mongoose from "mongoose";
 import { isValidMongoId } from "../../../../services/util/util.service";
@@ -10,16 +10,19 @@ import { AppError } from "../../../../services/error/error.service";
 
 jest.mock("../../../../services/als.service");
 jest.mock("mongoose");
-jest.mock("../../models/user.model", () => ({
+jest.mock("../../models/user/user.model", () => ({
   UserModel: {
     findById: jest.fn(),
   },
 }));
-jest.mock("../../models/followers.model", () => ({
+jest.mock("../../models/follower/follower.model", () => ({
   FollowerModel: {
     create: jest.fn(),
-    findOneAndDelete: jest.fn(),
+    findOneAndDelete: jest.fn().mockReturnValue({
+      setOptions: jest.fn().mockReturnThis(),
+    }),
     find: jest.fn().mockReturnValue({
+      setOptions: jest.fn().mockReturnThis(),
       select: jest.fn().mockReturnThis(),
       exec: jest.fn(),
     }),
@@ -116,6 +119,7 @@ describe("Followers Service", () => {
       startTransaction: jest.fn(),
       commitTransaction: jest.fn(),
       abortTransaction: jest.fn(),
+      inTransaction: jest.fn().mockReturnValue(true),
       endSession: jest.fn(),
     };
 
@@ -240,21 +244,26 @@ describe("Followers Service", () => {
   describe("removeFollowings", () => {
     const mockSession = {
       startTransaction: jest.fn(),
+      inTransaction: jest.fn().mockReturnValue(true),
       commitTransaction: jest.fn(),
       abortTransaction: jest.fn(),
       endSession: jest.fn(),
+    };
+
+    const mockQuery = {
+      setOptions: jest.fn().mockReturnThis(),
     };
 
     beforeEach(() => {
       jest.resetAllMocks();
       jest.clearAllMocks();
       (mongoose.startSession as jest.Mock).mockImplementation(() => Promise.resolve(mockSession));
+      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      mockQuery.setOptions.mockResolvedValueOnce({} as any);
     });
 
     it("should remove followings and return updated users", async () => {
       const [mockUser, mockUser2] = [getMockUser("1"), getMockUser("2")];
-
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
 
       (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
@@ -290,8 +299,6 @@ describe("Followers Service", () => {
         },
       };
 
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-
       (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce(mockUser2);
@@ -316,7 +323,9 @@ describe("Followers Service", () => {
     });
 
     it("should abort transaction and throw error if an error occurs", async () => {
-      (FollowerModel.findOneAndDelete as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+      mockQuery.setOptions.mockReset();
+      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      mockQuery.setOptions.mockRejectedValueOnce(new Error("Test error"));
 
       await expect(followerService.remove("1", "2")).rejects.toThrow("Test error");
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -324,7 +333,9 @@ describe("Followers Service", () => {
     });
 
     it("should throw error if follow Linkage is not found", async () => {
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce(null);
+      mockQuery.setOptions.mockReset();
+      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      mockQuery.setOptions.mockResolvedValueOnce(null);
 
       await expect(followerService.remove("1", "2")).rejects.toThrow(
         new AppError("You are not following this User", 404)
@@ -334,8 +345,6 @@ describe("Followers Service", () => {
     });
 
     it("should throw error if follower is not found", async () => {
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-
       (UserModel.findById as jest.Mock).mockResolvedValueOnce(null);
 
       await expect(followerService.remove("1", "2")).rejects.toThrow(
@@ -346,8 +355,6 @@ describe("Followers Service", () => {
     });
 
     it("should throw error if following is not found", async () => {
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-
       (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(null);
@@ -360,8 +367,6 @@ describe("Followers Service", () => {
     });
 
     it("should throw an error if post is not found", async () => {
-      (FollowerModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce({} as any);
-
       (UserModel.findById as jest.Mock)
         .mockResolvedValueOnce(getMockUser("1"))
         .mockResolvedValueOnce(getMockUser("2"));

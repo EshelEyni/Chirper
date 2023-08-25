@@ -1,5 +1,5 @@
 import botService from "./bot.service";
-import { UserModel } from "../../user/models/user.model";
+import { UserModel } from "../../user/models/user/user.model";
 import { assertUser, connectToTestDB } from "../../../services/test-util.service";
 import mongoose from "mongoose";
 

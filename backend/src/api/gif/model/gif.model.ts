@@ -14,8 +14,19 @@ const gifSchema = new mongoose.Schema(
       type: String,
       required: [true, "A gif must have a description"],
     },
-    sortOrder: Number,
-    category: String,
+    sortOrder: {
+      type: Number,
+    },
+    category: {
+      type: String,
+      required: [true, "A gif must have a category"],
+      validate: {
+        validator: (category: string) => {
+          return mongoose.model("GifCategory").exists({ name: category });
+        },
+        message: (props: any) => `${props.value} is not a valid category`,
+      },
+    },
     size: {
       type: {
         width: Number,
@@ -53,11 +64,26 @@ const gifSchema = new mongoose.Schema(
 
 gifSchema.index({ category: 1 });
 
+gifSchema.pre("save", async function (next) {
+  const gif = this as any;
+  if (gif.isNew) gif.sortOrder = await GifModel.countDocuments({ category: gif.category });
+
+  next();
+});
+
 const gifCategorySchema = new mongoose.Schema(
   {
-    name: String,
-    sortOrder: Number,
-    imgUrl: String,
+    name: {
+      type: String,
+      required: [true, "A gif category must have a name"],
+    },
+    sortOrder: {
+      type: Number,
+    },
+    imgUrl: {
+      type: String,
+      required: [true, "A gif category must have an image url"],
+    },
   },
   {
     toObject: {
@@ -77,6 +103,15 @@ const gifCategorySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+gifCategorySchema.index({ name: 1 }, { unique: true });
+
+gifCategorySchema.pre("save", async function (next) {
+  const gifCategory = this as any;
+  if (gifCategory.isNew) gifCategory.sortOrder = await GifCategoryModel.countDocuments();
+
+  next();
+});
 
 const GifModel = mongoose.model("Gif", gifSchema);
 const GifCategoryModel = mongoose.model("GifCategory", gifCategorySchema, "gif_categories");

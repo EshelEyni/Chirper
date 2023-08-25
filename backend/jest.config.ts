@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const isGlobalTesting = false;
 
-const currPath = "/api/gif/model";
+const currPath = "/api/user/router";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`
@@ -27,3 +27,5 @@ const config: Config.InitialOptions = {
 };
 
 export default config;
+
+// Command: npm run test -- --coverage --watchAll=false --testPathPattern=src/api/user/router

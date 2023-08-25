@@ -1,6 +1,6 @@
 import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
-import { FollowerModel } from "../../models/followers.model";
+import { FollowerModel } from "../../models/follower/follower.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
@@ -40,6 +40,7 @@ async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
     fromUserId: loggedInUserId,
     toUserId: { $in: ids },
   })
+    .setOptions({ skipHooks: true })
     .select({ toUserId: 1 })
     .exec();
 
@@ -72,6 +73,8 @@ async function add(
         session,
       });
 
+    await session.commitTransaction();
+
     return await _getUsers({
       fromUserId,
       toUserId,
@@ -79,7 +82,7 @@ async function add(
       inc: 1,
     });
   } catch (err) {
-    await session.abortTransaction();
+    if (session.inTransaction()) await session.abortTransaction();
     throw err;
   } finally {
     session.endSession();
@@ -97,7 +100,7 @@ async function remove(
     const followLinkage = await FollowerModel.findOneAndDelete(
       { fromUserId, toUserId },
       { session }
-    );
+    ).setOptions({ skipHooks: true });
     if (!followLinkage) throw new AppError("You are not following this User", 404);
 
     if (postId)
@@ -122,13 +125,13 @@ async function remove(
   }
 }
 
+// Can't use mongoose hooks because they don't work well with transactions
 async function _getUsers({
   fromUserId,
   toUserId,
   session,
   inc,
 }: UpdateAndGetUsersParams): Promise<FollowingResult> {
-  // TODO: use hooks instead of this to populate loggedInUser and followedUser
   await session.commitTransaction();
   const loggedInUser = (await UserModel.findById(fromUserId)) as unknown as User;
   if (!loggedInUser) throw new AppError("Follower not found", 404);

@@ -2,7 +2,7 @@ import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../shared/interfaces/user.interface";
-import { FollowerModel } from "./followers.model";
+import { FollowerModel } from "./follower/follower.model";
 import followerService from "../services/follower/follower.service";
 
 export interface IUser extends Document {

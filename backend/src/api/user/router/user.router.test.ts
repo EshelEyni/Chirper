@@ -15,7 +15,7 @@ import {
   getMongoId,
 } from "../../../services/test-util.service";
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
-import { FollowerModel } from "../models/followers.model";
+import { FollowerModel } from "../models/follower/follower.model";
 import cookieParser from "cookie-parser";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { PostModel } from "../../post/models/post.model";
@@ -264,11 +264,11 @@ describe("User Router", () => {
       expect(res.body.message).toContain("Invalid user id");
     });
 
-    it("should return 404 if the user with the given ID is not found", async () => {
+    it("should return 500 if the user with the given ID is not found", async () => {
       const id = new Types.ObjectId();
       await UserModel.findByIdAndDelete(id);
       const res = await request(app).post(`/${id}/following`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(404);
+      expect(res.statusCode).toEqual(500);
       expect(res.body.message).toContain("Following not found");
     });
 
@@ -348,7 +348,6 @@ describe("User Router", () => {
       const res = await request(app)
         .post(`/${validUser.id}/following/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
-
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
     });

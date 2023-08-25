@@ -7,7 +7,7 @@ import {
   PostImg,
   repliedPostDetails,
 } from "../../../../../shared/interfaces/post.interface";
-import { FollowerModel } from "../../user/models/followers.model";
+import { FollowerModel } from "../../user/models/follower/follower.model";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../shared/interfaces/location.interface";
 

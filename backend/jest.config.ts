@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const isGlobalTesting = false;
 
-const currPath = "/api/bot/router";
+const currPath = "/api/gif/model";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`
@@ -20,6 +20,7 @@ const config: Config.InitialOptions = {
     "!<rootDir>/src/services/rate-limiter.service.ts",
     "!**/*.config.ts",
     "!**/node_modules/**",
+    "!**/data/**",
   ],
   roots: [baseDir],
   testMatch: [`${baseDir}/**/*test.ts`],

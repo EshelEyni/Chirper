@@ -4,12 +4,13 @@ import express from "express";
 import router from "./bot.router";
 import { errorHandler } from "../../../services/error/error.service";
 
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import {
   connectToTestDB,
   createTestUser,
   deleteTestUser,
   getLoginTokenStrForTest,
+  getMongoId,
 } from "../../../services/test-util.service";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
@@ -66,13 +67,11 @@ describe("Bot Router", () => {
 
   describe("POST /:id", () => {
     it("should return 200 and a new post", async () => {
-      const botId = new Types.ObjectId().toHexString();
+      const botId = getMongoId();
       await createTestBot(botId);
 
       const res = await request(app).post(`/${botId}`).set("Cookie", [token]);
       // .send({ schedule: new Date() });
-
-      console.log(res.body);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body).toEqual({

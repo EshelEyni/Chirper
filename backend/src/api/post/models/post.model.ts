@@ -1,5 +1,5 @@
 import mongoose, { Document, Query } from "mongoose";
-import { gifSchema } from "../../gif/gif.model";
+import { gifSchema } from "../../gif/model/gif.model";
 import { pollSchema } from "./poll.model";
 import {
   Poll,
@@ -279,12 +279,12 @@ postSchema.post(/^find/, async function (this: Query<Document[], Post>, doc) {
 //   const options = this.getOptions();
 //   if (options.skipHooks || !docs || docs.length === undefined) return;
 //   for (const doc of docs) {
-//     // await populateCreatedBy(doc);
+//     await populateCreatedBy(doc);
 //     if (doc.get("quotedPostId")) {
 //       await populateQuotedPost(doc);
-//       // if (doc.get("quotedPost")) {
-//       //   await populateCreatedBy(doc.get("quotedPost"));
-//       // }
+//       if (doc.get("quotedPost")) {
+//         await populateCreatedBy(doc.get("quotedPost"));
+//       }
 //     }
 //   }
 // });

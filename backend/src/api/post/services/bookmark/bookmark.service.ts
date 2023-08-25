@@ -20,7 +20,6 @@ async function get(loggedInUserId: string): Promise<Post[]> {
     const { post } = doc as unknown as bookmarkedPostDoc;
     const res = await postUtilService.getPostLoggedInUserActionState(post.id);
     const currLoggedInActionState = res[post.id];
-
     post.loggedInUserActionState = currLoggedInActionState;
     const isFollowingMap = await followerService.getIsFollowing(post.createdBy.id);
     post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];

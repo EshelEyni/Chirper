@@ -29,6 +29,7 @@ export type isFollowingMap = {
 };
 
 async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
+  if (!ids.length) return {} as isFollowingMap;
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
   if (!isValidMongoId(loggedInUserId)) {

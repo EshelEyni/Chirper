@@ -2,6 +2,7 @@ import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 require("dotenv").config();
 import { AppError } from "../error/error.service";
+import { ObjectId } from "mongodb";
 
 export interface QueryObj {
   [key: string]: string | undefined;
@@ -134,6 +135,9 @@ function validateIds(...idEntities: IdEntity[]): void {
   });
 }
 
+function getUniqueStringIds(ids: ObjectId[]): string[] {
+  return [...new Set(ids.map(id => id.toString()))];
+}
 export {
   AnyObject,
   APIFeatures,
@@ -142,4 +146,5 @@ export {
   queryEntityExists,
   isValidMongoId,
   validateIds,
+  getUniqueStringIds,
 };

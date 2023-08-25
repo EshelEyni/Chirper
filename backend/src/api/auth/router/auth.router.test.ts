@@ -80,7 +80,8 @@ describe("Auth Router", () => {
       assertUser(response.body.data);
     });
 
-    it("should send a succesfull response with no user if an invalid token is provided", async () => {
+    it("should send a succesfull response with no user if an invalid token is provided in production environment", async () => {
+      process.env.NODE_ENV = "production";
       const response = await request(app)
         .post("/login/with-token")
         .set("Cookie", ["loginToken=invalid-token"]);
@@ -89,18 +90,32 @@ describe("Auth Router", () => {
         status: "success",
         data: null,
       });
+      process.env.NODE_ENV = "test";
     });
 
-    it("should send a succesfull response with no user if an invalid token is provided", async () => {
-      const emptyStr = "";
+    it("should send a a 400 error if an invalid token is provided in test or development evnironment", async () => {
       const response = await request(app)
         .post("/login/with-token")
-        .set("Cookie", [`loginToken=${emptyStr}`]);
+        .set("Cookie", ["loginToken=invalid-token"]);
+      expect(response.body.status).toBe("fail");
+      expect(response.body.message).toBe("Invalid token");
+    });
+
+    it("should send a succesfull response with no user if an invalid token is provided in production environment", async () => {
+      process.env.NODE_ENV = "production";
+      const response = await request(app).post("/login/with-token");
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         status: "success",
         data: null,
       });
+      process.env.NODE_ENV = "test";
+    });
+
+    it("should send a 401 error if no token is provided", async () => {
+      const response = await request(app).post("/login/with-token");
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe("You are not logged in");
     });
   });
 

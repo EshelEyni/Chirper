@@ -57,11 +57,11 @@ describe("Auth Controller", () => {
     );
   }
 
-  function assertBadRequestError(msg: string) {
+  function assertBadRequestError(msg: string, statusCode = 400) {
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({
-        statusCode: 400,
+        statusCode,
         status: "fail",
         message: msg,
       })
@@ -122,31 +122,6 @@ describe("Auth Controller", () => {
       jest.clearAllMocks();
     });
 
-    it("should send a succesfull response with no user if no token is provided", async () => {
-      const sut = loginWithToken as any;
-      await sut(req as Request, res as Response, next);
-
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "success",
-          data: null,
-        })
-      );
-    });
-
-    it("should send a succesfull response with no user if an empty string is provided as a token", async () => {
-      req.cookies = { loginToken: "" };
-      const sut = loginWithToken as any;
-      await sut(req as Request, res as Response, next);
-
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "success",
-          data: null,
-        })
-      );
-    });
-
     it("should send a succesfull response with the user if a valid token is provided", async () => {
       req.cookies = { loginToken: mockToken };
       (authService.loginWithToken as jest.Mock).mockResolvedValue({
@@ -157,6 +132,28 @@ describe("Auth Controller", () => {
       const sut = loginWithToken as any;
       await sut(req as Request, res as Response, next);
       assertUserTokenSuccesRes();
+    });
+
+    it("should send a succesfull response with no user if no token is provided in production environment", async () => {
+      process.env.NODE_ENV = "production";
+      const sut = loginWithToken as any;
+      await sut(req as Request, res as Response, next);
+
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: "success",
+          data: null,
+        })
+      );
+      process.env.NODE_ENV = "test";
+    });
+
+    it("should return an error with no user if no token is provided in development environment", async () => {
+      const sut = loginWithToken as any;
+      await sut(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalled();
+      assertBadRequestError("You are not logged in", 401);
     });
 
     it("should return a succesfull response with no user if an error occurs in production environment", async () => {
@@ -176,15 +173,17 @@ describe("Auth Controller", () => {
       process.env.NODE_ENV = "test";
     });
 
-    it("should throw an error if an error occurs in development environment", async () => {
+    it("should return an error failed response if an error occurs in development environment", async () => {
       process.env.NODE_ENV = "development";
       req.cookies = { loginToken: mockToken };
-      (authService.loginWithToken as jest.Mock).mockRejectedValue(new Error("error"));
+      (authService.loginWithToken as jest.Mock).mockImplementationOnce(() => {
+        throw new AppError("error", 400);
+      });
 
       const sut = loginWithToken as any;
       await sut(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next).toHaveBeenCalled();
+      assertBadRequestError("error");
       process.env.NODE_ENV = "test";
     });
   });

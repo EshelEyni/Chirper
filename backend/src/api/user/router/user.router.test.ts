@@ -12,6 +12,7 @@ import {
   assertUser,
   connectToTestDB,
   getLoginTokenStrForTest,
+  getMongoId,
 } from "../../../services/test-util.service";
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { FollowerModel } from "../models/followers.model";
@@ -164,7 +165,7 @@ describe("User Router", () => {
     });
 
     it("should return 404 if no user with the given ID exists", async () => {
-      const id = new Types.ObjectId().toHexString();
+      const id = getMongoId();
       await UserModel.findByIdAndDelete(id);
       const res = await request(app).get(`/${id}`);
       expect(res.statusCode).toEqual(404);
@@ -172,7 +173,7 @@ describe("User Router", () => {
     });
 
     it("should return 500 if an error occurs", async () => {
-      const id = new Types.ObjectId().toHexString();
+      const id = getMongoId();
 
       jest.spyOn(UserModel, "findById").mockImplementationOnce(
         () =>
@@ -224,7 +225,7 @@ describe("User Router", () => {
   });
 
   describe("POST /:id/following", () => {
-    const id = new Types.ObjectId().toHexString();
+    const id = getMongoId();
 
     beforeEach(async () => {
       await FollowerModel.deleteMany({});
@@ -241,7 +242,6 @@ describe("User Router", () => {
         fromUserId: testLoggedInUser.id,
         toUserId: validUser.id,
       });
-
       expect(followingLinkage).toBeTruthy();
 
       expect(res.statusCode).toEqual(200);
@@ -367,14 +367,14 @@ describe("User Router", () => {
 
     it("should return 400 if the provided userId or postId is not a valid MongoDB ID", async () => {
       const invalidUserId = "12345";
-      const postId = new Types.ObjectId().toHexString();
+      const postId = getMongoId();
       const res = await request(app)
         .post(`/${invalidUserId}/following/${postId}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id: 12345");
 
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
       const invalidPostId = "12345";
       const res_2 = await request(app)
         .post(`/${userId}/following/${invalidPostId}/fromPost`)
@@ -384,8 +384,8 @@ describe("User Router", () => {
     });
 
     it("should return 404 if the post with the given ID is not found", async () => {
-      const userId = new Types.ObjectId().toHexString();
-      const nonExistentPostId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
+      const nonExistentPostId = getMongoId();
 
       jest.spyOn(followerService, "add").mockRejectedValueOnce(new AppError("Post not found", 404));
 
@@ -397,8 +397,8 @@ describe("User Router", () => {
     });
 
     it("should return 404 if the Follower or Following with the given ID is not found", async () => {
-      const followerId = new Types.ObjectId().toHexString();
-      const nonExistentPostId = new Types.ObjectId().toHexString();
+      const followerId = getMongoId();
+      const nonExistentPostId = getMongoId();
 
       jest
         .spyOn(followerService, "add")
@@ -422,8 +422,8 @@ describe("User Router", () => {
     });
 
     it("should return 500 if an internal server error occurs", async () => {
-      const userId = new Types.ObjectId().toHexString();
-      const postId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
+      const postId = getMongoId();
 
       jest
         .spyOn(followerService, "add")
@@ -474,7 +474,7 @@ describe("User Router", () => {
 
     it("should return 400 if the provided userId or postId is not a valid MongoDB ID", async () => {
       const invalidUserId = "12345";
-      const postId = new Types.ObjectId().toHexString();
+      const postId = getMongoId();
 
       const res = await request(app)
         .delete(`/${invalidUserId}/following/${postId}/fromPost`)
@@ -483,7 +483,7 @@ describe("User Router", () => {
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id: 12345");
 
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
       const invalidPostId = "12345";
 
       const res_2 = await request(app)
@@ -497,8 +497,8 @@ describe("User Router", () => {
     it("should handle unexpected errors", async () => {
       jest.spyOn(followerService, "remove").mockRejectedValueOnce(new Error("Unexpected error"));
 
-      const userId = new Types.ObjectId().toHexString();
-      const postId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
+      const postId = getMongoId();
 
       const res = await request(app)
         .delete(`/${userId}/following/${postId}/fromPost`)
@@ -631,7 +631,7 @@ describe("User Router", () => {
   describe("POST /", () => {
     const requiredUserProps = ["username", "fullname", "email", "password", "passwordConfirm"];
 
-    const id = new Types.ObjectId().toHexString();
+    const id = getMongoId();
     beforeAll(async () => {
       await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
     });
@@ -701,7 +701,7 @@ describe("User Router", () => {
     });
 
     it("should successfully update a user by id", async () => {
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
       const testUser = await createTestUser({ id: userId });
       testUser.bio = "test bio";
 
@@ -715,7 +715,7 @@ describe("User Router", () => {
     });
 
     it("should return 401 if the user is not logged in", async () => {
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
       const testUser = await createTestUser({ id: userId });
 
       const res = await request(app).patch(`/${userId}`).send(testUser);
@@ -727,7 +727,7 @@ describe("User Router", () => {
 
     it("should return 403 if the user is not an admin", async () => {
       await createAndSetTestLoggedInUserAndToken({ isAdmin: false });
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
       const testUser = await createTestUser({ id: userId });
 
       const res = await request(app).patch(`/${userId}`).send(testUser).set("Cookie", [token]);
@@ -751,7 +751,7 @@ describe("User Router", () => {
     });
 
     it("should return 404 if user with provided id is not found", async () => {
-      const nonExistentUserId = new Types.ObjectId().toHexString();
+      const nonExistentUserId = getMongoId();
       await deleteTestUser(nonExistentUserId);
 
       const res = await request(app)
@@ -764,7 +764,7 @@ describe("User Router", () => {
     });
 
     it("should return 500 if an internal server error occurs", async () => {
-      const userId = new Types.ObjectId().toHexString();
+      const userId = getMongoId();
 
       jest.spyOn(UserModel, "findByIdAndUpdate").mockImplementationOnce(() => {
         throw new Error("Internal server error");
@@ -778,7 +778,7 @@ describe("User Router", () => {
   });
 
   describe("DELETE /:id", () => {
-    const mockId = new Types.ObjectId().toHexString();
+    const mockId = getMongoId();
     beforeAll(async () => {
       await createAndSetTestLoggedInUserAndToken({ isAdmin: true });
     });

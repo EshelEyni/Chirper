@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { asyncErrorCatcher } from "../../../services/error/error.service";
 import bookmarkService from "../services/bookmark/bookmark.service";
 import { addBookmarkedPost, getBookmarkedPosts, removeBookmarkedPost } from "./post.controller";
-import { Types } from "mongoose";
+import { getMongoId } from "../../../services/test-util.service";
 
 jest.mock("../services/bookmark/bookmark.service");
 jest.mock("../../../services/logger/logger.service", () => ({
@@ -31,7 +31,7 @@ describe("Post Controller", () => {
 
   function getMockPost() {
     return {
-      _id: new Types.ObjectId().toHexString(),
+      _id: getMongoId(),
       title: "Test Post",
       content: "Test Content",
       createdBy: {
@@ -48,7 +48,7 @@ describe("Post Controller", () => {
 
   describe("getBookmarkedPosts", () => {
     beforeEach(() => {
-      req = { query: {}, loggedInUserId: new Types.ObjectId().toHexString() };
+      req = { query: {}, loggedInUserId: getMongoId() };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
 
@@ -118,8 +118,8 @@ describe("Post Controller", () => {
   describe("addBookmarkedPost", () => {
     beforeEach(() => {
       req = {
-        params: { id: new Types.ObjectId().toHexString() },
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        params: { id: getMongoId() },
+        loggedInUserId: getMongoId(),
       };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
@@ -187,8 +187,8 @@ describe("Post Controller", () => {
   describe("removeBookmarkedPost", () => {
     beforeEach(() => {
       req = {
-        params: { id: new Types.ObjectId().toHexString() },
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        params: { id: getMongoId() },
+        loggedInUserId: getMongoId(),
       };
       res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     });

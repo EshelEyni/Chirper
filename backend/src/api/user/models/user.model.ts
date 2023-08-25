@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import { FollowerModel } from "./followers.model";
+import followerService from "../services/follower/follower.service";
 
 export interface IUser extends Document {
   username: string;
@@ -29,8 +30,6 @@ export interface IUser extends Document {
   loginAttempts: number;
   lockedUntil: number;
   bio: string;
-  followingCount: number;
-  followersCount: number;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -95,9 +94,6 @@ const userSchema: Schema<IUser> = new Schema(
     loginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Number, default: 0 },
     bio: { type: String, default: "" },
-    // TODO: delete followingCount and followersCount from userSchema and set them to be virtuals
-    followingCount: { type: Number, default: 0 },
-    followersCount: { type: Number, default: 0 },
   },
   {
     toObject: {
@@ -135,18 +131,53 @@ userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   next();
 });
 
-userSchema.post(/^find/, async function (this: Query<User[], User & Document>, doc) {
+userSchema.post(/^find/, async function (this: Query<User[], User & Document>, res) {
   const options = this.getOptions();
-  if (!doc || options.skipHooks) return;
-  doc.followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id });
-  doc.followersCount = await FollowerModel.countDocuments({ toUserId: doc._id });
-});
+  if (!res || options.skipHooks) return;
+  const isResArray = Array.isArray(res);
 
-userSchema.post(/\bfind\b/, async function (this: Query<User[], User & Document>, docs) {
-  if (!docs || docs.length === undefined) return;
-  for (const doc of docs) {
-    doc.followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id });
-    doc.followersCount = await FollowerModel.countDocuments({ toUserId: doc._id });
+  if (isResArray) {
+    const docs = res;
+    // Extract all user IDs
+    const userIds = docs.map((doc: User & Document) => doc._id.toString());
+
+    // Get the following and followers counts for all user IDs
+    const followingCounts = await FollowerModel.aggregate([
+      { $match: { fromUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
+      { $group: { _id: "$fromUserId", count: { $sum: 1 } } },
+    ]);
+    const followersCounts = await FollowerModel.aggregate([
+      { $match: { toUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
+      { $group: { _id: "$toUserId", count: { $sum: 1 } } },
+    ]);
+
+    // Convert the aggregation results into maps for easier lookup
+    const followingCountMap = Object.fromEntries(followingCounts.map(x => [x._id, x.count]));
+    const followersCountMap = Object.fromEntries(followersCounts.map(x => [x._id, x.count]));
+
+    // Get the following map for all user IDs
+    const isFollowingMap = await followerService.getIsFollowing(...userIds);
+
+    // Iterate through the documents and set the counts and following status
+    for (const doc of docs) {
+      const userId = doc._id.toString();
+      doc.set("followingCount", followingCountMap[userId] ?? 0, { strict: false });
+      doc.set("followersCount", followersCountMap[userId] ?? 0, { strict: false });
+      doc.set("isFollowing", isFollowingMap[userId], { strict: false });
+    }
+  } else {
+    const doc = res;
+    const userId = res._id.toString();
+    const followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id }).setOptions({
+      skipHooks: true,
+    });
+    const followersCount = await FollowerModel.countDocuments({ toUserId: doc._id }).setOptions({
+      skipHooks: true,
+    });
+    const isFollowingMap = await followerService.getIsFollowing(userId);
+    doc.set("followingCount", followingCount, { strict: false });
+    doc.set("followersCount", followersCount, { strict: false });
+    doc.set("isFollowing", isFollowingMap[userId], { strict: false });
   }
 });
 
@@ -155,6 +186,12 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = "";
   next();
+});
+
+userSchema.post("save", async function (doc: User & Document) {
+  doc.set("followingCount", 0, { strict: false });
+  doc.set("followersCount", 0, { strict: false });
+  doc.set("isFollowing", false, { strict: false });
 });
 
 userSchema.methods.checkPassword = async function (

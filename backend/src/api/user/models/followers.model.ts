@@ -1,6 +1,7 @@
 import mongoose, { model } from "mongoose";
 import { UserModel } from "./user.model";
 import { AppError } from "../../../services/error/error.service";
+import { getUniqueStringIds } from "../../../services/util/util.service";
 
 const followerSchema = new mongoose.Schema(
   {
@@ -65,13 +66,19 @@ followerSchema.pre("save", async function (next) {
   next();
 });
 
-followerSchema.post("find", async function (docs: any[]) {
-  // if (!docs?.length || docs.length === 0) return;
-  for (const doc of docs) {
-    await doc.populate("fromUser");
-    await doc.populate("toUser");
-  }
-});
+// followerSchema.post("find", async function (docs: any[]) {
+//   const options = this.getOptions();
+//   if (options.skipHooks) return;
+//   if (!Array.isArray(docs)) return;
+//   const userIds = getUniqueStringIds(
+//     docs.reduce((acc, doc) => [...acc, doc.get("fromUserId"), doc.get("toUserId")], [])
+//   );
+//   console.log("userIds", userIds);
+//   for (const doc of docs) {
+//     await doc.populate("fromUser");
+//     await doc.populate("toUser");
+//   }
+// });
 
 interface IFollowerBase {
   fromUserId: string;

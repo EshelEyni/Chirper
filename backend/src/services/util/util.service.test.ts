@@ -1,4 +1,4 @@
-import { Model, Query, Types } from "mongoose";
+import { Model, Query } from "mongoose";
 import {
   APIFeatures,
   AnyObject,
@@ -8,10 +8,13 @@ import {
   sendEmail,
   isValidMongoId,
   validateIds,
+  getUniqueStringIds,
 } from "./util.service";
 require("dotenv").config();
 import nodemailer from "nodemailer";
 import { AppError } from "../error/error.service";
+import { ObjectId } from "mongodb";
+import { getMongoId } from "../test-util.service";
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn().mockReturnValue({
@@ -197,7 +200,7 @@ describe("Util Service", () => {
     });
   });
 
-  fdescribe("sendMail", () => {
+  describe("sendMail", () => {
     const requiredEmailConfig = ["EMAIL_USERNAME", "EMAIL_PASSWORD", "EMAIL_HOST", "EMAIL_PORT"];
 
     it.each(requiredEmailConfig)("should throw an error if %s is not provided", async config => {
@@ -307,7 +310,7 @@ describe("Util Service", () => {
   });
 
   describe("validateIds", () => {
-    const validMongoId = new Types.ObjectId().toHexString();
+    const validMongoId = getMongoId();
 
     afterEach(() => {
       jest.clearAllMocks();
@@ -357,6 +360,17 @@ describe("Util Service", () => {
           { id: validMongoId, entityName: "loggedInUser" }
         )
       ).toThrow(new AppError("Invalid post id: invalidPostId", 400));
+    });
+  });
+
+  describe("getUniqueStringIds", () => {
+    const getMongoId = () => new ObjectId();
+    const ids = Array(10).fill(null).map(getMongoId);
+
+    it("should return an array of unique string ids", () => {
+      const result = getUniqueStringIds([...ids, ...ids]);
+      expect(result).toHaveLength(ids.length);
+      expect(result).toEqual(ids.map(id => id.toString()));
     });
   });
 });

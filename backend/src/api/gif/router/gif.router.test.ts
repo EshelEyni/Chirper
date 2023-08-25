@@ -98,7 +98,7 @@ describe("Gif Router", () => {
     });
   });
 
-  fdescribe("GET /categories", () => {
+  describe("GET /categories", () => {
     afterEach(() => {
       jest.clearAllMocks();
     });

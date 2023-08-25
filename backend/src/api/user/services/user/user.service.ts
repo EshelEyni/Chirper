@@ -2,7 +2,6 @@ import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
 import { Document } from "mongoose";
-import followerService from "../follower/follower.service";
 import { AppError } from "../../../../services/error/error.service";
 import { logger } from "../../../../services/logger/logger.service";
 
@@ -12,17 +11,7 @@ async function query(queryString: QueryObj): Promise<User[]> {
     .sort()
     .limitFields()
     .paginate();
-  const usersDocs = (await features.getQuery().exec()) as unknown as Document[];
-
-  const users = await Promise.all(
-    usersDocs.map(async userDoc => {
-      const user = userDoc.toObject();
-
-      const isFollowingMap = await followerService.getIsFollowing(user.id);
-      user.isFollowing = isFollowingMap[user.id];
-      return user;
-    })
-  );
+  const users = (await features.getQuery().exec()) as unknown as Document[];
   return users as unknown as User[];
 }
 

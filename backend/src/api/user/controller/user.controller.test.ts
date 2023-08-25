@@ -13,7 +13,7 @@ import {
   updateLoggedInUser,
 } from "./user.controller";
 import followerService from "../services/follower/follower.service";
-import { Types } from "mongoose";
+import { getMongoId } from "../../../services/test-util.service";
 
 jest.mock("../services/user/user.service");
 jest.mock("../services/follower/follower.service");
@@ -295,9 +295,9 @@ describe("User Controller", () => {
   describe("addFollowings", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        loggedInUserId: getMongoId(),
         params: {
-          id: new Types.ObjectId().toHexString(),
+          id: getMongoId(),
         },
       };
       res = {
@@ -384,9 +384,9 @@ describe("User Controller", () => {
   describe("removeFollowings", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        loggedInUserId: getMongoId(),
         params: {
-          id: new Types.ObjectId().toHexString(),
+          id: getMongoId(),
         },
       };
       res = {
@@ -470,10 +470,10 @@ describe("User Controller", () => {
   describe("addFollowingsFromPost", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        loggedInUserId: getMongoId(),
         params: {
-          postId: new Types.ObjectId().toHexString(),
-          userId: new Types.ObjectId().toHexString(),
+          postId: getMongoId(),
+          userId: getMongoId(),
         },
       };
       res = {
@@ -583,10 +583,10 @@ describe("User Controller", () => {
   describe("removeFollowingsFromPost", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: new Types.ObjectId().toHexString(),
+        loggedInUserId: getMongoId(),
         params: {
-          postId: new Types.ObjectId().toHexString(),
-          userId: new Types.ObjectId().toHexString(),
+          postId: getMongoId(),
+          userId: getMongoId(),
         },
       };
       res = {

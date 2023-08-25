@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { APIFeatures } from "../util/util.service";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 import { createOne, deleteOne, getAll, getOne, updateOne } from "./factory.service";
 import { DeepMockProxy, mockDeep } from "jest-mock-extended";
 import { asyncErrorCatcher } from "../error/error.service";
 import { logger } from "../logger/logger.service";
+import { getMongoId } from "../test-util.service";
 
 const ModelMock = mockDeep<Model<any>>();
 const APIFeaturesMock = mockDeep<APIFeatures<any>>();
@@ -118,7 +119,7 @@ describe("Factory Service", () => {
 
     beforeEach(() => {
       setMocks();
-      id = new Types.ObjectId().toHexString();
+      id = getMongoId();
       reqMock.params.id = id;
       mockData = { _id: id, name: "Item" };
       error = new Error("Test error");

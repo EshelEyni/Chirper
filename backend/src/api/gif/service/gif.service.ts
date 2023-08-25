@@ -1,7 +1,7 @@
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 require("dotenv").config();
 import fetch from "cross-fetch";
-import { GifModel } from "../gif.model";
+import { GifModel } from "../model/gif.model";
 import { APIFeatures } from "../../../services/util/util.service";
 import { AppError } from "../../../services/error/error.service";
 import { GiphyFetch } from "@giphy/js-fetch-api";

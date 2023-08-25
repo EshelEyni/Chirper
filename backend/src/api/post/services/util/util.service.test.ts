@@ -1,12 +1,11 @@
-import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { asyncLocalStorage } from "../../../../services/als.service";
-import { queryEntityExists } from "../../../../services/util/util.service";
 import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import { PostLikeModel } from "../../models/post-like.model";
 import { PostStatsModel } from "../../models/post-stats.model";
 import { RepostModel } from "../../models/repost.model";
 import postUtilService, { loggedInUserActionDefaultState } from "./util.service";
 import { Types } from "mongoose";
+import { assertLoggedInUserState, getMongoId } from "../../../../services/test-util.service";
 
 jest.mock("../../../../services/als.service");
 jest.mock("../../../../services/util/util.service", () => ({
@@ -15,28 +14,52 @@ jest.mock("../../../../services/util/util.service", () => ({
 }));
 
 jest.mock("../../models/repost.model", () => ({
-  RepostModel: {},
+  RepostModel: {
+    find: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      exec: jest.fn(),
+    }),
+  },
 }));
 
 jest.mock("../../models/post-like.model", () => ({
-  PostLikeModel: {},
+  PostLikeModel: {
+    find: jest.fn(),
+  },
 }));
 
 jest.mock("../../models/bookmark-post.model", () => ({
-  BookmarkedPostModel: {},
+  BookmarkedPostModel: {
+    find: jest.fn(),
+  },
 }));
 
 jest.mock("../../models/post-stats.model", () => ({
   PostStatsModel: {
-    findOne: jest.fn(),
+    find: jest.fn(),
   },
 }));
 
-xdescribe("Post Util Service", () => {
+describe("Post Util Service", () => {
   describe("getPostLoggedInUserActionState", () => {
-    const mockPost = { id: new Types.ObjectId().toHexString() };
-    const postId = new Types.ObjectId(mockPost.id);
-    const userId = new Types.ObjectId(new Types.ObjectId().toHexString());
+    function getPostsStats() {
+      const keys = [
+        "isViewed",
+        "isDetailedViewed",
+        "isProfileViewed",
+        "isFollowedFromPost",
+        "isHashTagClicked",
+        "isLinkClicked",
+        "isPostLinkCopied",
+        "isPostShared",
+        "isPostSendInMessage",
+        "isPostBookmarked",
+      ] as const;
+
+      return keys.reduce((acc, key) => ({ ...acc, [key]: Math.random() > 0.5 }), {});
+    }
+
+    const userId = new Types.ObjectId(getMongoId());
     beforeEach(() => {
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({
         loggedInUserId: userId,
@@ -47,77 +70,197 @@ xdescribe("Post Util Service", () => {
       jest.clearAllMocks();
     });
 
-    it("should return default state when isDefault is true", async () => {
-      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post, {
-        isDefault: true,
-      });
-      expect(result).toEqual(loggedInUserActionDefaultState);
-      expect(asyncLocalStorage.getStore).toHaveBeenCalled();
-    });
+    it("should return proper action states for the logged-in user", async () => {
+      const postStats = getPostsStats();
+      const postId = getMongoId();
+      const loggedInUserId = getMongoId();
 
-    it("should return default state when loggedInUserId is not valid", async () => {
-      (asyncLocalStorage.getStore as jest.Mock).mockReset();
-      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({});
-      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
-      expect(result).toEqual(loggedInUserActionDefaultState);
-      expect(asyncLocalStorage.getStore).toHaveBeenCalled();
-    });
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValue({ loggedInUserId });
+      (RepostModel.find().exec as jest.Mock).mockReturnValueOnce([{ postId }]);
+      (PostLikeModel.find as jest.Mock).mockReturnValueOnce([{ postId }]);
+      (BookmarkedPostModel.find as jest.Mock).mockReturnValueOnce([{ postId }]);
+      (PostStatsModel.find as jest.Mock).mockReturnValueOnce([{ postId, ...postStats }]);
 
-    it("should query the database for current user's post action state", async () => {
-      await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
-      expect(asyncLocalStorage.getStore).toHaveBeenCalled();
-      expect(asyncLocalStorage.getStore).toHaveBeenCalledTimes(1);
-      expect(queryEntityExists).toHaveBeenCalled();
-      expect(queryEntityExists).toHaveBeenCalledTimes(3);
-      expect(queryEntityExists).toHaveBeenNthCalledWith(1, RepostModel, {
-        postId,
+      const result = await postUtilService.getPostLoggedInUserActionState(postId);
+
+      expect(asyncLocalStorage.getStore).toBeCalledTimes(1);
+
+      expect(RepostModel.find).toBeCalledWith({
+        postId: { $in: [postId] },
         repostOwnerId: userId,
       });
-      expect(queryEntityExists).toHaveBeenNthCalledWith(2, PostLikeModel, {
-        postId,
+
+      expect(PostLikeModel.find).toBeCalledWith({
+        postId: { $in: [postId] },
         userId,
       });
-      expect(queryEntityExists).toHaveBeenNthCalledWith(3, BookmarkedPostModel, {
-        postId,
+
+      expect(BookmarkedPostModel.find).toBeCalledWith({
+        postId: { $in: [postId] },
         bookmarkOwnerId: userId,
       });
 
-      expect(PostStatsModel.findOne).toHaveBeenCalledWith({
-        postId,
+      expect(PostStatsModel.find).toBeCalledWith({
+        postId: { $in: [postId] },
         userId,
       });
-    });
 
-    it("should return the post action state based on the data from the DB", async () => {
-      const postStats = {
-        isViewed: true,
-        isDetailedViewed: true,
-        isProfileViewed: false,
-        isFollowedFromPost: false,
-        isHashTagClicked: true,
-        isLinkClicked: true,
-        isPostLinkCopied: true,
-        isPostShared: true,
-        isPostSendInMessage: true,
-        isPostBookmarked: true,
-      };
+      expect(Object.keys(result)).toEqual([postId]);
+      assertLoggedInUserState(result[postId]);
 
-      (queryEntityExists as jest.Mock)
-        .mockResolvedValueOnce(true)
-        .mockResolvedValueOnce(false)
-        .mockResolvedValueOnce(true);
-
-      (PostStatsModel.findOne as jest.Mock).mockReturnValueOnce(postStats);
-
-      const result = await postUtilService.getPostLoggedInUserActionState(mockPost as Post);
-
-      expect(result).toEqual({
-        ...loggedInUserActionDefaultState,
+      expect(result[postId]).toEqual({
         isReposted: true,
-        isLiked: false,
+        isLiked: true,
         isBookmarked: true,
         ...postStats,
       });
+    });
+
+    it("should return proper action states for the logged-in user for multiple posts", async () => {
+      const [postId1, postId2, postId3] = [getMongoId(), getMongoId(), getMongoId()];
+      const [postStats1, postStats2] = [getPostsStats(), getPostsStats()];
+
+      (RepostModel.find().exec as jest.Mock).mockReturnValueOnce([
+        { postId: postId1 },
+        { postId: postId2 },
+      ]);
+      (PostLikeModel.find as jest.Mock).mockReturnValueOnce([
+        { postId: postId1 },
+        { postId: postId2 },
+      ]);
+      (BookmarkedPostModel.find as jest.Mock).mockReturnValueOnce([
+        { postId: postId1 },
+        { postId: postId2 },
+      ]);
+      (PostStatsModel.find as jest.Mock).mockReturnValueOnce([
+        { postId: postId1, ...postStats1 },
+        { postId: postId2, ...postStats2 },
+      ]);
+
+      const result = await postUtilService.getPostLoggedInUserActionState(
+        postId1,
+        postId2,
+        postId3
+      );
+
+      expect(asyncLocalStorage.getStore).toBeCalledTimes(1);
+
+      expect(RepostModel.find).toBeCalledWith({
+        postId: { $in: [postId1, postId2, postId3] },
+        repostOwnerId: userId,
+      });
+
+      expect(PostLikeModel.find).toBeCalledWith({
+        postId: { $in: [postId1, postId2, postId3] },
+        userId,
+      });
+
+      expect(BookmarkedPostModel.find).toBeCalledWith({
+        postId: { $in: [postId1, postId2, postId3] },
+        bookmarkOwnerId: userId,
+      });
+
+      expect(PostStatsModel.find).toBeCalledWith({
+        postId: { $in: [postId1, postId2, postId3] },
+        userId,
+      });
+
+      expect(Object.keys(result)).toEqual([postId1, postId2, postId3]);
+
+      expect(result[postId1]).toEqual({
+        isReposted: true,
+        isLiked: true,
+        isBookmarked: true,
+        ...postStats1,
+      });
+
+      expect(result[postId2]).toEqual({
+        isReposted: true,
+        isLiked: true,
+        isBookmarked: true,
+        ...postStats2,
+      });
+
+      expect(result[postId3]).toEqual({
+        ...loggedInUserActionDefaultState,
+        isReposted: false,
+        isLiked: false,
+        isBookmarked: false,
+      });
+
+      Object.values(result).forEach(assertLoggedInUserState);
+    });
+
+    it("should return default action states for the logged-in user if the user is not logged in", async () => {
+      const postId = getMongoId();
+      (asyncLocalStorage.getStore as jest.Mock).mockReset();
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({});
+      const result = await postUtilService.getPostLoggedInUserActionState(postId);
+
+      expect(asyncLocalStorage.getStore).toBeCalledTimes(1);
+
+      expect(RepostModel.find).not.toBeCalled();
+      expect(PostLikeModel.find).not.toBeCalled();
+      expect(BookmarkedPostModel.find).not.toBeCalled();
+      expect(PostStatsModel.find).not.toBeCalled();
+
+      expect(Object.keys(result)).toEqual([postId]);
+      assertLoggedInUserState(result[postId]);
+      expect(result[postId]).toEqual(loggedInUserActionDefaultState);
+    });
+
+    it("should return default action states for the logged-in user if the user is not logged in for multiple posts", async () => {
+      const [postId1, postId2, postId3] = [getMongoId(), getMongoId(), getMongoId()];
+      (asyncLocalStorage.getStore as jest.Mock).mockReset();
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({});
+      const result = await postUtilService.getPostLoggedInUserActionState(
+        postId1,
+        postId2,
+        postId3
+      );
+
+      expect(asyncLocalStorage.getStore).toBeCalledTimes(1);
+
+      expect(RepostModel.find).not.toBeCalled();
+      expect(PostLikeModel.find).not.toBeCalled();
+      expect(BookmarkedPostModel.find).not.toBeCalled();
+      expect(PostStatsModel.find).not.toBeCalled();
+
+      expect(Object.keys(result)).toEqual([postId1, postId2, postId3]);
+
+      expect(result[postId1]).toEqual(loggedInUserActionDefaultState);
+      expect(result[postId2]).toEqual(loggedInUserActionDefaultState);
+      expect(result[postId3]).toEqual(loggedInUserActionDefaultState);
+      Object.values(result).forEach(assertLoggedInUserState);
+    });
+
+    it("should return an empty object if no post IDs are provided", async () => {
+      const result = await postUtilService.getPostLoggedInUserActionState();
+      expect(result).toEqual({});
+    });
+
+    it("should return default states for non-existent posts", async () => {
+      const postId = getMongoId();
+      (RepostModel.find().exec as jest.Mock).mockReturnValueOnce([]);
+      (PostLikeModel.find as jest.Mock).mockReturnValueOnce([]);
+      (BookmarkedPostModel.find as jest.Mock).mockReturnValueOnce([]);
+      (PostStatsModel.find as jest.Mock).mockReturnValueOnce([]);
+
+      const result = await postUtilService.getPostLoggedInUserActionState(postId);
+      expect(result[postId]).toEqual(loggedInUserActionDefaultState);
+    });
+
+    it("should handle duplicate post IDs properly", async () => {
+      const postId = getMongoId();
+
+      (RepostModel.find().exec as jest.Mock).mockReturnValueOnce([]);
+      (PostLikeModel.find as jest.Mock).mockReturnValueOnce([]);
+      (BookmarkedPostModel.find as jest.Mock).mockReturnValueOnce([]);
+      (PostStatsModel.find as jest.Mock).mockReturnValueOnce([]);
+
+      const result = await postUtilService.getPostLoggedInUserActionState(postId, postId);
+      const resultNumKeys = Object.keys(result).length;
+      expect(resultNumKeys).toEqual(1);
     });
   });
 

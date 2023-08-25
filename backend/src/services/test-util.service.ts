@@ -42,6 +42,7 @@ function assertUser(user: User) {
       isApprovedLocation: expect.any(Boolean),
       followingCount: expect.any(Number),
       followersCount: expect.any(Number),
+      isFollowing: expect.any(Boolean),
       createdAt: expect.any(String),
     })
   );
@@ -180,6 +181,10 @@ async function getValidPostId() {
   return post._id.toHexString();
 }
 
+function getMongoId() {
+  return new mongoose.Types.ObjectId().toHexString();
+}
+
 export {
   connectToTestDB,
   assertUser,
@@ -191,4 +196,6 @@ export {
   assertGif,
   createTestUser,
   deleteTestUser,
+  assertLoggedInUserState,
+  getMongoId,
 };

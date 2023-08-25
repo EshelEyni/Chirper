@@ -29,10 +29,12 @@ export const loggedInUserActionDefaultState: LoggedInUserActionState = {
 };
 
 async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedInUserActionStates> {
+  if (ids.length === 0) return {};
+
   const store = asyncLocalStorage.getStore() as alStoreType;
   const loggedInUserId = store?.loggedInUserId;
 
-  const uniquePostIds = Array.from(new Set(ids.map(id => new ObjectId(id))));
+  const uniquePostIds = Array.from(new Set(ids));
 
   if (!isValidMongoId(loggedInUserId)) {
     const defaultStates = ids.reduce(
@@ -75,11 +77,10 @@ async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedI
   const postStatsMap = new Map(postStatsResults.map(result => [result.postId.toString(), result]));
 
   const state = ids.reduce((acc, id): LoggedInUserActionStates => {
-    const postId = new ObjectId(id);
-    const isReposted = repostsIdSet.has(postId.toString());
-    const isLiked = likesIdSet.has(postId.toString());
-    const isBookmarked = bookmarkedIdSet.has(postId.toString());
-    const postStats = postStatsMap.get(postId.toString()) as unknown as PostStatsBody;
+    const isReposted = repostsIdSet.has(id);
+    const isLiked = likesIdSet.has(id);
+    const isBookmarked = bookmarkedIdSet.has(id);
+    const postStats = postStatsMap.get(id) as unknown as PostStatsBody;
     const additionalState: Partial<LoggedInUserActionState> = postStats
       ? {
           isViewed: postStats.isViewed,

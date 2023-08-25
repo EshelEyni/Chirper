@@ -12,7 +12,7 @@
     "strict": true,
     "noImplicitAny": true,
     "useUnknownInCatchVariables": false,
-    "inlineSourceMap": true,
+    "sourceMap": true,
     "baseUrl": ".",
     "paths": {
       "*": ["src/*"]

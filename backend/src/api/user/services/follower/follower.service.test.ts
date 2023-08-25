@@ -19,7 +19,10 @@ jest.mock("../../models/followers.model", () => ({
   FollowerModel: {
     create: jest.fn(),
     findOneAndDelete: jest.fn(),
-    exists: jest.fn(),
+    find: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      exec: jest.fn(),
+    }),
   },
 }));
 jest.mock("../../../post/models/post-stats.model", () => ({
@@ -51,30 +54,60 @@ describe("Followers Service", () => {
     it("should set isFollowing to false if loggedInUserId is not valid", async () => {
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId: null });
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
-      const result = await followerService.getIsFollowing(mockUser as any);
-      expect(result).toBe(false);
-      expect(FollowerModel.exists).not.toHaveBeenCalled();
+      const result = await followerService.getIsFollowing(mockUser.id);
+      expect(result).toEqual({ [mockUser.id]: false });
+      expect(FollowerModel.find).not.toHaveBeenCalled();
     });
 
-    it("should set isFollowing based on FollowerModel.exists result", async () => {
-      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({
-        loggedInUserId: "id",
-      });
-      (FollowerModel.exists as jest.Mock).mockResolvedValueOnce(true);
-      const result = await followerService.getIsFollowing(mockUser as any);
-      expect(FollowerModel.exists).toHaveBeenCalledWith({
-        fromUserId: "id",
-        toUserId: "1",
-      });
-      expect(result).toBe(true);
+    it("should return correct isFollowing status when loggedInUserId is valid and followers are found", async () => {
+      const loggedInUserId = "1";
+      const mockFollowerData = [{ toUserId: mockUser.id }];
 
-      (FollowerModel.exists as jest.Mock).mockResolvedValueOnce(false);
-      const result2 = await followerService.getIsFollowing(mockUser as any);
-      expect(FollowerModel.exists).toHaveBeenCalledWith({
-        fromUserId: "id",
-        toUserId: "1",
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
+      (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
+      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
+
+      const result = await followerService.getIsFollowing(mockUser.id);
+      expect(result).toEqual({ [mockUser.id]: true });
+      expect(FollowerModel.find).toHaveBeenCalledWith({
+        fromUserId: loggedInUserId,
+        toUserId: { $in: [mockUser.id] },
       });
-      expect(result2).toBe(false);
+    });
+
+    it("should return false for isFollowing status when loggedInUserId is valid but no followers are found", async () => {
+      const loggedInUserId = "1";
+
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
+      (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
+      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce([]);
+
+      const result = await followerService.getIsFollowing(mockUser.id);
+      expect(result).toEqual({ [mockUser.id]: false });
+    });
+
+    it("should handle multiple IDs correctly and return corresponding isFollowing status", async () => {
+      const loggedInUserId = "1";
+      const anotherUserId = "2";
+      const mockFollowerData = [{ toUserId: mockUser.id }];
+
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
+      (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
+      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
+
+      const result = await followerService.getIsFollowing(mockUser.id, anotherUserId);
+      expect(result).toEqual({ [mockUser.id]: true, [anotherUserId]: false });
+    });
+
+    it("should return an empty object when called with an empty array of IDs", async () => {
+      const loggedInUserId = "1";
+
+      (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
+      (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
+
+      const result = await followerService.getIsFollowing();
+      expect(result).toEqual({});
+      expect(FollowerModel.find).not.toHaveBeenCalled();
     });
   });
 

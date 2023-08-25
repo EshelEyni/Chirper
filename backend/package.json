@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon",
     "prod": "set NODE_ENV=production&& nodemon",
+    "server:main": "nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/main/server.ts\"",
+    "server:bot": "nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/bot/server.ts\"",
     "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles"
   },
   "author": "",

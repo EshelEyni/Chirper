@@ -25,7 +25,7 @@ mongoose
     logger.error("Failed to connect to MongoDB:", error);
   });
 
-const port = 3030;
+const port = 4000;
 
 const server = app.listen(port, () => {
   logger.info(`Server is running on port: ${port}`);

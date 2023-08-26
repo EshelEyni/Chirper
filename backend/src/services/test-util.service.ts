@@ -8,6 +8,7 @@ import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
 import { logger } from "./logger/logger.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
+import { BotPrompt } from "../../../shared/interfaces/bot.interface";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -169,6 +170,16 @@ function assertPostImgs(...postImgs: any) {
   }
 }
 
+function assertBotPrompt(botPrompt: BotPrompt) {
+  expect(botPrompt).toEqual(
+    expect.objectContaining({
+      botId: expect.any(String),
+      prompt: expect.any(String),
+      type: expect.any(String),
+    })
+  );
+}
+
 function createValidUserCreds(id?: string): UserCredenitials {
   const ranNum = Math.floor(Math.random() * 100000);
   const username = "testUser_" + ranNum;
@@ -199,6 +210,7 @@ async function createTestUser({
 async function deleteTestUser(id: string) {
   await UserModel.findByIdAndDelete(id).setOptions({ active: false });
 }
+
 function getLoginTokenStrForTest(validUserId: string) {
   const token = tokenService.signToken(validUserId);
   return `loginToken=${token}`;
@@ -264,4 +276,5 @@ export {
   getMockedUser,
   assertPoll,
   assertPostImgs,
+  assertBotPrompt,
 };

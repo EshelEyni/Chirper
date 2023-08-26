@@ -23,7 +23,7 @@ type Logger = {
 const addPadding = (str: string) => ` ${str} `;
 const capitalize = (str: string) => `${str[0].toUpperCase()}${str.slice(1)}`;
 
-const shouldLog = process.env.NODE_ENV === "test";
+const shouldLog = process.env.NODE_ENV !== "test";
 
 const logIfEnabled = (str: string, colorFn = ansiColors.white) => {
   if (shouldLog) {

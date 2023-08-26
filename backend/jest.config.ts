@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/bot/services/openai";
+const currPath = "/api/bot/services/prompt";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`

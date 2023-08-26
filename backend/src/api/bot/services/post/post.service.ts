@@ -1,14 +1,11 @@
 import { AppError } from "../../../../services/error/error.service";
-import promptService, {
-  postImgTextPrompt,
-  postSongReviewPrompt,
-  postVideoTextPrompt,
-} from "../prompt/prompt.service";
+import promptService from "../prompt/prompt.service";
 import postService from "../../../post/services/post/post.service";
 import openAIService from "../openai/openai.service";
 import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
+import botService from "../bot/bot.service";
 
 export enum PostType {
   TEXT = "text",
@@ -74,7 +71,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
         postBody["imgs"] = imgs as any;
 
         if (!addTextToContent) break;
-        const text = await createPostText(postImgTextPrompt + prompt);
+        const text = await createPostText(prompt);
         postBody["text"] = text ?? "";
         break;
       }
@@ -84,7 +81,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
         postBody["videoUrl"] = videoUrl;
 
         if (!addTextToContent) break;
-        const text = await createPostText(postVideoTextPrompt + prompt);
+        const text = await createPostText(prompt);
         postBody["text"] = text ?? "";
 
         break;
@@ -149,7 +146,7 @@ async function createPostVideo(prompt: string): Promise<string> {
 
 async function createPostSongReview(prompt: string) {
   botServiceLogger.get("songReview");
-  const text = await openAIService.getTextFromOpenAI(prompt + postSongReviewPrompt, "gpt-4");
+  const text = await openAIService.getTextFromOpenAI(prompt, "gpt-4");
   const parsedRes = JSON.parse(text);
 
   if (!parsedRes.songName) throw new AppError("songName is undefined", 500);
@@ -172,10 +169,20 @@ async function _getBotPrompt(botId: string, type: string): Promise<string> {
   if (!type) throw new AppError("postType is falsey", 500);
   if (!botId) throw new AppError("botId is falsey", 500);
   botServiceLogger.get("prompt");
-  const botPrompt = await promptService.getBotPrompt(botId, type);
+  const botPrompt = await promptService.getBotPrompt(botId);
   if (!botPrompt) throw new AppError("prompt is falsey", 500);
   botServiceLogger.retrieve("prompt");
   return botPrompt;
 }
 
-export default { createPost };
+async function autoSaveBotPosts() {
+  const bots = await botService.getBots();
+  // for (const bot of bots) {
+  //   // const prompts = await promptService.getBotPrompt(bot._id, PostType.TEXT);
+  //   // for (const prompt of prompts) {
+  //   //   await createPost(bot._id.toString(), { prompt, numOfPosts: 1, postType: PostType.TEXT });
+  //   // }
+  // }
+}
+
+export default { createPost, autoSaveBotPosts };

@@ -1,39 +1,52 @@
 import { BotPromptModel } from "../../model/bot-options.model";
+import { BotPrompt } from "../../../../../../shared/interfaces/bot.interface";
 
-async function getBotPrompt(botId: string, type = "text"): Promise<string> {
-  const count = await BotPromptModel.countDocuments({ botId, type });
+type TypeToTemplate = {
+  [key: string]: (prompt: string) => string;
+};
+
+async function getBotPrompt(botId: string): Promise<string> {
+  const count = await BotPromptModel.countDocuments({ botId });
   const random = Math.floor(Math.random() * count);
-  const botPrompt = await BotPromptModel.findOne({ botId, type }).skip(random).exec();
+
+  const botPrompt = await BotPromptModel.findOne({ botId }).skip(random).exec();
   if (!botPrompt) throw new Error("prompt is undefined");
-  if (type === "text")
-    return (botPrompt.prompt as string) + "\n" + "Limit Tweet to 247 characters.";
-  if (type === "poll") return _getPollPrompt(botPrompt.prompt as string);
-  return botPrompt.prompt as string;
+
+  const { type } = botPrompt;
+  return _promptHandler(botPrompt.prompt as string, type);
 }
 
-function _getPollPrompt(prompt: string) {
-  const start = "Generate a Poll about ";
-  const end =
-    " return a json object with the question in one property and the options in another property in an array.";
-  return start + prompt + end;
+async function getAllBotPrompts(botId: string): Promise<BotPrompt[]> {
+  const prompts = await BotPromptModel.find({ botId }).lean().exec();
+  if (!prompts) throw new Error("prompts is undefined");
+  return prompts as unknown as BotPrompt[];
 }
 
-export const postImgTextPrompt =
-  " " +
-  "I am Using AI to Generate Images for my tweeter Clone, And I need the text for the tweet with the image." +
-  "\n " +
-  "I will give the prompt i used to generate the image, and you will generate the text" +
-  "\n\nPrompt: ";
+function _promptHandler(prompt: string, type: string) {
+  const typeToTemplate: TypeToTemplate = {
+    text: prompt => `${prompt}${promptFragments.TEXT_PROMPT_SUFFIX}`,
+    poll: prompt =>
+      `${promptFragments.POLL_PROMPT_PREFIX}${prompt}${promptFragments.POLL_PROMPT_SUFFIX}`,
+    image: prompt => `${promptFragments.IMAGE_PROMPT_PREFIX}${prompt}`,
+    video: prompt => `${promptFragments.VIDEO_PROMPT_PREFIX}${prompt}`,
+    "song-review": prompt => `${prompt}${promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`,
+  };
 
-export const postVideoTextPrompt =
-  " " +
-  "I am Using AI to Generate Videos for my tweeter Clone, And I need the text for the tweet with the video." +
-  "\n " +
-  "I will give the prompt i used to generate the video, and you will generate the text" +
-  "\n\nPrompt: ";
+  const templateFunc = typeToTemplate[type];
+  return templateFunc ? templateFunc(prompt) : prompt;
+}
 
-export const postSongReviewPrompt =
-  " " +
-  "Please choose one song from the artist or genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'songName' and 'review'. Limit Review to 247 characters.";
+export const promptFragments = {
+  TEXT_PROMPT_SUFFIX: "\nLimit Tweet to 247 characters.",
+  POLL_PROMPT_PREFIX: "Generate a Poll about ",
+  POLL_PROMPT_SUFFIX:
+    " return a json object with the question in one property and the options in another property in an array.",
+  IMAGE_PROMPT_PREFIX:
+    "I am Using AI to Generate Images for my Tweeter Clone, And I need the text for the tweet with the image.\n I will give the prompt i used to generate the image, and you will generate the text\n\nPrompt: ",
+  VIDEO_PROMPT_PREFIX:
+    "I am Using AI to Generate Videos for my tweeter Clone, And I need the text for the tweet with the video.\n I will give the prompt i used to generate the video, and you will generate the text\n\nPrompt: ",
+  SONG_REVIEW_PROMPT_SUFFIX:
+    "Please choose one song from the artist or genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'songName' and 'review'. Limit Review to 247 characters.",
+};
 
-export default { getBotPrompt };
+export default { getBotPrompt, getAllBotPrompts, promptFragments };

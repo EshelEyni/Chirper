@@ -1,9 +1,5 @@
 import botPostService, { CreatePostOptions, PostType } from "./post.service";
-import promptService, {
-  postImgTextPrompt,
-  postSongReviewPrompt,
-  postVideoTextPrompt,
-} from "../prompt/prompt.service";
+import promptService from "../prompt/prompt.service";
 import postService from "../../../post/services/post/post.service";
 import openAIService from "../openai/openai.service";
 import youtubeService from "../youtube/youtube.service";
@@ -91,12 +87,12 @@ describe("Bot Post Service", () => {
         await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(AppError);
       });
 
-      fit("should handle multiple posts", async () => {
+      it("should handle multiple posts", async () => {
         const numOfPosts = 3;
         const options = getPostCreateOptions({ numOfPosts });
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.TEXT);
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -121,7 +117,7 @@ describe("Bot Post Service", () => {
 
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.TEXT);
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -146,7 +142,7 @@ describe("Bot Post Service", () => {
         const options = getPostCreateOptions();
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, "text");
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -208,7 +204,7 @@ describe("Bot Post Service", () => {
 
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, "poll");
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getAndSetPostPollFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -265,7 +261,7 @@ describe("Bot Post Service", () => {
 
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, "image");
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
 
         expect(postService.add).toHaveBeenCalledWith(
@@ -337,11 +333,9 @@ describe("Bot Post Service", () => {
 
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, "image");
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
-        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(
-          postImgTextPrompt + SAMPLE_PROMPT
-        );
+        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
 
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -456,9 +450,7 @@ describe("Bot Post Service", () => {
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
         expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT);
-        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(
-          postVideoTextPrompt + SAMPLE_PROMPT
-        );
+        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
             createdById: TEST_BOT_ID,
@@ -512,12 +504,9 @@ describe("Bot Post Service", () => {
 
         const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.SONG_REVIEW);
+        expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID);
         expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_SONG_NAME);
-        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(
-          SAMPLE_PROMPT + postSongReviewPrompt,
-          "gpt-4"
-        );
+        expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, "gpt-4");
 
         expect(postService.add).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -546,7 +535,7 @@ describe("Bot Post Service", () => {
         expect(promptService.getBotPrompt).not.toHaveBeenCalled();
         expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_SONG_NAME);
         expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(
-          "prompt from request" + postSongReviewPrompt,
+          "prompt from request",
           "gpt-4"
         );
 
@@ -620,6 +609,12 @@ describe("Bot Post Service", () => {
           "videoUrl is undefined"
         );
       });
+    });
+  });
+
+  xdescribe("autoSaveBotPosts", () => {
+    it("should save posts from all bots", async () => {
+      await botPostService.autoSaveBotPosts();
     });
   });
 });

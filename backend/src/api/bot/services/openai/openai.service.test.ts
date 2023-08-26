@@ -311,7 +311,7 @@ describe("Open AI Service", () => {
       assertPostImgs(...result);
     });
 
-    fit("should return multiple image URLs", async () => {
+    it("should return multiple image URLs", async () => {
       const numberOfImages = 3;
       const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
       mockOpenAICreateImg(...dataUrls);

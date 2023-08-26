@@ -64,9 +64,6 @@ describe("User Router", () => {
       await PostModel.create({
         _id: mockedPostID,
         text: "User Router Post",
-        audience: "everyone",
-        repliersType: "everyone",
-        isPublic: "true",
         createdById: validUser.id,
       })
     ).toObject() as unknown as Post;

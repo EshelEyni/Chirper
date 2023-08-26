@@ -3,7 +3,6 @@ import { AppError } from "../../../../services/error/error.service";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
 import { NewPostImg, Poll } from "../../../../../../shared/interfaces/post.interface";
-import { postImgTextPrompt } from "../prompt/prompt.service";
 
 require("dotenv").config();
 
@@ -41,32 +40,7 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
   return text as string;
 }
 
-async function getAndSetPostPollFromOpenAI(prompt: string): Promise<{ text: string; poll: Poll }> {
-  const completion = await openai.createChatCompletion({
-    model: "gpt-4",
-    messages: [{ role: "user", content: prompt }],
-  });
-  const { message } = completion.data.choices[0];
-  if (!message) throw new AppError("message is undefined", 500);
-  const parsedRes = JSON.parse(message.content as string);
-  const { question, options } = parsedRes;
-  if (!question || !options) throw new AppError("question or options is undefined", 500);
-  for (const option of options) {
-    if (!option) throw new AppError("option is undefined", 500);
-    if (typeof option !== "string") throw new AppError("option is not a string", 500);
-  }
-  if (options.length < 2) throw new AppError("options must be at least 2", 500);
-
-  const text = question;
-  const poll = _getPollObj(options);
-  return { text, poll };
-}
-
-async function getImgsFromOpenOpenAI(
-  prompt: string,
-  numberOfImages = 1,
-  addTextToContent = false
-): Promise<{ imgs: NewPostImg[]; text: string }> {
+async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<NewPostImg[]> {
   const response = await openai.createImage({
     prompt,
     n: numberOfImages,
@@ -88,22 +62,11 @@ async function getImgsFromOpenOpenAI(
   const imgs = cloudinaryUrls
     .filter(url => typeof url === "string")
     .map((url, i) => ({ url, sortOrder: i })) as unknown as NewPostImg[];
-
-  if (addTextToContent) {
-    const p = postImgTextPrompt + prompt;
-    const postImgText = await getTextFromOpenAI(p, "gpt-4");
-
-    if (postImgText)
-      return {
-        imgs,
-        text: postImgText,
-      };
-  }
-
-  return { imgs, text: "" };
+  if (!imgs.length) throw new AppError("imgs is empty", 500);
+  return imgs;
 }
 
-async function getVideoAndTextFromYoutubeAndOpenAI(prompt: string) {
+async function getAndSetPostPollFromOpenAI(prompt: string): Promise<{ text: string; poll: Poll }> {
   const completion = await openai.createChatCompletion({
     model: "gpt-4",
     messages: [{ role: "user", content: prompt }],
@@ -111,24 +74,17 @@ async function getVideoAndTextFromYoutubeAndOpenAI(prompt: string) {
   const { message } = completion.data.choices[0];
   if (!message) throw new AppError("message is undefined", 500);
   const parsedRes = JSON.parse(message.content as string);
+  const { question, options } = parsedRes;
+  if (!question || !options) throw new AppError("question or options is undefined", 500);
+  for (const option of options) {
+    if (!option) throw new AppError("option is undefined", 500);
+    if (typeof option !== "string") throw new AppError("option is not a string", 500);
+  }
+  if (options.length < 2) throw new AppError("options must be at least 2", 500);
 
-  if (!parsedRes.songName) throw new AppError("songName is undefined", 500);
-  if (!parsedRes.review) throw new AppError("review is undefined", 500);
-
-  const { songName, review } = parsedRes;
-
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) throw new Error("GOOGLE_API_KEY is undefined");
-
-  const apiStr = `https://www.googleapis.com/youtube/v3/search?part=snippet&videoCategoryId=10&videoEmbeddable=true&type=video&maxResults=1&key=${apiKey}&q=${songName}`;
-  const response = await axios.get(apiStr);
-  const songs = response.data.items;
-  const videoUrl = `https://www.youtube.com/watch?v=${songs[0].id.videoId}`;
-
-  return {
-    videoUrl,
-    text: review,
-  };
+  const text = question;
+  const poll = _getPollObj(options);
+  return { text, poll };
 }
 
 async function _uploadToCloudinary(imageBuffer: any) {
@@ -165,5 +121,4 @@ export default {
   getTextFromOpenAI,
   getAndSetPostPollFromOpenAI,
   getImgsFromOpenOpenAI,
-  getVideoAndTextFromYoutubeAndOpenAI,
 };

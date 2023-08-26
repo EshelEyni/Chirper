@@ -55,13 +55,17 @@ const locationSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
+    // TODO: Change from required to default.
+    // TODO: change accross app that is are not required
+    // TODO: add validation for audience and repliersType
     audience: {
       type: String,
-      required: true,
+      default: "everyone",
     },
+
     repliersType: {
       type: String,
-      required: true,
+      default: "everyone",
     },
     isPublic: {
       type: Boolean,

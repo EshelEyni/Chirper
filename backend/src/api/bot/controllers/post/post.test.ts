@@ -36,8 +36,9 @@ describe("Bot Post Contoller", () => {
     const sut = addPost as any;
     await sut(mockRequest as Request, mockResponse as Response, nextMock);
 
-    expect(botPostService.createPost).toHaveBeenCalledWith({
-      botId: "botId123",
+    const botId = mockRequest.params.id;
+
+    expect(botPostService.createPost).toHaveBeenCalledWith(botId, {
       prompt: "Test Prompt",
       schedule: "Test Schedule",
       numOfPosts: 5,

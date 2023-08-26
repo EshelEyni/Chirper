@@ -307,9 +307,8 @@ describe("Open AI Service", () => {
 
       const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
 
-      expect(result.text).toEqual("");
-      expect(result.imgs.length).toEqual(1);
-      assertPostImgs(...result.imgs);
+      expect(result.length).toEqual(1);
+      assertPostImgs(...result);
     });
 
     it("should return multiple image URLs", async () => {
@@ -320,9 +319,8 @@ describe("Open AI Service", () => {
 
       const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
 
-      expect(result.text).toEqual("");
-      expect(result.imgs.length).toEqual(3);
-      assertPostImgs(...result.imgs);
+      expect(result.length).toEqual(3);
+      assertPostImgs(...result);
     });
 
     it("should throw an error if data.url is undefined", async () => {
@@ -362,31 +360,13 @@ describe("Open AI Service", () => {
 
       const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
 
-      expect(result.text).toEqual("");
-      expect(result.imgs.length).toEqual(3);
-      assertPostImgs(...result.imgs);
+      expect(result.length).toEqual(3);
+      assertPostImgs(...result);
     });
 
-    it("should return text and image URLs, when addedTextToContent is true", async () => {
-      const numberOfImages = 1;
-      const { dataUrls, cloudinaryUrls } = getUrls(numberOfImages);
-      mockOpenAICreateImg(...dataUrls);
-      mockCloudinaryUpload(...cloudinaryUrls);
-
-      const response = {
-        data: {
-          choices: [
-            { message: { content: "Sample response from gpt-4, for Post Image with Text" } },
-          ],
-        },
-      };
-
-      openai.createChatCompletion = jest.fn().mockResolvedValue(response);
-      const result = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages, true);
-
-      expect(result.text).toEqual("Sample response from gpt-4, for Post Image with Text");
-      expect(result.imgs.length).toEqual(1);
-      assertPostImgs(...result.imgs);
+    it("should thorw an error if imgs is empty", async () => {
+      mockOpenAICreateImg();
+      await expect(openAIService.getImgsFromOpenOpenAI(prompt)).rejects.toThrow("imgs is empty");
     });
   });
 });

@@ -2,7 +2,8 @@ import { Configuration, OpenAIApi } from "openai";
 import { AppError } from "../../../../services/error/error.service";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
-import { NewPostImg, Poll } from "../../../../../../shared/interfaces/post.interface";
+import { Poll, PostImg } from "../../../../../../shared/interfaces/post.interface";
+import { botServiceLogger } from "../logger/logger";
 
 require("dotenv").config();
 
@@ -40,28 +41,36 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
   return text as string;
 }
 
-async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<NewPostImg[]> {
+async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<PostImg[]> {
   const response = await openai.createImage({
     prompt,
     n: numberOfImages,
     size: "512x512",
   });
 
-  const imagePromises = response.data.data.map(async data => {
-    if (!data.url) throw new AppError("data.url is undefined", 500);
-    const response = await axios.get(data.url, {
+  const openAIImgUrls = response.data.data.map(data => data.url);
+
+  const imgs: PostImg[] = [];
+  for (let i = 0; i < openAIImgUrls.length; i++) {
+    botServiceLogger.upload({ entity: "image", iterationNum: i });
+    const url = openAIImgUrls[i];
+    if (!url || typeof url !== "string") {
+      continue;
+    }
+
+    const response = await axios.get(url, {
       responseType: "arraybuffer",
     });
+    const cloudinaryUrl = (await _uploadToCloudinary(response.data)) as unknown as string;
+    if (!cloudinaryUrl) continue;
 
-    const cloudinaryUrl = await _uploadToCloudinary(response.data);
+    imgs.push({
+      url: cloudinaryUrl,
+      sortOrder: i,
+    });
+    botServiceLogger.uploaded({ entity: "image", iterationNum: i });
+  }
 
-    return cloudinaryUrl;
-  });
-
-  const cloudinaryUrls = await Promise.all(imagePromises);
-  const imgs = cloudinaryUrls
-    .filter(url => typeof url === "string")
-    .map((url, i) => ({ url, sortOrder: i })) as unknown as NewPostImg[];
   if (!imgs.length) throw new AppError("imgs is empty", 500);
   return imgs;
 }

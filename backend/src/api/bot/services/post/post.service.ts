@@ -6,14 +6,9 @@ import promptService, {
 } from "../prompt/prompt.service";
 import postService from "../../../post/services/post/post.service";
 import openAIService from "../openai/openai.service";
-import {
-  NewPost,
-  NewPostImg,
-  Poll,
-  Post,
-} from "../../../../../../shared/interfaces/post.interface";
-import { logger } from "../../../../services/logger/logger.service";
+import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import youtubeService from "../youtube/youtube.service";
+import { botServiceLogger } from "../logger/logger";
 
 export enum PostType {
   TEXT = "text",
@@ -56,7 +51,9 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
     createdById: botId,
   } as NewPost;
 
+  botServiceLogger.create({ entity: "posts" });
   for (let i = 0; i < numOfPosts; i++) {
+    botServiceLogger.create({ entity: "post", iterationNum: i });
     switch (postType) {
       case "text": {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.TEXT));
@@ -74,7 +71,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.IMAGE));
         const imgs = await createPostImage({ prompt, numberOfImages });
 
-        postBody["imgs"] = imgs;
+        postBody["imgs"] = imgs as any;
 
         if (!addTextToContent) break;
         const text = await createPostText(postImgTextPrompt + prompt);
@@ -107,52 +104,63 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
 
     const post = await postService.add(postBody as NewPost);
     posts.push(post);
-
-    logger.success(`Post created: ${post.id} - ${i + 1}/${numOfPosts}`);
+    botServiceLogger.created({ entity: "post", iterationNum: i, post });
   }
-
+  botServiceLogger.created({ entity: "posts" });
   return posts;
 }
 
 async function createPostText(prompt: string): Promise<string> {
+  botServiceLogger.get("text");
   const text = await openAIService.getTextFromOpenAI(prompt);
   if (!text) throw new AppError("text is undefined", 500);
+  botServiceLogger.retrieve("text");
   return text;
 }
 
 async function createPostPoll(prompt: string): Promise<{ text: string; poll: Poll }> {
+  botServiceLogger.get("poll");
   const { text, poll } = await openAIService.getAndSetPostPollFromOpenAI(prompt);
+  botServiceLogger.retrieve("poll");
   return { text, poll };
 }
 
 async function createPostImage({
   prompt,
   numberOfImages = 1,
-}: PostImageOptions): Promise<NewPostImg[]> {
+}: PostImageOptions): Promise<PostImg[]> {
+  botServiceLogger.get("imgs");
   const imgs = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
   if (!imgs) throw new AppError("imgs is undefined", 500);
   if (!imgs.length) throw new AppError("imgs is empty", 500);
+  botServiceLogger.retrieve("imgs");
 
   return imgs;
 }
 
 async function createPostVideo(prompt: string): Promise<string> {
+  botServiceLogger.get("videoUrl");
   const videoUrl = await youtubeService.getYoutubeVideo(prompt);
   if (!videoUrl) throw new AppError("videoUrl is undefined", 500);
+  botServiceLogger.retrieve("videoUrl");
 
   return videoUrl;
 }
 
 async function createPostSongReview(prompt: string) {
+  botServiceLogger.get("songReview");
   const text = await openAIService.getTextFromOpenAI(prompt + postSongReviewPrompt, "gpt-4");
   const parsedRes = JSON.parse(text);
 
   if (!parsedRes.songName) throw new AppError("songName is undefined", 500);
   if (!parsedRes.review) throw new AppError("review is undefined", 500);
-
   const { songName, review } = parsedRes;
+  botServiceLogger.retrieve("songReview");
+
+  botServiceLogger.get("videoUrl");
   const videoUrl = await youtubeService.getYoutubeVideo(songName);
   if (!videoUrl) throw new AppError("videoUrl is undefined", 500);
+  botServiceLogger.retrieve("videoUrl");
 
   return {
     videoUrl,
@@ -163,10 +171,10 @@ async function createPostSongReview(prompt: string) {
 async function _getBotPrompt(botId: string, type: string): Promise<string> {
   if (!type) throw new AppError("postType is falsey", 500);
   if (!botId) throw new AppError("botId is falsey", 500);
-
+  botServiceLogger.get("prompt");
   const botPrompt = await promptService.getBotPrompt(botId, type);
   if (!botPrompt) throw new AppError("prompt is falsey", 500);
-
+  botServiceLogger.retrieve("prompt");
   return botPrompt;
 }
 

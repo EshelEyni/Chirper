@@ -9,6 +9,8 @@ const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
 function _handleLogMessage(level: string, ...args: (string | Error | Record<string, unknown>)[]) {
+  const isTestEnv = process.env.NODE_ENV === "test";
+  if (isTestEnv) return;
   const message = _formatLogMessage(level, ...args);
   _writeToLogFile(message);
   _logMessage(level, message);

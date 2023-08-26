@@ -6,7 +6,6 @@ import promptService, {
 } from "../prompt/prompt.service";
 import postService from "../../../post/services/post/post.service";
 import openAIService from "../openai/openai.service";
-import { logger } from "../../../../services/logger/logger.service";
 import youtubeService from "../youtube/youtube.service";
 import { AppError } from "../../../../services/error/error.service";
 
@@ -81,7 +80,7 @@ describe("Bot Post Service", () => {
       MockSetter.setCoreMocks();
     });
 
-    fdescribe("core", () => {
+    describe("core", () => {
       it("should throw an error if botId is falsey", async () => {
         await expect(botPostService.createPost("", {} as any)).rejects.toThrow("botId is falsey");
       });
@@ -92,7 +91,7 @@ describe("Bot Post Service", () => {
         await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(AppError);
       });
 
-      it("should handle multiple posts", async () => {
+      fit("should handle multiple posts", async () => {
         const numOfPosts = 3;
         const options = getPostCreateOptions({ numOfPosts });
         const result = await botPostService.createPost(TEST_BOT_ID, options);
@@ -113,9 +112,6 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         expect(posts.length).toBe(numOfPosts);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${posts[0].id} - 1/3`);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${posts[1].id} - 2/3`);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${posts[2].id} - 3/3`);
 
         // expect(result).toEqual([mockPost, mockPost, mockPost]);
       });
@@ -137,7 +133,6 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
         expect(post.schedule).toBeDefined();
       });
     });
@@ -162,7 +157,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.text).toBeDefined();
       });
 
@@ -181,7 +176,7 @@ describe("Bot Post Service", () => {
         );
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.text).toBeDefined();
       });
 
@@ -227,7 +222,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.text).toBeDefined();
         expect(post.poll).toBeDefined();
       });
@@ -252,7 +247,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.text).toBeDefined();
         expect(post.poll).toBeDefined();
       });
@@ -284,7 +279,6 @@ describe("Bot Post Service", () => {
         const [post] = result;
         expect(post.imgs).toBeDefined();
         expect(Array.isArray(post.imgs)).toBe(true);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
       });
 
       it("should handle image post type with prompt", async () => {
@@ -309,7 +303,6 @@ describe("Bot Post Service", () => {
         const [post] = result;
         expect(post.imgs).toBeDefined();
         expect(Array.isArray(post.imgs)).toBe(true);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
       });
 
       it("should handle multiple images", async () => {
@@ -334,7 +327,6 @@ describe("Bot Post Service", () => {
         expect(post.imgs).toBeDefined();
         expect(Array.isArray(post.imgs)).toBe(true);
         expect(post.imgs.length).toBe(3);
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
       });
 
       it("should handle image post type with text", async () => {
@@ -365,7 +357,6 @@ describe("Bot Post Service", () => {
         expect(Array.isArray(post.imgs)).toBe(true);
         expect(post.text).toBeDefined();
         expect(typeof post.text).toBe("string");
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
       });
 
       it("should throw an error if prompt is not defined or found", async () => {
@@ -432,7 +423,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.videoUrl).toBeDefined();
       });
 
@@ -455,7 +446,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.videoUrl).toBeDefined();
       });
 
@@ -478,7 +469,7 @@ describe("Bot Post Service", () => {
 
         expect(Array.isArray(result)).toBe(true);
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.videoUrl).toBeDefined();
         expect(post.text).toBeDefined();
       });
@@ -537,7 +528,7 @@ describe("Bot Post Service", () => {
         );
 
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.videoUrl).toBeDefined();
         expect(typeof post.videoUrl).toBe("string");
         expect(post.text).toBeDefined();
@@ -568,7 +559,7 @@ describe("Bot Post Service", () => {
         );
 
         const [post] = result;
-        expect(logger.success).toHaveBeenCalledWith(`Post created: ${post.id} - 1/1`);
+
         expect(post.videoUrl).toBeDefined();
         expect(typeof post.videoUrl).toBe("string");
         expect(post.text).toBeDefined();

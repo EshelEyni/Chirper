@@ -6,6 +6,8 @@ import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interface
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
 import botService from "../bot/bot.service";
+import { shuffleArray } from "../../../../services/util/util.service";
+import { logger } from "../../../../services/logger/logger.service";
 
 export enum PostType {
   TEXT = "text",
@@ -165,24 +167,44 @@ async function createPostSongReview(prompt: string) {
   };
 }
 
-async function _getBotPrompt(botId: string, type: string): Promise<string> {
+async function _getBotPrompt(botId: string, type: PostType): Promise<string> {
   if (!type) throw new AppError("postType is falsey", 500);
   if (!botId) throw new AppError("botId is falsey", 500);
   botServiceLogger.get("prompt");
-  const botPrompt = await promptService.getBotPrompt(botId);
+  const botPrompt = await promptService.getBotPrompt(botId, type);
   if (!botPrompt) throw new AppError("prompt is falsey", 500);
   botServiceLogger.retrieve("prompt");
   return botPrompt;
 }
 
 async function autoSaveBotPosts() {
+  const createdPostOptions: { botId: string; options: CreatePostOptions }[] = [];
   const bots = await botService.getBots();
-  // for (const bot of bots) {
-  //   // const prompts = await promptService.getBotPrompt(bot._id, PostType.TEXT);
-  //   // for (const prompt of prompts) {
-  //   //   await createPost(bot._id.toString(), { prompt, numOfPosts: 1, postType: PostType.TEXT });
-  //   // }
-  // }
+  if (!bots) throw new AppError("bots is undefined", 500);
+
+  for (const bot of bots) {
+    const prompts = await promptService.getAllBotPrompts(bot._id.toString());
+    if (!prompts) throw new AppError("prompts is undefined", 500);
+
+    for (const prompt of prompts) {
+      const options: CreatePostOptions = {
+        prompt: promptService.promptHandler(prompt.prompt as string, prompt.type as PostType),
+        postType: prompt.type as PostType,
+      };
+      createdPostOptions.push({ botId: bot._id.toString(), options });
+    }
+  }
+
+  const shuffledOptions = shuffleArray(createdPostOptions);
+
+  for (let i = 0; i < shuffledOptions.length; i++) {
+    const { botId, options } = shuffledOptions[i];
+    try {
+      await createPost(botId, options);
+    } catch (error) {
+      logger.error(error);
+    }
+  }
 }
 
 export default { createPost, autoSaveBotPosts };

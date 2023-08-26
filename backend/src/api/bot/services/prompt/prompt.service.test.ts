@@ -1,6 +1,7 @@
 import { assertBotPrompt, getMongoId } from "../../../../services/test-util.service";
 import promptService from "./prompt.service";
 import { BotPromptModel } from "../../model/bot-options.model";
+import { PostType } from "../post/post.service";
 
 const SAMPLE_PROMPT = "Some prompt";
 
@@ -31,21 +32,21 @@ describe("Bot Prompt Service", () => {
     it("should handle failure in BotPromptModel.countDocuments", async () => {
       BotPromptModel.countDocuments = jest.fn().mockRejectedValue(new Error("some error"));
 
-      await expect(promptService.getBotPrompt(botId)).rejects.toThrow("some error");
+      await expect(promptService.getBotPrompt(botId, PostType.TEXT)).rejects.toThrow("some error");
       mockCountDocuments(1);
     });
 
     it("should throw an error if no prompt found", async () => {
       mockBotPromptFindOne(null);
 
-      await expect(promptService.getBotPrompt(botId.toString())).rejects.toThrow(
+      await expect(promptService.getBotPrompt(botId.toString(), PostType.TEXT)).rejects.toThrow(
         "prompt is undefined"
       );
     });
 
     it("should return text type prompt suffix", async () => {
       mockBotPromptFindOne(getMockPrompt());
-      const result = await promptService.getBotPrompt("someBotId");
+      const result = await promptService.getBotPrompt(botId, PostType.TEXT);
       expect(BotPromptModel.countDocuments).toBeCalledTimes(1);
       expect(BotPromptModel.findOne).toBeCalledTimes(1);
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.TEXT_PROMPT_SUFFIX}`;
@@ -55,7 +56,7 @@ describe("Bot Prompt Service", () => {
     it("should return poll type prompt with prefix and suffix", async () => {
       mockBotPromptFindOne(getMockPrompt("poll"));
 
-      const result = await promptService.getBotPrompt(botId);
+      const result = await promptService.getBotPrompt(botId, PostType.POLL);
 
       const expectResult = `${promptService.promptFragments.POLL_PROMPT_PREFIX}${SAMPLE_PROMPT}${promptService.promptFragments.POLL_PROMPT_SUFFIX}`;
       expect(result).toBe(expectResult);
@@ -64,7 +65,7 @@ describe("Bot Prompt Service", () => {
     it("should return image type prompt with prefix", async () => {
       mockBotPromptFindOne(getMockPrompt("image"));
 
-      const result = await promptService.getBotPrompt(botId);
+      const result = await promptService.getBotPrompt(botId, PostType.IMAGE);
 
       const expectResult = `${promptService.promptFragments.IMAGE_PROMPT_PREFIX}${SAMPLE_PROMPT}`;
       expect(result).toBe(expectResult);
@@ -73,7 +74,7 @@ describe("Bot Prompt Service", () => {
     it("should return video type prompt with prefix", async () => {
       mockBotPromptFindOne(getMockPrompt("video"));
 
-      const result = await promptService.getBotPrompt(botId);
+      const result = await promptService.getBotPrompt(botId, PostType.VIDEO);
 
       const expectResult = `${promptService.promptFragments.VIDEO_PROMPT_PREFIX}${SAMPLE_PROMPT}`;
       expect(result).toBe(expectResult);
@@ -82,7 +83,7 @@ describe("Bot Prompt Service", () => {
     it("should return song-review type prompt suffix", async () => {
       mockBotPromptFindOne(getMockPrompt("song-review"));
 
-      const result = await promptService.getBotPrompt(botId);
+      const result = await promptService.getBotPrompt(botId, PostType.SONG_REVIEW);
 
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`;
       expect(result).toBe(expectResult);

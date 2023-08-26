@@ -9,6 +9,7 @@ require("dotenv").config();
 import mongoose from "mongoose";
 import app from "./app";
 import { AppError } from "../../services/error/error.service";
+import postService from "../../api/bot/services/post/post.service";
 
 const { DB_URL } = process.env;
 if (!DB_URL) throw new AppError("DB_URL URL is not defined.", 500);
@@ -20,6 +21,7 @@ mongoose
   .connect(DB_URL, { dbName })
   .then(() => {
     logger.info("Connected to MongoDB.");
+    postService.autoSaveBotPosts();
   })
   .catch(error => {
     logger.error("Failed to connect to MongoDB:", error);

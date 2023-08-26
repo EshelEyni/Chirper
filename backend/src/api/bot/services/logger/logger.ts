@@ -26,10 +26,9 @@ const capitalize = (str: string) => `${str[0].toUpperCase()}${str.slice(1)}`;
 const shouldLog = process.env.NODE_ENV !== "test";
 
 const logIfEnabled = (str: string, colorFn = ansiColors.white) => {
-  if (shouldLog) {
-    console.log(colorFn(str));
-  }
+  if (shouldLog) console.log(colorFn(str));
 };
+
 const botServiceLogger: Logger = {
   create: ({ entity, iterationNum }) => {
     if (!shouldLog) return;

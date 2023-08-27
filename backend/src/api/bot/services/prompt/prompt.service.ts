@@ -6,8 +6,8 @@ type TypeToTemplate = {
   [key: string]: (prompt: string) => string;
 };
 
-async function getAllBotPrompts(botId: string): Promise<BotPrompt[]> {
-  const prompts = await BotPromptModel.find({ botId }).lean().exec();
+async function getAllPrompts(): Promise<BotPrompt[]> {
+  const prompts = await BotPromptModel.find({}).lean().exec();
   if (!prompts) throw new Error("prompts is undefined");
   return prompts as unknown as BotPrompt[];
 }
@@ -49,4 +49,4 @@ export const promptFragments = {
     "Please choose one song from the artist or genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'songName' and 'review'. Limit Review to 247 characters.",
 };
 
-export default { getBotPrompt, getAllBotPrompts, promptHandler, promptFragments };
+export default { getBotPrompt, getAllPrompts, promptHandler, promptFragments };

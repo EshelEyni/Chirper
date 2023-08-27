@@ -5,9 +5,7 @@ import openAIService from "../openai/openai.service";
 import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
-import botService from "../bot/bot.service";
 import { shuffleArray } from "../../../../services/util/util.service";
-import { logger } from "../../../../services/logger/logger.service";
 
 export enum PostType {
   TEXT = "text",
@@ -15,6 +13,11 @@ export enum PostType {
   IMAGE = "image",
   VIDEO = "video",
   SONG_REVIEW = "song-review",
+}
+
+interface createPostParams {
+  botId: string;
+  options: CreatePostOptions;
 }
 
 export type CreatePostOptions = {
@@ -167,6 +170,26 @@ async function createPostSongReview(prompt: string) {
   };
 }
 
+async function autoSaveBotPosts() {
+  const ONE_MINUTE = 60000;
+  const createPostOptions = await _getBotPostOptions();
+  const postGenerator = _generatePosts(createPostOptions);
+
+  setInterval(async () => {
+    for (let i = 0; i < 3; i++) {
+      const {
+        value: { botId, options },
+      } = postGenerator.next();
+
+      try {
+        await createPost(botId, options);
+      } catch (error) {
+        botServiceLogger.error(error.message);
+      }
+    }
+  }, ONE_MINUTE);
+}
+
 async function _getBotPrompt(botId: string, type: PostType): Promise<string> {
   if (!type) throw new AppError("postType is falsey", 500);
   if (!botId) throw new AppError("botId is falsey", 500);
@@ -177,33 +200,26 @@ async function _getBotPrompt(botId: string, type: PostType): Promise<string> {
   return botPrompt;
 }
 
-async function autoSaveBotPosts() {
-  const createdPostOptions: { botId: string; options: CreatePostOptions }[] = [];
-  const bots = await botService.getBots();
-  if (!bots) throw new AppError("bots is undefined", 500);
+async function _getBotPostOptions(): Promise<createPostParams[]> {
+  const prompts = await promptService.getAllPrompts();
+  if (!prompts) throw new AppError("prompts is falsey", 500);
 
-  for (const bot of bots) {
-    const prompts = await promptService.getAllBotPrompts(bot._id.toString());
-    if (!prompts) throw new AppError("prompts is undefined", 500);
+  return prompts.map(prompt => ({
+    botId: prompt.botId as string,
+    options: {
+      prompt: promptService.promptHandler(prompt.prompt as string, prompt.type as PostType),
+      postType: prompt.type as PostType,
+    },
+  }));
+}
 
-    for (const prompt of prompts) {
-      const options: CreatePostOptions = {
-        prompt: promptService.promptHandler(prompt.prompt as string, prompt.type as PostType),
-        postType: prompt.type as PostType,
-      };
-      createdPostOptions.push({ botId: bot._id.toString(), options });
-    }
-  }
-
-  const shuffledOptions = shuffleArray(createdPostOptions);
-
-  for (let i = 0; i < shuffledOptions.length; i++) {
-    const { botId, options } = shuffledOptions[i];
-    try {
-      await createPost(botId, options);
-    } catch (error) {
-      logger.error(error);
-    }
+function* _generatePosts(postOptions: { botId: string; options: CreatePostOptions }[]) {
+  // ensures that at the last yield statement, the function will create a new set of yield statements
+  while (true) {
+    // shuffles the postOptions array each time the yield statements are created
+    const shuffledOptions = shuffleArray(postOptions);
+    // creates yield statements in the length of the postOptions array
+    for (const option of shuffledOptions) yield option;
   }
 }
 

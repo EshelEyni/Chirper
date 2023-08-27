@@ -3,8 +3,11 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/bot";
+const currPath = "/api/bot/services/logger";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
+
+// const collectCoverage = true;
+const collectCoverage = false;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`
 //   : "<rootDir>/src/api/post/services/util/util.service.ts";
@@ -14,7 +17,7 @@ const config: Config.InitialOptions = {
   preset: "ts-jest",
   testEnvironment: "node",
   verbose: true,
-  collectCoverage: true,
+  collectCoverage,
   collectCoverageFrom: [
     coveragePath,
     "!**/*.model.ts",

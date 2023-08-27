@@ -14,12 +14,21 @@ jest.mock("../../model/bot-options.model", () => ({
 }));
 
 describe("Bot Prompt Service", () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     setAllMocks();
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("getAllPrompts", () => {
+    it("should get all bot prompts", async () => {
+      const results = await promptService.getAllPrompts();
+      expect(results).toBeDefined();
+      expect(results).toBeInstanceOf(Array);
+      results.forEach(assertBotPrompt);
+    });
   });
 
   describe("getBotPrompt", () => {
@@ -87,16 +96,6 @@ describe("Bot Prompt Service", () => {
 
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`;
       expect(result).toBe(expectResult);
-    });
-  });
-
-  describe("getAllBotPrompts", () => {
-    it("should get all bot prompts", async () => {
-      const botId = getMongoId();
-      const results = await promptService.getAllBotPrompts(botId);
-      expect(results).toBeDefined();
-      expect(results).toBeInstanceOf(Array);
-      results.forEach(assertBotPrompt);
     });
   });
 });

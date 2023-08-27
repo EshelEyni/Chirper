@@ -18,11 +18,23 @@ type Logger = {
   upload: ({ entity, iterationNum }: { entity: string; iterationNum?: number }) => void;
   uploaded: ({ entity, iterationNum }: { entity: string; iterationNum?: number }) => void;
   uploadError: (msg: string) => void;
+  error: (msg: string) => void;
 };
 
 const addPadding = (str: string) => ` ${str} `;
 const capitalize = (str: string) => `${str[0].toUpperCase()}${str.slice(1)}`;
-
+const logPost = (post: Post) => {
+  const { id, text, poll, imgs, videoUrl, createdBy } = post;
+  const postToLog = {
+    id,
+    text,
+    poll,
+    imgs,
+    videoUrl,
+    createdBy: createdBy?.username,
+  };
+  logIfEnabled(JSON.stringify(postToLog, null, 2), ansiColors.inverse);
+};
 const shouldLog = process.env.NODE_ENV !== "test";
 
 const logIfEnabled = (str: string, colorFn = ansiColors.white) => {
@@ -63,9 +75,7 @@ const botServiceLogger: Logger = {
 
     logIfEnabled(paddedText, colorFn);
 
-    if (entity === "post" && post) {
-      logIfEnabled(JSON.stringify(post, null, 2), ansiColors.inverse);
-    }
+    if (entity === "post" && post) logPost(post);
   },
   get: entity => {
     const entityCap = capitalize(entity);
@@ -103,6 +113,13 @@ const botServiceLogger: Logger = {
   uploadError: msg => {
     const text = addPadding(msg);
     const colorFn = ansiColors.bgBlackBright.black.italic;
+
+    logIfEnabled(text, colorFn);
+  },
+  error: msg => {
+    const currTime = new Date().toLocaleString("he");
+    const text = addPadding(`${currTime} - "ERROR" - ${msg}`);
+    const colorFn = ansiColors.bgRedBright.italic;
 
     logIfEnabled(text, colorFn);
   },

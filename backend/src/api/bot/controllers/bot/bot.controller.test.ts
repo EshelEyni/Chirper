@@ -34,9 +34,7 @@ describe("Bot Controller", () => {
     });
 
     it("should return 200 and a list of bots", async () => {
-      const mockUsers = Array(3)
-        .fill(null)
-        .map(_ => getMockedUser({ isBot: true }));
+      const mockUsers = Array(3).fill(getMockedUser({ isBot: true }));
 
       (botService.getBots as jest.Mock).mockResolvedValueOnce(mockUsers);
 

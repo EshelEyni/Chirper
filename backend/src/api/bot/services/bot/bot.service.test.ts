@@ -20,9 +20,7 @@ describe("BotService", () => {
 
   describe("Bot Service", () => {
     it("getBots", async () => {
-      const mockedBots = Array(3)
-        .fill(null)
-        .map(_ => getMockedUser({ isBot: true }));
+      const mockedBots = Array(3).fill(getMockedUser({ isBot: true }));
 
       UserModel.find = jest.fn().mockResolvedValue(mockedBots);
 

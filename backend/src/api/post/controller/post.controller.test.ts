@@ -57,7 +57,7 @@ describe("Post Controller", () => {
     });
 
     it("should successfully retrieve and send an array bookmarked posts", async () => {
-      const mockPosts = Array(5).fill(null).map(getMockPost);
+      const mockPosts = Array(5).fill(getMockPost());
 
       (bookmarkService.get as jest.Mock) = jest.fn().mockResolvedValue(mockPosts);
 

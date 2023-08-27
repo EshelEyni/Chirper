@@ -50,7 +50,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
           <Modal.Window
             name="userPreview/fullname"
             className="user-preview-modal"
-            closeOnHover={true}
+            hoverControl={true}
           >
             <PostPreviewUserModalContent />
           </Modal.Window>

@@ -31,7 +31,7 @@ export const RepostDisplay: FC = () => {
         </Modal.ModalHoverOpen>
       </div>
 
-      <Modal.Window name="respostDetails" className="user-preview-modal" closeOnHover={true}>
+      <Modal.Window name="respostDetails" className="user-preview-modal" hoverControl={true}>
         <PostPreviewUserModalContent />
       </Modal.Window>
     </Modal>

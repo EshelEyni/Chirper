@@ -14,8 +14,8 @@
 
   .modal-hover-guard-zone{
     position: absolute;
-    left: 0;
-    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   &.confirm-delete-post-thread,

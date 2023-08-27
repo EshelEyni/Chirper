@@ -14,8 +14,6 @@ import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
 import { useOutsideClick } from "../../hooks/app/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
-import { useOutsideHover } from "../../hooks/app/useOusideHover";
-import { useInsideHover } from "../../hooks/app/useInsideHover";
 
 type UserPreviewModalPosition = {
   top?: number;
@@ -60,7 +58,7 @@ type WindowProps = {
   mainScreenZIndex?: number;
   elementId?: string;
   includeTippy?: boolean;
-  closeOnHover?: boolean;
+  hoverControl?: boolean;
 };
 
 type ModalContextType = {
@@ -73,6 +71,7 @@ type ModalContextType = {
   setIsModalAbove: React.Dispatch<React.SetStateAction<boolean>>;
   modalHoverGuardZone: ModalHoverGuardZone | null;
   setModalHoverGuardZone: React.Dispatch<React.SetStateAction<ModalHoverGuardZone | null>>;
+  closeTimeoutId?: React.MutableRefObject<NodeJS.Timeout | null>;
 };
 
 type ModalHoverGuardZone = {
@@ -122,6 +121,7 @@ export const Modal: FC<ModalProps> & {
 
   const [modalHoverGuardZone, setModalHoverGuardZone] = useState<ModalHoverGuardZone | null>(null);
   const [isModalAbove, setIsModalAbove] = useState(false);
+  const closeTimeoutId = useRef<NodeJS.Timeout | null>(null);
 
   const close = () => {
     onClose?.();
@@ -147,6 +147,7 @@ export const Modal: FC<ModalProps> & {
     setIsModalAbove,
     modalHoverGuardZone,
     setModalHoverGuardZone,
+    closeTimeoutId,
   };
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
@@ -206,11 +207,12 @@ const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
 };
 
 const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName, modalHeight = 0 }) => {
-  const { open, setPosition, setIsModalAbove, setModalHoverGuardZone } = useContext(ModalContext)!;
-  const { insideHoverRef } = useInsideHover<HTMLDivElement>(setPositionAndOpen);
+  const { open, close, setPosition, setIsModalAbove, setModalHoverGuardZone, closeTimeoutId } =
+    useContext(ModalContext)!;
+  const ref = useRef<HTMLDivElement>(null);
 
   function setPositionAndOpen() {
-    const res = calculatePositionByRef(insideHoverRef, modalHeight);
+    const res = calculatePositionByRef(ref, modalHeight);
     if (!res) return;
     setPosition(res.position);
     setIsModalAbove(res.isModalAbove);
@@ -218,12 +220,27 @@ const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName, mod
       height: res.rect.height,
       width: res.rect.width,
     });
-    // debugger
     open(modalName);
   }
 
+  function handleMouseEnter() {
+    setTimeout(setPositionAndOpen, 500);
+  }
+
+  function handleMouseLeave() {
+    if (!closeTimeoutId) return;
+    closeTimeoutId.current = setTimeout(() => {
+      close();
+    }, 200);
+  }
+
   return (
-    <div className="modal-hover-open" ref={insideHoverRef}>
+    <div
+      className="modal-hover-open"
+      ref={ref}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children}
     </div>
   );
@@ -238,31 +255,55 @@ const Window: FC<WindowProps> = ({
   elementId = "app",
   includeTippy = false,
   style = {},
-  closeOnHover = false,
+  hoverControl = false,
 }) => {
-  const { openedModalName, close, position, isModalAbove, modalHoverGuardZone } =
-    useContext(ModalContext)!;
+  const {
+    openedModalName,
+    open,
+    close,
+    position,
+    isModalAbove,
+    modalHoverGuardZone,
+    closeTimeoutId,
+  } = useContext(ModalContext)!;
   const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
-  const { outsideHoverRef } = useOutsideHover<HTMLDivElement>(close);
+
+  function handleMouseEnter() {
+    if (closeTimeoutId && closeTimeoutId.current) {
+      clearTimeout(closeTimeoutId.current);
+      closeTimeoutId.current = null;
+    }
+    open(name);
+  }
+
+  function handleMouseLeave() {
+    if (!closeTimeoutId) return;
+    closeTimeoutId.current = setTimeout(() => {
+      close();
+    }, 200);
+  }
 
   if (name !== openedModalName) return null;
   return createPortal(
     <>
-      {!closeOnHover && <MainScreen mode={mainScreenMode} zIndex={mainScreenZIndex} />}
+      {!hoverControl && <MainScreen mode={mainScreenMode} zIndex={mainScreenZIndex} />}
       <section
         className={`modal ${className ? className : name}`}
         style={{ ...style, zIndex: mainScreenZIndex + 1, ...position }}
-        ref={closeOnHover ? outsideHoverRef : outsideClickRef}
+        ref={hoverControl ? undefined : outsideClickRef}
+        onMouseEnter={() => hoverControl && handleMouseEnter()}
+        onMouseLeave={() => hoverControl && handleMouseLeave()}
       >
         {includeTippy && <Tippy isModalAbove={!!isModalAbove} />}
         {children}
 
-        {closeOnHover && modalHoverGuardZone && (
+        {hoverControl && modalHoverGuardZone && (
           <div
             className="modal-hover-guard-zone"
             style={{
-              top: isModalAbove ? "100%" : `-${modalHoverGuardZone.height}px`,
-              height: `${modalHoverGuardZone.height}px` || "10%",
+              top: isModalAbove ? "100%" : `-${modalHoverGuardZone.height / 2}px`,
+              height: `${modalHoverGuardZone.height / 2}px` || "10%",
+              width: `${modalHoverGuardZone.width}px` || "10%",
             }}
           />
         )}

@@ -21,7 +21,7 @@ export const PostPreviewAside: FC = () => {
         <Modal.Window
           name="userPreview"
           className="user-preview-modal"
-          closeOnHover={true}
+          hoverControl={true}
           style={{ transform: "translate(-50%,-5%)" }}
         >
           <PostPreviewUserModalContent />

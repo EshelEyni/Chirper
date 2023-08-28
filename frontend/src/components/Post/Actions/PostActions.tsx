@@ -7,7 +7,12 @@ import {
   setNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { copyToClipboard, formatNumToK, readAsDataURL } from "../../../services/util/utils.service";
+import {
+  copyToClipboard,
+  formatNumToK,
+  getToolTipStyles,
+  readAsDataURL,
+} from "../../../services/util/utils.service";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../Msg/UserMsg/UserMsg";
 import { AppDispatch } from "../../../store/types";
@@ -93,12 +98,7 @@ export const PostActions: FC<PostEditActionsProps> & {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
-  const tooltipStyle = {
-    fontSize: "12px",
-    padding: "5px 10px",
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
-    zIndex: 1500,
-  } as React.CSSProperties;
+  const tooltipStyle = useRef(getToolTipStyles()).current;
 
   const value = {
     newPost,

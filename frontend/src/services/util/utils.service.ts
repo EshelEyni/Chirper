@@ -171,6 +171,16 @@ function getDefaultErrorMsg(): UserMsg {
   };
 }
 
+function getToolTipStyles(options?: React.CSSProperties): React.CSSProperties {
+  return {
+    fontSize: "12px",
+    padding: "5px 10px",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    zIndex: 1500,
+    ...options,
+  };
+}
+
 export {
   formatDateToRelativeTime,
   formatNumToK,
@@ -185,4 +195,5 @@ export {
   readAsDataURL,
   getBasePathName,
   getDefaultErrorMsg,
+  getToolTipStyles,
 };

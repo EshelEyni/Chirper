@@ -71,16 +71,21 @@
   }
 
   &.post-edit-option {
-    .post-edit-option-title {
-      font-size: 20px;
-      padding: rem(4px) rem(16px);
-    }
-
     border-radius: 25px;
     width: rem(260px);
     top: 100%;
     left: 25%;
     padding: rem(18px) 0;
+
+    .post-edit-option-title {
+      font-size: 18px;
+      padding: rem(4px) rem(16px);
+    }
+
+    .post-edit-option-desc {
+      padding: rem(4px) rem(16px);
+      color: var(--color-text-gray);
+    }
 
     &.repliers {
       width: rem(300px);
@@ -202,6 +207,48 @@
         &:hover {
           text-decoration: underline black;
         }
+      }
+    }
+  }
+
+  &.post-preview-more-options {
+    padding: 0;
+    width: rem(300px);
+
+    .btn-toggle-repliers,
+    .post-preview-pin-option,
+    .post-preview-delete-option {
+      padding: rem(8px) rem(10px);
+      display: flex;
+      align-items: center;
+      gap: rem(10px);
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .post-preview-delete-option {
+      color: var(--color-danger);
+    }
+
+    button {
+      div {
+        padding: rem(8px) rem(10px);
+        display: flex;
+        align-items: center;
+        gap: rem(10px);
+        font-weight: 600;
+      }
+
+      &:hover {
+        background-color: var(--color-hover);
+      }
+
+      &:first-child {
+        border-radius: 15px 15px 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 15px 15px;
       }
     }
   }

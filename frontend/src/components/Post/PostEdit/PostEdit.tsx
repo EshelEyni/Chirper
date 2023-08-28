@@ -234,7 +234,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {!!currNewPost?.gif && <GifEdit />}
           {!!currNewPost?.poll && <PollEdit />}
           <div className="btn-replries-location-container">
-            {isPickerShown && <BtnToggleRepliers />}
+            {isPickerShown && <BtnToggleRepliers newPost={currNewPost} />}
             <PostEditTitleLocation />
           </div>
           {isQueotePostShown && (

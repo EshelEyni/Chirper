@@ -11,7 +11,7 @@ const ProfileDetails = () => {
   const params = useParams();
   const { username } = params;
   const { user, posts, isLoading, isSuccess, isError } = useQueryUserWithPosts(username || "");
-  useDocumentTitle(`${user?.fullname} (${user?.username}) / Chirper`);
+  useDocumentTitle(user ? `${user.fullname} (${user.username}) / Chirper` : "");
 
   return (
     <main className="profile-details">

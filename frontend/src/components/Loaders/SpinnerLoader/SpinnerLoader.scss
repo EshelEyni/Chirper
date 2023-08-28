@@ -1,5 +1,9 @@
 @import "../../../styles/setup/functions";
 
+.spinner-loader-container {
+  position: relative;
+}
+
 .spinner-loader {
   display: block;
   position: absolute;

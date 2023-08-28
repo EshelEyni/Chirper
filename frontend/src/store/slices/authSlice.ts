@@ -49,7 +49,6 @@ export function loginWithToken(): AppThunk {
     dispatch(setIsPageLoading(true));
     const user = await authService.loginWithToken();
     dispatch(setLoggedInUser(user));
-    dispatch(setIsPageLoading(false));
   };
 }
 

@@ -45,21 +45,17 @@ function App() {
 
   return (
     <div id="app" className="app">
-      {isPageLoading ? (
-        <PageLoader isBirdLoader={true} />
-      ) : (
-        <div className="app-content" id="app-content">
-          <SideBar />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route index element={<Navigate replace to="/home" />} />
-              {getRoutes()}
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </Suspense>
-          {!loggedInUser && <LoginSignupMsg />}
-        </div>
-      )}
+      <div className="app-content" id="app-content">
+        <SideBar />
+        <Suspense fallback={<PageLoader isBirdLoader={isPageLoading} />}>
+          <Routes>
+            <Route index element={<Navigate replace to="/home" />} />
+            {getRoutes()}
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </Suspense>
+        {!loggedInUser && <LoginSignupMsg />}
+      </div>
     </div>
   );
 }

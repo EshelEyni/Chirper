@@ -3,14 +3,16 @@ import { Outlet } from "react-router-dom";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
 import { PostListContainer } from "../../../components/Post/PostListContainer/PostListContainer";
-import { useDocumentTitle } from "../../../hooks/app/useDocumentTitle";
-import "./Home.scss";
 import { useScrollRedirect } from "../../../hooks/app/useScrollRedirect";
+import { usePageLoaded } from "../../../hooks/app/usePageLoaded";
+import "./Home.scss";
+// import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const Homepage = () => {
-  useDocumentTitle("Home / Chirper");
+  usePageLoaded({ title: "Home / Chirper" });
   const { scrollTargetRef } = useScrollRedirect();
+  // const { posts, isLoading, isSuccess, isError, isEmpty } = useQueryPosts();
 
   return (
     <main className="home">
@@ -20,7 +22,9 @@ const Homepage = () => {
       <div className="home-main-container" ref={scrollTargetRef}>
         <div className="post-edit-container">
           <PostEditProvider isHomePage={true}>
-            <Suspense fallback={<SpinnerLoader />}>
+            <Suspense
+              fallback={<SpinnerLoader withContainer={true} containerSize={{ height: "100px" }} />}
+            >
               <PostEdit isHomePage={true} />
             </Suspense>
           </PostEditProvider>

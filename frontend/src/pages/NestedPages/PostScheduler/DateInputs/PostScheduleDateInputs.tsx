@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo } from "react";
 import { CustomSelect } from "../../../../components/App/CustomSelect/CustomSelect";
-import { useCustomSelect } from "../../../../hooks/useCustomSelect";
+import { useCustomSelect } from "../../../../hooks/app/useCustomSelect";
 import "./PostScheduleDateInputs.scss";
 import { getDaysInMonth, monthNames } from "../../../../services/util/utils.service";
 import { invalidDateStatus } from "../PostSchedule";

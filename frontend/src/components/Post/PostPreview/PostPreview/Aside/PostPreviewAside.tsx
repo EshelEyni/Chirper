@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { UserImg } from "../../../../User/UserImg/UserImg";
-import { PostPreviewUserModalContent } from "../../../../Modal/PostPreviewUserModalContent/PostPreviewUserModalContent";
 import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
 import { Modal } from "../../../../Modal/Modal";
 import "./PostPreviewAside.scss";
@@ -24,7 +23,7 @@ export const PostPreviewAside: FC = () => {
           hoverControl={true}
           style={{ transform: "translate(-50%,-5%)" }}
         >
-          <PostPreviewUserModalContent />
+          <Modal.PostPreviewUserModalContent />
         </Modal.Window>
       </Modal>
     </aside>

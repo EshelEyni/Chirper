@@ -4,7 +4,6 @@ import {
   formatDateToCleanString,
   formatDateToRelativeTime,
 } from "../../../services/util/utils.service";
-import { PostPreviewUserModalContent } from "../../Modal/PostPreviewUserModalContent/PostPreviewUserModalContent";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
 import "./PostPreviewHeader.scss";
@@ -52,7 +51,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
             className="user-preview-modal"
             hoverControl={true}
           >
-            <PostPreviewUserModalContent />
+            <Modal.PostPreviewUserModalContent />
           </Modal.Window>
         </Modal>
         <span>·</span>

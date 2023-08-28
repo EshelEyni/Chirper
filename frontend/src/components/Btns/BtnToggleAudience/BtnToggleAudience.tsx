@@ -8,7 +8,6 @@ import { AppDispatch } from "../../../store/types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
-import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
 import { PostEditOption } from "../../Modal/PostEditOption/PostEditOption";
 
 export const BtnToggleAudience: FC = () => {
@@ -19,21 +18,6 @@ export const BtnToggleAudience: FC = () => {
   if (!currNewPost) return null;
   const { audience } = currNewPost;
   const title = getTitle(audience);
-
-  const options: TypeOfPostEditOption[] = [
-    {
-      title: "Everyone",
-      icon: <GoGlobe />,
-      value: "everyone",
-      isSelected: audience === "everyone",
-    },
-    {
-      title: "Chirper Circle",
-      icon: <ChirperCircleIcon />,
-      value: "chirper-circle",
-      isSelected: audience === "chirper-circle",
-    },
-  ];
 
   function getTitle(value: string) {
     switch (value) {
@@ -67,13 +51,24 @@ export const BtnToggleAudience: FC = () => {
           mainScreenZIndex={1000}
         >
           <h1 className="post-edit-option-title">Choose audience</h1>
-          {options.map(option => (
-            <Modal.CloseBtn onClickFn={() => onOptionClick(option.value)} key={option.value}>
-              <div>
-                <PostEditOption option={option} />
-              </div>
-            </Modal.CloseBtn>
-          ))}
+          <Modal.CloseBtn onClickFn={() => onOptionClick("everyone")}>
+            <div>
+              <PostEditOption
+                title="Everyone"
+                icon={<GoGlobe />}
+                isSelected={audience === "everyone"}
+              />
+            </div>
+          </Modal.CloseBtn>
+          <Modal.CloseBtn onClickFn={() => onOptionClick("chirper-circle")}>
+            <div>
+              <PostEditOption
+                title="Chirper Circle"
+                icon={<ChirperCircleIcon />}
+                isSelected={audience === "chirper-circle"}
+              />
+            </div>
+          </Modal.CloseBtn>
         </Modal.Window>
       </Modal>
     </div>

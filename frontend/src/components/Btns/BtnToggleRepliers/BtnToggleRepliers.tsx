@@ -6,7 +6,6 @@ import { RootState } from "../../../store/store";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
-import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
 import { PostEditOption } from "../../Modal/PostEditOption/PostEditOption";
 
 export const BtnToggleRepliers: FC = () => {
@@ -17,27 +16,6 @@ export const BtnToggleRepliers: FC = () => {
   const { repliersType } = currNewPost;
 
   const title = getTitle(repliersType);
-
-  const options: TypeOfPostEditOption[] = [
-    {
-      title: "Everyone",
-      icon: <FaGlobeAmericas />,
-      value: "everyone",
-      isSelected: repliersType === "everyone",
-    },
-    {
-      title: "Only people you follow",
-      icon: <FaUserCheck />,
-      value: "followed",
-      isSelected: repliersType === "followed",
-    },
-    {
-      title: "Only people you mentioned",
-      icon: <FaAt />,
-      value: "mentioned",
-      isSelected: repliersType === "mentioned",
-    },
-  ];
 
   function getTitle(value: string) {
     switch (value) {
@@ -74,13 +52,34 @@ export const BtnToggleRepliers: FC = () => {
           mainScreenZIndex={1000}
         >
           <h1 className="post-edit-option-title">Choose who can reply</h1>
-          {options.map(option => (
-            <Modal.CloseBtn key={option.value} onClickFn={() => onOptionClick(option.value)}>
-              <div>
-                <PostEditOption option={option} />
-              </div>
-            </Modal.CloseBtn>
-          ))}
+
+          <Modal.CloseBtn onClickFn={() => onOptionClick("everyone")}>
+            <div>
+              <PostEditOption
+                title={"Everyone"}
+                icon={<FaGlobeAmericas />}
+                isSelected={repliersType === "everyone"}
+              />
+            </div>
+          </Modal.CloseBtn>
+          <Modal.CloseBtn onClickFn={() => onOptionClick("followed")}>
+            <div>
+              <PostEditOption
+                title={"Only people you follow"}
+                icon={<FaUserCheck />}
+                isSelected={repliersType === "followed"}
+              />
+            </div>
+          </Modal.CloseBtn>
+          <Modal.CloseBtn onClickFn={() => onOptionClick("mentioned")}>
+            <div>
+              <PostEditOption
+                title={"Only people you mentioned"}
+                icon={<FaAt />}
+                isSelected={repliersType === "mentioned"}
+              />
+            </div>
+          </Modal.CloseBtn>
         </Modal.Window>
       </Modal>
     </div>

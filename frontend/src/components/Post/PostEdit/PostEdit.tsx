@@ -42,6 +42,7 @@ import { useCreatePost } from "../../../hooks/reactQuery/post/useCreatePost";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 import postService from "../../../services/post.service";
 import { useGoBack } from "../../../hooks/app/useGoBack";
+import { PostEditActions as CompoundPostEditActions } from "../EditActions/PostEditActions";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -242,7 +243,20 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
             </MiniPostPreview>
           )}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <PostEditActions />
+            <CompoundPostEditActions
+              post={currNewPost}
+              isPickerShown={isPickerShown}
+              newPostText={newPostText}
+              setNewPostText={setNewPostText}
+            >
+              <CompoundPostEditActions.Media />
+              <CompoundPostEditActions.Gif />
+              <CompoundPostEditActions.Poll />
+              <CompoundPostEditActions.Emoji />
+              <CompoundPostEditActions.Schedule />
+              <CompoundPostEditActions.Location />
+            </CompoundPostEditActions>
+
             <div className="secondary-action-container">
               {isIndicatorAndAddThreadBtnShown && (
                 <div className="indicator-thread-btn-container">

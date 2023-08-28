@@ -14,6 +14,16 @@ import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
 import { useOutsideClick } from "../../hooks/app/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
+import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { usePostPreview } from "../../contexts/PostPreviewContext";
+import { UserImg } from "../User/UserImg/UserImg";
+import { BtnToggleFollow } from "../Btns/BtnToggleFollow/BtnToggleFollow";
+import { debounce, formatNumToK } from "../../services/util/utils.service";
+import { Link } from "react-router-dom";
+import { Logo } from "../App/Logo/Logo";
+import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
 
 type UserPreviewModalPosition = {
   top?: number;
@@ -36,6 +46,7 @@ type OpenBtnProps = {
   modalName: string;
   setPositionByRef?: boolean;
   modalHeight?: number;
+  externalControlFunc?: () => void;
 };
 
 type CloseBtnProps = {
@@ -71,7 +82,8 @@ type ModalContextType = {
   setIsModalAbove: React.Dispatch<React.SetStateAction<boolean>>;
   modalHoverGuardZone: ModalHoverGuardZone | null;
   setModalHoverGuardZone: React.Dispatch<React.SetStateAction<ModalHoverGuardZone | null>>;
-  closeTimeoutId?: React.MutableRefObject<NodeJS.Timeout | null>;
+  debouncedClose: () => void;
+  cancelDebouncedClose: () => void;
 };
 
 type ModalHoverGuardZone = {
@@ -99,13 +111,14 @@ function calculatePositionByRef<T extends HTMLElement>(
   };
 }
 
-export const ModalContext = createContext<ModalContextType | undefined>(undefined);
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const Modal: FC<ModalProps> & {
   OpenBtn: FC<OpenBtnProps>;
   Window: FC<WindowProps>;
   CloseBtn: FC<CloseBtnProps>;
   ModalHoverOpen: FC<ModalHoverActivatorProps>;
+  PostPreviewUserModalContent: FC;
 } = ({ children, externalStateControl, onClose, onOpen }) => {
   const [openedModalName, setOpenedModalName] = useState("");
   const [position, setPosition] = useState<UserPreviewModalPosition | null>(null);
@@ -121,7 +134,6 @@ export const Modal: FC<ModalProps> & {
 
   const [modalHoverGuardZone, setModalHoverGuardZone] = useState<ModalHoverGuardZone | null>(null);
   const [isModalAbove, setIsModalAbove] = useState(false);
-  const closeTimeoutId = useRef<NodeJS.Timeout | null>(null);
 
   const close = () => {
     onClose?.();
@@ -137,6 +149,10 @@ export const Modal: FC<ModalProps> & {
     setOpenedModalName(name);
   };
 
+  const { debouncedFunc: debouncedClose, cancel: cancelDebouncedClose } = debounce(() => {
+    close();
+  }, 500);
+
   const value = {
     openedModalName: externalStateControl?.openedModalName || openedModalName,
     close,
@@ -147,7 +163,8 @@ export const Modal: FC<ModalProps> & {
     setIsModalAbove,
     modalHoverGuardZone,
     setModalHoverGuardZone,
-    closeTimeoutId,
+    debouncedClose,
+    cancelDebouncedClose,
   };
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
@@ -158,6 +175,7 @@ const OpenBtn: FC<OpenBtnProps> = ({
   modalName,
   setPositionByRef = false,
   modalHeight = 0,
+  externalControlFunc,
 }) => {
   const { open, setPosition, setIsModalAbove } = useContext(ModalContext)!;
   const ref = useRef<HTMLButtonElement>(null);
@@ -171,6 +189,7 @@ const OpenBtn: FC<OpenBtnProps> = ({
 
   const handleClick = () => {
     if (setPositionByRef) calculatePosition();
+    if (externalControlFunc) return externalControlFunc();
     open(modalName);
   };
 
@@ -207,9 +226,20 @@ const CloseBtn: FC<CloseBtnProps> = ({ children, onClickFn }) => {
 };
 
 const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName, modalHeight = 0 }) => {
-  const { open, close, setPosition, setIsModalAbove, setModalHoverGuardZone, closeTimeoutId } =
-    useContext(ModalContext)!;
+  const {
+    open,
+    setPosition,
+    setIsModalAbove,
+    setModalHoverGuardZone,
+    debouncedClose,
+    cancelDebouncedClose,
+  } = useContext(ModalContext)!;
   const ref = useRef<HTMLDivElement>(null);
+
+  const { debouncedFunc: debouncedOpen, cancel: cancelDebouncedOpen } = debounce(
+    setPositionAndOpen,
+    500
+  );
 
   function setPositionAndOpen() {
     const res = calculatePositionByRef(ref, modalHeight);
@@ -224,14 +254,13 @@ const ModalHoverOpen: FC<ModalHoverActivatorProps> = ({ children, modalName, mod
   }
 
   function handleMouseEnter() {
-    setTimeout(setPositionAndOpen, 500);
+    cancelDebouncedClose();
+    debouncedOpen();
   }
 
   function handleMouseLeave() {
-    if (!closeTimeoutId) return;
-    closeTimeoutId.current = setTimeout(() => {
-      close();
-    }, 200);
+    cancelDebouncedOpen();
+    debouncedClose();
   }
 
   return (
@@ -264,23 +293,19 @@ const Window: FC<WindowProps> = ({
     position,
     isModalAbove,
     modalHoverGuardZone,
-    closeTimeoutId,
+    debouncedClose,
+    cancelDebouncedClose,
   } = useContext(ModalContext)!;
+
   const { outsideClickRef } = useOutsideClick<HTMLElement>(close);
 
   function handleMouseEnter() {
-    if (closeTimeoutId && closeTimeoutId.current) {
-      clearTimeout(closeTimeoutId.current);
-      closeTimeoutId.current = null;
-    }
+    cancelDebouncedClose();
     open(name);
   }
 
   function handleMouseLeave() {
-    if (!closeTimeoutId) return;
-    closeTimeoutId.current = setTimeout(() => {
-      close();
-    }, 200);
+    debouncedClose();
   }
 
   if (name !== openedModalName) return null;
@@ -313,7 +338,64 @@ const Window: FC<WindowProps> = ({
   );
 };
 
+const PostPreviewUserModalContent: FC = () => {
+  const { post, onNavigateToProfile, onToggleFollow } = usePostPreview();
+  const user = post.createdBy as MiniUser;
+  const { loggedInUser } = useSelector((state: RootState) => state.auth);
+  const followingStats = [
+    {
+      title: "Followers",
+      count: user.followersCount,
+      link: `/profile/${user.username}/followers`,
+    },
+    {
+      title: "Following",
+      count: user.followingCount,
+      link: `/profile/${user.username}/following`,
+    },
+  ];
+
+  return (
+    <>
+      <div className="user-preview-modal-header">
+        <UserImg
+          imgUrl={user.imgUrl}
+          onNavigateToProfile={() => onNavigateToProfile(user.username)}
+        />
+        {loggedInUser?.id !== user.id && (
+          <BtnToggleFollow user={user} handleBtnClick={onToggleFollow} />
+        )}
+      </div>
+
+      <div className="user-preview-modal-user-info">
+        <div className="post-preview-modal-user-info-title-container">
+          <span>{user.fullname}</span>
+          {user.isVerified && (
+            <BlueCheckMark className="post-preview-modal-user-info-blue-check-mark" />
+          )}
+          {user.isAdmin && <Logo />}
+        </div>
+        <span className="post-preview-modal-user-info-username">@{user.username}</span>
+        <p className="post-preview-modal-user-info-bio">{user.bio}</p>
+      </div>
+
+      <div className="post-preview-modal-user-info-following-stats">
+        {followingStats.map((stat, idx) => (
+          <div className="post-preview-modal-user-info-following-stats-item" key={idx}>
+            <Link to={stat.link}>{`${formatNumToK(stat.count)} ${stat.title}`}</Link>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ backgroundColor: "yellow" }}>
+        {" TODO: followers_you_follow link, and following/followers link"}
+      </div>
+    </>
+  );
+};
+
 Modal.OpenBtn = OpenBtn;
 Modal.Window = Window;
 Modal.CloseBtn = CloseBtn;
 Modal.ModalHoverOpen = ModalHoverOpen;
+Modal.PostPreviewUserModalContent = PostPreviewUserModalContent;

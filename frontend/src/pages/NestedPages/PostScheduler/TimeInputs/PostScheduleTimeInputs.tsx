@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useCustomSelect } from "../../../../hooks/useCustomSelect";
+import { useCustomSelect } from "../../../../hooks/app/useCustomSelect";
 import { CustomSelect } from "../../../../components/App/CustomSelect/CustomSelect";
 import { getDaysInMonth } from "../../../../services/util/utils.service";
 import { invalidDateStatus } from "../PostSchedule";

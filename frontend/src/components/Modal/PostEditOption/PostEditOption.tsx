@@ -1,21 +1,22 @@
 import { FC } from "react";
 import "./PostEditOption.scss";
-import { PostEditOption as TypeOfPostEditOption } from "../../../types/app.types";
 import { AiOutlineCheck } from "react-icons/ai";
 import "./PostEditOption.scss";
 
 type PostEditOptionProps = {
-  option: TypeOfPostEditOption;
+  title: string;
+  icon: JSX.Element;
+  isSelected: boolean;
 };
 
-export const PostEditOption: FC<PostEditOptionProps> = ({ option }) => {
+export const PostEditOption: FC<PostEditOptionProps> = ({ title, icon, isSelected }) => {
   return (
-    <button key={option.title} className="post-edit-option-preview">
+    <button key={title} className="post-edit-option-preview">
       <div className="post-edit-option-main-content">
-        <div className="post-edit-option-icon-container">{option.icon}</div>
-        <div className="post-edit-option-text">{option.title}</div>
+        <div className="post-edit-option-icon-container">{icon}</div>
+        <div className="post-edit-option-text">{title}</div>
       </div>
-      {option.isSelected && <AiOutlineCheck className="check-icon" />}
+      {isSelected && <AiOutlineCheck className="check-icon" />}
     </button>
   );
 };

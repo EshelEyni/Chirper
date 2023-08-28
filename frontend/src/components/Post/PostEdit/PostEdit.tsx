@@ -22,7 +22,6 @@ import { PollEdit } from "../../Poll/PollEdit/PollEdit";
 import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleRepliers";
 import { PostEditTitleLocation } from "./PostEditTitleLocation/PostEditTitleLocation";
 import { QuotedPostContent } from "../PostPreview/MiniPostPreview/QuotedPostContent/QuotedPostContent";
-import { PostEditActions } from "./PostEditActions/PostEditActions/PostEditActions";
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
 import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
 import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
@@ -42,7 +41,7 @@ import { useCreatePost } from "../../../hooks/reactQuery/post/useCreatePost";
 import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/NewPostContent";
 import postService from "../../../services/post.service";
 import { useGoBack } from "../../../hooks/app/useGoBack";
-import { PostEditActions as CompoundPostEditActions } from "../EditActions/PostEditActions";
+import { PostActions } from "../Actions/PostActions";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -243,19 +242,19 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
             </MiniPostPreview>
           )}
           <div className={"btns-container" + (isPickerShown ? " border-show" : "")}>
-            <CompoundPostEditActions
-              post={currNewPost}
+            <PostActions
+              newPost={currNewPost}
               isPickerShown={isPickerShown}
               newPostText={newPostText}
               setNewPostText={setNewPostText}
             >
-              <CompoundPostEditActions.Media />
-              <CompoundPostEditActions.Gif />
-              <CompoundPostEditActions.Poll />
-              <CompoundPostEditActions.Emoji />
-              <CompoundPostEditActions.Schedule />
-              <CompoundPostEditActions.Location />
-            </CompoundPostEditActions>
+              <PostActions.Media />
+              <PostActions.Gif />
+              <PostActions.Poll />
+              <PostActions.Emoji />
+              <PostActions.Schedule />
+              <PostActions.Location />
+            </PostActions>
 
             <div className="secondary-action-container">
               {isIndicatorAndAddThreadBtnShown && (

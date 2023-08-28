@@ -11,7 +11,6 @@ import { GifDisplay } from "../../../Gif/GifDisplay/GifDisplay";
 import { PollDisplay } from "../../../Poll/PollDisplay/PollDisplay";
 import { MiniPostPreview } from "../MiniPostPreview/MiniPostPreview";
 import { QuotedPostContent } from "../MiniPostPreview/QuotedPostContent/QuotedPostContent";
-import { PostPreviewActions } from "../PostPreviewActions/PostPreviewActions";
 import { PostPreviewMainContainer } from "../MainContainer/PostPreviewMainContainer";
 import { PostPreviewBody } from "../Body/PostPreviewBody";
 import { PostPreviewText } from "../Text/PostPreviewText";
@@ -25,6 +24,7 @@ import { VideoPlayerProvider } from "../../../../contexts/VideoPlayerContext";
 import "./PostPreview.scss";
 import { ExternalLink } from "../../../App/ExternalLink/ExternalLink";
 import { FaGithub } from "react-icons/fa";
+import { PostActions } from "../../Actions/PostActions";
 
 export const PostPreview: React.FC = () => {
   const { post, poll } = usePostPreview();
@@ -86,7 +86,14 @@ export const PostPreview: React.FC = () => {
             )}
           </PostPreviewBody>
           <Footer>
-            <PostPreviewActions />
+            {/* <PostPreviewActions /> */}
+            <PostActions post={post}>
+              <PostActions.Reply />
+              <PostActions.Repost />
+              <PostActions.Like />
+              <PostActions.View />
+              <PostActions.Share />
+            </PostActions>
           </Footer>
         </PostPreviewMainContainer>
       </PostPreviewWrapper>

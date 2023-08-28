@@ -8,7 +8,6 @@ import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
-import { PostList } from "../PostList/PostList";
 import { MiniPostPreview } from "../PostPreview/MiniPostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/MiniPostPreview/RepliedPostContent/RepliedPostContent";
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
@@ -42,6 +41,7 @@ import { NewPostContent } from "../PostPreview/MiniPostPreview/NewPostContent/Ne
 import postService from "../../../services/post.service";
 import { useGoBack } from "../../../hooks/app/useGoBack";
 import { PostActions } from "../Actions/PostActions";
+import { List } from "../../App/List/List";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -170,6 +170,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         return "Chirp";
     }
   }
+
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
     const isValid = postService.checkPostArrayValidity(postArray, newPostText);
@@ -204,8 +205,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
       {!!onClickBtnClose && <BtnClose onClickBtn={onClickBtnClose} />}
       {isCreating && <span className="progress-bar" />}
       {isPreCurrNewPostListShown && (
-        <PostList
-          posts={preCurrNewPostList as NewPost[]}
+        <List
+          items={preCurrNewPostList as NewPost[]}
           render={(post: NewPost) => (
             <MiniPostPreview key={post.tempId} newPost={post} type={"new-post"}>
               <NewPostContent newPost={post} />
@@ -279,8 +280,8 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         </main>
       </div>
       {isPostCurrNewPostListShown && (
-        <PostList
-          posts={postCurrNewPostList as NewPost[]}
+        <List
+          items={postCurrNewPostList as NewPost[]}
           render={(post: NewPost) => (
             <MiniPostPreview key={post.tempId} newPost={post} type={"new-post"}>
               <NewPostContent newPost={post} />

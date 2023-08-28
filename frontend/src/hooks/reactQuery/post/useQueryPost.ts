@@ -12,7 +12,7 @@ export function useQueryPosts() {
     queryKey: ["posts"],
     queryFn: async () => postService.query(),
   });
-  const isEmpty = posts && posts.length === 0;
+  const isEmpty = posts && posts.length === 0 ? true : false;
 
   return { posts, error, isLoading, isSuccess, isError, isEmpty };
 }

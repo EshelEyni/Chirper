@@ -20,13 +20,9 @@ import { useQueryGifs } from "../../../hooks/reactQuery/gif/useQueryGifs";
 import { IoArrowBackSharp, IoLocationSharp } from "react-icons/io5";
 import { AiOutlineClose, AiOutlineLink, AiOutlineRetweet } from "react-icons/ai";
 import { GifSearchBar } from "../../Gif/GifSearchBar/GifSearchBar";
-import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
-import { GifList } from "../../Gif/GifList/GifList";
-import { ErrorMsg } from "../../Msg/ErrorMsg/ErrorMsg";
-import { GifCategoryList } from "../../Gif/GifCategoryList/GifCategoryList";
 import { Modal } from "../../Modal/Modal";
 import { RiBarChartGroupedFill, RiFileGifLine } from "react-icons/ri";
-import { Gif as TypeOfGif } from "../../../../../shared/interfaces/gif.interface";
+import { GifCategory, Gif as TypeOfGif } from "../../../../../shared/interfaces/gif.interface";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { BsEmojiSmile } from "react-icons/bs";
@@ -46,6 +42,11 @@ import { useRemoveBookmark } from "../../../hooks/reactQuery/post/useRemoveBookm
 import { useAddBookmark } from "../../../hooks/reactQuery/post/useAddBookmark";
 import postService from "../../../services/post.service";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
+import { useQueryGifCategories } from "../../../hooks/reactQuery/gif/useQueryGifCategories";
+import { AsyncList } from "../../App/AsyncList/AsyncList";
+import { GifCategoryPreview } from "../../Gif/GifCategoryPreview/GifCategoryPreview";
+import { GifPreview } from "../../Gif/GifPreview/GifPreview";
+import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
 
 type PostEditActionsProps = {
   children: React.ReactNode;
@@ -288,18 +289,33 @@ const Gif: FC = () => {
   const {
     isPickerShown,
     newPost: post,
+    newPostType,
     dispatch,
     tooltipStyle,
   } = useContext(PostEditActionsContext)!;
+
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchBarInputRef = useRef<HTMLInputElement>(null);
   const [openedModalName, setOpenedModalName] = useState("");
   const { id: btnId } = useUniqueID();
 
-  const { gifs, isLoading, isSuccess, isError, isEmpty } = useQueryGifs(searchTerm);
+  const { gifCategories, isLoading, isSuccess, isError, isEmpty } = useQueryGifCategories();
+
+  const {
+    gifs,
+    isLoading: isLoadingGif,
+    isSuccess: isSuccessGif,
+    isError: isErrorGif,
+    isEmpty: isEmptyGif,
+  } = useQueryGifs(searchTerm);
 
   const isDisabled =
     (post?.imgs.length && post.imgs.length > 0) || !!post?.gif || !!post?.poll || !!post?.video;
+
+  async function handleCategoryClick(category: string) {
+    setSearchTerm(category);
+  }
 
   function resetState() {
     setSearchTerm("");
@@ -320,6 +336,15 @@ const Gif: FC = () => {
     setOpenedModalName("gif-picker");
   }
 
+  function handleGifClick(gif: TypeOfGif) {
+    if (!post) return;
+    dispatch(updateNewPost({ newPost: { ...post, gif }, newPostType }));
+    setOpenedModalName("");
+  }
+
+  function handleChange() {
+    setIsPlaying(prev => !prev);
+  }
   useEffect(() => {
     resetState();
   }, [openedModalName]);
@@ -364,16 +389,55 @@ const Gif: FC = () => {
 
         {searchTerm && (
           <>
-            {isLoading && <SpinnerLoader />}
-            {isSuccess && !isEmpty && (
-              <GifList onToggleElementVisibility={setOpenedModalName} gifs={gifs as TypeOfGif[]} />
-            )}
-            {isSuccess && isEmpty && <p className="no-res-msg">no gifs to show</p>}
-            {isError && <ErrorMsg msg={"Couldn't get gifs. Please try again later."} />}
+            <BtnSwitchPlay isPlaying={isPlaying} handleChange={handleChange} />
+            <AsyncList
+              items={gifs as TypeOfGif[]}
+              isLoading={isLoadingGif}
+              isSuccess={isSuccessGif}
+              isError={isErrorGif}
+              isEmpty={isEmptyGif as boolean}
+              entityName="gifs"
+              className="gif-list"
+              render={(gif: TypeOfGif, idx: number) => {
+                const ratio = gif.size.width / gif.size.height;
+                const width = 120 * ratio + "px";
+                return (
+                  <GifPreview
+                    key={gif.id}
+                    gif={gif}
+                    idx={idx}
+                    width={width}
+                    isPlaying={isPlaying}
+                    handleGifClick={handleGifClick}
+                  />
+                );
+              }}
+            />
           </>
         )}
 
-        {!searchTerm && <GifCategoryList setCurrCategory={setSearchTerm} />}
+        {!searchTerm && (
+          <AsyncList
+            items={gifCategories as GifCategory[]}
+            isLoading={isLoading}
+            isSuccess={isSuccess}
+            isError={isError}
+            isEmpty={isEmpty as boolean}
+            entityName="gif categories"
+            className="gif-category-list"
+            render={(gifCategory: GifCategory, idx: number, arr: GifCategory[]) => {
+              const isLast = idx === arr.length - 1;
+              return (
+                <GifCategoryPreview
+                  key={gifCategory.id}
+                  gifCategory={gifCategory}
+                  handleCategoryClick={handleCategoryClick}
+                  isLast={isLast}
+                />
+              );
+            }}
+          />
+        )}
       </Modal.Window>
     </Modal>
   );
@@ -823,7 +887,9 @@ const Share: FC = () => {
     postService.updatePostStats(post.id, { isPostShared: true });
     navigator
       .share({ title: "Chirp", text: post.text, url })
+      // eslint-disable-next-line no-console
       .then(() => console.log("Successful share"))
+      // eslint-disable-next-line no-console
       .catch(error => console.log("Error sharing", error));
   }
 

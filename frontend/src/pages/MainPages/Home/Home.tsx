@@ -2,17 +2,21 @@ import { lazy, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { SpinnerLoader } from "../../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostEditProvider } from "../../../contexts/PostEditContext";
-import { PostListContainer } from "../../../components/Post/PostListContainer/PostListContainer";
 import { useScrollRedirect } from "../../../hooks/app/useScrollRedirect";
 import { usePageLoaded } from "../../../hooks/app/usePageLoaded";
 import "./Home.scss";
+import { AsyncList } from "../../../components/App/AsyncList/AsyncList";
+import { Post } from "../../../../../shared/interfaces/post.interface";
+import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
+import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
+import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 // import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
 const Homepage = () => {
   usePageLoaded({ title: "Home / Chirper" });
   const { scrollTargetRef } = useScrollRedirect();
-  // const { posts, isLoading, isSuccess, isError, isEmpty } = useQueryPosts();
+  const { posts, isLoading, isSuccess, isError, isEmpty } = useQueryPosts();
 
   return (
     <main className="home">
@@ -29,7 +33,20 @@ const Homepage = () => {
             </Suspense>
           </PostEditProvider>
         </div>
-        <PostListContainer />
+
+        <AsyncList
+          render={(post: Post) => (
+            <PostPreviewProvider post={post} key={`${post.id}-${post.createdAt}`}>
+              <PostPreview />
+            </PostPreviewProvider>
+          )}
+          items={posts as Post[]}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+          isError={isError}
+          isEmpty={isEmpty}
+          entityName={"posts"}
+        />
       </div>
       <Suspense fallback={<SpinnerLoader />}>
         <Outlet />

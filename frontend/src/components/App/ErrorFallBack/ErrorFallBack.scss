@@ -1,0 +1,70 @@
+@import "../../../styles/setup/functions";
+
+.error-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+  .error-fallback-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(10px);
+    margin-top: 5%;
+    width: 50%;
+    min-width: rem(300px);
+    max-width: rem(550px);
+    padding: rem(25px);
+    border-radius: 35px;
+    border: 1px solid black;
+    background-color: var(--color-warning);
+    font-family: var(--font-primary);
+
+    h1 {
+      font-style: italic;
+      font-size: rem(28px);
+    }
+
+    p {
+      //   align-self: flex-start;
+      font-size: rem(16px);
+      padding: rem(10px);
+    }
+
+    details {
+      padding: rem(10px);
+      align-self: flex-start;
+    }
+
+    .error-actions {
+      margin-top: rem(25px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: rem(15px);
+
+      button {
+        padding: rem(10px) rem(15px);
+        border-radius: 35px;
+        font-size: rem(15px);
+        font-weight: 600;
+        cursor: pointer;
+        color: white;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+
+        &:nth-child(1) {
+          background-color: var(--color-success);
+        }
+
+        &:nth-child(2) {
+          background-color: var(--color-info);
+        }
+      }
+    }
+  }
+}

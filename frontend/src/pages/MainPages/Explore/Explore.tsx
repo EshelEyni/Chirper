@@ -12,6 +12,7 @@ const ExplorePage = () => {
     if (hashtag) setCurrHashtag(hashtag);
   }, [params]);
 
+  throw new Error("Error in ExplorePage.tsx: JSX element 'div' has no corresponding closing tag.");
   return (
     <div>
       <h1>Explore Page</h1>

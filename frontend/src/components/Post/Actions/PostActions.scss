@@ -127,6 +127,8 @@
 
   &.edit {
     display: flex;
+    height: fit-content;
+    width: fit-content;
     gap: rem(5px);
 
     .post-edit-action-btn {

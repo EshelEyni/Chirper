@@ -247,6 +247,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
               isPickerShown={isPickerShown}
               newPostText={newPostText}
               setNewPostText={setNewPostText}
+              className="edit"
             >
               <PostActions.Media />
               <PostActions.Gif />

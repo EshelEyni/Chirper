@@ -54,6 +54,7 @@ type PostEditActionsProps = {
   isPickerShown?: boolean;
   newPostText?: string;
   setNewPostText?: React.Dispatch<React.SetStateAction<string>>;
+  className?: string;
 };
 
 type PostEditActionsContextType = {
@@ -85,7 +86,7 @@ export const PostActions: FC<PostEditActionsProps> & {
   Like: FC;
   View: FC;
   Share: FC;
-} = ({ children, newPost, post, isPickerShown, newPostText, setNewPostText }) => {
+} = ({ children, newPost, post, isPickerShown, newPostText, setNewPostText, className }) => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const { newPostType, sideBar, homePage } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
@@ -115,7 +116,7 @@ export const PostActions: FC<PostEditActionsProps> & {
 
   return (
     <PostEditActionsContext.Provider value={value}>
-      <section className="post-actions">{children}</section>
+      <section className={`post-actions ${className}`}>{children}</section>
     </PostEditActionsContext.Provider>
   );
 };

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { RepostModel } from "../../models/repost.model";
 import { PostModel } from "../../models/post.model";
 import { AppError } from "../../../../services/error/error.service";
-import followerService from "../../../user/services/follower/follower.service";
+import followerService from "../../../user/services/user-relation/user-relation.service";
 import { logger } from "../../../../services/logger/logger.service";
 import { Post, PostRepostResult } from "../../../../../../shared/interfaces/post.interface";
 import postUtilService from "../util/util.service";

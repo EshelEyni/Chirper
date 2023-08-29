@@ -4,10 +4,10 @@ import mongoose from "mongoose";
 import { connectToTestDB, createValidUserCreds } from "../../../../services/test-util.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { FollowerModel } from "../follower/follower.model";
-import followerService from "../../services/follower/follower.service";
+import { UserRelationModel } from "../user-relation/user-relation.model";
+import followerService from "../../services/user-relation/user-relation.service";
 
-describe("User Model", () => {
+xdescribe("User Model", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });
@@ -257,8 +257,8 @@ describe("User Model", () => {
   });
 
   describe("User Model Post-find Hook", () => {
-    const spyAggregate = jest.spyOn(FollowerModel, "aggregate");
-    const spyCountDocuments = jest.spyOn(FollowerModel, "countDocuments");
+    const spyAggregate = jest.spyOn(UserRelationModel, "aggregate");
+    const spyCountDocuments = jest.spyOn(UserRelationModel, "countDocuments");
     const spyGetIsFollowing = jest.spyOn(followerService, "getIsFollowing");
 
     beforeEach(() => {

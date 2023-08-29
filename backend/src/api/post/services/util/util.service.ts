@@ -9,8 +9,7 @@ import {
   LoggedInUserActionStates,
   PostStatsBody,
 } from "../../../../../../shared/interfaces/post.interface";
-import { asyncLocalStorage } from "../../../../services/als.service";
-import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
+import { getLoggedInUserId } from "../../../../services/als.service";
 
 export const loggedInUserActionDefaultState: LoggedInUserActionState = {
   isLiked: false,
@@ -31,8 +30,7 @@ export const loggedInUserActionDefaultState: LoggedInUserActionState = {
 async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedInUserActionStates> {
   if (ids.length === 0) return {};
 
-  const store = asyncLocalStorage.getStore() as alStoreType;
-  const loggedInUserId = store?.loggedInUserId;
+  const loggedInUserId = getLoggedInUserId() as string;
 
   const uniquePostIds = Array.from(new Set(ids));
 

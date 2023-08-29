@@ -7,7 +7,7 @@ import {
   PostImg,
   repliedPostDetails,
 } from "../../../../../shared/interfaces/post.interface";
-import { FollowerModel } from "../../user/models/follower/follower.model";
+// import { UserRelationModel } from "../../user/models/user-relation/user-relation.model";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../shared/interfaces/location.interface";
 
@@ -74,6 +74,10 @@ const postSchema = new mongoose.Schema(
     isDraft: {
       type: Boolean,
     },
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
     previousThreadPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
@@ -116,6 +120,7 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
     },
+    // TODO: Delete these fields
     repliesCount: {
       type: Number,
       default: 0,
@@ -229,7 +234,8 @@ postSchema.pre("save", function (this: Document, next: () => void) {
 });
 
 async function populateCreatedBy(doc: Document) {
-  const populatedDoc = await doc.populate("createdBy", {
+  // const populatedDoc =
+  return await doc.populate("createdBy", {
     _id: 1,
     username: 1,
     fullname: 1,

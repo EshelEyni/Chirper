@@ -10,6 +10,7 @@ type PostPreviewContextType = {
   onNavigateToPostDetails: () => void;
   onNavigateToProfile: (username: string) => void;
   onToggleFollow: () => void;
+  onNavigateToPostStats: () => void;
   poll: Poll | null;
   setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
 };
@@ -33,6 +34,10 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
     navigate(`/profile/${username}`);
   }
 
+  function onNavigateToPostStats() {
+    navigate(`post-stats/${post.id}`, { relative: "path" });
+  }
+
   function onToggleFollow() {
     if (post.createdBy.isFollowing)
       removeFollowFromPost({
@@ -51,6 +56,7 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
     onNavigateToPostDetails,
     onNavigateToProfile,
     onToggleFollow,
+    onNavigateToPostStats,
     poll,
     setPoll,
   };

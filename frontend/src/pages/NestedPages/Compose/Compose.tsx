@@ -74,7 +74,7 @@ const ComposePage = () => {
     if (!isThreadType) return discardPostThreadAndGoBack();
 
     const isThread = isThreadType ? postEdit[newPostType].posts.length > 1 : false;
-    if (isThread) return setOpenedModalName("confirm-delete-post-thread");
+    if (isThread) return setOpenedModalName("confirm-delete-msg");
 
     const currPost = postEdit[newPostType].posts[0];
     if (postService.checkPostValidity(currPost, currPost.text)) {
@@ -119,18 +119,14 @@ const ComposePage = () => {
           </div>
         </Modal.Window>
 
-        <Modal.Window
-          name="confirm-delete-post-thread"
-          mainScreenMode="dark"
-          mainScreenZIndex={3000}
-        >
+        <Modal.Window name="confirm-delete-msg" mainScreenMode="dark" mainScreenZIndex={3000}>
           <div className="modal-header">
             <span className="modal-title">Discard thread?</span>
             <p className="modal-description">This can’t be undone and you’ll lose your draft.</p>
           </div>
 
           <div className="modal-btns-container">
-            <button className="btn btn-discard-post-thread" onClick={discardPostThreadAndGoBack}>
+            <button className="btn btn-delete" onClick={discardPostThreadAndGoBack}>
               <span>Discard</span>
             </button>
             <Modal.CloseBtn>

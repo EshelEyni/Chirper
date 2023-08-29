@@ -41,6 +41,7 @@ export type BasicPost = {
   schedule?: Date;
   location?: Location;
   isPublic: boolean;
+  isPinned: boolean;
   audience: string;
   repliersType: string;
   repliedPostDetails?: repliedPostDetails[];

@@ -16,22 +16,34 @@ import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { Modal } from "../../Modal/Modal";
 import { Tooltip } from "react-tooltip";
 import { useUniqueID } from "../../../hooks/app/useIDRef";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { RootState } from "../../../store/store";
 import { useSelector } from "react-redux";
 import { BiUserPlus, BiUserX } from "react-icons/bi";
 import { CgUnblock, CgBlock } from "react-icons/cg";
 import { BsTrash } from "react-icons/bs";
-import { RiPushpin2Line } from "react-icons/ri";
-import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleRepliers";
+import { RiBarChartGroupedFill, RiPushpin2Line } from "react-icons/ri";
+import { useRemovePost } from "../../../hooks/reactQuery/post/useRemovePost";
+import { useUpdatePost } from "../../../hooks/reactQuery/post/useUpdatePost";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
 };
 
 export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPreview = false }) => {
+  const [openedModalName, setOpenedModalName] = useState("");
+
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { post, onNavigateToProfile, onNavigateToPostDetails, onToggleFollow } = usePostPreview();
+  const {
+    post,
+    onNavigateToProfile,
+    onNavigateToPostDetails,
+    onToggleFollow,
+    onNavigateToPostStats,
+  } = usePostPreview();
+
+  const { removePost } = useRemovePost();
+  const { updatePost } = useUpdatePost();
   const { id: btnId } = useUniqueID();
 
   const user = post.createdBy;
@@ -53,6 +65,18 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
     // TODO: needs to be implemented
     // eslint-disable-next-line no-console
     console.log("handleBtnBlockUser");
+  }
+
+  function handleBtnDeletePost(postId: string) {
+    removePost(postId);
+  }
+
+  function handleBtnPinPost() {
+    updatePost({ ...post, isPinned: !post.isPinned });
+  }
+
+  function handleBtnViewPostStats() {
+    onNavigateToPostStats();
   }
 
   return (
@@ -103,11 +127,12 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
         </div>
       </div>
       {!isMiniPreview && (
-        <Modal>
+        <Modal externalStateControl={{ openedModalName, setOpenedModalName }}>
           <Modal.OpenBtn
             modalName="postPreview/moreOptions"
             setPositionByRef={true}
             modalHeight={400}
+            externalControlFunc={() => setOpenedModalName("postPreview/moreOptions")}
           >
             <div
               className="post-preview-more-options-btn"
@@ -123,12 +148,14 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
           <Modal.Window
             name="postPreview/moreOptions"
             className="post-preview-more-options"
-            style={{ transform: "translate(-95%,-25%)" }}
+            style={{
+              transform: "translate(-95%,-25%)",
+            }}
           >
             {!loggedInUser || loggedInUser.id !== post.createdBy.id ? (
               <>
-                <Modal.CloseBtn>
-                  <button onClick={handleBtnToggleFollow}>
+                <Modal.CloseBtn onClickFn={handleBtnToggleFollow}>
+                  <button>
                     {post.createdBy.isFollowing ? (
                       <div>
                         <BiUserX size={24} />
@@ -142,8 +169,8 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
                     )}
                   </button>
                 </Modal.CloseBtn>
-                <Modal.CloseBtn>
-                  <button onClick={handleBtnToggleMute}>
+                <Modal.CloseBtn onClickFn={handleBtnToggleMute}>
+                  <button>
                     {post.createdBy.isFollowing ? (
                       <div>
                         <IoVolumeMuteOutline size={24} />
@@ -157,8 +184,8 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
                     )}
                   </button>
                 </Modal.CloseBtn>
-                <Modal.CloseBtn>
-                  <button onClick={handleBtnToggleBlock}>
+                <Modal.CloseBtn onClickFn={handleBtnToggleBlock}>
+                  <button>
                     {post.createdBy.isFollowing ? (
                       <div>
                         <CgUnblock size={24} />
@@ -175,45 +202,63 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
               </>
             ) : (
               <>
-                <Modal.CloseBtn>
-                  <button className="post-preview-delete-option">
-                    <BsTrash size={18} color="var(--color-danger)" />
-                    <span>Delete</span>
-                  </button>
-                </Modal.CloseBtn>
-                <Modal.CloseBtn>
-                  <button onClick={handleBtnToggleFollow}>
-                    {post.createdBy.isFollowing ? (
-                      <div>
-                        <BiUserX size={24} />
-                        <span>{`Unfollow @${post.createdBy.username}`}</span>
-                      </div>
-                    ) : (
-                      <div>
-                        <BiUserPlus size={24} />
-                        <span>{`Follow @${post.createdBy.username}`}</span>
-                      </div>
-                    )}
-                  </button>
-                </Modal.CloseBtn>
-                <Modal.CloseBtn>
-                  <button onClick={handleBtnToggleFollow} className="post-preview-pin-option">
+                <button
+                  className="post-preview-delete-option"
+                  onClick={() => setOpenedModalName("postPreview/deletePost")}
+                >
+                  <BsTrash size={18} color="var(--color-danger)" />
+                  <span>Delete</span>
+                </button>
+                <Modal.CloseBtn onClickFn={handleBtnPinPost}>
+                  <button className="post-preview-pin-option">
                     <RiPushpin2Line size={24} />
-                    <span>
-                      {post.createdBy.username ? "Unpin from your Profile" : "Pin to your Profile"}
-                    </span>
+                    <span>{post.isPinned ? "Unpin from your Profile" : "Pin to your Profile"}</span>
                   </button>
                 </Modal.CloseBtn>
-                <Modal.CloseBtn>
-                  <div>
-                    <BtnToggleRepliers post={post} isPostEdit={false} />
-                  </div>
+                <Modal.CloseBtn onClickFn={handleBtnViewPostStats}>
+                  <button className="post-preview-pin-option">
+                    <RiBarChartGroupedFill size={24} />
+                    <span>View Post Analytics</span>
+                  </button>
                 </Modal.CloseBtn>
               </>
             )}
           </Modal.Window>
         </Modal>
       )}
+      <Modal
+        externalStateControl={{ openedModalName, setOpenedModalName }}
+        onAfterClose={() => setOpenedModalName("postPreview/moreOptions")}
+      >
+        <Modal.Window
+          name="postPreview/deletePost"
+          className="confirm-delete-msg"
+          mainScreenMode="dark"
+          mainScreenZIndex={4000}
+        >
+          <div className="modal-header">
+            <span className="modal-title">Delete Chirp?</span>
+            <p className="modal-description">This can’t be undone and you’ll lose your draft.</p>
+          </div>
+
+          <div className="modal-btns-container">
+            <button
+              className="btn btn-delete"
+              onClick={() => {
+                setOpenedModalName("");
+                handleBtnDeletePost(post.id);
+              }}
+            >
+              <span>Delete</span>
+            </button>
+            <Modal.CloseBtn>
+              <button className="btn btn-close-modal">
+                <span>Cancel</span>
+              </button>
+            </Modal.CloseBtn>
+          </div>
+        </Modal.Window>
+      </Modal>
     </header>
   );
 };

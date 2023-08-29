@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import { asyncLocalStorage } from "../als.service";
+import { getLoggedInUserId } from "../als.service";
 import ansiColors from "ansi-colors";
-import { alStoreType } from "../../middlewares/setupAls/setupAls.middleware";
 
 const logsDir = "./logs";
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
@@ -27,8 +26,7 @@ function _formatLogMessage(
     })
     .join(" | ");
 
-  const store = asyncLocalStorage.getStore() as alStoreType;
-  const userId = store?.loggedInUserId;
+  const userId = getLoggedInUserId();
   const userStr = userId ? `(userId: ${userId})` : "";
   const currTime = new Date().toLocaleString("he");
   return `${currTime} - ${level} - ${text} ${userStr}\n`;

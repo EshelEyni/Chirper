@@ -1,6 +1,6 @@
 import { asyncLocalStorage } from "../../../../services/als.service";
-import { FollowerModel } from "../../models/follower/follower.model";
-import followerService from "./follower.service";
+import { UserRelationModel } from "../../models/user-relation/user-relation.model";
+import followerService from "./user-relation.service";
 import { UserModel } from "../../models/user/user.model";
 import postService from "../../../post/services/post/post.service";
 import * as mongoose from "mongoose";
@@ -16,7 +16,7 @@ jest.mock("../../models/user/user.model", () => ({
   },
 }));
 jest.mock("../../models/follower/follower.model", () => ({
-  FollowerModel: {
+  UserRelationModel: {
     create: jest.fn(),
     findOneAndDelete: jest.fn().mockReturnValue({
       setOptions: jest.fn().mockReturnThis(),
@@ -59,7 +59,7 @@ describe("Followers Service", () => {
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
       const result = await followerService.getIsFollowing(mockUser.id);
       expect(result).toEqual({ [mockUser.id]: false });
-      expect(FollowerModel.find).not.toHaveBeenCalled();
+      expect(UserRelationModel.find).not.toHaveBeenCalled();
     });
 
     it("should return correct isFollowing status when loggedInUserId is valid and followers are found", async () => {
@@ -68,11 +68,11 @@ describe("Followers Service", () => {
 
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
       (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
-      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
+      (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
 
       const result = await followerService.getIsFollowing(mockUser.id);
       expect(result).toEqual({ [mockUser.id]: true });
-      expect(FollowerModel.find).toHaveBeenCalledWith({
+      expect(UserRelationModel.find).toHaveBeenCalledWith({
         fromUserId: loggedInUserId,
         toUserId: { $in: [mockUser.id] },
       });
@@ -83,7 +83,7 @@ describe("Followers Service", () => {
 
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
       (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
-      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce([]);
+      (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce([]);
 
       const result = await followerService.getIsFollowing(mockUser.id);
       expect(result).toEqual({ [mockUser.id]: false });
@@ -96,7 +96,7 @@ describe("Followers Service", () => {
 
       (asyncLocalStorage.getStore as jest.Mock).mockReturnValueOnce({ loggedInUserId });
       (isValidMongoId as jest.Mock).mockReturnValueOnce(true);
-      (FollowerModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
+      (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
 
       const result = await followerService.getIsFollowing(mockUser.id, anotherUserId);
       expect(result).toEqual({ [mockUser.id]: true, [anotherUserId]: false });
@@ -110,7 +110,7 @@ describe("Followers Service", () => {
 
       const result = await followerService.getIsFollowing();
       expect(result).toEqual({});
-      expect(FollowerModel.find).not.toHaveBeenCalled();
+      expect(UserRelationModel.find).not.toHaveBeenCalled();
     });
   });
 
@@ -138,7 +138,7 @@ describe("Followers Service", () => {
       const result = (await followerService.add("1", "2")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
-      expect(FollowerModel.create).toHaveBeenCalledWith(
+      expect(UserRelationModel.create).toHaveBeenCalledWith(
         [
           {
             fromUserId: "1",
@@ -173,7 +173,7 @@ describe("Followers Service", () => {
 
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
-      expect(FollowerModel.create).toHaveBeenCalledWith(
+      expect(UserRelationModel.create).toHaveBeenCalledWith(
         [
           {
             fromUserId: "1",
@@ -195,7 +195,7 @@ describe("Followers Service", () => {
     });
 
     it("should abort transaction and throw error if an error occurs", async () => {
-      (FollowerModel.create as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
+      (UserRelationModel.create as jest.Mock).mockRejectedValueOnce(new Error("Test error"));
 
       await expect(followerService.add("1", "2")).rejects.toThrow("Test error");
       expect(mockSession.abortTransaction).toHaveBeenCalled();
@@ -258,7 +258,7 @@ describe("Followers Service", () => {
       jest.resetAllMocks();
       jest.clearAllMocks();
       (mongoose.startSession as jest.Mock).mockImplementation(() => Promise.resolve(mockSession));
-      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      (UserRelationModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
       mockQuery.setOptions.mockResolvedValueOnce({} as any);
     });
 
@@ -272,7 +272,7 @@ describe("Followers Service", () => {
       const result = (await followerService.remove("1", "2")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
-      expect(FollowerModel.findOneAndDelete).toHaveBeenCalledWith(
+      expect(UserRelationModel.findOneAndDelete).toHaveBeenCalledWith(
         {
           fromUserId: "1",
           toUserId: "2",
@@ -308,7 +308,7 @@ describe("Followers Service", () => {
       const result = (await followerService.remove("1", "2", "postId")) as any;
       expect(mongoose.startSession).toHaveBeenCalled();
       expect(mockSession.startTransaction).toHaveBeenCalled();
-      expect(FollowerModel.findOneAndDelete).toHaveBeenCalledWith(
+      expect(UserRelationModel.findOneAndDelete).toHaveBeenCalledWith(
         {
           fromUserId: "1",
           toUserId: "2",
@@ -324,7 +324,7 @@ describe("Followers Service", () => {
 
     it("should abort transaction and throw error if an error occurs", async () => {
       mockQuery.setOptions.mockReset();
-      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      (UserRelationModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
       mockQuery.setOptions.mockRejectedValueOnce(new Error("Test error"));
 
       await expect(followerService.remove("1", "2")).rejects.toThrow("Test error");
@@ -334,7 +334,7 @@ describe("Followers Service", () => {
 
     it("should throw error if follow Linkage is not found", async () => {
       mockQuery.setOptions.mockReset();
-      (FollowerModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
+      (UserRelationModel.findOneAndDelete as jest.Mock).mockReturnValueOnce(mockQuery);
       mockQuery.setOptions.mockResolvedValueOnce(null);
 
       await expect(followerService.remove("1", "2")).rejects.toThrow(

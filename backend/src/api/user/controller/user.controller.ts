@@ -8,7 +8,8 @@ import {
 import { getOne, createOne, updateOne, deleteOne } from "../../../services/factory/factory.service";
 import { UserModel } from "../models/user/user.model";
 import { QueryObj, validateIds } from "../../../services/util/util.service";
-import followerService from "../services/follower/follower.service";
+import followerService from "../services/user-relation/user-relation.service";
+import { getLoggedInUserId } from "../../../services/als.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
@@ -49,7 +50,7 @@ const getUserByUsername = asyncErrorCatcher(async (req: Request, res: Response):
 const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const userToUpdate = req.body;
   validatePatchRequestBody(userToUpdate);
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserId();
   if (!loggedInUserId) throw new AppError("User not logged in", 401);
   const updatedUser = await userService.update(loggedInUserId, userToUpdate);
 
@@ -60,7 +61,7 @@ const updateLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 });
 
 const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserId();
   if (!loggedInUserId) throw new AppError("User not logged in", 401);
 
   await userService.removeAccount(loggedInUserId);
@@ -72,7 +73,7 @@ const removeLoggedInUser = asyncErrorCatcher(async (req: Request, res: Response)
 });
 
 const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserId();
   const toUserId = req.params.id;
   validateIds(
     { id: loggedInUserId, entityName: "loggedInUser" },
@@ -88,7 +89,7 @@ const addFollowings = asyncErrorCatcher(async (req: Request, res: Response): Pro
 });
 
 const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserId();
   const toUserId = req.params.id;
   validateIds(
     { id: loggedInUserId, entityName: "loggedInUser" },
@@ -105,7 +106,7 @@ const removeFollowings = asyncErrorCatcher(async (req: Request, res: Response): 
 
 const addFollowingsFromPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const { loggedInUserId } = req;
+    const loggedInUserId = getLoggedInUserId();
     const { postId, userId: toUserId } = req.params;
 
     validateIds(
@@ -126,7 +127,7 @@ const addFollowingsFromPost = asyncErrorCatcher(
 
 const removeFollowingsFromPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const { loggedInUserId } = req;
+    const loggedInUserId = getLoggedInUserId();
     const { postId, userId: toUserId } = req.params;
 
     validateIds(

@@ -1,7 +1,7 @@
 import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import bookmarkService from "./bookmark.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
-import followerService from "../../../user/services/follower/follower.service";
+import followerService from "../../../user/services/user-relation/user-relation.service";
 import { AppError } from "../../../../services/error/error.service";
 import { getMongoId } from "../../../../services/test-util.service";
 

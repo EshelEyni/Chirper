@@ -12,11 +12,15 @@ import {
   removeLoggedInUser,
   updateLoggedInUser,
 } from "./user.controller";
-import followerService from "../services/follower/follower.service";
+import followerService from "../services/user-relation/user-relation.service";
 import { getMongoId } from "../../../services/test-util.service";
+import { getLoggedInUserId } from "../../../services/als.service";
 
 jest.mock("../services/user/user.service");
-jest.mock("../services/follower/follower.service");
+jest.mock("../services/user-relation/user-relation.service");
+jest.mock("../../../services/als.service", () => ({
+  getLoggedInUserId: jest.fn().mockReturnValue("12345"),
+}));
 
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
@@ -194,7 +198,7 @@ describe("User Controller", () => {
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
+      (getLoggedInUserId as jest.Mock).mockReturnValueOnce(undefined);
       req.body = { name: "Updated Name" };
       const sut = updateLoggedInUser as any;
       await sut(req as Request, res as Response, nextMock);
@@ -244,7 +248,8 @@ describe("User Controller", () => {
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
+      (getLoggedInUserId as jest.Mock).mockReturnValueOnce(undefined);
+
       const sut = removeLoggedInUser as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
@@ -311,7 +316,8 @@ describe("User Controller", () => {
     });
 
     it("should throw an error if no logged in user id is provided", async () => {
-      req.loggedInUserId = undefined;
+      (getLoggedInUserId as jest.Mock).mockReturnValueOnce(undefined);
+
       const sut = addFollowings as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(

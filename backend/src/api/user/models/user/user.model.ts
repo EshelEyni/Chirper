@@ -2,8 +2,8 @@ import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { FollowerModel } from "../follower/follower.model";
-import followerService from "../../services/follower/follower.service";
+import { UserRelationModel } from "../user-relation/user-relation.model";
+import followerService from "../../services/user-relation/user-relation.service";
 
 export interface IUser extends Document {
   username: string;
@@ -148,11 +148,11 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     const userIds = docs.map((doc: User & Document) => doc._id.toString());
 
     // Get the following and followers counts for all user IDs
-    const followingCounts = await FollowerModel.aggregate([
+    const followingCounts = await UserRelationModel.aggregate([
       { $match: { fromUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
       { $group: { _id: "$fromUserId", count: { $sum: 1 } } },
     ]);
-    const followersCounts = await FollowerModel.aggregate([
+    const followersCounts = await UserRelationModel.aggregate([
       { $match: { toUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
       { $group: { _id: "$toUserId", count: { $sum: 1 } } },
     ]);
@@ -170,26 +170,24 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
       doc.followingCount = followingCountMap[userId] ?? 0;
       doc.followersCount = followersCountMap[userId] ?? 0;
       doc.isFollowing = isFollowingMap[userId];
-      // doc.set("followingCount", followingCountMap[userId] ?? 0);
-      // doc.set("followersCount", followersCountMap[userId] ?? 0);
-      // doc.set("isFollowing", isFollowingMap[userId]);
     }
   } else {
     const doc = res;
     const userId = res._id.toString();
-    const followingCount = await FollowerModel.countDocuments({ fromUserId: doc._id }).setOptions({
+    const followingCount = await UserRelationModel.countDocuments({
+      fromUserId: doc._id,
+    }).setOptions({
       skipHooks: true,
     });
-    const followersCount = await FollowerModel.countDocuments({ toUserId: doc._id }).setOptions({
-      skipHooks: true,
-    });
+    const followersCount = await UserRelationModel.countDocuments({ toUserId: doc._id }).setOptions(
+      {
+        skipHooks: true,
+      }
+    );
     const isFollowingMap = await followerService.getIsFollowing(userId);
     doc.followingCount = followingCount;
     doc.followersCount = followersCount;
     doc.isFollowing = isFollowingMap[userId];
-    // doc.set("followingCount", followingCount);
-    // doc.set("followersCount", followersCount);
-    // doc.set("isFollowing", isFollowingMap[userId]);
   }
 });
 

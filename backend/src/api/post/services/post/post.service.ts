@@ -4,7 +4,7 @@ import { PostModel } from "../../models/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { MiniUser } from "../../../../../../shared/interfaces/user.interface";
-import followerService from "../../../user/services/follower/follower.service";
+import followerService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
 import { UserModel } from "../../../user/models/user/user.model";
@@ -188,6 +188,7 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
 }
 
 async function update(id: string, post: Post): Promise<Post> {
+  // TODO: add guard that user can only update his own posts
   const postDoc = await PostModel.findByIdAndUpdate(id, post, {
     new: true,
     runValidators: true,

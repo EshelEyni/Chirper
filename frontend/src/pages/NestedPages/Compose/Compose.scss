@@ -67,8 +67,11 @@
   }
 }
 
+
+//TODO: check if this is still needed - we have the same in Modal.scss
+
 .modal.save-post-draft,
-.modal.confirm-delete-post-thread {
+.modal.confirm-delete-msg {
   .modal-header {
     display: flex;
     flex-direction: column;
@@ -113,7 +116,7 @@
       }
     }
 
-    .btn-discard-post-thread {
+    .btn-delete {
       background-color: var(--color-danger);
     }
 

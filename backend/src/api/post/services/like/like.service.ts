@@ -3,7 +3,7 @@ import { PostLikeModel } from "../../models/post-like.model";
 import { PostModel } from "../../models/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
-import followerService from "../../../user/services/follower/follower.service";
+import followerService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService from "../util/util.service";
 
 async function add(postId: string, userId: string): Promise<Post> {

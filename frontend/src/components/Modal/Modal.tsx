@@ -39,6 +39,7 @@ type ModalProps = {
   };
   onOpen?: () => void;
   onClose?: () => void;
+  onAfterClose?: () => void;
 };
 
 type OpenBtnProps = {
@@ -119,7 +120,7 @@ export const Modal: FC<ModalProps> & {
   CloseBtn: FC<CloseBtnProps>;
   ModalHoverOpen: FC<ModalHoverActivatorProps>;
   PostPreviewUserModalContent: FC;
-} = ({ children, externalStateControl, onClose, onOpen }) => {
+} = ({ children, externalStateControl, onClose, onOpen, onAfterClose }) => {
   const [openedModalName, setOpenedModalName] = useState("");
   const [position, setPosition] = useState<UserPreviewModalPosition | null>(null);
 
@@ -137,8 +138,13 @@ export const Modal: FC<ModalProps> & {
 
   const close = () => {
     onClose?.();
-    if (externalStateControl) return externalStateControl.setOpenedModalName("");
+    if (externalStateControl) {
+      externalStateControl.setOpenedModalName("");
+      onAfterClose?.();
+      return;
+    }
     setOpenedModalName("");
+    onAfterClose?.();
   };
   const open = (name: string) => {
     onOpen?.();

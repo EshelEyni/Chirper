@@ -1,15 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import postService from "../../../services/post.service";
-import { Post } from "../../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
+import reactQueryService from "../../../services/reactQuery/reactQuery.service";
+import { Post } from "../../../../../shared/interfaces/post.interface";
 
-export function useRemoveRepost() {
+export function useUpdatePost() {
   const queryClient = useQueryClient();
 
-  const { mutate: removeRepost, isLoading: isRemoving } = useMutation({
-    mutationFn: postService.removeRepost,
+  const { mutate: updatePost, isLoading: isUpdating } = useMutation({
+    mutationFn: postService.update,
     onSuccess: (post: Post) => {
       const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];
       if (!currentPosts) return;
@@ -28,5 +29,5 @@ export function useRemoveRepost() {
     },
   });
 
-  return { isRemoving, removeRepost };
+  return { isUpdating, updatePost };
 }

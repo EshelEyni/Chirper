@@ -1,7 +1,7 @@
 import { APIFeatures } from "../../../../services/util/util.service";
 import { UserModel } from "../../models/user/user.model";
 import userService from "./user.service";
-import followerService from "../follower/follower.service";
+import followerService from "../user-relation/user-relation.service";
 
 jest.mock("../../../../services/util/util.service");
 jest.mock("../../models/user/user.model");
@@ -58,8 +58,6 @@ describe("User Service", () => {
       expect(mockQueryObj.paginate).toHaveBeenCalled();
       expect(mockQueryObj.getQuery).toHaveBeenCalled();
       expect(mockQueryObj.exec).toHaveBeenCalled();
-      // expect(mockToObject).toHaveBeenCalledTimes(mockUsers.length);
-      // expect(followerService.getIsFollowing).toHaveBeenCalledTimes(mockUsers.length);
     });
   });
 });

@@ -1,6 +1,6 @@
 import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
 import { UserModel } from "../../models/user/user.model";
-import { FollowerModel } from "../../models/follower/follower.model";
+import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { asyncLocalStorage } from "../../../../services/als.service";
@@ -36,7 +36,7 @@ async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
     const res = ids.reduce((acc, id) => ({ ...acc, [id]: false }), {});
     return res;
   }
-  const isFollowing = await FollowerModel.find({
+  const isFollowing = await UserRelationModel.find({
     fromUserId: loggedInUserId,
     toUserId: { $in: ids },
   })
@@ -63,7 +63,7 @@ async function add(
   session.startTransaction();
 
   try {
-    await FollowerModel.create([{ fromUserId, toUserId }], { session });
+    await UserRelationModel.create([{ fromUserId, toUserId }], { session });
 
     if (postId)
       return await _updatePostStatsAndReturnPost({
@@ -97,7 +97,7 @@ async function remove(
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const followLinkage = await FollowerModel.findOneAndDelete(
+    const followLinkage = await UserRelationModel.findOneAndDelete(
       { fromUserId, toUserId },
       { session }
     ).setOptions({ skipHooks: true });

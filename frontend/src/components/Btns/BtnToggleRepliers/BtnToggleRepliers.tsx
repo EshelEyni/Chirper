@@ -1,27 +1,20 @@
 import { FC } from "react";
-import { FaAt, FaGlobeAmericas, FaRegComment, FaUserCheck } from "react-icons/fa";
+import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../store/types";
 import { RootState } from "../../../store/store";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption/PostEditOption";
-import { NewPost, Post } from "../../../../../shared/interfaces/post.interface";
+import { usePostEdit } from "../../../contexts/PostEditContext";
 
-type BtnToggleRepliersProps = {
-  newPost?: NewPost;
-  post?: Post;
-  isPostEdit?: boolean;
-};
-
-export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({
-  newPost,
-  post,
-  isPostEdit = true,
-}) => {
+export const BtnToggleRepliers: FC = () => {
+  const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
   const { newPostType } = useSelector((state: RootState) => state.postEdit);
-  const repliersType = newPost?.repliersType || post?.repliersType || "everyone";
+
+  if (!currNewPost) return null;
+  const repliersType = currNewPost?.repliersType || "everyone";
 
   const title = getTitle(repliersType);
 
@@ -39,13 +32,8 @@ export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({
   }
 
   function onOptionClick(value: string) {
-    if (newPost)
-      return dispatch(updateNewPost({ newPost: { ...newPost, repliersType: value }, newPostType }));
-
-    if (post) {
-      // const updatedPost = { ...post, repliersType: value };
-      throw new Error("Not implemented");
-    }
+    if (!currNewPost) return;
+    dispatch(updateNewPost({ newPost: { ...currNewPost, repliersType: value }, newPostType }));
   }
 
   return (
@@ -53,17 +41,8 @@ export const BtnToggleRepliers: FC<BtnToggleRepliersProps> = ({
       <Modal>
         <Modal.OpenBtn modalName="repliers" setPositionByRef={true} modalHeight={300}>
           <button className="btn-toggle-repliers">
-            {isPostEdit ? (
-              <>
-                <FaGlobeAmericas />
-                <span>{title} can reply</span>
-              </>
-            ) : (
-              <>
-                <FaRegComment size={18} />
-                <span>Change who can reply</span>
-              </>
-            )}
+            <FaGlobeAmericas />
+            <span>{title} can reply</span>
           </button>
         </Modal.OpenBtn>
         <Modal.Window

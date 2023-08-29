@@ -1,6 +1,6 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
-import followerService from "../../../user/services/follower/follower.service";
+import followerService from "../../../user/services/user-relation/user-relation.service";
 import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import postUtilService from "../util/util.service";
 

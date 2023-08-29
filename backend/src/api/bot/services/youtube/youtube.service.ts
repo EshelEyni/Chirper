@@ -14,20 +14,29 @@ async function getYoutubeVideo(prompt: string): Promise<string> {
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) throw new AppError("GOOGLE_API_KEY is undefined", 500);
 
-  // TODO: play around with the parameters
-  // const apiStr = `https://www.googleapis.com/youtube/v3/search?part=snippet&videoCategoryId=10&videoEmbeddable=true&type=video&maxResults=1&key=${apiKey}&q=${prompt}`;
-
   const response = await youtube.search.list({
-    part: ["snippet"],
+    part: ["id"],
     q: prompt,
     maxResults: 1,
     type: ["video"],
+    relevanceLanguage: "en",
+    videoDuration: "short",
+    videoCategoryId: "10",
   });
 
-  const songs = response.data.items;
-  const videoUrl = `https://www.youtube.com/watch?v=${songs[0].id.videoId}`;
+  if (!response.data.items || response.data.items.length === 0)
+    throw new AppError("No videos found", 404);
 
+  const firstItem = response.data.items[0];
+
+  if (!firstItem.id || firstItem.id.kind !== "youtube#video" || !firstItem.id.videoId)
+    throw new AppError("Invalid video data", 500);
+
+  const { videoId } = firstItem.id;
+  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
   return videoUrl;
 }
 
 export default { getYoutubeVideo };
+
+// Path: src\api\bot\services\youtube\youtube.service.ts

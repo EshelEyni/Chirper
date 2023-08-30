@@ -63,10 +63,7 @@ export interface IFollower extends IUserRelationBase, mongoose.Document {}
 
 const UserRelationModel = model<IFollower>("UserRelation", userRelationSchema, "user_relations");
 
-const FollowerModel = UserRelationModel.discriminator<IFollower>(
-  "Follower",
-  new mongoose.Schema({})
-);
+const FollowerModel = UserRelationModel.discriminator<IFollower>("Follow", new mongoose.Schema({}));
 
 const MuteModel = UserRelationModel.discriminator<IFollower>("Mute", new mongoose.Schema({}));
 

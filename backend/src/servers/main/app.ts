@@ -10,7 +10,8 @@ import cors from "cors";
 import { requestLogger } from "../../middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "../../services/error/error.service";
 import setupAsyncLocalStorage from "../../middlewares/setupAls/setupAls.middleware";
-import userRouter from "../../api/user/router/user.router";
+import userRouter from "../../api/user/routers/user.router";
+import userRelationRouter from "../../api/user/routers/user-relation.router";
 import postRouter from "../../api/post/router/post.router";
 import gifRouter from "../../api/gif/router/gif.router";
 import locationRouter from "../../api/location/router/location.router";
@@ -62,6 +63,7 @@ if (!isProdEnv)
   });
 
 app.use("/api/user", userRouter);
+app.use("/api/user", userRelationRouter);
 app.use("/api/post", postRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/location", locationRouter);

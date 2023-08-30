@@ -8,11 +8,7 @@ import {
   addUser,
   updateLoggedInUser,
   removeLoggedInUser,
-  addFollowings,
-  removeFollowings,
-  addFollowingsFromPost,
-  removeFollowingsFromPost,
-} from "../controller/user.controller";
+} from "../controllers/user/user.controller";
 import {
   checkUserAuthentication,
   checkAdminAuthorization,
@@ -25,10 +21,6 @@ router.get("/:id", getUserById);
 router.get("/username/:username", getUserByUsername);
 
 router.use(checkUserAuthentication);
-router.post("/:id/following", addFollowings);
-router.delete("/:id/following", removeFollowings);
-router.post("/:userId/following/:postId/fromPost", addFollowingsFromPost);
-router.delete("/:userId/following/:postId/fromPost", removeFollowingsFromPost);
 router.patch("/loggedInUser", updateLoggedInUser);
 router.delete("/loggedInUser", removeLoggedInUser);
 

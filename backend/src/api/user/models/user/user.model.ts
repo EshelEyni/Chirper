@@ -30,6 +30,9 @@ export interface IUser extends Document {
   loginAttempts: number;
   lockedUntil: number;
   bio: string;
+  _followingCount: number;
+  _followersCount: number;
+  _isFollowing: boolean;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -124,9 +127,32 @@ const userSchema: Schema<IUser> = new Schema(
   }
 );
 
-userSchema.virtual("followingCount").get(() => 0);
-userSchema.virtual("followersCount").get(() => 0);
-userSchema.virtual("isFollowing").get(() => false);
+userSchema
+  .virtual("followingCount")
+  .get(function () {
+    return this._followingCount;
+  })
+  .set(function (value) {
+    this._followingCount = value;
+  });
+
+userSchema
+  .virtual("followersCount")
+  .get(function () {
+    return this._followersCount;
+  })
+  .set(function (value) {
+    this._followersCount = value;
+  });
+
+userSchema
+  .virtual("isFollowing")
+  .get(function () {
+    return this._isFollowing;
+  })
+  .set(function (value) {
+    this._isFollowing = value;
+  });
 
 userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   const options = this.getOptions();
@@ -167,12 +193,13 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     // Iterate through the documents and set the counts and following status
     for (const doc of docs) {
       const userId = doc._id.toString();
-      doc.followingCount = followingCountMap[userId] ?? 0;
-      doc.followersCount = followersCountMap[userId] ?? 0;
-      doc.isFollowing = isFollowingMap[userId];
+      doc._followingCount = followingCountMap[userId] ?? 0;
+      doc._followersCount = followersCountMap[userId] ?? 0;
+      doc._isFollowing = isFollowingMap[userId] ?? false;
     }
   } else {
     const doc = res;
+
     const userId = res._id.toString();
     const followingCount = await UserRelationModel.countDocuments({
       fromUserId: doc._id,
@@ -185,9 +212,10 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
       }
     );
     const isFollowingMap = await followerService.getIsFollowing(userId);
-    doc.followingCount = followingCount;
-    doc.followersCount = followersCount;
-    doc.isFollowing = isFollowingMap[userId];
+
+    doc._followingCount = followingCount ?? 0;
+    doc._followersCount = followersCount ?? 0;
+    doc._isFollowing = isFollowingMap[userId] ?? false;
   }
 });
 
@@ -198,6 +226,12 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = "";
   next();
+});
+
+userSchema.post("save", async function (doc) {
+  doc._followersCount = 0;
+  doc._followingCount = 0;
+  doc._isFollowing = false;
 });
 
 userSchema.methods.checkPassword = async function (

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import { getLoggedInUserId } from "../als.service";
+import { getLoggedInUserIdFromReq } from "../als.service";
 import ansiColors from "ansi-colors";
 
 const logsDir = "./logs";
@@ -26,7 +26,7 @@ function _formatLogMessage(
     })
     .join(" | ");
 
-  const userId = getLoggedInUserId();
+  const userId = getLoggedInUserIdFromReq();
   const userStr = userId ? `(userId: ${userId})` : "";
   const currTime = new Date().toLocaleString("he");
   return `${currTime} - ${level} - ${text} ${userStr}\n`;

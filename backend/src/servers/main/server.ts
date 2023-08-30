@@ -13,8 +13,7 @@ import { AppError } from "../../services/error/error.service";
 const { DB_URL } = process.env;
 if (!DB_URL) throw new AppError("DB_URL URL is not defined.", 500);
 
-const dbName =
-  process.env.NODE_ENV === "production" ? process.env.PROD_DB_NAME : process.env.DEV_DB_NAME;
+const dbName = getDBName();
 
 mongoose
   .connect(DB_URL, { dbName })
@@ -37,3 +36,18 @@ process.on("unhandledRejection", (err: Error) => {
     process.exit(1);
   });
 });
+
+function getDBName(): string {
+  const { NODE_ENV, PROD_DB_NAME, DEV_DB_NAME, TEST_DB_NAME } = process.env;
+
+  switch (NODE_ENV) {
+    case "production":
+      return PROD_DB_NAME as string;
+    case "development":
+      return DEV_DB_NAME as string;
+    case "test":
+      return TEST_DB_NAME as string;
+    default:
+      throw new AppError("NODE_ENV is not defined.", 500);
+  }
+}

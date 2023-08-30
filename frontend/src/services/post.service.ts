@@ -64,7 +64,7 @@ async function removeRepost(repostedPostId: string): Promise<Post> {
 
 async function update(post: Post) {
   const updatedPost = await httpService.patch(`${BASE_URL}/${post.id}`, post);
-  return updatedPost;
+  return handleServerResponse<Post>(updatedPost);
 }
 async function savePollVote(postId: string, optionIdx: number) {
   return await httpService.post(`${BASE_URL}/poll/vote`, { postId, optionIdx });

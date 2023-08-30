@@ -2,5 +2,8 @@
   "watch": ["src"],
   "ext": "ts",
   "ignore": ["node_modules"],
+  "env": {
+    "NODE_ENV": "development"
+  },
   "exec": "npx ts-node --transpile-only src/servers/main/server.ts"
 }

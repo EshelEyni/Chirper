@@ -3,8 +3,7 @@ import { UserModel } from "../../models/user/user.model";
 import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
-import { asyncLocalStorage } from "../../../../services/als.service";
-import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
 import postService from "../../../post/services/post/post.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
@@ -24,14 +23,19 @@ type UpdatePostStatsAndReturnPostParams = {
   session: ClientSession;
 };
 
+type UserRelationParams = {
+  toUserId: string;
+  postId?: string;
+  kind: "Follow" | "Block" | "Mute";
+};
+
 export type isFollowingMap = {
   [key: string]: boolean;
 };
 
 async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
   if (!ids.length) return {} as isFollowingMap;
-  const store = asyncLocalStorage.getStore() as alStoreType;
-  const loggedInUserId = store?.loggedInUserId;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   if (!isValidMongoId(loggedInUserId)) {
     const res = ids.reduce((acc, id) => ({ ...acc, [id]: false }), {});
     return res;
@@ -39,6 +43,7 @@ async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
   const isFollowing = await UserRelationModel.find({
     fromUserId: loggedInUserId,
     toUserId: { $in: ids },
+    kind: "Follow",
   })
     .setOptions({ skipHooks: true })
     .select({ toUserId: 1 })
@@ -54,16 +59,19 @@ async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
   return res;
 }
 
-async function add(
-  fromUserId: string,
-  toUserId: string,
-  postId?: string
-): Promise<FollowingResult | Post> {
+async function add({
+  toUserId,
+  postId,
+  kind,
+}: UserRelationParams): Promise<FollowingResult | Post> {
+  const fromUserId = getLoggedInUserIdFromReq();
+  if (!isValidMongoId(fromUserId)) throw new AppError("You are not logged in", 401);
+
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    await UserRelationModel.create([{ fromUserId, toUserId }], { session });
+    await UserRelationModel.create([{ fromUserId, toUserId, kind }], { session });
 
     if (postId)
       return await _updatePostStatsAndReturnPost({
@@ -73,7 +81,7 @@ async function add(
         session,
       });
 
-    await session.commitTransaction();
+    // await session.commitTransaction();
 
     return await _getUsers({
       fromUserId,
@@ -89,16 +97,19 @@ async function add(
   }
 }
 
-async function remove(
-  fromUserId: string,
-  toUserId: string,
-  postId?: string
-): Promise<FollowingResult | Post> {
+async function remove({
+  toUserId,
+  postId,
+  kind,
+}: UserRelationParams): Promise<FollowingResult | Post> {
+  const fromUserId = getLoggedInUserIdFromReq();
+  if (!isValidMongoId(fromUserId)) throw new AppError("You are not logged in", 401);
+
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const followLinkage = await UserRelationModel.findOneAndDelete(
-      { fromUserId, toUserId },
+      { fromUserId, toUserId, kind },
       { session }
     ).setOptions({ skipHooks: true });
     if (!followLinkage) throw new AppError("You are not following this User", 404);

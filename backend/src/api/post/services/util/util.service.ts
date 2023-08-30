@@ -9,7 +9,7 @@ import {
   LoggedInUserActionStates,
   PostStatsBody,
 } from "../../../../../../shared/interfaces/post.interface";
-import { getLoggedInUserId } from "../../../../services/als.service";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 
 export const loggedInUserActionDefaultState: LoggedInUserActionState = {
   isLiked: false,
@@ -30,7 +30,7 @@ export const loggedInUserActionDefaultState: LoggedInUserActionState = {
 async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedInUserActionStates> {
   if (ids.length === 0) return {};
 
-  const loggedInUserId = getLoggedInUserId() as string;
+  const loggedInUserId = getLoggedInUserIdFromReq() as string;
 
   const uniquePostIds = Array.from(new Set(ids));
 

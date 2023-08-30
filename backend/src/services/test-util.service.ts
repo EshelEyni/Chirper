@@ -2,13 +2,12 @@ require("dotenv").config();
 import mongoose from "mongoose";
 import { LoggedInUserActionState, Poll, Post } from "../../../shared/interfaces/post.interface";
 import { MiniUser, User, UserCredenitials } from "../../../shared/interfaces/user.interface";
-import { PostModel } from "../api/post/models/post.model";
 import { UserModel } from "../api/user/models/user/user.model";
 import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
-import { logger } from "./logger/logger.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { BotPrompt } from "../../../shared/interfaces/bot.interface";
+import ansiColors from "ansi-colors";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -23,10 +22,10 @@ async function connectToTestDB({ isRemoteDB = false } = {}) {
   if (!TEST_DB_NAME) throw new AppError("TEST_DB_NAME is not defined.", 500);
 
   if (isRemoteDB) await mongoose.connect(DB_URL, { dbName: TEST_DB_NAME });
-  else {
-    await mongoose.connect(LOCAL_DB_URL);
-  }
-  logger.info("Connected to MongoDB.");
+  else await mongoose.connect(LOCAL_DB_URL);
+
+  // eslint-disable-next-line no-console
+  console.log(ansiColors.bgGreen("Connected to DB"));
 }
 
 function assertUser(user: User) {
@@ -216,30 +215,10 @@ function getLoginTokenStrForTest(validUserId: string) {
   return `loginToken=${token}`;
 }
 
-async function getValidUserId() {
-  const user = (await UserModel.findOne({})
-    .setOptions({ skipHooks: true })
-    .select("_id")
-    .lean()
-    .exec()) as unknown as { _id: any };
-  if (!user) throw new AppError("No user found in DB", 500);
-  return user._id.toHexString();
-}
-
-async function getValidPostId() {
-  const post = (await PostModel.findOne({})
-    .setOptions({ skipHooks: true })
-    .select("_id")
-    .lean()
-    .exec()) as unknown as { _id: any };
-
-  if (!post) throw new AppError("No post found in DB", 500);
-  return post._id.toHexString();
-}
-
 function getMongoId() {
   return new mongoose.Types.ObjectId().toHexString();
 }
+
 function getMockedUser({
   id,
   isBot = false,
@@ -259,13 +238,12 @@ function getMockedUser({
     toObject: jest.fn().mockReturnThis(),
   };
 }
+
 export {
   connectToTestDB,
   assertUser,
   assertPost,
   getLoginTokenStrForTest,
-  getValidUserId,
-  getValidPostId,
   assertGifCategory,
   assertGif,
   createTestUser,

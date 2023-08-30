@@ -12,16 +12,7 @@ export function useUpdatePost() {
   const { mutate: updatePost, isLoading: isUpdating } = useMutation({
     mutationFn: postService.update,
     onSuccess: (post: Post) => {
-      const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];
-      if (!currentPosts) return;
-
-      //TODO: check if can use service function from reactQuery.service.ts
-
-      const updatedPosts = currentPosts.map(p => {
-        if (p.id === post.id) return post;
-        return p;
-      });
-      queryClient.setQueryData(["posts"], updatedPosts);
+      reactQueryService.setUpdatePostIntoQueryData(post, queryClient);
     },
     onError: () => {
       const msg = getDefaultErrorMsg();

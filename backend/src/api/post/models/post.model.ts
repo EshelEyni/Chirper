@@ -10,6 +10,7 @@ import {
 // import { UserRelationModel } from "../../user/models/user-relation/user-relation.model";
 import { Gif } from "../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../shared/interfaces/location.interface";
+import { UserRelationModel } from "../../user/models/user-relation/user-relation.model";
 
 export interface IPost extends Document {
   audience: string;
@@ -55,8 +56,6 @@ const locationSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema(
   {
-    // TODO: Change from required to default.
-    // TODO: change accross app that is are not required
     // TODO: add validation for audience and repliersType
     audience: {
       type: String,
@@ -234,8 +233,7 @@ postSchema.pre("save", function (this: Document, next: () => void) {
 });
 
 async function populateCreatedBy(doc: Document) {
-  // const populatedDoc =
-  return await doc.populate("createdBy", {
+  const populatedDoc = await doc.populate("createdBy", {
     _id: 1,
     username: 1,
     fullname: 1,
@@ -246,17 +244,17 @@ async function populateCreatedBy(doc: Document) {
     followersCount: 1,
     followingCount: 1,
   });
-  // const userId = populatedDoc.get("createdById");
-  // const followersCount = await FollowerModel.countDocuments({
-  //   toUserId: userId,
-  // });
-  // const followingCount = await FollowerModel.countDocuments({
-  //   fromUserId: userId,
-  // });
+  const userId = populatedDoc.get("createdById");
+  const followersCount = await UserRelationModel.countDocuments({
+    toUserId: userId,
+  });
+  const followingCount = await UserRelationModel.countDocuments({
+    fromUserId: userId,
+  });
   // populatedDoc.followersCount = followersCount;
   // populatedDoc.followingCount = followingCount;
-  // populatedDoc.set("createdBy.followersCount", followersCount);
-  // populatedDoc.set("createdBy.followingCount", followingCount);
+  populatedDoc.set("createdBy.followersCount", followersCount);
+  populatedDoc.set("createdBy.followingCount", followingCount);
 }
 
 async function populateQuotedPost(doc: Document) {
@@ -305,6 +303,7 @@ postSchema.virtual("createdBy", {
   localField: "createdById",
   foreignField: "_id",
   justOne: true,
+  hooks: true,
 });
 
 postSchema.virtual("quotedPost", {

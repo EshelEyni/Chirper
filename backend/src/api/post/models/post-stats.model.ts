@@ -28,6 +28,14 @@ const postStatsSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isBlockedFromPost: {
+      type: Boolean,
+      default: false,
+    },
+    isMutedFromPost: {
+      type: Boolean,
+      default: false,
+    },
     isHashTagClicked: {
       type: Boolean,
       default: false,

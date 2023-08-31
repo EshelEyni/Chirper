@@ -160,7 +160,7 @@ const Media: FC = () => {
         type: "info",
         text: "Only images and videos are allowed.",
       } as TypeOfUserMsg;
-      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.success(<UserMsg userMsg={msg} />);
 
       return { isValid: false };
     }
@@ -176,7 +176,7 @@ const Media: FC = () => {
         type: "info",
         text: "Only one video is allowed.",
       } as TypeOfUserMsg;
-      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.success(<UserMsg userMsg={msg} />);
 
       return { isValid: false };
     }
@@ -189,7 +189,7 @@ const Media: FC = () => {
         type: "info",
         text: "Only verified users can upload videos larger than 10MB.",
       } as TypeOfUserMsg;
-      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.success(<UserMsg userMsg={msg} />);
 
       return { isValid: false };
     }
@@ -203,7 +203,7 @@ const Media: FC = () => {
         type: "info",
         text: "Please choose either 1 GIF or up to 4 photos.",
       } as TypeOfUserMsg;
-      toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.success(<UserMsg userMsg={msg} />);
 
       return { isValid: false };
     }
@@ -640,7 +640,7 @@ const Location: FC = () => {
       type: "info",
       text: "Please set your location in your profile first.",
     } as TypeOfUserMsg;
-    toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+    toast.success(<UserMsg userMsg={msg} />);
   }
 
   return (
@@ -879,7 +879,7 @@ const Share: FC = () => {
       type: "info",
       text: "Copied to clipboard",
     } as TypeOfUserMsg;
-    toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+    toast.success(<UserMsg userMsg={msg} />);
   }
 
   function handleBtnShareClick() {

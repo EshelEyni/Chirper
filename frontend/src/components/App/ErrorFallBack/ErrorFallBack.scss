@@ -17,11 +17,11 @@
     max-width: rem(550px);
     padding: rem(25px);
     border-radius: 35px;
-    border: 1px solid black;
-    background-color: var(--color-warning);
+    color: var(--color-text-gray);
     font-family: var(--font-primary);
 
     h1 {
+      color: var(--color-text);
       font-style: italic;
       font-size: rem(28px);
     }

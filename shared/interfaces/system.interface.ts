@@ -15,5 +15,12 @@ export interface IAsyncLocalStorageStore {
 export interface UserMsg {
   type: "info" | "success" | "error" | "warning" | "";
   text: string;
-  link?: string;
+  link?: {
+    text?: string;
+    url: string;
+  };
+  btn?: {
+    text: string;
+    fn: Function;
+  };
 }

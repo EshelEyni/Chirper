@@ -124,7 +124,7 @@ const getPostAddedMsg = ({ postId, date }: { postId: string; date?: Date }): Use
   return {
     type: "info",
     text,
-    link: `/post/${postId}`,
+    link: { url: `/post/${postId}` },
   };
 };
 

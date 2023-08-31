@@ -12,6 +12,12 @@ function setUpdatePostIntoQueryData(post: Post, queryClient: QueryClient) {
   queryClient.setQueryData(["posts"], updatedPosts);
 }
 
-export default {
-  setUpdatePostIntoQueryData,
-};
+function removePostFromQueryData(post: Post, queryClient: QueryClient) {
+  const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];
+
+  if (!currentPosts) return;
+  const updatedPosts = currentPosts.filter(p => p.id !== post.id);
+  queryClient.setQueryData(["posts"], updatedPosts);
+}
+
+export default { setUpdatePostIntoQueryData, removePostFromQueryData };

@@ -16,7 +16,7 @@ export function useUpdatePost() {
     },
     onError: () => {
       const msg = getDefaultErrorMsg();
-      toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.error(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
     },
   });
 

@@ -30,7 +30,7 @@ app.use(errorHandler);
 const mockedPostID = "64dd30f4937431fdad0f6d91";
 const mockedUserID = "64dd30f4937431fdad0f6d92";
 
-fdescribe("User Router: User Relation Follow Actions", () => {
+fdescribe("User Router: User Relation", () => {
   let testLoggedInUser: User, validUser: User, token: string, testPost: Post;
 
   async function createAndSetTestLoggedInUserAndToken({ isAdmin = false } = {}) {
@@ -126,15 +126,17 @@ fdescribe("User Router: User Relation Follow Actions", () => {
 
     it("should successfully add a following from a post", async () => {
       await createTestPost();
+      const spy = jest.spyOn(userRelationService, "add");
 
       const res = await request(app)
         .post(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
     });
 
-    it("should return a post with loggedInUserActionState.isFollowedFromPost after a succesfull request", async () => {
+    it("should return a post with user.isFollowing after a succesfull request", async () => {
       await createTestPost();
       const res = await request(app)
         .post(`/${validUser.id}/follow/${testPost.id}/fromPost`)
@@ -205,12 +207,15 @@ fdescribe("User Router: User Relation Follow Actions", () => {
     it("should successfully remove following from post", async () => {
       await createTestPost();
       await createTestFollowingFromPost();
+
+      const spy = jest.spyOn(userRelationService, "remove");
       const res = await request(app)
         .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
     });
 
     it("should return a post with updated user after a succesfull request", async () => {

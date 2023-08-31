@@ -26,6 +26,10 @@ import { RiBarChartGroupedFill, RiPushpin2Line } from "react-icons/ri";
 import { useRemovePost } from "../../../hooks/reactQuery/post/useRemovePost";
 import { useUpdatePost } from "../../../hooks/reactQuery/post/useUpdatePost";
 import { FaRobot } from "react-icons/fa";
+import useRemoveBlock from "../../../hooks/reactQuery/post/useRemoveBlock";
+import useAddBlock from "../../../hooks/reactQuery/post/useAddBlock";
+import useRemoveMute from "../../../hooks/reactQuery/post/useRemoveMute";
+import useAddMute from "../../../hooks/reactQuery/post/useAddMute";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
@@ -45,6 +49,11 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
 
   const { removePost } = useRemovePost();
   const { updatePost } = useUpdatePost();
+  const { addBlock } = useAddBlock();
+  const { removeBlock } = useRemoveBlock();
+  const { removeMute } = useRemoveMute();
+  const { addMute } = useAddMute();
+
   const { id: btnId } = useUniqueID();
 
   const user = post.createdBy;
@@ -57,15 +66,13 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   }
 
   function handleBtnToggleMute() {
-    //TODO: needs to be implemented
-    // eslint-disable-next-line no-console
-    console.log("handleBtnToggleMute");
+    if (post.createdBy.isMuted) removeMute({ userId: post.createdBy.id, postId: post.id });
+    else addMute({ userId: post.createdBy.id, postId: post.id });
   }
 
   function handleBtnToggleBlock() {
-    // TODO: needs to be implemented
-    // eslint-disable-next-line no-console
-    console.log("handleBtnBlockUser");
+    if (post.createdBy.isBlocked) removeBlock({ userId: post.createdBy.id, postId: post.id });
+    else addBlock({ userId: post.createdBy.id, postId: post.id });
   }
 
   function handleBtnDeletePost(postId: string) {

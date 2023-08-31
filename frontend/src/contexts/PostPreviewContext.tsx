@@ -2,8 +2,8 @@ import { createContext, useContext, useState } from "react";
 import { Poll, Post } from "../../../shared/interfaces/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
-import useRemoveFollowFromPost from "../hooks/reactQuery/post/useRemoveFollowFromPost";
-import useAddFollowFromPost from "../hooks/reactQuery/post/useAddFollowFromPost";
+import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";
+import useAddFollow from "../hooks/reactQuery/post/useAddFollow";
 
 type PostPreviewContextType = {
   post: Post;
@@ -21,8 +21,8 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
   const { isDetailedViewed, isProfileViewed } = post.loggedInUserActionState;
   const [poll, setPoll] = useState(post.poll || null);
   const navigate = useNavigate();
-  const { addFollowFromPost } = useAddFollowFromPost();
-  const { removeFollowFromPost } = useRemoveFollowFromPost();
+  const { addFollow } = useAddFollow();
+  const { removeFollow } = useRemoveFollow();
 
   async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
@@ -40,12 +40,12 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
 
   function onToggleFollow() {
     if (post.createdBy.isFollowing)
-      removeFollowFromPost({
+      removeFollow({
         userId: post.createdBy.id,
         postId: post.id,
       });
     else
-      addFollowFromPost({
+      addFollow({
         userId: post.createdBy.id,
         postId: post.id,
       });

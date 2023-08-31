@@ -18,7 +18,7 @@ export function useAddLike() {
         type: "error",
         text: "Something went wrong, but don’t fret — let’s give it another shot.",
       } as TypeOfUserMsg;
-      toast.error(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+      toast.error(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
     },
   });
 

@@ -1,37 +1,35 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../../../services/post.service";
 import reactQueryService from "../../../services/reactQuery/reactQuery.service";
+import userRelationService from "../../../services/userRelation.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
-export function useAddBookmark() {
+export default function useAddFollow() {
   const queryClient = useQueryClient();
 
-  async function onAddBookmark(postId: string) {
-    postService.updatePostStats(postId, { isPostBookmarked: true });
-    return await postService.addBookmark(postId);
-  }
-
-  const { mutate: addBookmark, isLoading: isAdding } = useMutation({
-    mutationFn: onAddBookmark,
+  const { mutate: addFollow } = useMutation({
+    mutationFn: async ({ userId, postId }: { userId: string; postId?: string }) =>
+      await userRelationService.followUser(userId, postId),
     onSuccess: post => {
+      const isDataPost = "createdBy" in post;
+      if (!isDataPost) return;
       reactQueryService.setUpdatePostIntoQueryData(post, queryClient);
 
       const msg = {
-        type: "info",
-        text: "Chirp added to your Bookmarks",
-        link: { url: `/bookmarks` },
+        type: "success",
+        text: `You followed ${post.createdBy.username}.`,
       } as TypeOfUserMsg;
 
       toast.success(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
     },
     onError: () => {
-      const msg = getDefaultErrorMsg();
-      toast.error(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
+      toast.error(t => (
+        <UserMsg userMsg={getDefaultErrorMsg()} onDissmisToast={() => toast.dismiss(t.id)} />
+      ));
     },
   });
 
-  return { isAdding, addBookmark };
+  return { addFollow };
 }

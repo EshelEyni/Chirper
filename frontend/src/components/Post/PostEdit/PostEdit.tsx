@@ -150,7 +150,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           type: "info",
           text: "You can add more Chirps to this thread after sending these.",
         } as TypeOfUserMsg;
-        toast.success(t => <UserMsg userMsg={msg} onDismiss={() => toast.dismiss(t.id)} />);
+        toast.success(<UserMsg userMsg={msg} />);
       }
 
       dispatch(addNewPostToThread(newPostType));
@@ -234,7 +234,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {!!currNewPost?.gif && <GifEdit />}
           {!!currNewPost?.poll && <PollEdit />}
           <div className="btn-replries-location-container">
-            {isPickerShown && <BtnToggleRepliers newPost={currNewPost} />}
+            {isPickerShown && <BtnToggleRepliers />}
             <PostEditTitleLocation />
           </div>
           {isQueotePostShown && (

@@ -6,6 +6,7 @@
   justify-content: center;
   gap: rem(15px);
   min-width: rem(300px);
+  width: max-content;
   height: rem(50px);
   text-align: center;
   position: fixed;
@@ -31,7 +32,8 @@
     background-color: var(--color-warning);
   }
 
-  .user-msg-link {
+  .user-msg-link,
+  .user-msg-btn {
     color: white;
     font-weight: 700;
 

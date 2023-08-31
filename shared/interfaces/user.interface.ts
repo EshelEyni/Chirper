@@ -22,22 +22,11 @@ export interface User extends UserCredenitials {
   followersCount: number;
   createdAt: number;
   isFollowing?: boolean;
-}
-
-export interface MiniUser {
-  id: string;
-  username: string;
-  fullname: string;
-  isAdmin?: boolean;
-  isVerified?: boolean;
-  imgUrl: string;
-  bio: string;
-  followersCount: number;
-  followingCount: number;
-  isFollowing: boolean;
+  isMuted?: boolean;
+  isBlocked?: boolean;
 }
 
 export type FollowingResult = {
   loggedInUser: User;
-  followedUser: User;
+  targetUser: User;
 };

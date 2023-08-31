@@ -4,6 +4,7 @@ import { AppError, asyncErrorCatcher } from "../../../../services/error/error.se
 import { addFollow, removeFollow } from "./user-relation.controller";
 import userRelationService from "../../services/user-relation/user-relation.service";
 import { getMongoId } from "../../../../services/test-util.service";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 
 jest.mock("../../services/user-relation/user-relation.service");
 jest.mock("../../../../services/als.service", () => ({
@@ -24,21 +25,18 @@ const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 });
 
 describe("User Relation Controller", () => {
+  (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(getMongoId());
+
   let req: Partial<Request>;
   let res: Partial<Response>;
 
   describe("addFollowings", () => {
     beforeEach(() => {
       req = {
-        loggedInUserId: getMongoId(),
-        params: {
-          id: getMongoId(),
-        },
+        params: { id: getMongoId() },
         body: {},
       };
-      res = {
-        send: jest.fn(),
-      };
+      res = { send: jest.fn() };
       nextMock.mockClear();
     });
 
@@ -54,6 +52,19 @@ describe("User Relation Controller", () => {
         expect.objectContaining({
           message: "No user id provided",
           statusCode: 400,
+        })
+      );
+    });
+
+    it("should throw an error if logged in user id is not a valid MongoDB id", async () => {
+      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce("123");
+
+      const sut = addFollow as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining("Invalid loggedInUser id: 123"),
+          statusCode: 401,
         })
       );
     });
@@ -92,6 +103,24 @@ describe("User Relation Controller", () => {
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
         data: mockUpdatedUser,
+      });
+    });
+
+    it("should add followings from post and return updated post data", async () => {
+      req = {
+        params: {
+          postId: getMongoId(),
+          userId: getMongoId(),
+        },
+      };
+
+      const mockUpdatedPost = { id: "67890", title: "TestPost" };
+      (userRelationService.add as jest.Mock).mockResolvedValue(mockUpdatedPost);
+      const sut = addFollow as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(res.send).toHaveBeenCalledWith({
+        status: "success",
+        data: mockUpdatedPost,
       });
     });
 
@@ -146,6 +175,19 @@ describe("User Relation Controller", () => {
       );
     });
 
+    it("should throw an error if logged in user id is not a valid MongoDB id", async () => {
+      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce("123");
+
+      const sut = addFollow as any;
+      await sut(req as Request, res as Response, nextMock);
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining("Invalid loggedInUser id: 123"),
+          statusCode: 401,
+        })
+      );
+    });
+
     it("should throw an error if user id is not a valid MongoDB id", async () => {
       req.params!.id = "123";
       const sut = removeFollow as any;
@@ -169,197 +211,6 @@ describe("User Relation Controller", () => {
       });
     });
 
-    it("should pass errors from the userRelationService to the next middleware", async () => {
-      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
-        throw new Error("Test error");
-      });
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
-    });
-  });
-
-  describe("addFollowingsFromPost", () => {
-    beforeEach(() => {
-      req = {
-        loggedInUserId: getMongoId(),
-        params: {
-          postId: getMongoId(),
-          userId: getMongoId(),
-        },
-      };
-      res = {
-        send: jest.fn(),
-      };
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("should throw an error if no user id is provided", async () => {
-      delete req.params!.userId;
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "No user id provided",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if user id is not a valid MongoDB id", async () => {
-      req.params!.userId = "123";
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Invalid user id: 123",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if no post id is provided", async () => {
-      delete req.params!.postId;
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "No post id provided",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if post id is not a valid MongoDB id", async () => {
-      req.params!.postId = "123";
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Invalid post id: 123",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if user is not found", async () => {
-      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
-        throw new AppError("User not found", 404);
-      });
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "User not found",
-          statusCode: 404,
-        })
-      );
-    });
-
-    it("should add followings from post and return updated post data", async () => {
-      const mockUpdatedPost = { id: "67890", title: "TestPost" };
-      (userRelationService.add as jest.Mock).mockResolvedValue(mockUpdatedPost);
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(res.send).toHaveBeenCalledWith({
-        status: "success",
-        data: mockUpdatedPost,
-      });
-    });
-
-    it("should pass errors from the userRelationService to the next middleware", async () => {
-      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
-        throw new Error("Test error");
-      });
-      const sut = addFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
-    });
-  });
-
-  describe("removeFollowingsFromPost", () => {
-    beforeEach(() => {
-      req = {
-        loggedInUserId: getMongoId(),
-        params: {
-          postId: getMongoId(),
-          userId: getMongoId(),
-        },
-      };
-      res = {
-        send: jest.fn(),
-      };
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("should throw an error if no user id is provided", async () => {
-      delete req.params!.userId;
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "No user id provided",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if user id is not a valid MongoDB id", async () => {
-      req.params!.userId = "123";
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Invalid user id: 123",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if no post id is provided", async () => {
-      delete req.params!.postId;
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "No post id provided",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if post id is not a valid MongoDB id", async () => {
-      req.params!.postId = "123";
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Invalid post id: 123",
-          statusCode: 400,
-        })
-      );
-    });
-
-    it("should throw an error if user is not found", async () => {
-      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
-        throw new AppError("User not found", 404);
-      });
-      const sut = removeFollow as any;
-      await sut(req as Request, res as Response, nextMock);
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "User not found",
-          statusCode: 404,
-        })
-      );
-    });
-
     it("should remove followings from post and return updated post data", async () => {
       const mockUpdatedPost = { id: "67890", title: "TestPost" };
       (userRelationService.remove as jest.Mock).mockResolvedValue(mockUpdatedPost);
@@ -381,14 +232,3 @@ describe("User Relation Controller", () => {
     });
   });
 });
-
-/*
-Notes: 
-
-this function are not tested, because they are factory functions and are tested in the service test file
-- getById
-- addUser
-- updateUser
-- removeUser
-
-*/

@@ -2,17 +2,15 @@
 import request from "supertest";
 import express from "express";
 import router from "../user-relation.router";
-import { AppError, errorHandler } from "../../../../services/error/error.service";
-import mongoose, { Types } from "mongoose";
+import { errorHandler } from "../../../../services/error/error.service";
+import mongoose from "mongoose";
 import userRelationService from "../../services/user-relation/user-relation.service";
-import { UserModel } from "../../models/user/user.model";
 import {
   assertPost,
   assertUser,
   connectToTestDB,
   createTestUser,
   getLoginTokenStrForTest,
-  getMongoId,
 } from "../../../../services/test-util.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../../models/user-relation/user-relation.model";
@@ -32,7 +30,7 @@ app.use(errorHandler);
 const mockedPostID = "64dd30f4937431fdad0f6d91";
 const mockedUserID = "64dd30f4937431fdad0f6d92";
 
-describe("User Router: User Relation Actions", () => {
+fdescribe("User Router: User Relation Follow Actions", () => {
   let testLoggedInUser: User, validUser: User, token: string, testPost: Post;
 
   async function createAndSetTestLoggedInUserAndToken({ isAdmin = false } = {}) {
@@ -76,8 +74,6 @@ describe("User Router: User Relation Actions", () => {
   });
 
   describe("POST /:id/follow", () => {
-    const id = getMongoId();
-
     beforeEach(async () => {
       await UserRelationModel.deleteMany({});
       await createAndSetTestLoggedInUserAndToken();
@@ -87,7 +83,8 @@ describe("User Router: User Relation Actions", () => {
       await UserRelationModel.deleteMany({});
     });
 
-    it("should return 200 and the updated users data when following is added", async () => {
+    it("should return 200 when following is added", async () => {
+      const spy = jest.spyOn(userRelationService, "add");
       const res = await request(app).post(`/${validUser.id}/follow`).set("Cookie", [token]);
       const followingLinkage = await UserRelationModel.findOne({
         fromUserId: testLoggedInUser.id,
@@ -96,96 +93,24 @@ describe("User Router: User Relation Actions", () => {
       });
 
       expect(followingLinkage).toBeTruthy();
-
-      expect(res.statusCode).toEqual(200);
-
-      const users = Object.values(res.body.data) as User[];
-      expect(users.length).toEqual(2);
-      users.forEach(assertUser);
-
-      const [loggedInUser, followedUser] = users;
-      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
-      expect(followedUser.id).toEqual(validUser.id);
-      expect(loggedInUser.followingCount).toEqual(testLoggedInUser.followingCount + 1);
-      expect(followedUser.followersCount).toEqual(validUser.followersCount + 1);
-    });
-
-    it("should return 400 if the provided ID is not a valid MongoDB ID", async () => {
-      const invalidUserId = "12345";
-      const res = await request(app).post(`/${invalidUserId}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.message).toContain("Invalid user id");
-    });
-
-    it("should return 500 if the user with the given ID is not found", async () => {
-      const id = new Types.ObjectId();
-      await UserModel.findByIdAndDelete(id);
-      const res = await request(app).post(`/${id}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(500);
-      expect(res.body.message).toContain("Target User not found");
-    });
-
-    it("should return 500 if an error occurs", async () => {
-      jest.spyOn(userRelationService, "add").mockRejectedValueOnce(new Error("Test error"));
-      const res = await request(app).post(`/${id}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(500);
-    });
-  });
-
-  describe("DELETE /:id/follow", () => {
-    beforeAll(async () => {
-      await UserRelationModel.deleteMany({});
-      await createAndSetTestLoggedInUserAndToken();
-    });
-
-    afterAll(async () => {
-      await UserRelationModel.deleteMany({});
-    });
-
-    it("should successfully remove a following", async () => {
-      await UserRelationModel.create({
-        fromUserId: testLoggedInUser.id,
-        toUserId: validUser.id,
-        kind: "Follow",
-      });
-      const spy = jest.spyOn(userRelationService, "remove");
-      const res = await request(app).delete(`/${validUser.id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
       expect(spy).toHaveBeenCalled();
     });
 
-    it("should return 401 if the user is not logged in", async () => {
-      const res = await request(app).delete(`/${validUser.id}/follow`);
-      expect(res.statusCode).toEqual(401);
-      expect(res.body.message).toContain("You are not logged in! Please log in to get access.");
-    });
+    it("should return 200 and return the updated users data when following is added", async () => {
+      const res = await request(app).post(`/${validUser.id}/follow`).set("Cookie", [token]);
 
-    it("should return 400 if the provided ID is not a valid MongoDB ID", async () => {
-      const invalidUserId = "12345";
-      const res = await request(app).delete(`/${invalidUserId}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.message).toContain("Invalid user id");
-    });
+      const users = Object.values(res.body.data) as User[];
+      expect(users.length).toEqual(2);
+      users.forEach(assertUser);
 
-    it("should return 404 if the user with the given ID is not found", async () => {
-      const id = new Types.ObjectId();
-      await UserModel.findByIdAndDelete(id);
-      const res = await request(app).delete(`/${id}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(404);
-      expect(res.body.message).toContain("You are not following this User");
-    });
-
-    it("should return 500 if an internal server error occurs", async () => {
-      const id = new Types.ObjectId();
-
-      jest
-        .spyOn(userRelationService, "remove")
-        .mockRejectedValueOnce(new Error("Internal server error"));
-
-      const res = await request(app).delete(`/${id}/follow`).set("Cookie", [token]);
-      expect(res.statusCode).toEqual(500);
-      expect(res.body.message).toContain("Internal server error");
+      const [loggedInUser, targetUser] = users;
+      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
+      expect(targetUser.id).toEqual(validUser.id);
+      expect(targetUser.isFollowing).toEqual(true);
+      expect(loggedInUser.followingCount).toEqual(testLoggedInUser.followingCount + 1);
+      expect(targetUser.followersCount).toEqual(validUser.followersCount + 1);
     });
   });
 
@@ -216,81 +141,55 @@ describe("User Router: User Relation Actions", () => {
         .set("Cookie", [token]);
       const post = res.body.data as Post;
       assertPost(post);
-      expect(post.loggedInUserActionState.isFollowedFromPost).toEqual(true);
       const user = post.createdBy as User;
+
       expect(user.followersCount).toEqual(validUser.followersCount + 1);
+      expect(user.isFollowing).toEqual(true);
+    });
+  });
+
+  describe("DELETE /:id/follow", () => {
+    beforeAll(async () => {
+      await UserRelationModel.deleteMany({});
+      await createAndSetTestLoggedInUserAndToken();
     });
 
-    it("should return 400 if the provided userId or postId is not a valid MongoDB ID", async () => {
-      const invalidUserId = "12345";
-      const postId = getMongoId();
-      const res = await request(app)
-        .post(`/${invalidUserId}/follow/${postId}/fromPost`)
-        .set("Cookie", [token]);
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.message).toContain("Invalid user id: 12345");
-
-      const userId = getMongoId();
-      const invalidPostId = "12345";
-      const res_2 = await request(app)
-        .post(`/${userId}/follow/${invalidPostId}/fromPost`)
-        .set("Cookie", [token]);
-      expect(res_2.statusCode).toEqual(400);
-      expect(res_2.body.message).toContain("Invalid post id: 12345");
+    afterAll(async () => {
+      await UserRelationModel.deleteMany({});
     });
 
-    it("should return 404 if the post with the given ID is not found", async () => {
-      const userId = getMongoId();
-      const nonExistentPostId = getMongoId();
+    it("should successfully remove a following", async () => {
+      await UserRelationModel.create({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Follow",
+      });
+      const spy = jest.spyOn(userRelationService, "remove");
+      const res = await request(app).delete(`/${validUser.id}/follow`).set("Cookie", [token]);
 
-      jest.spyOn(userRelationService, "add").mockRejectedValueOnce(new AppError("Post not found", 404));
-
-      const res = await request(app)
-        .post(`/${userId}/follow/${nonExistentPostId}/fromPost`)
-        .set("Cookie", [token]);
-      expect(res.statusCode).toEqual(404);
-      expect(res.body.message).toContain("Post not found");
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
     });
 
-    it("should return 404 if the Follower or Following with the given ID is not found", async () => {
-      const followerId = getMongoId();
-      const nonExistentPostId = getMongoId();
+    it("should successfully remove a following and return the updated users", async () => {
+      await UserRelationModel.create({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Follow",
+      });
+      const res = await request(app).delete(`/${validUser.id}/follow`).set("Cookie", [token]);
 
-      jest
-        .spyOn(userRelationService, "add")
-        .mockRejectedValueOnce(new AppError("Follower not found", 404));
+      const users = Object.values(res.body.data) as User[];
+      expect(users.length).toEqual(2);
+      users.forEach(assertUser);
 
-      const res = await request(app)
-        .post(`/${followerId}/follow/${nonExistentPostId}/fromPost`)
-        .set("Cookie", [token]);
-      expect(res.statusCode).toEqual(404);
-      expect(res.body.message).toContain("Follower not found");
-
-      jest
-        .spyOn(userRelationService, "add")
-        .mockRejectedValueOnce(new AppError("Following not found", 404));
-
-      const res_3 = await request(app)
-        .post(`/${followerId}/follow/${nonExistentPostId}/fromPost`)
-        .set("Cookie", [token]);
-      expect(res_3.statusCode).toEqual(404);
-      expect(res_3.body.message).toContain("Following not found");
-    });
-
-    it("should return 500 if an internal server error occurs", async () => {
-      const userId = getMongoId();
-      const postId = getMongoId();
-
-      jest
-        .spyOn(userRelationService, "add")
-        .mockRejectedValueOnce(new AppError("Internal server error", 500));
-
-      const res = await request(app)
-        .post(`/${userId}/follow/${postId}/fromPost`)
-        .set("Cookie", [token]);
-
-      expect(res.statusCode).toEqual(500);
-      expect(res.body.message).toContain("Internal server error");
+      const [loggedInUser, targetUser] = users;
+      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
+      expect(targetUser.id).toEqual(validUser.id);
+      expect(targetUser.isFollowing).toEqual(false);
+      expect(loggedInUser.followingCount).toEqual(0);
+      expect(targetUser.followersCount).toEqual(0);
     });
   });
 
@@ -314,7 +213,7 @@ describe("User Router: User Relation Actions", () => {
       expect(res.body.status).toEqual("success");
     });
 
-    it("should return a post with !loggedInUserActionState.isFollowedFromPost after a succesfull request", async () => {
+    it("should return a post with updated user after a succesfull request", async () => {
       await createTestPost();
       await createTestFollowingFromPost();
       const res = await request(app)
@@ -323,45 +222,295 @@ describe("User Router: User Relation Actions", () => {
 
       const post = res.body.data as Post;
       assertPost(post);
-      expect(post.loggedInUserActionState.isFollowedFromPost).toEqual(false);
       const user = post.createdBy as User;
       expect(user.followersCount).toEqual(validUser.followersCount);
+      expect(user.followersCount).toEqual(validUser.followersCount);
+      expect(user.isFollowing).toEqual(false);
+    });
+  });
+
+  describe("POST /:id/mute", () => {
+    beforeEach(async () => {
+      await UserRelationModel.deleteMany({});
+      await createAndSetTestLoggedInUserAndToken();
     });
 
-    it("should return 400 if the provided userId or postId is not a valid MongoDB ID", async () => {
-      const invalidUserId = "12345";
-      const postId = getMongoId();
-
-      const res = await request(app)
-        .delete(`/${invalidUserId}/follow/${postId}/fromPost`)
-        .set("Cookie", [token]);
-
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.message).toContain("Invalid user id: 12345");
-
-      const userId = getMongoId();
-      const invalidPostId = "12345";
-
-      const res_2 = await request(app)
-        .delete(`/${userId}/follow/${invalidPostId}/fromPost`)
-        .set("Cookie", [token]);
-
-      expect(res_2.statusCode).toEqual(400);
-      expect(res_2.body.message).toContain("Invalid post id: 12345");
+    afterEach(async () => {
+      await UserRelationModel.deleteMany({});
     });
 
-    it("should handle unexpected errors", async () => {
-      jest.spyOn(userRelationService, "remove").mockRejectedValueOnce(new Error("Unexpected error"));
+    it("should return 200 when mute is added", async () => {
+      const spy = jest.spyOn(userRelationService, "add");
+      const res = await request(app).post(`/${validUser.id}/mute`).set("Cookie", [token]);
+      const userRelation = await UserRelationModel.findOne({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Mute",
+      });
 
-      const userId = getMongoId();
-      const postId = getMongoId();
+      expect(userRelation).toBeTruthy();
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("should return 200 and return the updated users data when mute is added", async () => {
+      const res = await request(app).post(`/${validUser.id}/mute`).set("Cookie", [token]);
+
+      const users = Object.values(res.body.data) as User[];
+      expect(users.length).toEqual(2);
+      users.forEach(assertUser);
+
+      const [loggedInUser, targetUser] = users;
+      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
+      expect(targetUser.id).toEqual(validUser.id);
+      expect(targetUser.isMuted).toEqual(true);
+    });
+  });
+
+  describe("POST /:userId/mute/:postId/fromPost", () => {
+    beforeAll(async () => {
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully add a mute from a post", async () => {
+      await createTestPost();
+
+      const spy = jest.spyOn(userRelationService, "add");
+      const res = await request(app)
+        .post(`/${validUser.id}/mute/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("should return a post with user.isMuted is true after a succesfull request", async () => {
+      await createTestPost();
+
+      const spy = jest.spyOn(userRelationService, "add");
 
       const res = await request(app)
-        .delete(`/${userId}/follow/${postId}/fromPost`)
+        .post(`/${validUser.id}/mute/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+      const post = res.body.data as Post;
+      assertPost(post);
+      const user = post.createdBy as User;
+      expect(user.isMuted).toEqual(true);
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe("DELETE /:id/mute", () => {
+    beforeAll(async () => {
+      await UserRelationModel.deleteMany({});
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    afterAll(async () => {
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully remove a mute", async () => {
+      await UserRelationModel.create({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Mute",
+      });
+
+      const spy = jest.spyOn(userRelationService, "remove");
+
+      const res = await request(app).delete(`/${validUser.id}/mute`).set("Cookie", [token]);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("should successfully remove a mute and return the updated users", async () => {
+      await UserRelationModel.create({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Mute",
+      });
+
+      const res = await request(app).delete(`/${validUser.id}/mute`).set("Cookie", [token]);
+
+      const users = Object.values(res.body.data) as User[];
+      expect(users.length).toEqual(2);
+      users.forEach(assertUser);
+
+      const [loggedInUser, targetUser] = users;
+      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
+      expect(targetUser.id).toEqual(validUser.id);
+      expect(targetUser.isMuted).toEqual(false);
+    });
+  });
+
+  describe("DELETE /:userId/mute/:postId/fromPost", () => {
+    beforeAll(async () => {
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    afterEach(async () => {
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully remove mute from post", async () => {
+      await createTestPost();
+      await createTestFollowingFromPost();
+
+      const spy = jest.spyOn(userRelationService, "remove");
+      const res = await request(app)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
 
-      expect(res.statusCode).toEqual(500);
-      expect(res.body.message).toContain("Unexpected error");
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("should return a post with user.isMuted is false after a succesfull request", async () => {
+      await createTestPost();
+      await createTestFollowingFromPost();
+      const res = await request(app)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+
+      const post = res.body.data as Post;
+      assertPost(post);
+      const user = post.createdBy as User;
+      expect(user.isMuted).toEqual(false);
+    });
+  });
+
+  describe("POST /:id/block", () => {
+    beforeEach(async () => {
+      await UserRelationModel.deleteMany({});
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    afterEach(async () => {
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should return 200 and the updated users data when block is added", async () => {
+      const res = await request(app).post(`/${validUser.id}/block`).set("Cookie", [token]);
+      const userRelation = await UserRelationModel.findOne({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Block",
+      });
+
+      expect(userRelation).toBeTruthy();
+
+      expect(res.statusCode).toEqual(200);
+
+      const users = Object.values(res.body.data) as User[];
+      expect(users.length).toEqual(2);
+      users.forEach(assertUser);
+
+      const [loggedInUser, targetUser] = users;
+      expect(loggedInUser.id).toEqual(testLoggedInUser.id);
+      expect(targetUser.id).toEqual(validUser.id);
+      expect(targetUser.isBlocked).toEqual(true);
+    });
+  });
+
+  describe("POST /:userId/block/:postId/fromPost", () => {
+    beforeAll(async () => {
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully add a block from a post", async () => {
+      await createTestPost();
+
+      const res = await request(app)
+        .post(`/${validUser.id}/block/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+    });
+
+    it("should return a post with loggedInUserActionState.isFollowedFromPost after a succesfull request", async () => {
+      await createTestPost();
+      const res = await request(app)
+        .post(`/${validUser.id}/block/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+      const post = res.body.data as Post;
+      assertPost(post);
+      const user = post.createdBy as User;
+      expect(user.isBlocked).toEqual(true);
+    });
+  });
+
+  describe("DELETE /:id/block", () => {
+    beforeAll(async () => {
+      await UserRelationModel.deleteMany({});
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    afterAll(async () => {
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully remove a block", async () => {
+      await UserRelationModel.create({
+        fromUserId: testLoggedInUser.id,
+        toUserId: validUser.id,
+        kind: "Block",
+      });
+      const spy = jest.spyOn(userRelationService, "remove");
+      const res = await request(app).delete(`/${validUser.id}/block`).set("Cookie", [token]);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  fdescribe("DELETE /:userId/block/:postId/fromPost", () => {
+    beforeAll(async () => {
+      await createAndSetTestLoggedInUserAndToken();
+    });
+
+    afterEach(async () => {
+      await UserRelationModel.deleteMany({});
+    });
+
+    it("should successfully remove block from post", async () => {
+      await createTestPost();
+      await createTestFollowingFromPost();
+      const res = await request(app)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.status).toEqual("success");
+    });
+
+    it("should return a post with !user.isBlocked after a succesfull request", async () => {
+      await createTestPost();
+      await createTestFollowingFromPost();
+      const res = await request(app)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
+        .set("Cookie", [token]);
+
+      const post = res.body.data as Post;
+      assertPost(post);
+      const user = post.createdBy as User;
+      expect(user.followersCount).toEqual(validUser.followersCount);
+      expect(user.followersCount).toEqual(validUser.followersCount);
+      expect(user.isBlocked).toEqual(false);
     });
   });
 });

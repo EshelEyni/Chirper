@@ -25,6 +25,7 @@ import { BsTrash } from "react-icons/bs";
 import { RiBarChartGroupedFill, RiPushpin2Line } from "react-icons/ri";
 import { useRemovePost } from "../../../hooks/reactQuery/post/useRemovePost";
 import { useUpdatePost } from "../../../hooks/reactQuery/post/useUpdatePost";
+import { FaRobot } from "react-icons/fa";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
@@ -93,6 +94,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
                 <span className="post-preview-header-full-name">{user.fullname}</span>
                 {user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
                 {user.isAdmin && <Logo options={logoOptions} />}
+                {user.isBot && <FaRobot size={20} color="var(--color-primary)" />}
               </div>
             </Modal.ModalHoverOpen>
             <Modal.ModalHoverOpen modalName="userPreview/fullname" modalHeight={200}>

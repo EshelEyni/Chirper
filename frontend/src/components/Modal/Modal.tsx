@@ -14,7 +14,7 @@ import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
 import { useOutsideClick } from "../../hooks/app/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
-import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../shared/interfaces/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { usePostPreview } from "../../contexts/PostPreviewContext";
@@ -346,7 +346,7 @@ const Window: FC<WindowProps> = ({
 
 const PostPreviewUserModalContent: FC = () => {
   const { post, onNavigateToProfile, onToggleFollow } = usePostPreview();
-  const user = post.createdBy as MiniUser;
+  const user = post.createdBy as User;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const followingStats = [
     {

@@ -1,7 +1,7 @@
 require("dotenv").config();
 import mongoose from "mongoose";
 import { LoggedInUserActionState, Poll, Post } from "../../../shared/interfaces/post.interface";
-import { MiniUser, User, UserCredenitials } from "../../../shared/interfaces/user.interface";
+import { User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { UserModel } from "../api/user/models/user/user.model";
 import { AppError } from "./error/error.service";
 import tokenService from "./token/token.service";
@@ -78,7 +78,6 @@ function assertLoggedInUserState(loggedInUserState: LoggedInUserActionState) {
     isViewed: expect.any(Boolean),
     isDetailedViewed: expect.any(Boolean),
     isProfileViewed: expect.any(Boolean),
-    isFollowedFromPost: expect.any(Boolean),
     isHashTagClicked: expect.any(Boolean),
     isLinkClicked: expect.any(Boolean),
     isBookmarked: expect.any(Boolean),
@@ -89,8 +88,8 @@ function assertLoggedInUserState(loggedInUserState: LoggedInUserActionState) {
   });
 }
 
-function assertMiniUser(miniUser: MiniUser) {
-  expect(miniUser).toEqual(
+function assertMiniUser(User: User) {
+  expect(User).toEqual(
     expect.objectContaining({
       id: expect.any(String),
       username: expect.any(String),

@@ -89,7 +89,6 @@ export type LoggedInUserActionState = {
   isViewed: boolean;
   isDetailedViewed: boolean;
   isProfileViewed: boolean;
-  isFollowedFromPost: boolean;
   isHashTagClicked: boolean;
   isLinkClicked: boolean;
   isBookmarked: boolean;

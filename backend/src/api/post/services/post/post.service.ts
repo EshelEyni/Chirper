@@ -3,7 +3,7 @@ import { APIFeatures, QueryObj } from "../../../../services/util/util.service";
 import { PostModel } from "../../models/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
-import { MiniUser } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/interfaces/user.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
@@ -79,7 +79,7 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   for (const post of posts) {
     const currCreatedById = post.createdById.toString();
 
-    const user = usersMap.get(currCreatedById) as unknown as MiniUser;
+    const user = usersMap.get(currCreatedById) as unknown as User;
     post.createdBy = user;
     post.loggedInUserActionState = loggedInUserStatesMap[post.id];
     post.createdBy.isFollowing = isFollowingMap[currCreatedById];

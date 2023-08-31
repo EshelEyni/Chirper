@@ -1,6 +1,12 @@
 import mongoose, { model } from "mongoose";
 import { UserModel } from "../user/user.model";
 
+export enum UserRelationKind {
+  Follow = "Follow",
+  Block = "Block",
+  Mute = "Mute",
+}
+
 const userRelationSchema = new mongoose.Schema(
   {
     fromUserId: {
@@ -63,11 +69,20 @@ export interface IFollower extends IUserRelationBase, mongoose.Document {}
 
 const UserRelationModel = model<IFollower>("UserRelation", userRelationSchema, "user_relations");
 
-const FollowerModel = UserRelationModel.discriminator<IFollower>("Follow", new mongoose.Schema({}));
+const FollowerModel = UserRelationModel.discriminator<IFollower>(
+  UserRelationKind.Follow,
+  new mongoose.Schema({})
+);
 
-const MuteModel = UserRelationModel.discriminator<IFollower>("Mute", new mongoose.Schema({}));
+const MuteModel = UserRelationModel.discriminator<IFollower>(
+  UserRelationKind.Mute,
+  new mongoose.Schema({})
+);
 
-const BlockModel = UserRelationModel.discriminator<IFollower>("Block", new mongoose.Schema({}));
+const BlockModel = UserRelationModel.discriminator<IFollower>(
+  UserRelationKind.Block,
+  new mongoose.Schema({})
+);
 
 export { UserRelationModel, FollowerModel, BlockModel, MuteModel };
 

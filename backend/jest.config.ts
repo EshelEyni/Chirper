@@ -1,9 +1,9 @@
 import type { Config } from "@jest/types";
 
-const isGlobalTesting = true;
-// const isGlobalTesting = false;
+// const isGlobalTesting = true;
+const isGlobalTesting = false;
 
-const currPath = "/api/post/router";
+const currPath = "/api/user/routers";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 
 // const collectCoverage = true;

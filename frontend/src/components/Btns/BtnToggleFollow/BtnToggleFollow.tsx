@@ -1,9 +1,9 @@
 import { FC, useState } from "react";
-import { MiniUser } from "../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../shared/interfaces/user.interface";
 import "./BtnToggleFollow.scss";
 
 type BtnToggleFollowProps = {
-  user: MiniUser;
+  user: User;
   handleBtnClick: () => void;
 };
 

@@ -23,7 +23,7 @@
         position: relative;
         display: flex;
         align-items: center;
-        gap: rem(3px);
+        gap: rem(5px);
         @include modal-hover-guard;
         cursor: pointer;
 

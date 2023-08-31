@@ -2,7 +2,7 @@ import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { UserRelationModel } from "../user-relation/user-relation.model";
+import { UserRelationKind, UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
 
 export interface IUser extends Document {
@@ -33,6 +33,8 @@ export interface IUser extends Document {
   _followingCount: number;
   _followersCount: number;
   _isFollowing: boolean;
+  _isMuted: boolean;
+  _isBlocked: boolean;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -154,6 +156,24 @@ userSchema
     this._isFollowing = value;
   });
 
+userSchema
+  .virtual("isMuted")
+  .get(function () {
+    return this._isMuted;
+  })
+  .set(function (value) {
+    this._isMuted = value;
+  });
+
+userSchema
+  .virtual("isBlocked")
+  .get(function () {
+    return this._isBlocked;
+  })
+  .set(function (value) {
+    this._isBlocked = value;
+  });
+
 userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   const options = this.getOptions();
   if (options.active === false) return next();
@@ -187,15 +207,20 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     const followingCountMap = Object.fromEntries(followingCounts.map(x => [x._id, x.count]));
     const followersCountMap = Object.fromEntries(followersCounts.map(x => [x._id, x.count]));
 
-    // Get the following map for all user IDs
-    const isFollowingMap = await userRelationService.getIsFollowing(...userIds);
+    // Get the user relation map for all user IDs
+    const userRelationMap = await userRelationService.getUserRelation(
+      [UserRelationKind.Follow, UserRelationKind.Mute, UserRelationKind.Block],
+      ...userIds
+    );
 
     // Iterate through the documents and set the counts and following status
     for (const doc of docs) {
       const userId = doc._id.toString();
       doc._followingCount = followingCountMap[userId] ?? 0;
       doc._followersCount = followersCountMap[userId] ?? 0;
-      doc._isFollowing = isFollowingMap[userId] ?? false;
+      doc._isFollowing = userRelationMap[userId].isFollowing ?? false;
+      doc._isMuted = userRelationMap[userId].isMuted ?? false;
+      doc._isBlocked = userRelationMap[userId].isBlocked ?? false;
     }
   } else {
     const doc = res;
@@ -211,11 +236,18 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
         skipHooks: true,
       }
     );
-    const isFollowingMap = await userRelationService.getIsFollowing(userId);
 
     doc._followingCount = followingCount ?? 0;
     doc._followersCount = followersCount ?? 0;
-    doc._isFollowing = isFollowingMap[userId] ?? false;
+
+    const userRelationMap = await userRelationService.getUserRelation(
+      [UserRelationKind.Follow, UserRelationKind.Mute, UserRelationKind.Block],
+      userId
+    );
+
+    doc._isFollowing = userRelationMap[userId].isFollowing ?? false;
+    doc._isMuted = userRelationMap[userId].isMuted ?? false;
+    doc._isBlocked = userRelationMap[userId].isBlocked ?? false;
   }
 });
 
@@ -232,6 +264,8 @@ userSchema.post("save", async function (doc) {
   doc._followersCount = 0;
   doc._followingCount = 0;
   doc._isFollowing = false;
+  doc._isMuted = false;
+  doc._isBlocked = false;
 });
 
 userSchema.methods.checkPassword = async function (

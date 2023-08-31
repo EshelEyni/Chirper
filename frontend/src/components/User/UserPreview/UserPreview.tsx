@@ -1,9 +1,9 @@
-import { MiniUser } from "../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../shared/interfaces/user.interface";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import "./UserPreview.scss";
 
 interface UserPreviewProps {
-  user: MiniUser;
+  user: User;
   isEllipsisShown?: boolean;
   onClickFunc?: () => void;
 }

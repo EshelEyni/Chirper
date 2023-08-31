@@ -4,7 +4,7 @@ import { Logo } from "../App/Logo/Logo";
 import { NavList } from "./NavList/NavList";
 import { BtnCreatePost } from "../Btns/BtnCreatePost/BtnCreatePost";
 import { UserPreview } from "../User/UserPreview/UserPreview";
-import { MiniUser } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../shared/interfaces/user.interface";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
 import { userLogout } from "../../store/slices/authSlice";
@@ -68,7 +68,7 @@ export const SideBar = () => {
         <Modal>
           <Modal.OpenBtn modalName="side-bar-options" setPositionByRef={true} modalHeight={400}>
             <div className="user-preview-container">
-              <UserPreview user={loggedInUser as MiniUser} isEllipsisShown={true} />
+              <UserPreview user={loggedInUser as User} isEllipsisShown={true} />
             </div>
           </Modal.OpenBtn>
 

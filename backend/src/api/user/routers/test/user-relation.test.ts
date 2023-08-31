@@ -16,7 +16,7 @@ import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import cookieParser from "cookie-parser";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
-import { PostModel } from "../../../post/models/post.model";
+import { PostModel } from "../../../post/models/post/post.model";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
 import mongoose from "mongoose";

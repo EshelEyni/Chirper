@@ -8,7 +8,7 @@ import tokenService from "./token/token.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { BotPrompt } from "../../../shared/interfaces/bot.interface";
 import ansiColors from "ansi-colors";
-import { PostModel } from "../api/post/models/post.model";
+import { PostModel } from "../api/post/models/post/post.model";
 
 type CreateTestUserOptions = {
   id?: string;

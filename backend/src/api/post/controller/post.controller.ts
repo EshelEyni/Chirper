@@ -8,7 +8,7 @@ import {
   validatePatchRequestBody,
 } from "../../../services/error/error.service";
 import { deleteOne, getAll } from "../../../services/factory/factory.service";
-import { PostModel } from "../models/post.model";
+import { PostModel } from "../models/post/post.model";
 import repostService from "../services/repost/repost.service";
 import likeService from "../services/like/like.service";
 import bookmarkService from "../services/bookmark/bookmark.service";

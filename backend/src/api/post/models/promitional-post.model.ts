@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { postSchema } from "./post.model";
+import { postSchema } from "./post/post.model";
 
 const promotionalPostSchema = new mongoose.Schema({
   ...postSchema.obj,

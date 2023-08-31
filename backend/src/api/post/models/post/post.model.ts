@@ -1,16 +1,15 @@
 import mongoose, { Document, Query } from "mongoose";
-import { gifSchema } from "../../gif/model/gif.model";
-import { pollSchema } from "./poll.model";
+import { gifSchema } from "../../../gif/model/gif.model";
+import { pollSchema } from "../poll.model";
 import {
   Poll,
   Post,
   PostImg,
   repliedPostDetails,
-} from "../../../../../shared/interfaces/post.interface";
-// import { UserRelationModel } from "../../user/models/user-relation/user-relation.model";
-import { Gif } from "../../../../../shared/interfaces/gif.interface";
-import { Location } from "../../../../../shared/interfaces/location.interface";
-import { UserRelationModel } from "../../user/models/user-relation/user-relation.model";
+} from "../../../../../../shared/interfaces/post.interface";
+import { Gif } from "../../../../../../shared/interfaces/gif.interface";
+import { Location } from "../../../../../../shared/interfaces/location.interface";
+import { UserRelationModel } from "../../../user/models/user-relation/user-relation.model";
 
 export interface IPost extends Document {
   audience: string;
@@ -275,7 +274,6 @@ async function populateQuotedPost(doc: Document) {
 }
 
 postSchema.post("save", async function (doc: Document) {
-  console.log("postSchema.post('save')", doc);
   if (!doc) return;
   await populateCreatedBy(doc);
   if (!doc.get("quotedPostId")) return;
@@ -291,19 +289,19 @@ postSchema.post(/^find/, async function (this: Query<Document[], Post>, doc) {
   if (doc.get("quotedPost")) await populateCreatedBy(doc.get("quotedPost"));
 });
 
-// postSchema.post(/^find/, async function (this: Query<Document[], Post>, docs) {
-//   const options = this.getOptions();
-//   if (options.skipHooks || !docs || docs.length === undefined) return;
-//   for (const doc of docs) {
-//     await populateCreatedBy(doc);
-//     if (doc.get("quotedPostId")) {
-//       await populateQuotedPost(doc);
-//       if (doc.get("quotedPost")) {
-//         await populateCreatedBy(doc.get("quotedPost"));
-//       }
-//     }
-//   }
-// });
+postSchema.post(/^find/, async function (this: Query<Document[], Post>, docs) {
+  const options = this.getOptions();
+  if (options.skipHooks || !docs || docs.length === undefined) return;
+  for (const doc of docs) {
+    await populateCreatedBy(doc);
+    if (doc.get("quotedPostId")) {
+      await populateQuotedPost(doc);
+      if (doc.get("quotedPost")) {
+        await populateCreatedBy(doc.get("quotedPost"));
+      }
+    }
+  }
+});
 
 postSchema.virtual("createdBy", {
   ref: "User",

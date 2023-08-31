@@ -3,6 +3,7 @@ import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { AppError } from "../../../../services/error/error.service";
 import {
+  assertPost,
   connectToTestDB,
   createTestPost,
   createTestUser,
@@ -95,4 +96,39 @@ describe("Bookmark Post Model", () => {
       );
     });
   });
+
+  describe("Post-save hooks", () => {
+    fit("should populate the post field", async () => {
+      await deleateAndCreateMocks();
+      const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
+      const doc = (await newBookmark.save()) as any;
+
+      expect(doc.post).toBeDefined();
+      const { post } = doc.toObject();
+      console.log(post);
+      assertPost(post);
+    });
+  });
+
+  //   describe("Post-findOneAndRemove hooks", () => {
+  //     it("should populate the post field", async () => {
+  //       // implement test
+  //     });
+  //   });
+
+  //   describe("Post-find hooks", () => {
+  //     it("should populate the post field for all documents", async () => {
+  //       // implement test
+  //     });
+  //   });
 });
+
+// function mockPostModelExist(value: any) {
+//   (PostModel.exists as jest.Mock).mockReset();
+//   (PostModel.exists as jest.Mock).mockImplementation(() => {
+//     return {
+//       setOptions: jest.fn().mockReturnThis(),
+//       exec: jest.fn().mockResolvedValue(value),
+//     };
+//   });
+// }

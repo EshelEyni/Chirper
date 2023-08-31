@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { PostLikeModel } from "../../models/post-like.model";
-import { PostModel } from "../../models/post.model";
+import { PostModel } from "../../models/post/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";

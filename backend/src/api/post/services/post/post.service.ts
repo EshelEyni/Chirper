@@ -1,6 +1,6 @@
 import { Post, NewPost, PostReplyResult } from "../../../../../../shared/interfaces/post.interface";
 import { APIFeatures, QueryObj } from "../../../../services/util/util.service";
-import { PostModel } from "../../models/post.model";
+import { PostModel } from "../../models/post/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
@@ -19,16 +19,12 @@ async function query(queryString: QueryObj): Promise<Post[]> {
     .paginate();
 
   const postsDocs = (await features.getQuery().lean().exec()) as unknown as any[];
-  // TODO: Add Reposts
 
   const repostDocs = await RepostModel.find({})
     .populate("post")
     .lean()
     .populate(postUtilService.populateRepostedBy())
     .exec();
-
-  // TODO: refactor this, can be in one map function
-  // repostDocs = repostDocs.map(doc => doc.toObject());
 
   const reposts = repostDocs.map((repost: any) => {
     const { createdAt, updatedAt, post, repostedBy } = repost;

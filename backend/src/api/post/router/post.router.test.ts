@@ -46,10 +46,14 @@ describe("Post Router", () => {
       jest.clearAllMocks();
     });
 
-    it("should return a 200 status code and an array of posts", async () => {
+    fit("should return a 200 status code and an array of posts", async () => {
+      await bookmarkService.add(validPostId, validUserId);
+
       const res = await request(app).get("/bookmark").set("Cookie", [token]);
+      console.log("res.body", res.body);
 
       expect(res.status).toBe(200);
+
       expect(res.body).toEqual({
         status: "success",
         requestedAt: expect.any(String),

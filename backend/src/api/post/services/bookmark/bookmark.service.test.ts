@@ -1,7 +1,7 @@
 import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import bookmarkService from "./bookmark.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
-import followerService from "../../../user/services/user-relation/user-relation.service";
+import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { AppError } from "../../../../services/error/error.service";
 import { getMongoId } from "../../../../services/test-util.service";
 
@@ -25,7 +25,7 @@ jest.mock("../../models/bookmark-post.model", () => ({
   },
 }));
 
-jest.mock("../../../user/services/follower/follower.service");
+jest.mock("../../../user/services/user-relation/user-relation.service");
 jest.mock("../util/util.service");
 
 describe("BookmarkService", () => {
@@ -81,7 +81,7 @@ describe("BookmarkService", () => {
           [mockedBookMarkedPosts[1].post.id]: {},
         });
 
-      (followerService.getIsFollowing as jest.Mock)
+      (userRelationService.getIsFollowing as jest.Mock)
         .mockResolvedValueOnce({
           [mockedBookMarkedPosts[0].post.id]: {},
         })
@@ -109,7 +109,7 @@ describe("BookmarkService", () => {
         (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({
           [mockedBookMarkedPosts[index].post.id]: { ...actionState },
         });
-        (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+        (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
           [mockedBookMarkedPosts[index].post.createdBy.id]: {},
         });
       });
@@ -134,12 +134,14 @@ describe("BookmarkService", () => {
         (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({
           [mockedBookMarkedPosts[idx].post.id]: { ...mockedBookMarkedPosts[idx].actionState },
         });
-        (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+        (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
           [mockedBookMarkedPosts[idx].post.createdBy.id]: isFollowing,
         });
       });
       const res = await bookmarkService.get(userId);
-      expect(followerService.getIsFollowing).toHaveBeenCalledTimes(mockedBookMarkedPosts.length);
+      expect(userRelationService.getIsFollowing).toHaveBeenCalledTimes(
+        mockedBookMarkedPosts.length
+      );
 
       res.forEach((post, index) => {
         expect(post.createdBy.isFollowing).toEqual(mockIsFollowing[index]);
@@ -163,7 +165,7 @@ describe("BookmarkService", () => {
     it("should add a bookmarked post", async () => {
       (BookmarkedPostModel.create as jest.Mock).mockResolvedValueOnce(mockedBookMarkedPost);
       (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({});
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce(false);
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce(false);
 
       const res = await bookmarkService.add(postId, userId);
       expect(res).toEqual(mockedBookMarkedPost.post);
@@ -180,7 +182,7 @@ describe("BookmarkService", () => {
         [mockedBookMarkedPost.post.id]: { ...mockActionState },
       });
 
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
         [mockedBookMarkedPost.post.createdBy.id]: false,
       });
 
@@ -194,12 +196,12 @@ describe("BookmarkService", () => {
 
       (BookmarkedPostModel.create as jest.Mock).mockResolvedValueOnce(mockedBookMarkedPost);
       (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({});
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
         [mockedBookMarkedPost.post.createdBy.id]: mockIsFollowing,
       });
 
       const res = await bookmarkService.add(postId, userId);
-      expect(followerService.getIsFollowing).toHaveBeenCalledTimes(1);
+      expect(userRelationService.getIsFollowing).toHaveBeenCalledTimes(1);
       expect(res.createdBy.isFollowing).toEqual(mockIsFollowing);
     });
 
@@ -233,7 +235,7 @@ describe("BookmarkService", () => {
       );
 
       (postUtilService.getPostLoggedInUserActionState as jest.Mock).mockResolvedValueOnce({});
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
         [mockedBookMarkedPost.post.createdBy.id]: false,
       });
 
@@ -258,7 +260,7 @@ describe("BookmarkService", () => {
         [mockedBookMarkedPost.post.id]: { ...mockActionState },
       });
 
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
         [mockedBookMarkedPost.post.createdBy.id]: false,
       });
 
@@ -273,7 +275,7 @@ describe("BookmarkService", () => {
       (BookmarkedPostModel.findOneAndRemove as jest.Mock).mockResolvedValueOnce(
         mockedBookMarkedPost
       );
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValueOnce({
         [mockedBookMarkedPost.post.createdBy.id]: mockIsFollowing,
       });
 
@@ -282,7 +284,7 @@ describe("BookmarkService", () => {
       });
 
       const res = await bookmarkService.remove(postId, userId);
-      expect(followerService.getIsFollowing).toHaveBeenCalledTimes(1);
+      expect(userRelationService.getIsFollowing).toHaveBeenCalledTimes(1);
       expect(res.createdBy.isFollowing).toEqual(mockIsFollowing);
     });
 

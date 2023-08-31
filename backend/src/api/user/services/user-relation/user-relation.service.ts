@@ -81,8 +81,6 @@ async function add({
         session,
       });
 
-    // await session.commitTransaction();
-
     return await _getUsers({
       fromUserId,
       toUserId,

@@ -3,7 +3,7 @@ import { PostLikeModel } from "../../models/post-like.model";
 import { PostModel } from "../../models/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
-import followerService from "../../../user/services/user-relation/user-relation.service";
+import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService from "../util/util.service";
 
 async function add(postId: string, userId: string): Promise<Post> {
@@ -31,7 +31,7 @@ async function add(postId: string, userId: string): Promise<Post> {
 
     updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
     updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     return updatedPost;
@@ -68,7 +68,7 @@ async function remove(postId: string, userId: string): Promise<Post> {
     const currLoggedInActionState = res[updatedPost.id];
     updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
     updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     return updatedPost;

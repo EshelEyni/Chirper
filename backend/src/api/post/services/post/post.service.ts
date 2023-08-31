@@ -4,7 +4,7 @@ import { PostModel } from "../../models/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { MiniUser } from "../../../../../../shared/interfaces/user.interface";
-import followerService from "../../../user/services/user-relation/user-relation.service";
+import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
 import { UserModel } from "../../../user/models/user/user.model";
@@ -74,7 +74,7 @@ async function query(queryString: QueryObj): Promise<Post[]> {
   const userResults = await UserModel.find({ _id: { $in: uniqeUserIds } }).exec();
   const usersMap = new Map(userResults.map(user => [user.id, user.toObject()]));
   const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
-  const isFollowingMap = await followerService.getIsFollowing(...uniqeUserIds);
+  const isFollowingMap = await userRelationService.getIsFollowing(...uniqeUserIds);
 
   for (const post of posts) {
     const currCreatedById = post.createdById.toString();
@@ -104,7 +104,7 @@ async function getById(postId: string): Promise<Post | null> {
     ? currLoggedInActionState
     : loggedInUserActionDefaultState;
 
-  const isFollowingMap = await followerService.getIsFollowing(post.createdBy.id);
+  const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
   post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
   return post;
 }
@@ -116,7 +116,7 @@ async function add(post: NewPost): Promise<Post> {
   const populatedPost = postDoc.toObject() as unknown as Post;
   populatedPost.loggedInUserActionState = loggedInUserActionDefaultState;
 
-  const isFollowingMap = await followerService.getIsFollowing(populatedPost.createdBy.id);
+  const isFollowingMap = await userRelationService.getIsFollowing(populatedPost.createdBy.id);
   populatedPost.createdBy.isFollowing = isFollowingMap[populatedPost.createdBy.id];
 
   return populatedPost as unknown as Post;
@@ -170,7 +170,7 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
 
     updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
     updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     const replyDoc = await PostModel.findById(savedReply.id).exec();
@@ -203,7 +203,7 @@ async function update(id: string, post: Post): Promise<Post> {
 
   updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-  const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+  const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
   updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
   return updatedPost;

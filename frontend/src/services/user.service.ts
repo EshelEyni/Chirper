@@ -8,59 +8,34 @@ function getDefaultUserImgUrl(): string {
 }
 
 async function query(): Promise<User[]> {
-  try {
-    const respose = await httpService.get(`user`);
-    return handleServerResponse<User[]>(respose);
-  } catch (err) {
-    console.log("User service: err in query", err);
-    throw err;
-  }
+  const respose = await httpService.get(`user`);
+  return handleServerResponse<User[]>(respose);
 }
 
 async function getById(userId: string): Promise<User> {
-  try {
-    const respose = await httpService.get(`user/${userId}`);
-    return handleServerResponse<User>(respose);
-  } catch (err) {
-    console.log("User service: err in getById", err);
-    throw err;
-  }
+  const respose = await httpService.get(`user/${userId}`);
+  return handleServerResponse<User>(respose);
 }
 
 async function getByUsername(username: string): Promise<User> {
-  try {
-    const respose = await httpService.get(`user/username/${username}`);
-    return handleServerResponse<User>(respose);
-  } catch (err) {
-    console.log("User service: err in getByUsername", err);
-    throw err;
-  }
+  const respose = await httpService.get(`user/username/${username}`);
+  return handleServerResponse<User>(respose);
 }
 
 async function followUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
-  try {
-    const endpoint = _getFollowingEndpoint(userId, postId);
-    const respose = await httpService.post(endpoint);
-    return handleServerResponse<FollowingResult | Post>(respose);
-  } catch (err) {
-    console.log("User service: err in addFollowiing", err);
-    throw err;
-  }
+  const endpoint = _getFollowingEndpoint(userId, postId);
+  const respose = await httpService.post(endpoint);
+  return handleServerResponse<FollowingResult | Post>(respose);
 }
 
 async function unFollowUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
-  try {
-    const endpoint = _getFollowingEndpoint(userId, postId);
-    const respose = await httpService.delete(endpoint);
-    return handleServerResponse<FollowingResult | Post>(respose);
-  } catch (err) {
-    console.log("User service: err in removeFollowiing", err);
-    throw err;
-  }
+  const endpoint = _getFollowingEndpoint(userId, postId);
+  const respose = await httpService.delete(endpoint);
+  return handleServerResponse<FollowingResult | Post>(respose);
 }
 
 function _getFollowingEndpoint(userId: string, postId?: string): string {
-  return postId ? `user/${userId}/following/${postId}/fromPost` : `user/follow/${userId}`;
+  return postId ? `user/${userId}/follow/${postId}/fromPost` : `user/follow/${userId}`;
 }
 
 export default {

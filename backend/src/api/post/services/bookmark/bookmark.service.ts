@@ -1,6 +1,6 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
-import followerService from "../../../user/services/user-relation/user-relation.service";
+import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { BookmarkedPostModel } from "../../models/bookmark-post.model";
 import postUtilService from "../util/util.service";
 
@@ -21,7 +21,7 @@ async function get(loggedInUserId: string): Promise<Post[]> {
     const res = await postUtilService.getPostLoggedInUserActionState(post.id);
     const currLoggedInActionState = res[post.id];
     post.loggedInUserActionState = currLoggedInActionState;
-    const isFollowingMap = await followerService.getIsFollowing(post.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
     post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
 
     return post;
@@ -45,7 +45,7 @@ async function add(postId: string, loggedInUserId: string): Promise<Post> {
 
   post.loggedInUserActionState = currLoggedInActionState;
 
-  const isFollowingMap = await followerService.getIsFollowing(post.createdBy.id);
+  const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
   post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
 
   return post;
@@ -67,7 +67,7 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
 
   post.loggedInUserActionState = currLoggedInActionState;
 
-  const isFollowingMap = await followerService.getIsFollowing(post.createdBy.id);
+  const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
   post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
 
   return post;

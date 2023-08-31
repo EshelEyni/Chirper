@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";
-import followerService from "../../services/user-relation/user-relation.service";
+import userRelationService from "../../services/user-relation/user-relation.service";
 
 export interface IUser extends Document {
   username: string;
@@ -188,7 +188,7 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     const followersCountMap = Object.fromEntries(followersCounts.map(x => [x._id, x.count]));
 
     // Get the following map for all user IDs
-    const isFollowingMap = await followerService.getIsFollowing(...userIds);
+    const isFollowingMap = await userRelationService.getIsFollowing(...userIds);
 
     // Iterate through the documents and set the counts and following status
     for (const doc of docs) {
@@ -211,7 +211,7 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
         skipHooks: true,
       }
     );
-    const isFollowingMap = await followerService.getIsFollowing(userId);
+    const isFollowingMap = await userRelationService.getIsFollowing(userId);
 
     doc._followingCount = followingCount ?? 0;
     doc._followersCount = followersCount ?? 0;

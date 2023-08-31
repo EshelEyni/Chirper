@@ -1,13 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { AppError, asyncErrorCatcher } from "../../../../services/error/error.service";
-import {
-  addFollowings,
-  addFollowingsFromPost,
-  removeFollowings,
-  removeFollowingsFromPost,
-} from "./user-relation.controller";
-import followerService from "../../services/user-relation/user-relation.service";
+import { addFollow, removeFollow } from "./user-relation.controller";
+import userRelationService from "../../services/user-relation/user-relation.service";
 import { getMongoId } from "../../../../services/test-util.service";
 
 jest.mock("../../services/user-relation/user-relation.service");
@@ -51,9 +46,9 @@ describe("User Relation Controller", () => {
       jest.clearAllMocks();
     });
 
-    fit("should throw an error if no user id is provided", async () => {
+    it("should throw an error if no user id is provided", async () => {
       req.params = {};
-      const sut = addFollowings as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -65,7 +60,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if user id is not a valid MongoDB id", async () => {
       req.params!.id = "123";
-      const sut = addFollowings as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -76,10 +71,10 @@ describe("User Relation Controller", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      (followerService.add as jest.Mock).mockImplementationOnce(() => {
+      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
-      const sut = addFollowings as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -91,8 +86,8 @@ describe("User Relation Controller", () => {
 
     it("should add followings and return updated user data", async () => {
       const mockUpdatedUser = { id: "12345", username: "TestUser" };
-      (followerService.add as jest.Mock).mockResolvedValue(mockUpdatedUser);
-      const sut = addFollowings as any;
+      (userRelationService.add as jest.Mock).mockResolvedValue(mockUpdatedUser);
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
@@ -100,11 +95,11 @@ describe("User Relation Controller", () => {
       });
     });
 
-    it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.add as jest.Mock).mockImplementationOnce(() => {
+    it("should pass errors from the userRelationService to the next middleware", async () => {
+      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
-      const sut = addFollowings as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
     });
@@ -127,7 +122,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if no user id is provided", async () => {
       req.params = {};
-      const sut = removeFollowings as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -138,10 +133,10 @@ describe("User Relation Controller", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
+      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
-      const sut = removeFollowings as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -153,7 +148,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if user id is not a valid MongoDB id", async () => {
       req.params!.id = "123";
-      const sut = removeFollowings as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -165,8 +160,8 @@ describe("User Relation Controller", () => {
 
     it("should remove followings and return updated user data", async () => {
       const mockUpdatedUser = { id: "12345", username: "TestUser" };
-      (followerService.remove as jest.Mock).mockResolvedValue(mockUpdatedUser);
-      const sut = removeFollowings as any;
+      (userRelationService.remove as jest.Mock).mockResolvedValue(mockUpdatedUser);
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
@@ -174,11 +169,11 @@ describe("User Relation Controller", () => {
       });
     });
 
-    it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
+    it("should pass errors from the userRelationService to the next middleware", async () => {
+      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
-      const sut = removeFollowings as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
     });
@@ -204,7 +199,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if no user id is provided", async () => {
       delete req.params!.userId;
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -216,7 +211,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if user id is not a valid MongoDB id", async () => {
       req.params!.userId = "123";
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -228,7 +223,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if no post id is provided", async () => {
       delete req.params!.postId;
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -240,7 +235,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if post id is not a valid MongoDB id", async () => {
       req.params!.postId = "123";
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -251,10 +246,10 @@ describe("User Relation Controller", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      (followerService.add as jest.Mock).mockImplementationOnce(() => {
+      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -266,8 +261,8 @@ describe("User Relation Controller", () => {
 
     it("should add followings from post and return updated post data", async () => {
       const mockUpdatedPost = { id: "67890", title: "TestPost" };
-      (followerService.add as jest.Mock).mockResolvedValue(mockUpdatedPost);
-      const sut = addFollowingsFromPost as any;
+      (userRelationService.add as jest.Mock).mockResolvedValue(mockUpdatedPost);
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
@@ -275,11 +270,11 @@ describe("User Relation Controller", () => {
       });
     });
 
-    it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.add as jest.Mock).mockImplementationOnce(() => {
+    it("should pass errors from the userRelationService to the next middleware", async () => {
+      (userRelationService.add as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
-      const sut = addFollowingsFromPost as any;
+      const sut = addFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
     });
@@ -305,7 +300,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if no user id is provided", async () => {
       delete req.params!.userId;
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -317,7 +312,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if user id is not a valid MongoDB id", async () => {
       req.params!.userId = "123";
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -329,7 +324,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if no post id is provided", async () => {
       delete req.params!.postId;
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -341,7 +336,7 @@ describe("User Relation Controller", () => {
 
     it("should throw an error if post id is not a valid MongoDB id", async () => {
       req.params!.postId = "123";
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -352,10 +347,10 @@ describe("User Relation Controller", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
+      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new AppError("User not found", 404);
       });
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -367,8 +362,8 @@ describe("User Relation Controller", () => {
 
     it("should remove followings from post and return updated post data", async () => {
       const mockUpdatedPost = { id: "67890", title: "TestPost" };
-      (followerService.remove as jest.Mock).mockResolvedValue(mockUpdatedPost);
-      const sut = removeFollowingsFromPost as any;
+      (userRelationService.remove as jest.Mock).mockResolvedValue(mockUpdatedPost);
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
@@ -376,11 +371,11 @@ describe("User Relation Controller", () => {
       });
     });
 
-    it("should pass errors from the followerService to the next middleware", async () => {
-      (followerService.remove as jest.Mock).mockImplementationOnce(() => {
+    it("should pass errors from the userRelationService to the next middleware", async () => {
+      (userRelationService.remove as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Test error");
       });
-      const sut = removeFollowingsFromPost as any;
+      const sut = removeFollow as any;
       await sut(req as Request, res as Response, nextMock);
       expect(nextMock).toHaveBeenCalledWith(new Error("Test error"));
     });

@@ -8,11 +8,17 @@ import tokenService from "./token/token.service";
 import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { BotPrompt } from "../../../shared/interfaces/bot.interface";
 import ansiColors from "ansi-colors";
+import { PostModel } from "../api/post/models/post.model";
 
 type CreateTestUserOptions = {
   id?: string;
   isAdmin?: boolean;
   isBot?: boolean;
+};
+
+type CreateTestPostOptions = {
+  id?: string;
+  createdById?: string;
 };
 
 async function connectToTestDB({ isRemoteDB = false } = {}) {
@@ -239,6 +245,19 @@ function getMockedUser({
   };
 }
 
+async function createTestPost({ id, createdById }: CreateTestPostOptions = {}): Promise<Post> {
+  await PostModel.findByIdAndDelete(id);
+  return await PostModel.create({
+    _id: id || getMongoId(),
+    createdById: createdById || (await createTestUser({})).id,
+    text: "test post",
+  });
+}
+
+async function deleteTestPost(id: string) {
+  await PostModel.findByIdAndDelete(id);
+}
+
 export {
   connectToTestDB,
   assertUser,
@@ -255,4 +274,6 @@ export {
   assertPoll,
   assertPostImgs,
   assertBotPrompt,
+  createTestPost,
+  deleteTestPost,
 };

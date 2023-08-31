@@ -1,11 +1,11 @@
 import { APIFeatures } from "../../../../services/util/util.service";
 import { UserModel } from "../../models/user/user.model";
 import userService from "./user.service";
-import followerService from "../user-relation/user-relation.service";
+import userRelationService from "../user-relation/user-relation.service";
 
 jest.mock("../../../../services/util/util.service");
 jest.mock("../../models/user/user.model");
-jest.mock("../follower/follower.service");
+jest.mock("../user-relation/user-relation.service");
 
 describe("User Service", () => {
   const mockToObject = jest.fn().mockReturnThis();
@@ -44,7 +44,7 @@ describe("User Service", () => {
     });
 
     it("should return users", async () => {
-      (followerService.getIsFollowing as jest.Mock).mockResolvedValue({});
+      (userRelationService.getIsFollowing as jest.Mock).mockResolvedValue({});
 
       // Act
       const result = await userService.query({});

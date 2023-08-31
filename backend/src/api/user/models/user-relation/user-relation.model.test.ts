@@ -127,7 +127,7 @@ describe("User Relation Model", () => {
       expect(follower).toBeDefined();
       expect(follower.fromUserId.toString()).toEqual(fromUser.id.toString());
       expect(follower.toUserId.toString()).toEqual(toUser.id.toString());
-      expect(follower.kind).toBe("Follower");
+      expect(follower.kind).toBe("Follow");
     });
 
     it("should create a Mute document", async () => {

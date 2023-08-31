@@ -14,7 +14,7 @@ type CreateRelationMiddleWareParams = {
   kind: "Follow" | "Block" | "Mute";
 };
 
-const addFollowings = asyncErrorCatcher(
+const addFollow = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const addUserRelationMiddleware = createUserRelationMiddleware({
       action: "add",
@@ -24,7 +24,7 @@ const addFollowings = asyncErrorCatcher(
   }
 );
 
-const removeFollowings = asyncErrorCatcher(
+const removeFollow = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const removeUserRelationMiddleware = createUserRelationMiddleware({
       action: "remove",
@@ -34,27 +34,50 @@ const removeFollowings = asyncErrorCatcher(
   }
 );
 
-const addFollowingsFromPost = asyncErrorCatcher(
+const addBlock = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const addUserRelationMiddleware = createUserRelationMiddleware({
       action: "add",
-      kind: "Follow",
+      kind: "Block",
     });
 
     await addUserRelationMiddleware(req, res, next);
   }
 );
 
-const removeFollowingsFromPost = asyncErrorCatcher(
+const removeBlock = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const removeUserRelationMiddleware = createUserRelationMiddleware({
       action: "remove",
-      kind: "Follow",
+      kind: "Block",
     });
 
     await removeUserRelationMiddleware(req, res, next);
   }
 );
+
+const addMute = asyncErrorCatcher(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const addUserRelationMiddleware = createUserRelationMiddleware({
+      action: "add",
+      kind: "Mute",
+    });
+
+    await addUserRelationMiddleware(req, res, next);
+  }
+);
+
+const removeMute = asyncErrorCatcher(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const removeUserRelationMiddleware = createUserRelationMiddleware({
+      action: "remove",
+      kind: "Mute",
+    });
+
+    await removeUserRelationMiddleware(req, res, next);
+  }
+);
+
 const createUserRelationMiddleware = ({ action, kind }: CreateRelationMiddleWareParams) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const toUserId = req.params.id || req.params.userId;
@@ -78,4 +101,4 @@ const createUserRelationMiddleware = ({ action, kind }: CreateRelationMiddleWare
   };
 };
 
-export { addFollowings, removeFollowings, addFollowingsFromPost, removeFollowingsFromPost };
+export { addFollow, removeFollow, addBlock, removeBlock, addMute, removeMute };

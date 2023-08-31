@@ -8,9 +8,11 @@ import { BookmarkedPostModel } from "../models/bookmark-post.model";
 import {
   assertPost,
   connectToTestDB,
+  createTestPost,
+  createTestUser,
+  deleteTestPost,
+  deleteTestUser,
   getLoginTokenStrForTest,
-  getValidPostId,
-  getValidUserId,
 } from "../../../services/test-util.service";
 import cookieParser from "cookie-parser";
 import bookmarkService from "../services/bookmark/bookmark.service";
@@ -28,12 +30,14 @@ describe("Post Router", () => {
 
   beforeAll(async () => {
     await connectToTestDB();
-    validUserId = await getValidUserId();
-    validPostId = await getValidPostId();
+    validUserId = (await createTestUser({})).id;
+    validPostId = (await createTestPost({ createdById: validUserId })).id;
     token = getLoginTokenStrForTest(validUserId);
   });
 
   afterAll(async () => {
+    await deleteTestPost(validPostId);
+    await deleteTestUser(validUserId);
     await mongoose.connection.close();
   });
 
@@ -140,8 +144,10 @@ describe("Post Router", () => {
       jest.clearAllMocks();
     });
 
-    xit("should return a 200 status code and the bookmarked post", async () => {
+    fit("should return a 200 status code and the bookmarked post", async () => {
       const res = await request(app).post(`/${validPostId}/bookmark`).set("Cookie", [token]);
+
+      console.log(res.body);
       expect(res.status).toBe(201);
       expect(res.body).toEqual({
         status: "success",
@@ -252,7 +258,7 @@ describe("Post Router", () => {
       jest.clearAllMocks();
     });
 
-    xit("should return a 200 status code and the deleted bookmarked post", async () => {
+    it("should return a 200 status code and the deleted bookmarked post", async () => {
       await BookmarkedPostModel.create({
         postId: validPostId,
         bookmarkOwnerId: validUserId,

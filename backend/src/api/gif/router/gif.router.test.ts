@@ -8,8 +8,9 @@ import {
   assertGif,
   assertGifCategory,
   connectToTestDB,
+  createTestUser,
+  deleteTestUser,
   getLoginTokenStrForTest,
-  getValidUserId,
 } from "../../../services/test-util.service";
 import mongoose from "mongoose";
 
@@ -22,11 +23,12 @@ describe("Gif Router", () => {
 
   beforeAll(async () => {
     await connectToTestDB();
-    validUserId = await getValidUserId();
+    validUserId = (await createTestUser({})).id;
     token = getLoginTokenStrForTest(validUserId);
   });
 
   afterAll(async () => {
+    await deleteTestUser(validUserId);
     await mongoose.connection.close();
   });
 

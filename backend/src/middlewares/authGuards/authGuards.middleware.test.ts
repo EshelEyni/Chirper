@@ -6,18 +6,20 @@ import mongoose from "mongoose";
 import { UserModel } from "../../api/user/models/user/user.model";
 
 jest.mock("../../services/token/token.service");
-jest.mock("../../api/user/models/user/user.model", () => ({
-  UserModel: {
-    findById: jest.fn().mockReturnValue({
-      setOptions: jest.fn().mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null), // Replace null with the desired object
+jest.mock("../../api/user/models/user/user.model", () => {
+  return {
+    UserModel: {
+      findById: jest.fn().mockReturnValue({
+        setOptions: jest.fn().mockReturnValue({
+          exec: jest.fn(),
+        }),
       }),
-    }),
-  },
-}));
+    },
+  };
+});
 
 describe("Auth Guards Middleware", () => {
-  fdescribe("checkUserAuthentication", () => {
+  describe("checkUserAuthentication", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let next: jest.Mock;
@@ -57,6 +59,9 @@ describe("Auth Guards Middleware", () => {
         id: "invalid",
         timeStamp: Date.now(),
       });
+
+      setMockUserModel("123");
+
       next = jest.fn().mockImplementation(err => {
         expect(next).toHaveBeenCalledWith(expect.any(AppError));
         expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: "Invalid User Id" }));
@@ -64,16 +69,16 @@ describe("Auth Guards Middleware", () => {
       checkUserAuthentication(req as Request, res as Response, next);
     });
 
-    fit("should call next with an error if the user does not exist", done => {
+    it("should call next with an error if the user does not exist", done => {
       (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("token");
       (tokenService.verifyToken as jest.Mock).mockReturnValue({
         id: new mongoose.Types.ObjectId(),
         timeStamp: Date.now(),
       });
-      (UserModel.findById as jest.Mock).mockResolvedValue(null);
+
+      setMockUserModel(null);
 
       next = jest.fn().mockImplementation(err => {
-        console.log(err);
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(
           expect.objectContaining({ message: "The user belonging to this token does not exist." })
@@ -93,7 +98,8 @@ describe("Auth Guards Middleware", () => {
         id: new mongoose.Types.ObjectId(),
         timeStamp: Date.now(),
       });
-      (UserModel.findById as jest.Mock).mockReturnValue(user);
+
+      setMockUserModel(user);
 
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
@@ -115,7 +121,8 @@ describe("Auth Guards Middleware", () => {
       };
       (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("token");
       (tokenService.verifyToken as jest.Mock).mockReturnValue({ id, timeStamp: Date.now() });
-      (UserModel.findById as jest.Mock).mockReturnValue(user);
+
+      setMockUserModel(user);
 
       next = jest.fn().mockImplementation(() => {
         expect(req.loggedInUserId).toBe(id);
@@ -155,7 +162,9 @@ describe("Auth Guards Middleware", () => {
 
     it("should call next with an error if the user does not exist", done => {
       req.loggedInUserId = validMongoId;
-      (UserModel.findById as jest.Mock).mockResolvedValue(null);
+
+      setMockUserModel(null);
+
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(expect.objectContaining({ message: "User not found" }));
@@ -167,7 +176,9 @@ describe("Auth Guards Middleware", () => {
     it("should call next with an error if the user is not an admin", done => {
       const user = { isAdmin: false };
       req.loggedInUserId = validMongoId;
-      (UserModel.findById as jest.Mock).mockResolvedValue(user);
+
+      setMockUserModel(user);
+
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(
@@ -181,7 +192,9 @@ describe("Auth Guards Middleware", () => {
     it("should call next with no arguments if the user is an admin", done => {
       const user = { isAdmin: true };
       req.loggedInUserId = validMongoId;
-      (UserModel.findById as jest.Mock).mockResolvedValue(user);
+
+      setMockUserModel(user);
+
       next = jest.fn().mockImplementation(() => {
         expect(next).toHaveBeenCalled();
         done();
@@ -190,3 +203,15 @@ describe("Auth Guards Middleware", () => {
     });
   });
 });
+
+function setMockUserModel(value: any) {
+  UserModel.findById = jest.fn().mockImplementation(() => {
+    return {
+      setOptions: jest.fn().mockImplementation(() => {
+        return {
+          exec: jest.fn().mockResolvedValue(value),
+        };
+      }),
+    };
+  });
+}

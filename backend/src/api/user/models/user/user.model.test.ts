@@ -5,7 +5,7 @@ import { connectToTestDB, createValidUserCreds } from "../../../../services/test
 import { UserModel } from "./user.model";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";
-import followerService from "../../services/user-relation/user-relation.service";
+import userRelationService from "../../services/user-relation/user-relation.service";
 
 xdescribe("User Model", () => {
   beforeAll(async () => {
@@ -259,7 +259,7 @@ xdescribe("User Model", () => {
   describe("User Model Post-find Hook", () => {
     const spyAggregate = jest.spyOn(UserRelationModel, "aggregate");
     const spyCountDocuments = jest.spyOn(UserRelationModel, "countDocuments");
-    const spyGetIsFollowing = jest.spyOn(followerService, "getIsFollowing");
+    const spyGetIsFollowing = jest.spyOn(userRelationService, "getIsFollowing");
 
     beforeEach(() => {
       spyAggregate.mockClear();

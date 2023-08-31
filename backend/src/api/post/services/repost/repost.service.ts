@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { RepostModel } from "../../models/repost.model";
 import { PostModel } from "../../models/post.model";
 import { AppError } from "../../../../services/error/error.service";
-import followerService from "../../../user/services/user-relation/user-relation.service";
+import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { logger } from "../../../../services/logger/logger.service";
 import { Post, PostRepostResult } from "../../../../../../shared/interfaces/post.interface";
 import postUtilService from "../util/util.service";
@@ -31,7 +31,7 @@ async function add(postId: string, loggedInUserId: string): Promise<PostRepostRe
 
     updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
     updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     const repostDoc = await RepostModel.findById(savedRepost.id)
@@ -88,7 +88,7 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
     const currLoggedInActionState = res[updatedPost.id];
     updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    const isFollowingMap = await followerService.getIsFollowing(updatedPost.createdBy.id);
+    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
     updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
     logger.warn(`Deleted repost of Post With ${postId} by user ${loggedInUserId}`);

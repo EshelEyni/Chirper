@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "../user.router";
+import router from "../user-relation.router";
 import { AppError, errorHandler } from "../../../../services/error/error.service";
 import mongoose, { Types } from "mongoose";
-import followerService from "../../services/user-relation/user-relation.service";
+import userRelationService from "../../services/user-relation/user-relation.service";
 import { UserModel } from "../../models/user/user.model";
 import {
   assertPost,
@@ -75,7 +75,7 @@ describe("User Router: User Relation Actions", () => {
     await mongoose.connection.close();
   });
 
-  describe("POST /:id/following", () => {
+  describe("POST /:id/follow", () => {
     const id = getMongoId();
 
     beforeEach(async () => {
@@ -88,7 +88,7 @@ describe("User Router: User Relation Actions", () => {
     });
 
     it("should return 200 and the updated users data when following is added", async () => {
-      const res = await request(app).post(`/${validUser.id}/following`).set("Cookie", [token]);
+      const res = await request(app).post(`/${validUser.id}/follow`).set("Cookie", [token]);
       const followingLinkage = await UserRelationModel.findOne({
         fromUserId: testLoggedInUser.id,
         toUserId: validUser.id,
@@ -112,7 +112,7 @@ describe("User Router: User Relation Actions", () => {
 
     it("should return 400 if the provided ID is not a valid MongoDB ID", async () => {
       const invalidUserId = "12345";
-      const res = await request(app).post(`/${invalidUserId}/following`).set("Cookie", [token]);
+      const res = await request(app).post(`/${invalidUserId}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id");
     });
@@ -120,19 +120,19 @@ describe("User Router: User Relation Actions", () => {
     it("should return 500 if the user with the given ID is not found", async () => {
       const id = new Types.ObjectId();
       await UserModel.findByIdAndDelete(id);
-      const res = await request(app).post(`/${id}/following`).set("Cookie", [token]);
+      const res = await request(app).post(`/${id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
       expect(res.body.message).toContain("Target User not found");
     });
 
     it("should return 500 if an error occurs", async () => {
-      jest.spyOn(followerService, "add").mockRejectedValueOnce(new Error("Test error"));
-      const res = await request(app).post(`/${id}/following`).set("Cookie", [token]);
+      jest.spyOn(userRelationService, "add").mockRejectedValueOnce(new Error("Test error"));
+      const res = await request(app).post(`/${id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
     });
   });
 
-  describe("DELETE /:id/following", () => {
+  describe("DELETE /:id/follow", () => {
     beforeAll(async () => {
       await UserRelationModel.deleteMany({});
       await createAndSetTestLoggedInUserAndToken();
@@ -148,22 +148,22 @@ describe("User Router: User Relation Actions", () => {
         toUserId: validUser.id,
         kind: "Follow",
       });
-      const spy = jest.spyOn(followerService, "remove");
-      const res = await request(app).delete(`/${validUser.id}/following`).set("Cookie", [token]);
+      const spy = jest.spyOn(userRelationService, "remove");
+      const res = await request(app).delete(`/${validUser.id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
       expect(spy).toHaveBeenCalled();
     });
 
     it("should return 401 if the user is not logged in", async () => {
-      const res = await request(app).delete(`/${validUser.id}/following`);
+      const res = await request(app).delete(`/${validUser.id}/follow`);
       expect(res.statusCode).toEqual(401);
       expect(res.body.message).toContain("You are not logged in! Please log in to get access.");
     });
 
     it("should return 400 if the provided ID is not a valid MongoDB ID", async () => {
       const invalidUserId = "12345";
-      const res = await request(app).delete(`/${invalidUserId}/following`).set("Cookie", [token]);
+      const res = await request(app).delete(`/${invalidUserId}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id");
     });
@@ -171,7 +171,7 @@ describe("User Router: User Relation Actions", () => {
     it("should return 404 if the user with the given ID is not found", async () => {
       const id = new Types.ObjectId();
       await UserModel.findByIdAndDelete(id);
-      const res = await request(app).delete(`/${id}/following`).set("Cookie", [token]);
+      const res = await request(app).delete(`/${id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(404);
       expect(res.body.message).toContain("You are not following this User");
     });
@@ -180,16 +180,16 @@ describe("User Router: User Relation Actions", () => {
       const id = new Types.ObjectId();
 
       jest
-        .spyOn(followerService, "remove")
+        .spyOn(userRelationService, "remove")
         .mockRejectedValueOnce(new Error("Internal server error"));
 
-      const res = await request(app).delete(`/${id}/following`).set("Cookie", [token]);
+      const res = await request(app).delete(`/${id}/follow`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(500);
       expect(res.body.message).toContain("Internal server error");
     });
   });
 
-  describe("POST /:userId/following/:postId/fromPost", () => {
+  describe("POST /:userId/follow/:postId/fromPost", () => {
     beforeAll(async () => {
       await createAndSetTestLoggedInUserAndToken();
     });
@@ -203,7 +203,7 @@ describe("User Router: User Relation Actions", () => {
       await createTestPost();
 
       const res = await request(app)
-        .post(`/${validUser.id}/following/${testPost.id}/fromPost`)
+        .post(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
       expect(res.body.status).toEqual("success");
@@ -212,7 +212,7 @@ describe("User Router: User Relation Actions", () => {
     it("should return a post with loggedInUserActionState.isFollowedFromPost after a succesfull request", async () => {
       await createTestPost();
       const res = await request(app)
-        .post(`/${validUser.id}/following/${testPost.id}/fromPost`)
+        .post(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
       const post = res.body.data as Post;
       assertPost(post);
@@ -225,7 +225,7 @@ describe("User Router: User Relation Actions", () => {
       const invalidUserId = "12345";
       const postId = getMongoId();
       const res = await request(app)
-        .post(`/${invalidUserId}/following/${postId}/fromPost`)
+        .post(`/${invalidUserId}/follow/${postId}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(400);
       expect(res.body.message).toContain("Invalid user id: 12345");
@@ -233,7 +233,7 @@ describe("User Router: User Relation Actions", () => {
       const userId = getMongoId();
       const invalidPostId = "12345";
       const res_2 = await request(app)
-        .post(`/${userId}/following/${invalidPostId}/fromPost`)
+        .post(`/${userId}/follow/${invalidPostId}/fromPost`)
         .set("Cookie", [token]);
       expect(res_2.statusCode).toEqual(400);
       expect(res_2.body.message).toContain("Invalid post id: 12345");
@@ -243,10 +243,10 @@ describe("User Router: User Relation Actions", () => {
       const userId = getMongoId();
       const nonExistentPostId = getMongoId();
 
-      jest.spyOn(followerService, "add").mockRejectedValueOnce(new AppError("Post not found", 404));
+      jest.spyOn(userRelationService, "add").mockRejectedValueOnce(new AppError("Post not found", 404));
 
       const res = await request(app)
-        .post(`/${userId}/following/${nonExistentPostId}/fromPost`)
+        .post(`/${userId}/follow/${nonExistentPostId}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(404);
       expect(res.body.message).toContain("Post not found");
@@ -257,21 +257,21 @@ describe("User Router: User Relation Actions", () => {
       const nonExistentPostId = getMongoId();
 
       jest
-        .spyOn(followerService, "add")
+        .spyOn(userRelationService, "add")
         .mockRejectedValueOnce(new AppError("Follower not found", 404));
 
       const res = await request(app)
-        .post(`/${followerId}/following/${nonExistentPostId}/fromPost`)
+        .post(`/${followerId}/follow/${nonExistentPostId}/fromPost`)
         .set("Cookie", [token]);
       expect(res.statusCode).toEqual(404);
       expect(res.body.message).toContain("Follower not found");
 
       jest
-        .spyOn(followerService, "add")
+        .spyOn(userRelationService, "add")
         .mockRejectedValueOnce(new AppError("Following not found", 404));
 
       const res_3 = await request(app)
-        .post(`/${followerId}/following/${nonExistentPostId}/fromPost`)
+        .post(`/${followerId}/follow/${nonExistentPostId}/fromPost`)
         .set("Cookie", [token]);
       expect(res_3.statusCode).toEqual(404);
       expect(res_3.body.message).toContain("Following not found");
@@ -282,11 +282,11 @@ describe("User Router: User Relation Actions", () => {
       const postId = getMongoId();
 
       jest
-        .spyOn(followerService, "add")
+        .spyOn(userRelationService, "add")
         .mockRejectedValueOnce(new AppError("Internal server error", 500));
 
       const res = await request(app)
-        .post(`/${userId}/following/${postId}/fromPost`)
+        .post(`/${userId}/follow/${postId}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res.statusCode).toEqual(500);
@@ -294,7 +294,7 @@ describe("User Router: User Relation Actions", () => {
     });
   });
 
-  describe("DELETE /:userId/following/:postId/fromPost", () => {
+  describe("DELETE /:userId/follow/:postId/fromPost", () => {
     beforeAll(async () => {
       await createAndSetTestLoggedInUserAndToken();
     });
@@ -307,7 +307,7 @@ describe("User Router: User Relation Actions", () => {
       await createTestPost();
       await createTestFollowingFromPost();
       const res = await request(app)
-        .delete(`/${validUser.id}/following/${testPost.id}/fromPost`)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res.statusCode).toEqual(200);
@@ -318,7 +318,7 @@ describe("User Router: User Relation Actions", () => {
       await createTestPost();
       await createTestFollowingFromPost();
       const res = await request(app)
-        .delete(`/${validUser.id}/following/${testPost.id}/fromPost`)
+        .delete(`/${validUser.id}/follow/${testPost.id}/fromPost`)
         .set("Cookie", [token]);
 
       const post = res.body.data as Post;
@@ -333,7 +333,7 @@ describe("User Router: User Relation Actions", () => {
       const postId = getMongoId();
 
       const res = await request(app)
-        .delete(`/${invalidUserId}/following/${postId}/fromPost`)
+        .delete(`/${invalidUserId}/follow/${postId}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res.statusCode).toEqual(400);
@@ -343,7 +343,7 @@ describe("User Router: User Relation Actions", () => {
       const invalidPostId = "12345";
 
       const res_2 = await request(app)
-        .delete(`/${userId}/following/${invalidPostId}/fromPost`)
+        .delete(`/${userId}/follow/${invalidPostId}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res_2.statusCode).toEqual(400);
@@ -351,13 +351,13 @@ describe("User Router: User Relation Actions", () => {
     });
 
     it("should handle unexpected errors", async () => {
-      jest.spyOn(followerService, "remove").mockRejectedValueOnce(new Error("Unexpected error"));
+      jest.spyOn(userRelationService, "remove").mockRejectedValueOnce(new Error("Unexpected error"));
 
       const userId = getMongoId();
       const postId = getMongoId();
 
       const res = await request(app)
-        .delete(`/${userId}/following/${postId}/fromPost`)
+        .delete(`/${userId}/follow/${postId}/fromPost`)
         .set("Cookie", [token]);
 
       expect(res.statusCode).toEqual(500);

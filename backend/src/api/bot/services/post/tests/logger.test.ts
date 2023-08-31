@@ -25,6 +25,14 @@ jest.mock("../../logger/logger", () => {
 const { TEST_BOT_ID, SAMPLE_POST_TEXT } = testUtil.constants;
 
 describe("logger", () => {
+  beforeAll(() => {
+    process.env.NODE_ENV = "development";
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = "test";
+  });
+
   beforeEach(() => {
     testUtil.MockSetter.setCoreMocks();
   });

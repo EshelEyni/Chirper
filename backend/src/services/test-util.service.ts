@@ -34,6 +34,12 @@ async function connectToTestDB({ isRemoteDB = false } = {}) {
   console.log(ansiColors.bgGreen("Connected to DB"));
 }
 
+async function disconnectFromTestDB() {
+  await mongoose.connection.close();
+  // eslint-disable-next-line no-console
+  console.log(ansiColors.bgRed("Disconnected from DB"));
+}
+
 function assertUser(user: User) {
   expect(user).toEqual(
     expect.objectContaining({
@@ -257,22 +263,40 @@ async function deleteTestPost(id: string) {
   await PostModel.findByIdAndDelete(id);
 }
 
+function getMockPost() {
+  return {
+    _id: getMongoId(),
+    createdById: getMongoId(),
+    text: "test post",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function getMockPromptText(): string {
+  const randomNum = Math.floor(Math.random() * 100000);
+  return `test prompt #${randomNum}`;
+}
+
 export {
   connectToTestDB,
+  disconnectFromTestDB,
   assertUser,
   assertPost,
   getLoginTokenStrForTest,
   assertGifCategory,
   assertGif,
-  createTestUser,
-  createValidUserCreds,
-  deleteTestUser,
-  assertLoggedInUserState,
-  getMongoId,
-  getMockedUser,
   assertPoll,
   assertPostImgs,
   assertBotPrompt,
+  assertLoggedInUserState,
+  createTestUser,
+  createValidUserCreds,
   createTestPost,
+  getMongoId,
+  getMockedUser,
+  getMockPost,
+  getMockPromptText,
+  deleteTestUser,
   deleteTestPost,
 };

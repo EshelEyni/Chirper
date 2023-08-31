@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
 import {
   connectToTestDB,
   createTestUser,
   deleteTestUser,
+  disconnectFromTestDB,
   getMongoId,
 } from "../../../services/test-util.service";
 import { BotPromptModel } from "./bot-options.model";
@@ -14,7 +14,7 @@ describe("BotPromptModel", () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   beforeEach(async () => {

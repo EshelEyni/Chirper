@@ -3,8 +3,7 @@ import request from "supertest";
 import express from "express";
 import router from "./post.router";
 import { AppError, errorHandler } from "../../../services/error/error.service";
-import mongoose from "mongoose";
-import { BookmarkedPostModel } from "../models/bookmark-post.model";
+import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import {
   assertPost,
   connectToTestDB,
@@ -12,6 +11,7 @@ import {
   createTestUser,
   deleteTestPost,
   deleteTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
 import cookieParser from "cookie-parser";
@@ -38,7 +38,7 @@ describe("Post Router", () => {
   afterAll(async () => {
     await deleteTestPost(validPostId);
     await deleteTestUser(validUserId);
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("GET /bookmark", () => {

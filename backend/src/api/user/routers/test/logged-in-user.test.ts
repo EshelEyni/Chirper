@@ -4,16 +4,15 @@ import express from "express";
 import router from "../user.router";
 import { errorHandler } from "../../../../services/error/error.service";
 import userService from "../../services/user/user.service";
-import mongoose from "mongoose";
 import { UserModel } from "../../models/user/user.model";
 import {
   connectToTestDB,
   createTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../../services/test-util.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
-
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 
 const app = express();
@@ -38,7 +37,7 @@ xdescribe("User Router: Logged In User Actions", () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("PATCH /loggedInUser", () => {

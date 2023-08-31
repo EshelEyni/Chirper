@@ -3,7 +3,6 @@ import request from "supertest";
 import express from "express";
 import router from "../user.router";
 import { errorHandler } from "../../../../services/error/error.service";
-import mongoose from "mongoose";
 import { UserModel } from "../../models/user/user.model";
 import {
   assertUser,
@@ -11,12 +10,12 @@ import {
   createTestUser,
   createValidUserCreds,
   deleteTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
   getMongoId,
 } from "../../../../services/test-util.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
-
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 
 const app = express();
@@ -42,7 +41,7 @@ xdescribe("User Router: Admin Actions", () => {
 
   afterAll(async () => {
     await deleteTestUser(mockedUserID);
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("POST /", () => {

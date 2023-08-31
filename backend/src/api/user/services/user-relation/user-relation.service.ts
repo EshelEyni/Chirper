@@ -73,11 +73,20 @@ async function getUserRelation(
     .exec();
 
   const relationMap = userRelations.reduce((acc, { toUserId, kind }) => {
-    const relationStatus = {
-      isFollowing: kind === "Follow",
-      isMuted: kind === "Mute",
-      isBlocked: kind === "Block",
+    const getRelationBoolen = (kind: string) => {
+      switch (kind) {
+        case "Follow":
+          return "isFollowing";
+        case "Block":
+          return "isBlocked";
+        case "Mute":
+          return "isMuted";
+        default:
+          return "";
+      }
     };
+
+    const relationStatus = { [getRelationBoolen(kind)]: true };
 
     return {
       ...acc,

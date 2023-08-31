@@ -2,8 +2,13 @@ import { Request, Response } from "express";
 import { checkAdminAuthorization, checkUserAuthentication } from "./authGuards.middleware";
 import tokenService from "../../services/token/token.service";
 import { AppError } from "../../services/error/error.service";
-import mongoose from "mongoose";
 import { UserModel } from "../../api/user/models/user/user.model";
+import { getMongoId } from "../../services/test-util.service";
+import { getLoggedInUserIdFromReq } from "../../services/als.service";
+
+jest.mock("../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
 
 jest.mock("../../services/token/token.service");
 jest.mock("../../api/user/models/user/user.model", () => {
@@ -19,6 +24,8 @@ jest.mock("../../api/user/models/user/user.model", () => {
 });
 
 describe("Auth Guards Middleware", () => {
+  (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(getMongoId());
+
   describe("checkUserAuthentication", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
@@ -72,7 +79,7 @@ describe("Auth Guards Middleware", () => {
     it("should call next with an error if the user does not exist", done => {
       (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("token");
       (tokenService.verifyToken as jest.Mock).mockReturnValue({
-        id: new mongoose.Types.ObjectId(),
+        id: getMongoId(),
         timeStamp: Date.now(),
       });
 
@@ -95,7 +102,7 @@ describe("Auth Guards Middleware", () => {
       };
       (tokenService.getTokenFromRequest as jest.Mock).mockReturnValue("token");
       (tokenService.verifyToken as jest.Mock).mockReturnValue({
-        id: new mongoose.Types.ObjectId(),
+        id: getMongoId(),
         timeStamp: Date.now(),
       });
 
@@ -114,8 +121,8 @@ describe("Auth Guards Middleware", () => {
       checkUserAuthentication(req as Request, res as Response, next);
     });
 
-    it("should set req.loggedInUserId and call next with no arguments if the authentication is successful", done => {
-      const id = new mongoose.Types.ObjectId();
+    it("should call next with no arguments if the authentication is successful", done => {
+      const id = getMongoId();
       const user = {
         changedPasswordAfter: jest.fn().mockReturnValue(false),
       };
@@ -125,7 +132,6 @@ describe("Auth Guards Middleware", () => {
       setMockUserModel(user);
 
       next = jest.fn().mockImplementation(() => {
-        expect(req.loggedInUserId).toBe(id);
         expect(next).toHaveBeenCalled();
         done();
       });
@@ -138,7 +144,7 @@ describe("Auth Guards Middleware", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let next: jest.Mock;
-    const validMongoId = new mongoose.Types.ObjectId().toString();
+    const validMongoId = getMongoId();
 
     beforeEach(() => {
       req = {};
@@ -151,7 +157,7 @@ describe("Auth Guards Middleware", () => {
     });
 
     it("should call next with an error if no user is logged in", done => {
-      req.loggedInUserId = undefined;
+      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(null);
       next = jest.fn().mockImplementation(err => {
         expect(err).toBeInstanceOf(AppError);
         expect(err).toEqual(expect.objectContaining({ message: "User not logged in" }));
@@ -161,8 +167,6 @@ describe("Auth Guards Middleware", () => {
     });
 
     it("should call next with an error if the user does not exist", done => {
-      req.loggedInUserId = validMongoId;
-
       setMockUserModel(null);
 
       next = jest.fn().mockImplementation(err => {
@@ -175,7 +179,6 @@ describe("Auth Guards Middleware", () => {
 
     it("should call next with an error if the user is not an admin", done => {
       const user = { isAdmin: false };
-      req.loggedInUserId = validMongoId;
 
       setMockUserModel(user);
 

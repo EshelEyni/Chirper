@@ -1,7 +1,7 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
-import { BookmarkedPostModel } from "../../models/bookmark-post.model";
+import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
 import postUtilService from "../util/util.service";
 
 type bookmarkedPostDoc = {

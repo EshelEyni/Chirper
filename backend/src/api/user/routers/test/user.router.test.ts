@@ -3,12 +3,12 @@ import request from "supertest";
 import express from "express";
 import router from "../user-relation.router";
 import { errorHandler } from "../../../../services/error/error.service";
-import mongoose from "mongoose";
 import {
   assertUser,
   connectToTestDB,
   createTestUser,
   deleteTestUser,
+  disconnectFromTestDB,
 } from "../../../../services/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
@@ -31,7 +31,7 @@ xdescribe("User Router: GET Actions", () => {
 
   afterAll(async () => {
     await deleteTestUser(validUser.id);
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("GET /", () => {

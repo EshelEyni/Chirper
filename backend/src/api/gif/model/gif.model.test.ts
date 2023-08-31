@@ -1,5 +1,8 @@
-import mongoose from "mongoose";
-import { assertGif, connectToTestDB } from "../../../services/test-util.service";
+import {
+  assertGif,
+  connectToTestDB,
+  disconnectFromTestDB,
+} from "../../../services/test-util.service";
 import { GifCategoryModel, GifModel } from "./gif.model";
 
 describe("GifModel", () => {
@@ -12,7 +15,7 @@ describe("GifModel", () => {
     await GifModel.deleteMany({
       createdAt: { $gte: new Date(Date.now() - TEN_MINUTES) },
     });
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("Gif Schema", () => {
@@ -99,7 +102,7 @@ describe("GifCategoryModel", () => {
     await GifCategoryModel.deleteMany({
       createdAt: { $gte: new Date(Date.now() - TEN_MINUTES) },
     });
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   beforeEach(async () => {

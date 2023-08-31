@@ -3,13 +3,13 @@ import request from "supertest";
 import express from "express";
 import router from "../user-relation.router";
 import { errorHandler } from "../../../../services/error/error.service";
-import mongoose from "mongoose";
 import userRelationService from "../../services/user-relation/user-relation.service";
 import {
   assertPost,
   assertUser,
   connectToTestDB,
   createTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../../services/test-util.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
@@ -19,6 +19,7 @@ import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { PostModel } from "../../../post/models/post.model";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats.model";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(cookieParser());
@@ -70,7 +71,7 @@ fdescribe("User Router: User Relation", () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("POST /:id/follow", () => {

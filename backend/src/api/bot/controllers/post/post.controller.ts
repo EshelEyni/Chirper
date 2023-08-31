@@ -8,7 +8,7 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
 
   const options = req.body as CreatePostOptions;
   const post = await botPostService.createPost(botId, options);
-  res.send({
+  res.status(201).send({
     status: "success",
     data: post,
   });

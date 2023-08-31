@@ -43,7 +43,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
     prompt: promptFromOptions,
     schedule,
     numOfPosts = 1,
-    postType = "text",
+    postType = PostType.TEXT,
     numberOfImages = 1,
     addTextToContent = false,
   } = options;
@@ -57,19 +57,19 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
   for (let i = 0; i < numOfPosts; i++) {
     botServiceLogger.create({ entity: "post", iterationNum: i });
     switch (postType) {
-      case "text": {
+      case PostType.TEXT: {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.TEXT));
         postBody["text"] = await createPostText(prompt);
         break;
       }
-      case "poll": {
+      case PostType.POLL: {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.POLL));
         const { text, poll } = await createPostPoll(prompt);
         postBody["text"] = text;
         postBody["poll"] = poll;
         break;
       }
-      case "image": {
+      case PostType.IMAGE: {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.IMAGE));
         const imgs = await createPostImage({ prompt, numberOfImages });
 
@@ -80,7 +80,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
         postBody["text"] = text ?? "";
         break;
       }
-      case "video": {
+      case PostType.VIDEO: {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.VIDEO));
         const videoUrl = await createPostVideo(prompt);
         postBody["videoUrl"] = videoUrl;
@@ -91,7 +91,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
 
         break;
       }
-      case "song-review": {
+      case PostType.SONG_REVIEW: {
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.SONG_REVIEW));
         const { videoUrl, text } = await createPostSongReview(prompt);
         postBody["videoUrl"] = videoUrl;
@@ -207,8 +207,11 @@ async function _getBotPostOptions(): Promise<createPostParams[]> {
   return prompts.map(prompt => ({
     botId: prompt.botId as string,
     options: {
-      prompt: promptService.promptHandler(prompt.prompt as string, prompt.type as PostType),
-      postType: prompt.type as PostType,
+      prompt: promptService.promptHandler(
+        prompt.prompt as string,
+        prompt.type as unknown as PostType
+      ),
+      postType: prompt.type as unknown as PostType,
     },
   }));
 }

@@ -10,9 +10,9 @@ import {
   connectToTestDB,
   createTestUser,
   deleteTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
-import mongoose from "mongoose";
 
 const app = express();
 app.use(router);
@@ -29,7 +29,7 @@ describe("Gif Router", () => {
 
   afterAll(async () => {
     await deleteTestUser(validUserId);
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("GET /", () => {

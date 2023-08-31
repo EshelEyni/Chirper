@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import mongoose from "mongoose";
-import { connectToTestDB, createValidUserCreds } from "../../../../services/test-util.service";
+import {
+  connectToTestDB,
+  createValidUserCreds,
+  disconnectFromTestDB,
+} from "../../../../services/test-util.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";
@@ -17,7 +20,7 @@ xdescribe("User Model", () => {
     await UserModel.deleteMany({
       createdAt: { $gte: Date.now() - TEN_MINUTES },
     });
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("User Schema", () => {

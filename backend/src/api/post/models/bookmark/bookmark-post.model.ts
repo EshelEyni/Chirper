@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model } from "mongoose";
-import { PostModel } from "./post.model";
-import { AppError } from "../../../services/error/error.service";
+import { PostModel } from "../post.model";
+import { AppError } from "../../../../services/error/error.service";
 
 const bookmarkedPostSchema = new mongoose.Schema(
   {

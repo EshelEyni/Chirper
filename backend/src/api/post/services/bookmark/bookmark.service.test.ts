@@ -1,4 +1,4 @@
-import { BookmarkedPostModel } from "../../models/bookmark-post.model";
+import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
 import bookmarkService from "./bookmark.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";

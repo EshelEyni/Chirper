@@ -7,14 +7,16 @@ import { UserCredenitials } from "../../../../../shared/interfaces/user.interfac
 import {
   assertUser,
   connectToTestDB,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
-import mongoose from "mongoose";
 import { UserModel } from "../../user/models/user/user.model";
+import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.all("*", setupAsyncLocalStorage);
 app.use(router);
 app.use(errorHandler);
 
@@ -60,7 +62,7 @@ describe("Auth Router", () => {
 
   afterAll(async () => {
     await deleteTestUser();
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("POST /login/with-token", () => {

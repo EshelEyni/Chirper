@@ -1,5 +1,8 @@
-import { connectToTestDB, getMockedUser } from "../../../../services/test-util.service";
-import mongoose from "mongoose";
+import {
+  connectToTestDB,
+  disconnectFromTestDB,
+  getMockedUser,
+} from "../../../../services/test-util.service";
 import botService from "./bot.service";
 import { UserModel } from "../../../user/models/user/user.model";
 
@@ -15,7 +18,7 @@ describe("BotService", () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
   describe("Bot Service", () => {

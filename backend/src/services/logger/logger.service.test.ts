@@ -13,6 +13,14 @@ jest.spyOn(console, "log").mockImplementation(() => {
 });
 
 describe("Logger Service", () => {
+  beforeAll(() => {
+    process.env.NODE_ENV = "test_log";
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = "test";
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

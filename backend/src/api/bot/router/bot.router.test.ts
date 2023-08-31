@@ -4,36 +4,53 @@ import express from "express";
 import router from "./bot.router";
 import { errorHandler } from "../../../services/error/error.service";
 
-import mongoose from "mongoose";
 import {
+  assertBotPrompt,
+  assertUser,
   connectToTestDB,
   createTestUser,
   deleteTestUser,
+  disconnectFromTestDB,
   getLoginTokenStrForTest,
+  getMockPost,
+  getMockPromptText,
   getMongoId,
 } from "../../../services/test-util.service";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
 import { BotPromptModel } from "../model/bot-options.model";
+import {
+  checkAdminAuthorization,
+  checkUserAuthentication,
+} from "../../../middlewares/authGuards/authGuards.middleware";
+import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
+import botPostService from "../services/post/post.service";
+
+jest.mock("../services/post/post.service");
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.all("*", setupAsyncLocalStorage);
+
+router.use(checkUserAuthentication);
+router.use(checkAdminAuthorization);
+
 app.use(router);
 app.use(errorHandler);
 
 describe("Bot Router", () => {
-  const mockedUserID = "64dd30f4937431fdad0f6d92";
+  const mockedUserID = getMongoId();
 
   let testLoggedInUser: User, token: string;
+  const [testBotId1, testBotId2] = [getMongoId(), getMongoId()];
 
   async function createTestBot(id: string) {
     await deleteTestUser(id);
     await BotPromptModel.deleteMany({ botId: id });
 
     await createTestUser({ id, isBot: true });
-    const prompt =
-      "Act like you are a user on Tweeter, and write a post about Jest. up to 247 charchters";
+    const prompt = getMockPromptText();
 
     await BotPromptModel.create({
       botId: id,
@@ -45,14 +62,21 @@ describe("Bot Router", () => {
     await connectToTestDB();
     testLoggedInUser = await createTestUser({ id: mockedUserID, isAdmin: true });
     token = getLoginTokenStrForTest(testLoggedInUser.id);
+
+    await createTestBot(testBotId1);
+    await createTestBot(testBotId2);
   });
 
   afterAll(async () => {
+    [testBotId1, testBotId2].forEach(async id => {
+      await deleteTestUser(id);
+      await BotPromptModel.deleteMany({ botId: id });
+    });
     await deleteTestUser(testLoggedInUser.id);
-    await mongoose.connection.close();
+    await disconnectFromTestDB();
   });
 
-  xdescribe("GET /", () => {
+  describe("GET /", () => {
     it("should return 200 and a list of bots", async () => {
       const res = await request(app).get("/").set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
@@ -62,22 +86,86 @@ describe("Bot Router", () => {
         results: expect.any(Number),
         data: expect.any(Array),
       });
+
+      const bots = res.body.data;
+
+      expect(bots.length).toBeGreaterThanOrEqual(2);
+      bots.forEach(assertUser);
+      bots.every((bot: User) => expect(bot.isBot).toEqual(true));
     });
   });
 
-  xdescribe("POST /:id", () => {
-    it("should return 200 and a new post", async () => {
-      const botId = getMongoId();
-      await createTestBot(botId);
-
-      const res = await request(app).post(`/${botId}`).set("Cookie", [token]);
-      // .send({ schedule: new Date() });
-
+  describe("GET /prompts", () => {
+    it("should return 200 and a list of bot prompts", async () => {
+      const res = await request(app).get("/prompts").set("Cookie", [token]);
       expect(res.statusCode).toEqual(200);
+      expect(res.body).toEqual({
+        status: "success",
+        requestedAt: expect.any(String),
+        results: expect.any(Number),
+        data: expect.any(Array),
+      });
+
+      const bots = res.body.data;
+
+      expect(bots.length).toBeGreaterThanOrEqual(2);
+      bots.forEach(assertBotPrompt);
+    });
+  });
+
+  describe("POST /:id([a-fA-F0-9]{24})", () => {
+    it("should return 200 and a created bot post", async () => {
+      (botPostService.createPost as jest.Mock).mockResolvedValueOnce(getMockPost());
+
+      const res = await request(app).post(`/${testBotId1}`).set("Cookie", [token]);
+      expect(res.statusCode).toEqual(201);
       expect(res.body).toEqual({
         status: "success",
         data: expect.any(Object),
       });
+    });
+  });
+
+  describe("POST /botPrompt", () => {
+    it("should return 200 and a created bot prompt", async () => {
+      const res = await request(app).post(`/botPrompt`).set("Cookie", [token]).send({
+        botId: testBotId1,
+        prompt: getMockPromptText(),
+      });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const prompt = res.body.data;
+      assertBotPrompt(prompt);
+    });
+  });
+
+  describe("POST /manyBotPrompts", () => {
+    it("should return 200 and a created many bot prompts", async () => {
+      const res = await request(app)
+        .post(`/manyBotPrompts`)
+        .set("Cookie", [token])
+        .send({
+          botId: testBotId1,
+          type: "text",
+          prompts: [getMockPromptText(), getMockPromptText()],
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body).toEqual({
+        status: "success",
+        requestedAt: expect.any(String),
+        results: expect.any(Number),
+        data: expect.any(Array),
+      });
+
+      const prompts = res.body.data;
+      expect(prompts.length).toEqual(2);
+      prompts.forEach(assertBotPrompt);
     });
   });
 });

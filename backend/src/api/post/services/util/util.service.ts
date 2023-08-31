@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import { RepostModel } from "../../models/repost.model";
 import { PostLikeModel } from "../../models/post-like.model";
-import { BookmarkedPostModel } from "../../models/bookmark-post.model";
+import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
 import { PostStatsModel } from "../../models/post-stats.model";
 import {
   LoggedInUserActionState,

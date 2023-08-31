@@ -13,8 +13,13 @@ import {
 import authService from "../service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
+import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 
 jest.mock("../service/auth.service");
+jest.mock("../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn().mockReturnValue("userId"),
+}));
+
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -292,7 +297,7 @@ describe("Auth Controller", () => {
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
+      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(undefined);
       const sut = updatePassword as any;
       await sut(req as Request, res as Response, next);
       expect(next).toHaveBeenCalledWith(expect.any(AppError));

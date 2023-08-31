@@ -22,7 +22,7 @@ const addBotManyPrompts = asyncErrorCatcher(async (req: Request, res: Response) 
     botPrompts.push(botPrompt);
   }
 
-  res.send({
+  res.status(201).send({
     status: "success",
     requestedAt: new Date().toISOString(),
     results: botPrompts.length,

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User, UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import authService from "../service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
+import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 
 const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -53,7 +54,7 @@ const updatePassword = asyncErrorCatcher(async (req: Request, res: Response) => 
     if (!req.body[field]) throw new AppError(`${field} is required`, 400);
 
   if (newPassword !== newPasswordConfirm) throw new AppError("Passwords do not match", 400);
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   if (!loggedInUserId) throw new AppError("You are not logged in", 401);
   const { user, token } = await authService.updatePassword(
     loggedInUserId,

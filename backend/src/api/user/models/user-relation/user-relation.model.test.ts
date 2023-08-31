@@ -117,6 +117,86 @@ describe("User Relation Model", () => {
     });
   });
 
+  describe("UserRelation Pre Save Hook", () => {
+    it("should delete a block relation when user follows a target user he blocked", async () => {
+      const block = await BlockModel.create({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(block).toBeDefined();
+      expect(block.fromUserId.toString()).toEqual(fromUser.id.toString());
+      expect(block.toUserId.toString()).toEqual(toUser.id.toString());
+      expect(block.kind).toBe("Block");
+
+      const follower = await FollowerModel.create({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(follower).toBeDefined();
+      expect(follower.fromUserId.toString()).toEqual(fromUser.id.toString());
+      expect(follower.toUserId.toString()).toEqual(toUser.id.toString());
+      expect(follower.kind).toBe("Follow");
+
+      const blockExists = await BlockModel.exists({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(blockExists).toBe(null);
+    });
+
+    it("should delete a follow relation when user blocks a target user he follows", async () => {
+      const follower = await FollowerModel.create({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(follower).toBeDefined();
+      expect(follower.fromUserId.toString()).toEqual(fromUser.id.toString());
+      expect(follower.toUserId.toString()).toEqual(toUser.id.toString());
+      expect(follower.kind).toBe("Follow");
+
+      const block = await BlockModel.create({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(block).toBeDefined();
+      expect(block.fromUserId.toString()).toEqual(fromUser.id.toString());
+      expect(block.toUserId.toString()).toEqual(toUser.id.toString());
+      expect(block.kind).toBe("Block");
+
+      const followerExists = await FollowerModel.exists({
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      });
+
+      expect(followerExists).toBe(null);
+    });
+  });
+
+  describe("UserRelation Indexes", () => {
+    it("should throw an error if duplicate userRelation with the same kind", async () => {
+      const followerData = {
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      };
+      await UserRelationModel.create(followerData);
+
+      const follower = new UserRelationModel(followerData);
+      let error;
+      try {
+        await follower.save();
+      } catch (err) {
+        error = err;
+      }
+      expect(error).toBeDefined();
+      expect(error.message).toContain("duplicate key error");
+    });
+  });
+
   describe("UserRelationModel", () => {
     it("should create a follower document", async () => {
       const follower = await FollowerModel.create({

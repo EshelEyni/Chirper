@@ -53,9 +53,27 @@ const userRelationSchema = new mongoose.Schema(
   }
 );
 
-userRelationSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
+userRelationSchema.index({ fromUserId: 1, toUserId: 1, discriminatorKey: 1 }, { unique: true });
 userRelationSchema.index({ toUserId: 1 });
 userRelationSchema.index({ fromUserId: 1 });
+
+userRelationSchema.pre("save", async function (this: IFollower) {
+  if (this.kind === UserRelationKind.Follow) {
+    await UserRelationModel.findOneAndDelete({
+      fromUserId: this.fromUserId,
+      toUserId: this.toUserId,
+      kind: UserRelationKind.Block,
+    }).exec();
+  }
+
+  if (this.kind === UserRelationKind.Block) {
+    await UserRelationModel.findOneAndDelete({
+      fromUserId: this.fromUserId,
+      toUserId: this.toUserId,
+      kind: UserRelationKind.Follow,
+    }).exec();
+  }
+});
 
 interface IUserRelationBase {
   fromUserId: string;

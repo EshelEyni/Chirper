@@ -16,6 +16,7 @@ import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
 import { PromotionalPostModel } from "../models/promitional-post.model";
 import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
+import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -41,7 +42,7 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 });
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const post = req.body as unknown as NewPost;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;
@@ -54,7 +55,7 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
 });
 
 const addPostThread = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const posts = req.body as unknown as NewPost[];
 
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
@@ -70,7 +71,7 @@ const addPostThread = asyncErrorCatcher(async (req: Request, res: Response): Pro
 });
 
 const addReply = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const post = req.body as unknown as NewPost;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;
@@ -83,7 +84,7 @@ const addReply = asyncErrorCatcher(async (req: Request, res: Response): Promise<
 });
 
 const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   const { postId } = req.query;
   if (!postId) throw new AppError("No post id provided", 400);
@@ -97,7 +98,7 @@ const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promis
 });
 
 const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   const post = req.body as unknown as NewPost;
   if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
@@ -134,7 +135,7 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
 const removePost = deleteOne(PostModel);
 
 const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const { postId } = req.query;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
@@ -150,7 +151,7 @@ const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Prom
 
 const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { postId, optionIdx } = req.body;
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
 
   if (!postId) throw new AppError("No post id provided", 400);
   if (!(typeof optionIdx === "number")) throw new AppError("No option index provided", 400);
@@ -164,7 +165,7 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
 });
 
 const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = req.params.id;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
@@ -177,7 +178,7 @@ const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
 });
 
 const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = req.params.id;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
@@ -203,7 +204,7 @@ const getPostStats = asyncErrorCatcher(async (req: Request, res: Response): Prom
 const createPostStatsWithView = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
     const postId = req.params.id;
-    const { loggedInUserId } = req;
+    const loggedInUserId = getLoggedInUserIdFromReq();
     if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
     if (!postId) throw new AppError("No post id provided", 400);
     const postStats = await postStatsService.create(postId, loggedInUserId);
@@ -217,7 +218,7 @@ const createPostStatsWithView = asyncErrorCatcher(
 
 const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const postId = req.params.id;
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const stats = req.body;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   if (!postId) throw new AppError("No post id provided", 400);
@@ -230,7 +231,7 @@ const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): P
 });
 
 const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   validateIds({ id: loggedInUserId, entityName: "loggedInUser" });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const bookmarkedPosts = await bookmarkService.get(loggedInUserId!);
@@ -244,7 +245,7 @@ const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response)
 });
 
 const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = req.params.id;
 
   validateIds(
@@ -263,7 +264,7 @@ const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response):
 
 const removeBookmarkedPost = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {
-    const { loggedInUserId } = req;
+    const loggedInUserId = getLoggedInUserIdFromReq();
     const postId = req.params.id;
 
     validateIds(
@@ -284,7 +285,7 @@ const removeBookmarkedPost = asyncErrorCatcher(
 const getPromotionalPosts = getAll(PromotionalPostModel);
 
 const addPromotionalPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const { loggedInUserId } = req;
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const post = req.body as unknown as NewPost;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;

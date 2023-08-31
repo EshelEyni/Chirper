@@ -144,7 +144,7 @@ describe("Post Router", () => {
       jest.clearAllMocks();
     });
 
-    fit("should return a 200 status code and the bookmarked post", async () => {
+    it("should return a 200 status code and the bookmarked post", async () => {
       const res = await request(app).post(`/${validPostId}/bookmark`).set("Cookie", [token]);
 
       console.log(res.body);

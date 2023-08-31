@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import postService from "../../../services/post.service";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
 export function useRemovePost() {
@@ -17,7 +18,13 @@ export function useRemovePost() {
 
         const updatedPosts = currentPosts.filter(p => p.id !== postId);
         queryClient.setQueryData(["posts"], updatedPosts);
-        toast.success("Your Post was deleted");
+
+        const msg = {
+          type: "info",
+          text: "Your post was deleted",
+        } as TypeOfUserMsg;
+
+        toast.success(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
       },
       onError: () => {
         const msg = getDefaultErrorMsg();

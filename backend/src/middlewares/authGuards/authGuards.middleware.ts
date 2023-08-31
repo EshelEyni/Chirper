@@ -3,6 +3,7 @@ import { AppError, asyncErrorCatcher } from "../../services/error/error.service"
 import { UserModel } from "../../api/user/models/user/user.model";
 import tokenService from "../../services/token/token.service";
 import { isValidMongoId } from "../../services/util/util.service";
+import { getLoggedInUserIdFromReq } from "../../services/als.service";
 
 const checkUserAuthentication = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -20,14 +21,14 @@ const checkUserAuthentication = asyncErrorCatcher(
     const changedPasswordAfter = currentUser.changedPasswordAfter(timeStamp);
     if (changedPasswordAfter)
       return next(new AppError("User recently changed password! Please log in again.", 401));
-    req.loggedInUserId = id;
+    // req.loggedInUserId = id;
     next();
   }
 );
 
 const checkAdminAuthorization = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { loggedInUserId } = req;
+    const loggedInUserId = getLoggedInUserIdFromReq();
     if (!loggedInUserId) throw new AppError("User not logged in", 401);
     const user = await UserModel.findById(loggedInUserId).setOptions({ skipHooks: true }).exec();
     if (!user) throw new AppError("User not found", 404);

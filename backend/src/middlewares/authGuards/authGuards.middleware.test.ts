@@ -11,17 +11,15 @@ jest.mock("../../services/als.service", () => ({
 }));
 
 jest.mock("../../services/token/token.service");
-jest.mock("../../api/user/models/user/user.model", () => {
-  return {
-    UserModel: {
-      findById: jest.fn().mockReturnValue({
-        setOptions: jest.fn().mockReturnValue({
-          exec: jest.fn(),
-        }),
+jest.mock("../../api/user/models/user/user.model", () => ({
+  UserModel: {
+    findById: jest.fn().mockReturnValue({
+      setOptions: jest.fn().mockReturnValue({
+        exec: jest.fn(),
       }),
-    },
-  };
-});
+    }),
+  },
+}));
 
 describe("Auth Guards Middleware", () => {
   (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(getMongoId());

@@ -274,7 +274,14 @@ async function populateQuotedPost(doc: Document) {
   await populateCreatedBy(populatedDoc.get("quotedPost"));
 }
 
-// TODO: Refactor this to only run on findOne and findById
+postSchema.post("save", async function (doc: Document) {
+  console.log("postSchema.post('save')", doc);
+  if (!doc) return;
+  await populateCreatedBy(doc);
+  if (!doc.get("quotedPostId")) return;
+  await populateQuotedPost(doc);
+});
+
 postSchema.post(/^find/, async function (this: Query<Document[], Post>, doc) {
   const options = this.getOptions();
   if (options.skipHooks || !doc || doc.length !== undefined) return;

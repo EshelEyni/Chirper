@@ -31,7 +31,7 @@ app.use(errorHandler);
 const mockedPostID = "64dd30f4937431fdad0f6d91";
 const mockedUserID = "64dd30f4937431fdad0f6d92";
 
-fdescribe("User Router: User Relation", () => {
+describe("User Router: User Relation", () => {
   let testLoggedInUser: User, validUser: User, token: string, testPost: Post;
 
   async function createAndSetTestLoggedInUserAndToken({ isAdmin = false } = {}) {
@@ -484,7 +484,7 @@ fdescribe("User Router: User Relation", () => {
     });
   });
 
-  fdescribe("DELETE /:userId/block/:postId/fromPost", () => {
+  describe("DELETE /:userId/block/:postId/fromPost", () => {
     beforeAll(async () => {
       await createAndSetTestLoggedInUserAndToken();
     });

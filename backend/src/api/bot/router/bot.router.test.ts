@@ -114,7 +114,7 @@ describe("Bot Router", () => {
   });
 
   describe("POST /:id([a-fA-F0-9]{24})", () => {
-    it("should return 200 and a created bot post", async () => {
+    it("should return 201 and a created bot post", async () => {
       (botPostService.createPost as jest.Mock).mockResolvedValueOnce(getMockPost());
 
       const res = await request(app).post(`/${testBotId1}`).set("Cookie", [token]);
@@ -127,7 +127,7 @@ describe("Bot Router", () => {
   });
 
   describe("POST /botPrompt", () => {
-    it("should return 200 and a created bot prompt", async () => {
+    it("should return 201 and a created bot prompt", async () => {
       const res = await request(app).post(`/botPrompt`).set("Cookie", [token]).send({
         botId: testBotId1,
         prompt: getMockPromptText(),
@@ -145,7 +145,7 @@ describe("Bot Router", () => {
   });
 
   describe("POST /manyBotPrompts", () => {
-    it("should return 200 and a created many bot prompts", async () => {
+    it("should return 201 and a created many bot prompts", async () => {
       const res = await request(app)
         .post(`/manyBotPrompts`)
         .set("Cookie", [token])

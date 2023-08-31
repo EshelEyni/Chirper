@@ -25,6 +25,7 @@ describe("addBotManyPrompts function", () => {
       },
     };
     res = {
+      status: jest.fn().mockReturnThis(),
       send: jest.fn(),
     };
     next = jest.fn();
@@ -40,6 +41,7 @@ describe("addBotManyPrompts function", () => {
       prompt: req.body.prompts[0],
       type: req.body.type,
     });
+
     expect(res.send).toHaveBeenCalledWith({
       status: "success",
       requestedAt: expect.any(String),

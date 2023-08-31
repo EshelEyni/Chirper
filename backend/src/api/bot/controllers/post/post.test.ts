@@ -19,6 +19,7 @@ describe("Bot Post Contoller", () => {
   } as unknown as Request;
 
   const mockResponse = {
+    status: jest.fn().mockReturnThis(),
     send: jest.fn(),
   } as unknown as Response;
 

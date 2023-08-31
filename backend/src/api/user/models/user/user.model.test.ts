@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {
@@ -10,7 +11,7 @@ import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
 
-xdescribe("User Model", () => {
+describe("User Model", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });

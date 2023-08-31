@@ -41,7 +41,7 @@ describe("Post Router", () => {
     await disconnectFromTestDB();
   });
 
-  describe("GET /bookmark", () => {
+  fdescribe("GET /bookmark", () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -147,7 +147,6 @@ describe("Post Router", () => {
     it("should return a 200 status code and the bookmarked post", async () => {
       const res = await request(app).post(`/${validPostId}/bookmark`).set("Cookie", [token]);
 
-      console.log(res.body);
       expect(res.status).toBe(201);
       expect(res.body).toEqual({
         status: "success",

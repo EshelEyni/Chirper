@@ -1,6 +1,6 @@
 import { Gif } from "./gif.interface";
 import { Location } from "./location.interface";
-import { MiniUser } from "./user.interface";
+import { User } from "./user.interface";
 
 export type PostReplyResult = {
   updatedPost: Post;
@@ -37,7 +37,6 @@ export type BasicPost = {
   video?: NewPostVideo | null;
   videoUrl?: string;
   gif: Gif | null;
-  poll: Poll | null;
   schedule?: Date;
   location?: Location;
   isPublic: boolean;
@@ -53,12 +52,13 @@ export interface QuotedPost extends BasicPost {
   id: string;
   createdAt: Date;
   imgs: PostImg[];
-  createdBy: MiniUser;
+  createdBy: User;
 }
 
 export interface NewPost extends BasicPost {
   tempId: string;
   imgs: NewPostImg[];
+  poll: NewPoll | null;
   quotedPostId?: string;
   previousThreadPostId?: string;
   isDraft?: boolean;
@@ -74,9 +74,10 @@ export interface Post extends BasicPost {
   likesCount: number;
   viewsCount: number;
   imgs: PostImg[];
+  poll: Poll | null;
   quotedPost?: QuotedPost;
-  createdBy: MiniUser;
-  repostedBy?: MiniUser;
+  createdBy: User;
+  repostedBy?: User;
   loggedInUserActionState: LoggedInUserActionState;
   isPromotional?: boolean;
   linkToSite?: string;
@@ -117,6 +118,15 @@ export interface Poll {
   };
   isVotingOff: boolean;
   createdAt: number;
+}
+
+export interface NewPoll {
+  options: { text: string }[];
+  length: {
+    days: number;
+    hours: number;
+    minutes: number;
+  };
 }
 
 export interface Emoji {

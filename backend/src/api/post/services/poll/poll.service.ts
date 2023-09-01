@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { PostModel } from "../../models/post/post.model";
-import { PollResultModel } from "../../models/poll/poll.model";
+import { PollVoteModel } from "../../models/poll-vote/poll-vote.model";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PollOption, Post } from "../../../../../../shared/interfaces/post.interface";
@@ -30,9 +30,9 @@ async function setPollVote(postId: string, optionIdx: number, userId: string): P
       optionIdx,
       userId,
     };
-    const userVote = await PollResultModel.findOne(vote).session(session);
+    const userVote = await PollVoteModel.findOne(vote).session(session);
     if (userVote) throw new AppError("user already voted", 400);
-    await PollResultModel.create([vote], { session });
+    await PollVoteModel.create([vote], { session });
 
     await session.commitTransaction();
 
@@ -52,11 +52,12 @@ async function getLoggedInUserPollDetails(...posts: Post[]) {
   const isNoPolls = posts.every(post => !post.poll);
   if (!isValidMongoId(loggedInUserId) || isNoPolls) return;
 
-  const pollResults = await PollResultModel.find({
+  const pollResults = await PollVoteModel.find({
     userId: new ObjectId(loggedInUserId),
     postId: { $in: posts.map(post => post.id) },
   }).exec();
 
+  // TODO: add vote count to poll options
   // if (!pollResults.length) return;
   const pollResultsMap = new Map(pollResults.map(result => [result.postId.toString(), result]));
 

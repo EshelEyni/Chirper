@@ -43,6 +43,7 @@ const _getDefaultNewPost = (
       : undefined,
     repliedPostDetails,
     isPublic: true,
+    isPinned: false,
     quotedPostId: quotedPostId,
     imgs: [],
     video: null,

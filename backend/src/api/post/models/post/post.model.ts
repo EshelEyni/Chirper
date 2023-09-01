@@ -1,6 +1,5 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import { pollSchema } from "../poll/poll.model";
 import {
   Poll,
   Post,
@@ -14,6 +13,7 @@ import postUtilService from "../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats.model";
 import { RepostModel } from "../repost/repost.model";
+import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 
 export interface IPost extends Document {
   audience: string;
@@ -39,48 +39,6 @@ export interface IPost extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-const imgsSchema = new mongoose.Schema(
-  {
-    url: {
-      type: String,
-      required: true,
-    },
-    sortOrder: {
-      type: Number,
-      required: true,
-    },
-  },
-  {
-    _id: false,
-    default: null,
-  }
-);
-
-const locationSchema = new mongoose.Schema(
-  {
-    placeId: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    lat: {
-      type: Number,
-      required: true,
-    },
-    lng: {
-      type: Number,
-      required: true,
-    },
-  },
-  {
-    _id: false,
-    default: null,
-  }
-);
 
 const postSchema: Schema<IPost> = new mongoose.Schema(
   {
@@ -328,6 +286,7 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
 });
 
 async function _populatePostData(...docs: IPost[]) {
+  //TODO: populate quoted post and poll stats
   if (!docs.length) return;
   const {
     userIds,

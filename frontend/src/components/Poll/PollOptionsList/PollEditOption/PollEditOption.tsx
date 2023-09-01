@@ -1,11 +1,10 @@
 import { FC } from "react";
-import { PollOption as TypeOfPollOption } from "../../../../../../shared/interfaces/post.interface";
 import { AiOutlinePlus } from "react-icons/ai";
-import "./PollOption.scss";
+import "./PollEditOption.scss";
 
 type PollOptionProps = {
   idx: number;
-  option: TypeOfPollOption;
+  option: { text: string };
   optionsLength: number;
   inputRefs: React.RefObject<HTMLInputElement>[];
   focused: Record<string, boolean>;
@@ -15,7 +14,7 @@ type PollOptionProps = {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>, idx: number) => void;
 };
 
-export const PollOption: FC<PollOptionProps> = ({
+export const PollEditOption: FC<PollOptionProps> = ({
   idx,
   option,
   optionsLength,

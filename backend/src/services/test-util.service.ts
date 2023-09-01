@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 require("dotenv").config();
 import mongoose from "mongoose";
 import { LoggedInUserActionState, Poll, Post } from "../../../shared/interfaces/post.interface";
@@ -19,6 +20,7 @@ type CreateTestUserOptions = {
 type CreateTestPostOptions = {
   id?: string;
   createdById?: string;
+  body?: any;
 };
 
 async function connectToTestDB({ isRemoteDB = false } = {}) {
@@ -105,12 +107,17 @@ async function deleteManyTestPosts(ids: string[]) {
   await UserModel.deleteMany({ _id: { $in: createdByIds.map(({ createdById }) => createdById) } });
 }
 
-async function createTestPost({ id, createdById }: CreateTestPostOptions = {}): Promise<Post> {
+async function createTestPost({
+  id,
+  createdById,
+  body,
+}: CreateTestPostOptions = {}): Promise<Post> {
   await PostModel.findByIdAndDelete(id);
   return (await PostModel.create({
     _id: id || getMongoId(),
     createdById: createdById || (await createTestUser({})).id,
     text: "test post",
+    ...body,
   })) as unknown as Post;
 }
 
@@ -136,6 +143,29 @@ function createValidUserCreds(id?: string): UserCredenitials {
     password,
     passwordConfirm: password,
   } as UserCredenitials;
+}
+
+function createTestPoll({
+  options,
+  length,
+}: {
+  options?: { text: string }[];
+  length?: { days: number; hours: number; minutes: number };
+}) {
+  const defaultOptions = [{ text: "option 1" }, { text: "option 2" }];
+
+  const defaultLength = {
+    days: 1,
+    hours: 0,
+    minutes: 0,
+  };
+
+  const poll = {
+    options: options || defaultOptions,
+    length: length || defaultLength,
+  };
+
+  return poll;
 }
 
 function getLoginTokenStrForTest(validUserId: string) {
@@ -324,6 +354,7 @@ export {
   createManyTestPosts,
   deleteManyTestPosts,
   createTestPost,
+  createTestPoll,
   getMongoId,
   getMockedUser,
   getMockPost,

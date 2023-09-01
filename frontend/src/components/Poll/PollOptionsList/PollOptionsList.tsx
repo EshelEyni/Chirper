@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import "./PollOptionsList.scss";
-import { PollOption } from "./PollOption/PollOption";
+import { PollEditOption } from "./PollEditOption/PollEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
 
@@ -17,17 +17,9 @@ export const PollOptionsList: FC = () => {
 
   const { currNewPost } = usePostEdit();
 
-  function getDefaultOption() {
-    return {
-      text: "",
-      voteCount: 0,
-      isLoggedInUserVoted: false,
-    };
-  }
-
   function onAddChoice() {
     if (!currNewPost || currNewPost.poll!.options.length >= 5) return;
-    const defaultOption = getDefaultOption();
+    const defaultOption = { text: "" };
     const newPost = {
       ...currNewPost,
       poll: {
@@ -84,7 +76,7 @@ export const PollOptionsList: FC = () => {
   return (
     <div className="poll-options-container">
       {currNewPost.poll!.options.map((option, idx) => (
-        <PollOption
+        <PollEditOption
           key={idx}
           idx={idx}
           option={option}

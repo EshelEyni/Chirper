@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { AppError } from "../../../../services/error/error.service";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import {
   assertPost,
   connectToTestDB,
@@ -14,6 +14,10 @@ import {
 } from "../../../../services/test-util.service";
 import { BookmarkedPostModel } from "./bookmark-post.model";
 
+jest.mock("../../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
+
 describe("Bookmark Post Model", () => {
   let post: Post, user: User, postId: string, bookmarkOwnerId: string;
 
@@ -21,14 +25,16 @@ describe("Bookmark Post Model", () => {
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
     user = await createTestUser({});
-    post = await createTestPost({ id: user.id });
+    post = await createTestPost({});
     postId = post.id;
     bookmarkOwnerId = user.id;
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(user.id);
   }
 
   async function deleteMocks() {
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
+    await BookmarkedPostModel.deleteMany({});
   }
 
   beforeAll(async () => {
@@ -50,6 +56,16 @@ describe("Bookmark Post Model", () => {
       );
     });
 
+    it("should check if the referenced post exists", async () => {
+      const newBookmark = new BookmarkedPostModel({
+        postId: getMongoId(),
+        bookmarkOwnerId,
+      });
+      await expect(newBookmark.save()).rejects.toThrow(
+        "BookmarkedPost validation failed: postId: Referenced post does not exist"
+      );
+    });
+
     it("should require bookmarkOwnerId", async () => {
       const newBookmark = new BookmarkedPostModel({ postId });
 
@@ -58,11 +74,20 @@ describe("Bookmark Post Model", () => {
       );
     });
 
+    it("should check if the referenced user exists", async () => {
+      const newBookmark = new BookmarkedPostModel({
+        postId,
+        bookmarkOwnerId: getMongoId(),
+      });
+
+      await expect(newBookmark.save()).rejects.toThrow(
+        "BookmarkedPost validation failed: bookmarkOwnerId: Referenced user does not exist"
+      );
+    });
+
     it("should create timestamps", async () => {
-      const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
-
-      await newBookmark.save();
-
+      await deleateAndCreateMocks();
+      const newBookmark = await BookmarkedPostModel.create({ postId, bookmarkOwnerId });
       expect(newBookmark.createdAt).toBeDefined();
       expect(newBookmark.updatedAt).toBeDefined();
     });
@@ -85,36 +110,37 @@ describe("Bookmark Post Model", () => {
     });
   });
 
-  describe("Pre-save hooks", () => {
-    it("should check if the referenced post exists", async () => {
-      const newBookmark = new BookmarkedPostModel({
-        postId: getMongoId(),
-        bookmarkOwnerId: getMongoId(),
-      });
-      await expect(newBookmark.save()).rejects.toThrow(
-        new AppError("Referenced post does not exist", 404)
-      );
-    });
-  });
-
   describe("Post-save hooks", () => {
-    fit("should populate the post field", async () => {
+    it("should populate the post field with post.isBookmarked is true", async () => {
       await deleateAndCreateMocks();
       const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
       const doc = (await newBookmark.save()) as any;
 
       expect(doc.post).toBeDefined();
-      const { post } = doc.toObject();
-      console.log(post);
+      const post = doc.toObject().post as Post;
       assertPost(post);
+      expect(post.loggedInUserActionState.isBookmarked).toBe(true);
     });
   });
 
-  //   describe("Post-findOneAndRemove hooks", () => {
-  //     it("should populate the post field", async () => {
-  //       // implement test
-  //     });
-  //   });
+  describe("Post-find hook", () => {
+    it("should populate the post field with post.isBookmarked is false after remove action", async () => {
+      await deleateAndCreateMocks();
+      const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
+      const doc = (await newBookmark.save()) as any;
+
+      expect(doc.post).toBeDefined();
+
+      const removedDoc = (await BookmarkedPostModel.findOneAndRemove({
+        _id: doc._id,
+      })) as any;
+
+      expect(removedDoc.post).toBeDefined();
+      const { post } = removedDoc.toObject();
+      assertPost(post);
+      expect(post.loggedInUserActionState.isBookmarked).toBe(false);
+    });
+  });
 
   //   describe("Post-find hooks", () => {
   //     it("should populate the post field for all documents", async () => {
@@ -122,13 +148,3 @@ describe("Bookmark Post Model", () => {
   //     });
   //   });
 });
-
-// function mockPostModelExist(value: any) {
-//   (PostModel.exists as jest.Mock).mockReset();
-//   (PostModel.exists as jest.Mock).mockImplementation(() => {
-//     return {
-//       setOptions: jest.fn().mockReturnThis(),
-//       exec: jest.fn().mockResolvedValue(value),
-//     };
-//   });
-// }

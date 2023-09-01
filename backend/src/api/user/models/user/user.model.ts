@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationKind, UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 
 export interface IUser extends Document {
   username: string;
@@ -210,6 +211,7 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
     // Get the user relation map for all user IDs
     const userRelationMap = await userRelationService.getUserRelation(
       [UserRelationKind.Follow, UserRelationKind.Mute, UserRelationKind.Block],
+      getLoggedInUserIdFromReq(),
       ...userIds
     );
 
@@ -218,9 +220,9 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
       const userId = doc._id.toString();
       doc._followingCount = followingCountMap[userId] ?? 0;
       doc._followersCount = followersCountMap[userId] ?? 0;
-      doc._isFollowing = userRelationMap[userId].isFollowing ?? false;
-      doc._isMuted = userRelationMap[userId].isMuted ?? false;
-      doc._isBlocked = userRelationMap[userId].isBlocked ?? false;
+      doc._isFollowing = userRelationMap[userId].isFollowing;
+      doc._isMuted = userRelationMap[userId].isMuted;
+      doc._isBlocked = userRelationMap[userId].isBlocked;
     }
   } else {
     const doc = res;
@@ -242,12 +244,13 @@ userSchema.post(/^find/, async function (this: Query<User[], User & Document>, r
 
     const userRelationMap = await userRelationService.getUserRelation(
       [UserRelationKind.Follow, UserRelationKind.Mute, UserRelationKind.Block],
+      getLoggedInUserIdFromReq(),
       userId
     );
 
-    doc._isFollowing = userRelationMap[userId].isFollowing ?? false;
-    doc._isMuted = userRelationMap[userId].isMuted ?? false;
-    doc._isBlocked = userRelationMap[userId].isBlocked ?? false;
+    doc._isFollowing = userRelationMap[userId].isFollowing;
+    doc._isMuted = userRelationMap[userId].isMuted;
+    doc._isBlocked = userRelationMap[userId].isBlocked;
   }
 });
 

@@ -116,7 +116,7 @@ async function queryEntityExists<T extends Document>(
   model: Model<T>,
   query: FilterQuery<T>
 ): Promise<boolean> {
-  return !!(await model.exists(query));
+  return !!(await model.exists(query).setOptions({ skipHooks: true }).exec());
 }
 
 function isValidMongoId(id: string): boolean {

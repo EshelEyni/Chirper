@@ -1,7 +1,14 @@
-import mongoose from "mongoose";
-import { postSchema } from "./post/post.model";
+import mongoose, { Schema } from "mongoose";
+import { IPost, postSchema } from "./post/post.model";
 
-const promotionalPostSchema = new mongoose.Schema({
+export interface PromotionalPost extends IPost {
+  isPromotional: boolean;
+  companyName: string;
+  linkToSite: string;
+  linkToRepo?: string;
+}
+
+const promotionalPostSchema: Schema<PromotionalPost> = new mongoose.Schema({
   ...postSchema.obj,
   isPromotional: {
     type: Boolean,

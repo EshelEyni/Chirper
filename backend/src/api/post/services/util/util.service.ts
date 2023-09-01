@@ -62,7 +62,7 @@ async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedI
   const bookmarkedResults = await BookmarkedPostModel.find({
     postId: { $in: uniquePostIds },
     bookmarkOwnerId: userId,
-  });
+  }).setOptions({ skipHooks: true });
 
   const bookmarkedIdSet = new Set(bookmarkedResults.map(bookmark => bookmark.postId.toString()));
 

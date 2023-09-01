@@ -58,14 +58,22 @@ describe("User Relation Service: Get Actions", () => {
     });
 
     it("should return an empty object if no IDs are provided", async () => {
-      const result = await userRelationService.getUserRelation();
+      const result = await userRelationService.getUserRelation(
+        [UserRelationKind.Follow],
+        loggedInUserId
+      );
       expect(result).toEqual({});
     });
 
     it("should return empty relation maps for each ID if loggedInUserId is not valid", async () => {
       (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(null);
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
-      const result = await userRelationService.getUserRelation([UserRelationKind.Follow], "1", "2");
+      const result = await userRelationService.getUserRelation(
+        [UserRelationKind.Follow],
+        "",
+        "1",
+        "2"
+      );
       expect(result).toEqual({ "1": {}, "2": {} });
     });
 
@@ -78,13 +86,14 @@ describe("User Relation Service: Get Actions", () => {
       (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce(mockData);
       const result = await userRelationService.getUserRelation(
         [UserRelationKind.Follow, UserRelationKind.Mute, UserRelationKind.Block],
+        loggedInUserId,
         "1",
         "2"
       );
 
       expect(result).toEqual({
-        "1": { isFollowing: true, isMuted: true },
-        "2": { isBlocked: true },
+        "1": { isFollowing: true, isMuted: true, isBlocked: false },
+        "2": { isBlocked: true, isFollowing: false, isMuted: false },
       });
     });
 
@@ -96,14 +105,16 @@ describe("User Relation Service: Get Actions", () => {
       (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce(mockData);
       const result = await userRelationService.getUserRelation(
         [UserRelationKind.Follow, UserRelationKind.Block],
+        loggedInUserId,
         "1",
         "2",
         "3"
       );
+
       expect(result).toEqual({
-        "1": { isFollowing: true },
-        "2": { isBlocked: true },
-        "3": {},
+        "1": { isFollowing: true, isBlocked: false, isMuted: false },
+        "2": { isBlocked: true, isFollowing: false, isMuted: false },
+        "3": { isBlocked: false, isFollowing: false, isMuted: false },
       });
     });
   });

@@ -16,7 +16,6 @@ type UpdateAndGetUsersParams = {
   fromUserId: string;
   toUserId: string;
   session: ClientSession;
-  // inc: number;
 };
 
 type UserRelationState = {
@@ -52,12 +51,12 @@ type UserRelationMap = {
 };
 
 async function getUserRelation(
-  kinds: UserRelationKind[] = [UserRelationKind.Follow],
+  kinds: UserRelationKind[],
+  loggedInUserId: string,
   ...ids: string[]
 ): Promise<UserRelationMap> {
   if (!ids.length) return {} as UserRelationMap;
 
-  const loggedInUserId = getLoggedInUserIdFromReq();
   if (!isValidMongoId(loggedInUserId)) {
     const res = ids.reduce((acc, id) => ({ ...acc, [id]: {} }), {});
     return res;
@@ -71,6 +70,12 @@ async function getUserRelation(
     .setOptions({ skipHooks: true })
     .select({ toUserId: 1, kind: 1 })
     .exec();
+
+  const getDefaultRelationState = () => ({
+    isFollowing: false,
+    isMuted: false,
+    isBlocked: false,
+  });
 
   const relationMap = userRelations.reduce((acc, { toUserId, kind }) => {
     const getRelationBoolen = (kind: string) => {
@@ -90,17 +95,16 @@ async function getUserRelation(
 
     return {
       ...acc,
-      [toUserId]: {
-        ...acc[toUserId],
-        ...relationStatus,
-      },
+      [toUserId]: acc[toUserId]
+        ? { ...acc[toUserId], ...relationStatus }
+        : { ...getDefaultRelationState(), ...relationStatus },
     };
   }, {} as UserRelationMap);
 
   const res = ids.reduce(
     (acc, id) => ({
       ...acc,
-      [id]: relationMap[id] || {},
+      [id]: relationMap[id] || getDefaultRelationState(),
     }),
     {}
   );
@@ -109,11 +113,24 @@ async function getUserRelation(
 }
 
 async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
-  return await getUserRelation([UserRelationKind.Follow], ...ids).then(res =>
-    Object.fromEntries(
-      Object.entries(res).map(([id, { isFollowing }]) => [id, isFollowing || false])
-    )
+  return await getUserRelation([UserRelationKind.Follow], getLoggedInUserIdFromReq(), ...ids).then(
+    res =>
+      Object.fromEntries(
+        Object.entries(res).map(([id, { isFollowing }]) => [id, isFollowing || false])
+      )
   );
+}
+
+async function getBlockedUserIds(): Promise<string[]> {
+  const loggedInUserId = getLoggedInUserIdFromReq();
+  if (!isValidMongoId(loggedInUserId)) return [];
+
+  const blockedUserIds = await UserRelationModel.find({
+    fromUserId: loggedInUserId,
+    kind: UserRelationKind.Block,
+  }).select({ toUserId: 1 });
+
+  return blockedUserIds.map(({ toUserId }) => toUserId);
 }
 
 async function add({
@@ -247,6 +264,7 @@ function _getRelationNotFoundError(kind: UserRelationKind) {
 export default {
   getUserRelation,
   getIsFollowing,
+  getBlockedUserIds,
   add,
   remove,
 };

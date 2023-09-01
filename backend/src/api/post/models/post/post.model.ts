@@ -13,7 +13,8 @@ import postUtilService from "../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats/post-stats.model";
 import { RepostModel } from "../repost/repost.model";
-import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
+import { imgsSchema, locationSchema, pollSchema, repliedPostDetailsSchema } from "./post-sub-schemas";
+import { ObjectId } from "mongodb";
 
 export interface IPost extends Document {
   audience: string;
@@ -54,46 +55,64 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
         message: "Post must have no more than 4 images.",
       },
     },
-    videoUrl: String,
+    videoUrl: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: (videoUrl: Post["videoUrl"]) => {
+          if (!videoUrl) return true;
+          const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/watch\?v=.+$/;
+          const cloudinaryRegex =
+            /^https:\/\/res\.cloudinary\.com\/[a-zA-Z0-9]+\/video\/upload\/v[0-9]+\/[a-zA-Z0-9]+\.mp4$/;
+
+          return youtubeRegex.test(videoUrl) || cloudinaryRegex.test(videoUrl);
+        },
+        message: "Video URL must be a valid YouTube or Vimeo URL.",
+      },
+    },
     gif: gifSchema,
     poll: pollSchema,
     schedule: Date,
     location: locationSchema,
     createdById: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      required: [true, "Post must have a createdById"],
       ref: "User",
     },
     quotedPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
+      validate: {
+        validator: async (id: ObjectId) => !!(await mongoose.models.Post.findById({ _id: id })),
+        message: "Referenced post does not exist",
+      },
     },
     audience: {
       type: String,
       default: "everyone",
-      enum: ["everyone", "chirper-circle"],
+      enum: {
+        values: ["everyone", "chirper-circle"],
+        message: "Audience must be either everyone or chirper-circle",
+      },
     },
     repliersType: {
       type: String,
       default: "everyone",
-      enum: ["everyone", "followed", "mentioned"],
+      enum: {
+        values: ["everyone", "followed", "mentioned"],
+        message: "Repliers type must be either everyone, followed, or mentioned",
+      },
     },
     previousThreadPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
-    },
-    repliedPostDetails: [
-      {
-        postId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Post",
-        },
-        postOwner: {
-          userId: mongoose.Schema.Types.ObjectId,
-          username: String,
-        },
+      validate: {
+        validator: async (id: Post["previousThreadPostId"]) =>
+          !!(await mongoose.models.Post.findById({ _id: id })),
+        message: "Referenced post does not exist",
       },
-    ],
+    },
+    repliedPostDetails: [repliedPostDetailsSchema],
     isPublic: {
       type: Boolean,
       default: true,
@@ -240,7 +259,10 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
 postSchema.pre("save", function (this: Document, next: () => void) {
   const isPublic = this.get("schedule") === undefined && this.get("isDraft") === undefined;
   this.set("isPublic", isPublic);
+  next();
+});
 
+postSchema.pre("save", function (this: Document, next: () => void) {
   // Trimming last occurence of videoUrl from text
   const videoUrl = this.get("videoUrl");
   if (!videoUrl) next();
@@ -251,9 +273,10 @@ postSchema.pre("save", function (this: Document, next: () => void) {
     const trimmedText = postText.slice(0, idx) + postText.slice(idx + videoUrl.length);
     this.set("text", trimmedText);
   }
-
   next();
 });
+
+// TODO: add validation for replies
 
 postSchema.post("save", async function (doc: IPost) {
   if (!doc) return;
@@ -363,7 +386,7 @@ async function _getPostStats(...ids: string[]) {
   return { repostCountsMap, likesCountsMap, viewsCountsMap, repliesCountMap };
 }
 
-// TODO: Fully implement this with tests
+// TODO: Fully implement this with tests, also implement tests in schema.test.ts
 // async function _populateQuotedPost(...docs: Document[]) {
 //   if (!docs.length) return;
 

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
+import { ObjectId } from "mongodb";
 
 type IPollOption = {
   text: string;
@@ -19,15 +20,23 @@ type IPollBase = {
   updatedAt: Date;
 };
 
+type RepliedPostDetails = {
+  postId: mongoose.Types.ObjectId;
+  postOwner: {
+    userId: mongoose.Types.ObjectId;
+    username: string;
+  };
+};
+
 const imgsSchema = new mongoose.Schema(
   {
     url: {
       type: String,
-      required: true,
+      required: [true, "Image url is required"],
     },
     sortOrder: {
       type: Number,
-      required: true,
+      required: [true, "Image sort order is required"],
     },
   },
   {
@@ -40,19 +49,19 @@ const locationSchema = new mongoose.Schema(
   {
     placeId: {
       type: String,
-      required: true,
+      required: [true, "Place id is required"],
     },
     name: {
       type: String,
-      required: true,
+      required: [true, "Place name is required"],
     },
     lat: {
       type: Number,
-      required: true,
+      required: [true, "Latitude is required"],
     },
     lng: {
       type: Number,
-      required: true,
+      required: [true, "Longitude is required"],
     },
   },
   {
@@ -160,4 +169,25 @@ pollSchema.pre("save", function (next) {
   next();
 });
 
-export { pollSchema, imgsSchema, locationSchema };
+const repliedPostDetailsSchema: Schema<RepliedPostDetails> = new mongoose.Schema({
+  postId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post",
+    validate: {
+      validator: async (id: ObjectId) => !!(await mongoose.models.Post.findById({ _id: id })),
+      message: "Referenced replied post does not exist",
+    },
+  },
+  postOwner: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Replied post owner must have a userId"],
+    },
+    username: {
+      type: String,
+      required: [true, "Replied post owner must have a username"],
+    },
+  },
+});
+export { pollSchema, imgsSchema, locationSchema, repliedPostDetailsSchema };

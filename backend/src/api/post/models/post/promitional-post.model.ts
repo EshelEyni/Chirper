@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IPost, postSchema } from "./post/post.model";
+import { IPost, postSchema } from "./post.model";
 
 export interface PromotionalPost extends IPost {
   isPromotional: boolean;

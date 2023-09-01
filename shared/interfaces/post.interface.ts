@@ -78,6 +78,7 @@ export interface Post extends BasicPost {
   quotedPost?: QuotedPost;
   createdBy: User;
   repostedBy?: User;
+  previousThreadPostId?: string;
   loggedInUserActionState: LoggedInUserActionState;
   isPromotional?: boolean;
   linkToSite?: string;

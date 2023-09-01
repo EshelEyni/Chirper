@@ -132,8 +132,15 @@ function getMongoId() {
 }
 
 function createValidUserCreds(id?: string): UserCredenitials {
-  const ranNum = Math.floor(Math.random() * 100000);
-  const username = "testUser_" + ranNum;
+  function makeId(length = 10): string {
+    let txt = "";
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < length; i++) {
+      txt += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return txt;
+  }
+  const username = "testUser_" + makeId();
   const password = "password";
   return {
     _id: id || getMongoId(),
@@ -150,7 +157,7 @@ function createTestPoll({
   length,
 }: {
   options?: { text: string }[];
-  length?: { days: number; hours: number; minutes: number };
+  length?: { days?: number; hours?: number; minutes?: number };
 }) {
   const defaultOptions = [{ text: "option 1" }, { text: "option 2" }];
 
@@ -166,6 +173,16 @@ function createTestPoll({
   };
 
   return poll;
+}
+
+function createRepliedPostDetails(post: Post) {
+  return {
+    postId: post.id,
+    postOwner: {
+      userId: post.createdBy.id,
+      username: post.createdBy.username,
+    },
+  };
 }
 
 function getLoginTokenStrForTest(validUserId: string) {
@@ -355,6 +372,7 @@ export {
   deleteManyTestPosts,
   createTestPost,
   createTestPoll,
+  createRepliedPostDetails,
   getMongoId,
   getMockedUser,
   getMockPost,

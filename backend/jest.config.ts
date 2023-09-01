@@ -3,9 +3,9 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/post/models/post-stats";
+const currPath = "/api/post/models/post/tests";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
-
+const specifiedPath = baseDir + "/post-schema.test.ts";
 // const collectCoverage = true;
 const collectCoverage = false;
 // const coveragePath = isGlobalTesting
@@ -27,7 +27,8 @@ const config: Config.InitialOptions = {
     "!**/data/**",
   ],
   roots: [baseDir],
-  testMatch: [`${baseDir}/**/*test.ts`],
+  // testMatch: [`${baseDir}/**/*test.ts`],
+  testMatch: [specifiedPath],
 };
 
 export default config;

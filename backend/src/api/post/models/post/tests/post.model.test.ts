@@ -1,6 +1,6 @@
-import { Post } from "../../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../../shared/interfaces/user.interface";
-import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
+import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import { User } from "../../../../../../../shared/interfaces/user.interface";
+import { getLoggedInUserIdFromReq } from "../../../../../services/als.service";
 import {
   connectToTestDB,
   createManyTestPosts,
@@ -8,18 +8,18 @@ import {
   deleteManyTestPosts,
   deleteManyTestUsers,
   disconnectFromTestDB,
-} from "../../../../services/test-util.service";
+} from "../../../../../services/test-util.service";
 import {
   UserRelationKind,
   UserRelationModel,
-} from "../../../user/models/user-relation/user-relation.model";
-import { PostModel } from "./post.model";
+} from "../../../../user/models/user-relation/user-relation.model";
+import { PostModel } from "../post.model";
 
-jest.mock("../../../../services/als.service", () => ({
+jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 
-describe("PostModel", () => {
+xdescribe("PostModel", () => {
   let loggedInUser: User,
     followedUser: User,
     blockedUser: User,

@@ -14,7 +14,7 @@ import likeService from "../services/like/like.service";
 import bookmarkService from "../services/bookmark/bookmark.service";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
-import { PromotionalPostModel } from "../models/promitional-post.model";
+import { PromotionalPostModel } from "../models/post/promitional-post.model";
 import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 

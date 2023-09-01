@@ -1,6 +1,6 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import { pollSchema } from "../poll.model";
+import { pollSchema } from "../poll/poll.model";
 import {
   Poll,
   Post,
@@ -13,7 +13,7 @@ import userRelationService from "../../../user/services/user-relation/user-relat
 import postUtilService from "../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats.model";
-import { RepostModel } from "../repost.model";
+import { RepostModel } from "../repost/repost.model";
 
 export interface IPost extends Document {
   audience: string;

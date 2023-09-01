@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { PostModel } from "../../models/post/post.model";
-import { PollResultModel } from "../../models/poll.model";
+import { PollResultModel } from "../../models/poll/poll.model";
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { alStoreType } from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PollOption, Post } from "../../../../../../shared/interfaces/post.interface";

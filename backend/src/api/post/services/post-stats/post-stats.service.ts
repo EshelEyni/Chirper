@@ -3,7 +3,7 @@ import { PostStatsBody } from "../../../../../../shared/interfaces/post.interfac
 import { PostLikeModel } from "../../models/like/post-like.model";
 import { PostStatsModel } from "../../models/post-stats.model";
 import { PostModel } from "../../models/post/post.model";
-import { RepostModel } from "../../models/repost.model";
+import { RepostModel } from "../../models/repost/repost.model";
 import mongoose from "mongoose";
 
 async function get(postId: string): Promise<PostStatsBody> {

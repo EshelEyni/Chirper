@@ -21,13 +21,14 @@ jest.mock("../../../../services/als.service", () => ({
 describe("Post Like Model", () => {
   let post: Post, user: User, postId: string, userId: string;
 
-  async function deleateAndCreateMocks() {
+  async function deleteAndCreateMocks() {
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
     user = await createTestUser({});
     post = await createTestPost({});
     postId = post.id;
     userId = user.id;
+    mockGetLoggedInUserIdFromReq();
   }
 
   async function deleteMocks() {
@@ -42,7 +43,7 @@ describe("Post Like Model", () => {
 
   beforeAll(async () => {
     await connectToTestDB();
-    await deleateAndCreateMocks();
+    await deleteAndCreateMocks();
   });
 
   afterAll(async () => {
@@ -86,7 +87,7 @@ describe("Post Like Model", () => {
 
   describe("Indexes", () => {
     it("should not allow duplicate postLike for same postId and userId", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       await PostLikeModel.create({
         postId,
         userId,
@@ -110,8 +111,7 @@ describe("Post Like Model", () => {
 
   describe("Hooks", () => {
     it("should populate post after save with postLike.post", async () => {
-      await deleateAndCreateMocks();
-      mockGetLoggedInUserIdFromReq();
+      await deleteAndCreateMocks();
 
       const postLike = new PostLikeModel({
         postId,
@@ -128,8 +128,7 @@ describe("Post Like Model", () => {
     });
 
     it("should populate post after findOneAndRemove with !postLike.post", async () => {
-      await deleateAndCreateMocks();
-      mockGetLoggedInUserIdFromReq();
+      await deleteAndCreateMocks();
 
       const postLike = new PostLikeModel({
         postId,

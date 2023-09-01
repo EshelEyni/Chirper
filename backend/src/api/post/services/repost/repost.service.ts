@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { RepostModel } from "../../models/repost.model";
+import { RepostModel } from "../../models/repost/repost.model";
 import { PostModel } from "../../models/post/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";

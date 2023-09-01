@@ -8,7 +8,7 @@ import userRelationService from "../../../user/services/user-relation/user-relat
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
 import { UserModel } from "../../../user/models/user/user.model";
-import { RepostModel } from "../../models/repost.model";
+import { RepostModel } from "../../models/repost/repost.model";
 import promotionalPostsService from "../promotional-posts/promotional-posts.service";
 
 async function query(queryString: QueryObj): Promise<Post[]> {

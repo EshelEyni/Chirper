@@ -21,7 +21,7 @@ jest.mock("../../../../services/als.service", () => ({
 describe("Bookmark Post Model", () => {
   let post: Post, user: User, postId: string, bookmarkOwnerId: string;
 
-  async function deleateAndCreateMocks() {
+  async function deleteAndCreateMocks() {
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
     user = await createTestUser({});
@@ -43,7 +43,7 @@ describe("Bookmark Post Model", () => {
 
   beforeAll(async () => {
     await connectToTestDB();
-    await deleateAndCreateMocks();
+    await deleteAndCreateMocks();
   });
 
   afterAll(async () => {
@@ -90,7 +90,7 @@ describe("Bookmark Post Model", () => {
     });
 
     it("should create timestamps", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       const newBookmark = await BookmarkedPostModel.create({ postId, bookmarkOwnerId });
       expect(newBookmark.createdAt).toBeDefined();
       expect(newBookmark.updatedAt).toBeDefined();
@@ -99,7 +99,7 @@ describe("Bookmark Post Model", () => {
 
   describe("Indexes", () => {
     it("should enforce unique constraint on postId and bookmarkOwnerId", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       const newBookmark1 = new BookmarkedPostModel({ postId, bookmarkOwnerId });
       await newBookmark1.save();
 
@@ -118,7 +118,7 @@ describe("Bookmark Post Model", () => {
 
   describe("Post-save hooks", () => {
     it("should populate the post field with post.isBookmarked is true", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
       const doc = (await newBookmark.save()) as any;
 
@@ -131,7 +131,7 @@ describe("Bookmark Post Model", () => {
 
   describe("Post-find hook", () => {
     it("should populate the post field", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
       const doc = (await newBookmark.save()) as any;
 
@@ -150,7 +150,7 @@ describe("Bookmark Post Model", () => {
     });
 
     it("should populate the post field with post.isBookmarked is false after remove action", async () => {
-      await deleateAndCreateMocks();
+      await deleteAndCreateMocks();
       const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
       const doc = (await newBookmark.save()) as any;
 

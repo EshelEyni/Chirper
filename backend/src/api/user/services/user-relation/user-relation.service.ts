@@ -7,7 +7,7 @@ import {
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
-import { PostStatsModel } from "../../../post/models/post-stats.model";
+import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";
 import postService from "../../../post/services/post/post.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";

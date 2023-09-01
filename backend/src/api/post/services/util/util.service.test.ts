@@ -1,7 +1,7 @@
 import { asyncLocalStorage } from "../../../../services/als.service";
 import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
 import { PostLikeModel } from "../../models/like/post-like.model";
-import { PostStatsModel } from "../../models/post-stats.model";
+import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import { RepostModel } from "../../models/repost/repost.model";
 import postUtilService, { loggedInUserActionDefaultState } from "./util.service";
 import { Types } from "mongoose";

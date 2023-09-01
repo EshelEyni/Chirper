@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import {
   assertPost,
   connectToTestDB,
@@ -14,10 +13,6 @@ import {
 } from "../../../../services/test-util.service";
 import { PostLikeModel } from "./post-like.model";
 
-jest.mock("../../../../services/als.service", () => ({
-  getLoggedInUserIdFromReq: jest.fn(),
-}));
-
 describe("Post Like Model", () => {
   let post: Post, user: User, postId: string, userId: string;
 
@@ -28,17 +23,12 @@ describe("Post Like Model", () => {
     post = await createTestPost({});
     postId = post.id;
     userId = user.id;
-    mockGetLoggedInUserIdFromReq();
   }
 
   async function deleteMocks() {
     await PostLikeModel.deleteMany({});
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
-  }
-
-  function mockGetLoggedInUserIdFromReq() {
-    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(user.id);
   }
 
   beforeAll(async () => {

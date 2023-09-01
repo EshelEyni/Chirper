@@ -6,7 +6,7 @@ import userRelationService from "../user-relation.service";
 import { UserModel } from "../../../models/user/user.model";
 import postService from "../../../../post/services/post/post.service";
 import * as mongoose from "mongoose";
-import { PostStatsModel } from "../../../../post/models/post-stats.model";
+import { PostStatsModel } from "../../../../post/models/post-stats/post-stats.model";
 import { AppError } from "../../../../../services/error/error.service";
 
 jest.mock("../../../../../services/als.service", () => ({

@@ -73,6 +73,6 @@ pollVoteSchema.pre("save", async function (next) {
   next();
 });
 
-const PollVoteModel = mongoose.model("PollResult", pollVoteSchema, "poll_results");
+const PollVoteModel = mongoose.model("PollVote", pollVoteSchema, "poll_votes");
 
 export { PollVoteModel };

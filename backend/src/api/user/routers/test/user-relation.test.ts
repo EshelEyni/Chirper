@@ -18,7 +18,7 @@ import cookieParser from "cookie-parser";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { PostModel } from "../../../post/models/post/post.model";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
-import { PostStatsModel } from "../../../post/models/post-stats.model";
+import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";
 import mongoose from "mongoose";
 
 const app = express();

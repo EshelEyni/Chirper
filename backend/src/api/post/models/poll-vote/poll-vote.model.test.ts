@@ -82,14 +82,14 @@ describe("Poll Result Model", () => {
       const optionIdx = 0;
       const pollVote = PollVoteModel.create({ optionIdx, userId });
       expect(pollVote).rejects.toThrow(
-        "PollResult validation failed: postId: Path `postId` is required."
+        "PollVote validation failed: postId: Path `postId` is required."
       );
     });
 
     it("should not save a poll vote without optionIdx", () => {
       const pollVote = PollVoteModel.create({ postId, userId });
       expect(pollVote).rejects.toThrow(
-        "PollResult validation failed: optionIdx: Path `optionIdx` is required."
+        "PollVote validation failed: optionIdx: Path `optionIdx` is required."
       );
     });
 
@@ -97,7 +97,7 @@ describe("Poll Result Model", () => {
       const optionIdx = 0;
       const pollVote = PollVoteModel.create({ postId, optionIdx });
       expect(pollVote).rejects.toThrow(
-        "PollResult validation failed: userId: Path `userId` is required."
+        "PollVote validation failed: userId: Path `userId` is required."
       );
     });
   });

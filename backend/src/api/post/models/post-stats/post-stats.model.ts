@@ -1,16 +1,47 @@
-import mongoose, { InferSchemaType, Model } from "mongoose";
+import { ObjectId } from "mongodb";
+import mongoose, { Model, Schema } from "mongoose";
+import { queryEntityExists } from "../../../../services/util/util.service";
+import { PostModel } from "../post/post.model";
+import { UserModel } from "../../../user/models/user/user.model";
 
-const postStatsSchema = new mongoose.Schema(
+type IPostStats = {
+  postId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  isViewed: boolean;
+  isDetailedViewed: boolean;
+  isProfileViewed: boolean;
+  isFollowedFromPost: boolean;
+  isBlockedFromPost: boolean;
+  isMutedFromPost: boolean;
+  isHashTagClicked: boolean;
+  isLinkClicked: boolean;
+  isPostLinkCopied: boolean;
+  isPostShared: boolean;
+  isPostSendInMessage: boolean;
+  isPostBookmarked: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const postStatsSchema: Schema<IPostStats> = new mongoose.Schema(
   {
     postId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Post",
+      validate: {
+        validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
+        message: "Referenced post does not exist",
+      },
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
+      validate: {
+        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        message: "Referenced user does not exist",
+      },
     },
     isViewed: {
       type: Boolean,
@@ -69,7 +100,6 @@ const postStatsSchema = new mongoose.Schema(
 postStatsSchema.index({ postId: 1, userId: 1 }, { unique: true });
 postStatsSchema.index({ postId: 1 });
 
-type IPostStats = InferSchemaType<typeof postStatsSchema>;
 const PostStatsModel: Model<IPostStats> = mongoose.model(
   "PostStats",
   postStatsSchema,

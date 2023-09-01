@@ -11,7 +11,7 @@ import { Location } from "../../../../../../shared/interfaces/location.interface
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService from "../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
-import { PostStatsModel } from "../post-stats.model";
+import { PostStatsModel } from "../post-stats/post-stats.model";
 import { RepostModel } from "../repost/repost.model";
 import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 

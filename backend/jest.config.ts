@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/post/models/poll-vote";
+const currPath = "/api/post/models/post-stats";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 
 // const collectCoverage = true;

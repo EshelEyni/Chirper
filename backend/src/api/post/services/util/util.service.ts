@@ -3,7 +3,7 @@ import { isValidMongoId } from "../../../../services/util/util.service";
 import { RepostModel } from "../../models/repost/repost.model";
 import { PostLikeModel } from "../../models/like/post-like.model";
 import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
-import { PostStatsModel } from "../../models/post-stats.model";
+import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import {
   LoggedInUserActionState,
   LoggedInUserActionStates,

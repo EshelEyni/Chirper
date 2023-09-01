@@ -1,34 +1,33 @@
 import { ObjectId } from "mongodb";
-import mongoose, { Document, Model, Query } from "mongoose";
-import { PostModel } from "../post/post.model";
+import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { queryEntityExists } from "../../../../services/util/util.service";
+import { PostModel } from "../post/post.model";
 import { UserModel } from "../../../user/models/user/user.model";
 
-interface IBookmarkedPostBase {
+interface IPostLikeBase {
   postId: ObjectId;
-  bookmarkOwnerId: ObjectId;
+  userId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface IBookmarkedPostDoc extends IBookmarkedPostBase, mongoose.Document {}
+interface IPostLikeDoc extends IPostLikeBase, mongoose.Document {}
 
-const bookmarkedPostSchema = new mongoose.Schema(
+const postLikeSchema: Schema<IPostLikeDoc> = new mongoose.Schema(
   {
     postId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
       required: true,
+      ref: "Post",
       validate: {
         validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
         message: "Referenced post does not exist",
       },
     },
-
-    bookmarkOwnerId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
       required: true,
+      ref: "User",
       validate: {
         validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
         message: "Referenced user does not exist",
@@ -46,24 +45,24 @@ const bookmarkedPostSchema = new mongoose.Schema(
   }
 );
 
-bookmarkedPostSchema.virtual("post", {
+postLikeSchema.virtual("post", {
   ref: "Post",
   localField: "postId",
   foreignField: "_id",
   justOne: true,
 });
 
-bookmarkedPostSchema.index({ postId: 1, bookmarkOwnerId: 1 }, { unique: true });
-bookmarkedPostSchema.index({ bookmarkOwnerId: 1 });
+postLikeSchema.index({ postId: 1, userId: 1 }, { unique: true });
+postLikeSchema.index({ userId: 1 });
 
-bookmarkedPostSchema.post("save", async function (doc: Document) {
+postLikeSchema.post("save", async function (doc: Document) {
   if (!doc) return;
   await doc.populate("post");
 });
 
-bookmarkedPostSchema.post(
+postLikeSchema.post(
   /^find/,
-  async function (this: Query<IBookmarkedPostDoc[], IBookmarkedPostDoc>, res): Promise<void> {
+  async function (this: Query<IPostLikeDoc[], IPostLikeDoc>, res): Promise<void> {
     const options = this.getOptions();
     if (!res || options.skipHooks) return;
     const isResArray = Array.isArray(res);
@@ -72,17 +71,17 @@ bookmarkedPostSchema.post(
       const docs = res;
       for (const doc of docs) await doc.populate("post");
     } else {
-      const doc = res as IBookmarkedPostDoc;
+      const doc = res as IPostLikeDoc;
       if (!doc) return;
       await doc.populate("post");
     }
   }
 );
 
-const BookmarkedPostModel: Model<IBookmarkedPostDoc> = mongoose.model<IBookmarkedPostDoc>(
-  "BookmarkedPost",
-  bookmarkedPostSchema,
-  "bookmarked_posts"
+const PostLikeModel: Model<IPostLikeDoc> = mongoose.model<IPostLikeDoc>(
+  "PostLike",
+  postLikeSchema,
+  "post_likes"
 );
 
-export { BookmarkedPostModel };
+export { PostLikeModel };

@@ -28,13 +28,17 @@ describe("Bookmark Post Model", () => {
     post = await createTestPost({});
     postId = post.id;
     bookmarkOwnerId = user.id;
-    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(user.id);
+    mockGetLoggedInUserIdFromReq();
   }
 
   async function deleteMocks() {
     await deleteTestPost(post?.id);
     await deleteTestUser(user?.id);
     await BookmarkedPostModel.deleteMany({});
+  }
+
+  function mockGetLoggedInUserIdFromReq() {
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(user.id);
   }
 
   beforeAll(async () => {
@@ -91,7 +95,9 @@ describe("Bookmark Post Model", () => {
       expect(newBookmark.createdAt).toBeDefined();
       expect(newBookmark.updatedAt).toBeDefined();
     });
+  });
 
+  describe("Indexes", () => {
     it("should enforce unique constraint on postId and bookmarkOwnerId", async () => {
       await deleateAndCreateMocks();
       const newBookmark1 = new BookmarkedPostModel({ postId, bookmarkOwnerId });
@@ -124,6 +130,25 @@ describe("Bookmark Post Model", () => {
   });
 
   describe("Post-find hook", () => {
+    it("should populate the post field", async () => {
+      await deleateAndCreateMocks();
+      const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
+      const doc = (await newBookmark.save()) as any;
+
+      expect(doc.post).toBeDefined();
+
+      const docsFromFind = (await BookmarkedPostModel.find({
+        postId,
+        bookmarkOwnerId,
+      })) as any;
+
+      for (const doc of docsFromFind) {
+        expect(doc.post).toBeDefined();
+        const post = doc.toObject().post as Post;
+        assertPost(post);
+      }
+    });
+
     it("should populate the post field with post.isBookmarked is false after remove action", async () => {
       await deleateAndCreateMocks();
       const newBookmark = new BookmarkedPostModel({ postId, bookmarkOwnerId });
@@ -141,10 +166,4 @@ describe("Bookmark Post Model", () => {
       expect(post.loggedInUserActionState.isBookmarked).toBe(false);
     });
   });
-
-  //   describe("Post-find hooks", () => {
-  //     it("should populate the post field for all documents", async () => {
-  //       // implement test
-  //     });
-  //   });
 });

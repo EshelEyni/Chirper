@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import { RepostModel } from "../../models/repost.model";
-import { PostLikeModel } from "../../models/post-like.model";
+import { PostLikeModel } from "../../models/like/post-like.model";
 import { BookmarkedPostModel } from "../../models/bookmark/bookmark-post.model";
 import { PostStatsModel } from "../../models/post-stats.model";
 import {
@@ -47,6 +47,7 @@ async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedI
     postId: { $in: uniquePostIds },
     repostOwnerId: userId,
   })
+    .setOptions({ skipHooks: true })
     .select({ postId: 1 })
     .exec();
 
@@ -55,7 +56,7 @@ async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedI
   const likesResults = await PostLikeModel.find({
     postId: { $in: uniquePostIds },
     userId,
-  });
+  }).setOptions({ skipHooks: true });
 
   const likesIdSet = new Set(likesResults.map(like => like.postId.toString()));
 
@@ -69,7 +70,7 @@ async function getPostLoggedInUserActionState(...ids: string[]): Promise<LoggedI
   const postStatsResults = await PostStatsModel.find({
     postId: { $in: uniquePostIds },
     userId,
-  });
+  }).setOptions({ skipHooks: true });
 
   const postStatsMap = new Map(postStatsResults.map(result => [result.postId.toString(), result]));
 

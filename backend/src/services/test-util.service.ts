@@ -203,34 +203,6 @@ function createTestGif({
   };
 }
 
-function createRepliedPostDetailsFromPost(post: Post) {
-  return {
-    postId: post.id,
-    postOwner: {
-      userId: post.createdBy.id,
-      username: post.createdBy.username,
-    },
-  };
-}
-
-function createRepliedPostDetails({
-  postId,
-  userId,
-  username,
-}: {
-  postId: string;
-  userId: string;
-  username: string;
-}) {
-  return {
-    postId,
-    postOwner: {
-      userId,
-      username,
-    },
-  };
-}
-
 function getLoginTokenStrForTest(validUserId: string) {
   const token = tokenService.signToken(validUserId);
   return `loginToken=${token}`;
@@ -418,8 +390,6 @@ export {
   deleteManyTestPosts,
   createTestPost,
   createTestPoll,
-  createRepliedPostDetailsFromPost,
-  createRepliedPostDetails,
   createTestGif,
   getMongoId,
   getMockedUser,

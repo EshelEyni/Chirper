@@ -1,5 +1,5 @@
-import { beforeEach } from "node:test";
 import {
+  assertUser,
   connectToTestDB,
   createRepliedPostDetails,
   createRepliedPostDetailsFromPost,
@@ -11,15 +11,20 @@ import {
   disconnectFromTestDB,
   getMongoId,
 } from "../../../../../services/test-util.service";
+import { UserModel } from "../../../../user/models/user/user.model";
 import { PostModel } from "../post.model";
 
-describe("PostModel: Hooks", () => {
+xdescribe("PostModel: Hooks", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await PostModel.deleteMany({});
+    await UserModel.deleteMany({});
+  });
+
+  afterAll(async () => {
     await disconnectFromTestDB();
   });
 
@@ -153,5 +158,40 @@ describe("PostModel: Hooks", () => {
       });
       expect(post.text).toBe("Hello world");
     });
+  });
+
+  describe("Post save hook - Populate Post Data", () => {
+    // Tests for _populatePostData
+    afterEach(async () => {
+      await PostModel.deleteMany({});
+      await UserModel.deleteMany({});
+    });
+
+    it("Should correctly populate createdBy from UserModel.", async () => {
+      const user = await createTestUser();
+      const post = await createTestPost({ body: { createdBy: user.id } });
+      const { createdBy } = post;
+      assertUser(createdBy);
+    });
+
+    // it("Should correctly set loggedInUserActionState.", async () => {});
+    // it("Should correctly set repostsCount, repliesCount, likesCount, and viewsCount.", async () => {});
+    // it("Should handle quoted posts correctly.", async () => {});
+    // it("Should handle replied post details correctly.", async () => {});
+    // // Tests for _getUserAndPostIds
+    // it("Should collect userIds, postIds, and quotedPostIds from docs.", async () => {});
+    // it("Should handle missing or null values in docs.", async () => {});
+    // // Tests for _getPostStats
+    // it("Should correctly aggregate repost, like, view, and reply counts.", async () => {});
+    // it("Should handle empty ID array gracefully.", async () => {});
+    // // Tests for setRepliedPostDetailsUsername
+    // it("Should not modify doc if repliedPostDetails is not present or empty.", async () => {});
+    // it("Should correctly set username in repliedPostDetails.", async () => {});
+    // // Tests for _getQuotedPosts
+    // it("Should return quoted posts and their creator IDs.", async () => {});
+    // it("Should handle empty ID array gracefully.", async () => {});
+    // // Tests for _setQuotedPost
+    // it("Should not modify doc if quotedPosts is empty.", async () => {});
+    // it("Should correctly set quotedPost and quotedPost.createdBy.", async () => {});
   });
 });

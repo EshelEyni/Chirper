@@ -1,8 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
-import { ObjectId } from "mongodb";
-import { queryEntityExists } from "../../../../services/util/util.service";
-import { UserModel } from "../../../user/models/user/user.model";
 
 type IPollOption = {
   text: string;
@@ -20,14 +17,6 @@ type IPollBase = {
   length: IPollLength;
   createdAt: Date;
   updatedAt: Date;
-};
-
-type RepliedPostDetails = {
-  postId: mongoose.Types.ObjectId;
-  postOwner: {
-    userId: mongoose.Types.ObjectId;
-    username: string;
-  };
 };
 
 const imgsSchema = new mongoose.Schema(
@@ -171,25 +160,4 @@ pollSchema.pre("save", function (next) {
   next();
 });
 
-const repliedPostDetailsSchema: Schema<RepliedPostDetails> = new mongoose.Schema({
-  postId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Post",
-    validate: {
-      validator: async (id: ObjectId) => !!(await mongoose.models.Post.findById({ _id: id })),
-      message: "Referenced replied post does not exist",
-    },
-  },
-  postOwner: {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "Replied post owner must have a userId"],
-      validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
-        message: "Referenced user does not exist",
-      },
-    },
-  },
-});
-export { pollSchema, imgsSchema, locationSchema, repliedPostDetailsSchema };
+export { pollSchema, imgsSchema, locationSchema };

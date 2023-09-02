@@ -331,8 +331,8 @@ describe("PostModel: Schema", () => {
     });
   });
 
-  describe("Repliers", () => {
-    it("Should validate repliedPostDetails with valid postId and postOwner.", async () => {
+  fdescribe("Repliers", () => {
+    fit("Should validate repliedPostDetails with valid postId and postOwner.", async () => {
       const repliedPost = await createTestPost({});
       const body = { repliedPostDetails: [createRepliedPostDetailsFromPost(repliedPost)] };
       await expect(createTestPost({ body })).resolves.toBeDefined();

@@ -4,21 +4,17 @@ import {
   Poll,
   Post,
   PostImg,
+  QuotedPost,
   repliedPostDetails,
 } from "../../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../../shared/interfaces/location.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService from "../../services/util/util.service";
-import { UserModel } from "../../../user/models/user/user.model";
+import { IUser, UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats/post-stats.model";
 import { RepostModel } from "../repost/repost.model";
-import {
-  imgsSchema,
-  locationSchema,
-  pollSchema,
-  repliedPostDetailsSchema,
-} from "./post-sub-schemas";
+import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
 
@@ -29,7 +25,6 @@ export interface IPost extends Document {
   isDraft?: boolean;
   isPinned: boolean;
   previousThreadPostId?: string;
-  repliedPostDetails?: repliedPostDetails[];
   createdById: mongoose.Schema.Types.ObjectId;
   text?: string;
   imgs?: PostImg[];
@@ -118,7 +113,6 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
         message: "Referenced post does not exist",
       },
     },
-    repliedPostDetails: [repliedPostDetailsSchema],
     isPublic: {
       type: Boolean,
       default: true,
@@ -313,15 +307,14 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
 });
 
 async function _populatePostData(...docs: IPost[]) {
-  //TODO: populate quoted post and poll stats and replier details as well
   if (!docs.length) return;
-  const {
-    userIds,
-    postIds,
-    // quotedPostIds
-  } = _getUserAndPostIds(docs);
+  const { userIds, postIds, quotedPostIds } = _getUserAndPostIdsFromPostDoc(...docs);
 
-  const users = await UserModel.find({ _id: { $in: userIds } });
+  const { quotedPosts, quotedPostCreatorIds } = await _getQuotedPostAndCreatorIdByPostId(
+    ...quotedPostIds
+  );
+
+  const users = await UserModel.find({ _id: { $in: [...userIds, ...quotedPostCreatorIds] } });
   const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
 
   const { repostCountsMap, repliesCountMap, likesCountsMap, viewsCountsMap } = await _getPostStats(
@@ -329,21 +322,25 @@ async function _populatePostData(...docs: IPost[]) {
   );
 
   for (const doc of docs) {
+    if (!doc) continue;
+
     const currCreatedById = doc.get("createdById").toString();
     const currPostId = doc.get("_id").toString();
 
     const user = users.find(user => user._id.toString() === currCreatedById);
-    doc.set("createdBy", user);
+
+    if (user) doc.set("createdBy", user);
     doc.set("loggedInUserActionState", loggedInUserStatesMap[currPostId]);
 
     doc._repostsCount = repostCountsMap.get(currPostId) ?? 0;
     doc._repliesCount = repliesCountMap.get(currPostId) ?? 0;
     doc._likesCount = likesCountsMap.get(currPostId) ?? 0;
     doc._viewsCount = viewsCountsMap.get(currPostId) ?? 0;
+    if (doc.get("quotedPostId")) _setQuotedPost(doc, quotedPosts, currPostId, users);
   }
 }
 
-function _getUserAndPostIds(docs: Document[]) {
+function _getUserAndPostIdsFromPostDoc(...docs: Document[]) {
   const userIds = new Set<string>();
   const postIds = [];
   const quotedPostIds = [];
@@ -352,9 +349,12 @@ function _getUserAndPostIds(docs: Document[]) {
     const userIdStr = doc.get("createdById").toString();
     const postIdStr = doc.get("_id").toString();
     const quotedPostIdStr = doc.get("quotedPostId")?.toString();
+    const repliedPostDetails = doc.get("repliedPostDetails") as repliedPostDetails[];
 
     userIds.add(userIdStr);
     postIds.push(postIdStr);
+
+    for (const { postOwner } of repliedPostDetails) userIds.add(postOwner.userId.toString());
     if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
   }
 
@@ -390,34 +390,47 @@ async function _getPostStats(...ids: string[]) {
   return { repostCountsMap, likesCountsMap, viewsCountsMap, repliesCountMap };
 }
 
-// TODO: Fully implement this with tests, also implement tests in schema.test.ts
-// async function _populateQuotedPost(...docs: Document[]) {
-//   if (!docs.length) return;
+async function _getQuotedPostAndCreatorIdByPostId(...ids: string[]): Promise<{
+  quotedPosts: QuotedPost[];
+  quotedPostCreatorIds: string[];
+}> {
+  const quotedPosts = (await PostModel.find({ _id: { $in: ids } })
+    .select([
+      "id",
+      "text",
+      "video",
+      "videoUrl",
+      "gif",
+      "imgs",
+      "isPublic",
+      "audience",
+      "repliersType",
+      "repliedPostDetails",
+      "createdById",
+      "createdAt",
+    ])
+    .lean()
+    .setOptions({ skipHooks: true })) as unknown as QuotedPost[];
 
-//   for (const doc of docs) {
-//     const isQuotedPost = doc.get("quotedPostId");
-//     if (!isQuotedPost) continue;
+  const quotedPostCreatorIds = quotedPosts.map(post => post.createdBy.id.toString());
 
-//     const populatedDoc = await doc.populate("quotedPost", {
-//       _id: 1,
-//       text: 1,
-//       videoUrl: 1,
-//       gif: 1,
-//       poll: 1,
-//       imgs: 1,
-//       isPublic: 1,
-//       audience: 1,
-//       repliersType: 1,
-//       createdAt: 1,
-//       createdById: 1,
-//     });
+  return { quotedPosts, quotedPostCreatorIds };
+}
 
-//     const currCreatedById = doc.get("quotedPost.createdById").toString();
-//     const createdBy = await UserModel.findById(currCreatedById)
-//     populatedDoc.set("quotedPost.createdBy", createdBy);
-//   }
-// }
+function _setQuotedPost(
+  doc: Document,
+  quotedPosts: QuotedPost[],
+  currPostId: string,
+  users: IUser[]
+) {
+  if (!quotedPosts.length) return;
+  const quotedPost = quotedPosts.find(post => post.id.toString() === currPostId);
+  if (!quotedPost) return;
+  doc.set("quotedPost", quotedPost);
+  const quotedPostCreator = users.find(user => user._id.toString() === quotedPost?.createdById);
+  doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
+}
 
-const PostModel = mongoose.model("Post", postSchema);
+const PostModel = mongoose.model<IPost>("Post", postSchema);
 
 export { PostModel, postSchema };

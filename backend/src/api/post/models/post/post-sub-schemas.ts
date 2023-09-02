@@ -1,6 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { ObjectId } from "mongodb";
+import { queryEntityExists } from "../../../../services/util/util.service";
+import { UserModel } from "../../../user/models/user/user.model";
 
 type IPollOption = {
   text: string;
@@ -183,10 +185,10 @@ const repliedPostDetailsSchema: Schema<RepliedPostDetails> = new mongoose.Schema
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Replied post owner must have a userId"],
-    },
-    username: {
-      type: String,
-      required: [true, "Replied post owner must have a username"],
+      validate: {
+        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        message: "Referenced user does not exist",
+      },
     },
   },
 });

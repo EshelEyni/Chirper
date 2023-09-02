@@ -175,12 +175,58 @@ function createTestPoll({
   return poll;
 }
 
-function createRepliedPostDetails(post: Post) {
+function createTestGif({
+  category,
+  url,
+  staticUrl,
+  description,
+  size,
+  placeholderUrl,
+  staticPlaceholderUrl,
+}: {
+  category?: string;
+  url?: string;
+  staticUrl?: string;
+  description?: string;
+  size?: { height: number; width: number };
+  placeholderUrl?: string;
+  staticPlaceholderUrl?: string;
+} = {}) {
+  return {
+    category: category || "Agree",
+    url: url || "test url",
+    staticUrl: staticUrl || "test static url",
+    description: description || "test description",
+    size: size || { height: 100, width: 100 },
+    placeholderUrl: placeholderUrl || "test placeholder url",
+    staticPlaceholderUrl: staticPlaceholderUrl || "test static placeholder url",
+  };
+}
+
+function createRepliedPostDetailsFromPost(post: Post) {
   return {
     postId: post.id,
     postOwner: {
       userId: post.createdBy.id,
       username: post.createdBy.username,
+    },
+  };
+}
+
+function createRepliedPostDetails({
+  postId,
+  userId,
+  username,
+}: {
+  postId: string;
+  userId: string;
+  username: string;
+}) {
+  return {
+    postId,
+    postOwner: {
+      userId,
+      username,
     },
   };
 }
@@ -372,7 +418,9 @@ export {
   deleteManyTestPosts,
   createTestPost,
   createTestPoll,
+  createRepliedPostDetailsFromPost,
   createRepliedPostDetails,
+  createTestGif,
   getMongoId,
   getMockedUser,
   getMockPost,

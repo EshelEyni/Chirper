@@ -13,8 +13,14 @@ import postUtilService from "../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats/post-stats.model";
 import { RepostModel } from "../repost/repost.model";
-import { imgsSchema, locationSchema, pollSchema, repliedPostDetailsSchema } from "./post-sub-schemas";
+import {
+  imgsSchema,
+  locationSchema,
+  pollSchema,
+  repliedPostDetailsSchema,
+} from "./post-sub-schemas";
 import { ObjectId } from "mongodb";
+import { AppError } from "../../../../services/error/error.service";
 
 export interface IPost extends Document {
   audience: string;
@@ -209,7 +215,7 @@ postSchema.index({ schedule: 1 }, { partialFilterExpression: { schedule: { $exis
 
 postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
   const createValidationError = (message: string) => {
-    const err = new Error(message);
+    const err = new AppError(message, 400);
     err.name = "ValidationError";
     return err;
   };
@@ -224,11 +230,6 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
     );
   };
 
-  const hasValidPollOptions = () => {
-    const options = this.get("poll.options");
-    return options?.length > 1 && options?.length <= 5;
-  };
-
   const hasValidSchedule = () => {
     if (this.get("schedule") < new Date()) return "Schedule cannot be in the past";
     if (this.get("poll")) return "Post with poll cannot be scheduled";
@@ -240,17 +241,20 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
     return;
   }
 
-  if (this.get("poll") && !hasValidPollOptions()) {
-    next(createValidationError("Poll must have at least 2 options and at most 5 options"));
-    return;
-  }
-
+  // schedule needs to be validated before poll, because poll validation depends on schedule
   if (this.get("schedule")) {
     const scheduleValidation = hasValidSchedule();
     if (scheduleValidation !== "valid") {
       next(createValidationError(scheduleValidation));
       return;
     }
+  }
+
+  if (this.get("poll")) {
+    const text = this.get("text");
+    if (text) next();
+    next(createValidationError("Poll must have a question in the text field"));
+    return;
   }
 
   next();
@@ -268,6 +272,8 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   if (!videoUrl) next();
 
   const postText = this.get("text");
+  if (!postText) next();
+
   const idx = postText.lastIndexOf(videoUrl);
   if (idx !== -1) {
     const trimmedText = postText.slice(0, idx) + postText.slice(idx + videoUrl.length);
@@ -275,8 +281,6 @@ postSchema.pre("save", function (this: Document, next: () => void) {
   }
   next();
 });
-
-// TODO: add validation for replies
 
 postSchema.post("save", async function (doc: IPost) {
   if (!doc) return;
@@ -309,7 +313,7 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
 });
 
 async function _populatePostData(...docs: IPost[]) {
-  //TODO: populate quoted post and poll stats
+  //TODO: populate quoted post and poll stats and replier details as well
   if (!docs.length) return;
   const {
     userIds,

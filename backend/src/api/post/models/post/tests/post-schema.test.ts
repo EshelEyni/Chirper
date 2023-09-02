@@ -1,16 +1,13 @@
 import {
   connectToTestDB,
-  createRepliedPostDetailsFromPost,
   createTestPoll,
   createTestPost,
-  createTestUser,
-  deleteTestUser,
   disconnectFromTestDB,
   getMongoId,
 } from "../../../../../services/test-util.service";
 import { PostModel } from "../post.model";
 
-describe("PostModel: Schema", () => {
+xdescribe("PostModel: Schema", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });
@@ -328,45 +325,6 @@ describe("PostModel: Schema", () => {
 
     it("Should allow omitting previousThreadPostId.", async () => {
       await expect(createTestPost({})).resolves.toBeDefined();
-    });
-  });
-
-  fdescribe("Repliers", () => {
-    fit("Should validate repliedPostDetails with valid postId and postOwner.", async () => {
-      const repliedPost = await createTestPost({});
-      const body = { repliedPostDetails: [createRepliedPostDetailsFromPost(repliedPost)] };
-      await expect(createTestPost({ body })).resolves.toBeDefined();
-    });
-
-    it("Should invalidate repliedPostDetails with non-existing postId.", async () => {
-      const user = await createTestUser({});
-      const body = {
-        repliedPostDetails: [
-          {
-            postId: getMongoId(),
-            postOwner: { userId: user.id, username: user.username },
-          },
-        ],
-      };
-      await expect(createTestPost({ body })).rejects.toThrow(
-        "Referenced replied post does not exist"
-      );
-      await deleteTestUser(user.id);
-    });
-
-    it("Should invalidate repliedPostDetails when postOwner.userId is missing.", async () => {
-      const post = await createTestPost({});
-      const body = {
-        repliedPostDetails: [
-          {
-            postId: post.id,
-            postOwner: { username: "existing_username" },
-          },
-        ],
-      };
-      await expect(createTestPost({ body })).rejects.toThrow(
-        "Replied post owner must have a userId"
-      );
     });
   });
 

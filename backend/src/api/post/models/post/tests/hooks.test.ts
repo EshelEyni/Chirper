@@ -1,20 +1,16 @@
 import {
   assertUser,
   connectToTestDB,
-  createRepliedPostDetails,
-  createRepliedPostDetailsFromPost,
   createTestGif,
   createTestPoll,
   createTestPost,
   createTestUser,
-  deleteTestUser,
   disconnectFromTestDB,
-  getMongoId,
 } from "../../../../../services/test-util.service";
 import { UserModel } from "../../../../user/models/user/user.model";
 import { PostModel } from "../post.model";
 
-xdescribe("PostModel: Hooks", () => {
+describe("PostModel: Hooks", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });

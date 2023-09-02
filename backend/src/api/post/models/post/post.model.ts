@@ -5,7 +5,6 @@ import {
   Post,
   PostImg,
   QuotedPost,
-  repliedPostDetails,
 } from "../../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../../shared/interfaces/location.interface";
@@ -278,7 +277,7 @@ postSchema.pre("save", function (this: Document, next: () => void) {
 
 postSchema.post("save", async function (doc: IPost) {
   if (!doc) return;
-  await _populatePostData(doc);
+  await new PostDataPopulator().populate(doc);
 });
 
 postSchema.pre(/^find/, async function (this: Query<Document, Post>, next: (err?: Error) => void) {
@@ -297,138 +296,136 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
   if (!res || options.skipHooks) return;
   const isResArray = Array.isArray(res);
 
-  if (isResArray) {
-    const docs = res;
-    await _populatePostData(...docs);
-  } else {
-    const doc = res;
-    await _populatePostData(doc);
-  }
+  if (isResArray) await new PostDataPopulator().populate(...res);
+  else await new PostDataPopulator().populate(res);
 });
 
-async function _populatePostData(...docs: IPost[]) {
-  if (!docs.length) return;
-  const { userIds, postIds, quotedPostIds } = _getUserAndPostIdsFromPostDoc(...docs);
-
-  const { quotedPosts, quotedPostCreatorIds } = await _getQuotedPostAndCreatorIdByPostId(
-    ...quotedPostIds
-  );
-
-  const users = await UserModel.find({ _id: { $in: [...userIds, ...quotedPostCreatorIds] } });
-  const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
-
-  const { repostCountsMap, repliesCountMap, likesCountsMap, viewsCountsMap } = await _getPostStats(
-    ...postIds
-  );
-
-  for (const doc of docs) {
-    if (!doc) continue;
-
-    const currCreatedById = doc.get("createdById").toString();
-    const currPostId = doc.get("_id").toString();
-
-    const user = users.find(user => user._id.toString() === currCreatedById);
-
-    if (user) doc.set("createdBy", user);
-    doc.set("loggedInUserActionState", loggedInUserStatesMap[currPostId]);
-
-    doc._repostsCount = repostCountsMap.get(currPostId) ?? 0;
-    doc._repliesCount = repliesCountMap.get(currPostId) ?? 0;
-    doc._likesCount = likesCountsMap.get(currPostId) ?? 0;
-    doc._viewsCount = viewsCountsMap.get(currPostId) ?? 0;
-    if (doc.get("quotedPostId")) _setQuotedPost(doc, quotedPosts, currPostId, users);
-  }
-}
-
-function _getUserAndPostIdsFromPostDoc(...docs: Document[]) {
-  const userIds = new Set<string>();
-  const postIds = [];
-  const quotedPostIds = [];
-
-  for (const doc of docs) {
-    const userIdStr = doc.get("createdById").toString();
-    const postIdStr = doc.get("_id").toString();
-    const quotedPostIdStr = doc.get("quotedPostId")?.toString();
-    const repliedPostDetails = doc.get("repliedPostDetails") as repliedPostDetails[];
-
-    userIds.add(userIdStr);
-    postIds.push(postIdStr);
-
-    for (const { postOwner } of repliedPostDetails) userIds.add(postOwner.userId.toString());
-    if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
+class PostDataPopulator {
+  public async populate(...docs: IPost[]) {
+    await this.#populate(...docs);
   }
 
-  return { userIds: Array.from(userIds), postIds, quotedPostIds };
-}
+  #populate = async (...docs: IPost[]) => {
+    if (!docs.length) return;
+    const { userIds, postIds, quotedPostIds } = this.#getUserAndPostIdsFromPostDoc(...docs);
 
-async function _getPostStats(...ids: string[]) {
-  const repostCounts = await RepostModel.aggregate([
-    { $match: { postId: { $in: ids } } },
-    { $group: { _id: "$postId", repostCount: { $sum: 1 } } },
-  ]);
+    const { quotedPosts, quotedPostCreatorIds } = await this.#getQuotedPostAndCreatorIdByPostId(
+      ...quotedPostIds
+    );
 
-  const likesCounts = await PostStatsModel.aggregate([
-    { $match: { postId: { $in: ids } } },
-    { $group: { _id: "$postId", likesCount: { $sum: 1 } } },
-  ]);
+    const users = await UserModel.find({ _id: { $in: [...userIds, ...quotedPostCreatorIds] } });
+    const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
 
-  const viewsCounts = await PostStatsModel.aggregate([
-    { $match: { postId: { $in: ids } } },
-    { $group: { _id: "$postId", viewsCount: { $sum: 1 } } },
-  ]);
+    const { repostCountsMap, repliesCountMap, likesCountsMap, viewsCountsMap } =
+      await this.#getPostStats(...postIds);
 
-  const repliesCount = await PostModel.aggregate([
-    { $match: { previousThreadPostId: { $in: ids } } },
-    { $group: { _id: "$previousThreadPostId", repliesCount: { $sum: 1 } } },
-  ]);
+    for (const doc of docs) {
+      if (!doc) continue;
 
-  const repostCountsMap = new Map(repostCounts.map(({ _id, repostCount }) => [_id, repostCount]));
-  const likesCountsMap = new Map(likesCounts.map(({ _id, likesCount }) => [_id, likesCount]));
-  const viewsCountsMap = new Map(viewsCounts.map(({ _id, viewsCount }) => [_id, viewsCount]));
-  const repliesCountMap = new Map(repliesCount.map(({ _id, repliesCount }) => [_id, repliesCount]));
+      const currCreatedById = doc.get("createdById").toString();
+      const currPostId = doc.get("_id").toString();
 
-  return { repostCountsMap, likesCountsMap, viewsCountsMap, repliesCountMap };
-}
+      const user = users.find(user => user._id.toString() === currCreatedById);
 
-async function _getQuotedPostAndCreatorIdByPostId(...ids: string[]): Promise<{
-  quotedPosts: QuotedPost[];
-  quotedPostCreatorIds: string[];
-}> {
-  const quotedPosts = (await PostModel.find({ _id: { $in: ids } })
-    .select([
-      "id",
-      "text",
-      "video",
-      "videoUrl",
-      "gif",
-      "imgs",
-      "isPublic",
-      "audience",
-      "repliersType",
-      "repliedPostDetails",
-      "createdById",
-      "createdAt",
-    ])
-    .lean()
-    .setOptions({ skipHooks: true })) as unknown as QuotedPost[];
+      if (user) doc.set("createdBy", user);
+      doc.set("loggedInUserActionState", loggedInUserStatesMap[currPostId]);
 
-  const quotedPostCreatorIds = quotedPosts.map(post => post.createdBy.id.toString());
+      doc._repostsCount = repostCountsMap.get(currPostId) ?? 0;
+      doc._repliesCount = repliesCountMap.get(currPostId) ?? 0;
+      doc._likesCount = likesCountsMap.get(currPostId) ?? 0;
+      doc._viewsCount = viewsCountsMap.get(currPostId) ?? 0;
 
-  return { quotedPosts, quotedPostCreatorIds };
-}
+      if (doc.get("quotedPostId")) this.#setQuotedPost(doc, quotedPosts, currPostId, users);
+    }
+  };
 
-function _setQuotedPost(
-  doc: Document,
-  quotedPosts: QuotedPost[],
-  currPostId: string,
-  users: IUser[]
-) {
-  if (!quotedPosts.length) return;
-  const quotedPost = quotedPosts.find(post => post.id.toString() === currPostId);
-  if (!quotedPost) return;
-  doc.set("quotedPost", quotedPost);
-  const quotedPostCreator = users.find(user => user._id.toString() === quotedPost?.createdById);
-  doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
+  #getUserAndPostIdsFromPostDoc = (...docs: Document[]) => {
+    const userIds = new Set<string>();
+    const postIds = [];
+    const quotedPostIds = [];
+
+    for (const doc of docs) {
+      const userIdStr = doc.get("createdById").toString();
+      const postIdStr = doc.get("_id").toString();
+      const quotedPostIdStr = doc.get("quotedPostId")?.toString();
+
+      userIds.add(userIdStr);
+      postIds.push(postIdStr);
+
+      if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
+    }
+
+    return { userIds: Array.from(userIds), postIds, quotedPostIds };
+  };
+
+  #getPostStats = async (...ids: string[]) => {
+    const repostCounts = await RepostModel.aggregate([
+      { $match: { postId: { $in: ids } } },
+      { $group: { _id: "$postId", repostCount: { $sum: 1 } } },
+    ]);
+
+    const likesCounts = await PostStatsModel.aggregate([
+      { $match: { postId: { $in: ids } } },
+      { $group: { _id: "$postId", likesCount: { $sum: 1 } } },
+    ]);
+
+    const viewsCounts = await PostStatsModel.aggregate([
+      { $match: { postId: { $in: ids } } },
+      { $group: { _id: "$postId", viewsCount: { $sum: 1 } } },
+    ]);
+
+    const repliesCount = await PostModel.aggregate([
+      { $match: { previousThreadPostId: { $in: ids } } },
+      { $group: { _id: "$previousThreadPostId", repliesCount: { $sum: 1 } } },
+    ]);
+
+    const repostCountsMap = new Map(repostCounts.map(({ _id, repostCount }) => [_id, repostCount]));
+    const likesCountsMap = new Map(likesCounts.map(({ _id, likesCount }) => [_id, likesCount]));
+    const viewsCountsMap = new Map(viewsCounts.map(({ _id, viewsCount }) => [_id, viewsCount]));
+    const repliesCountMap = new Map(
+      repliesCount.map(({ _id, repliesCount }) => [_id, repliesCount])
+    );
+
+    return { repostCountsMap, likesCountsMap, viewsCountsMap, repliesCountMap };
+  };
+
+  #getQuotedPostAndCreatorIdByPostId = async (...ids: string[]) => {
+    const quotedPosts = (await PostModel.find({ _id: { $in: ids } })
+      .select([
+        "id",
+        "text",
+        "video",
+        "videoUrl",
+        "gif",
+        "imgs",
+        "isPublic",
+        "audience",
+        "repliersType",
+        "repliedPostDetails",
+        "createdById",
+        "createdAt",
+      ])
+      .lean()
+      .setOptions({ skipHooks: true })) as unknown as QuotedPost[];
+
+    const quotedPostCreatorIds = quotedPosts.map(post => post.createdBy.id.toString());
+
+    return { quotedPosts, quotedPostCreatorIds };
+  };
+
+  #setQuotedPost = (
+    doc: Document,
+    quotedPosts: QuotedPost[],
+    currPostId: string,
+    users: IUser[]
+  ) => {
+    if (!quotedPosts.length) return;
+    const quotedPost = quotedPosts.find(post => post.id.toString() === currPostId);
+    if (!quotedPost) return;
+    doc.set("quotedPost", quotedPost);
+    const quotedPostCreator = users.find(user => user._id.toString() === quotedPost?.createdById);
+    doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
+  };
 }
 
 const PostModel = mongoose.model<IPost>("Post", postSchema);

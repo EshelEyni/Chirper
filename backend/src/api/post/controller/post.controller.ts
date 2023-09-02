@@ -233,7 +233,7 @@ const updatePostStats = asyncErrorCatcher(async (req: Request, res: Response): P
 const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
   validateIds({ id: loggedInUserId, entityName: "loggedInUser" });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const bookmarkedPosts = (
     await BookmarkedPostModel.find({
       bookmarkOwnerId: loggedInUserId,

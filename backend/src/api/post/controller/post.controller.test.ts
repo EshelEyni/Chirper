@@ -2,11 +2,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { asyncErrorCatcher } from "../../../services/error/error.service";
-import bookmarkService from "../services/bookmark/bookmark.service";
 import { addBookmarkedPost, getBookmarkedPosts, removeBookmarkedPost } from "./post.controller";
 import { getMongoId } from "../../../services/test-util.service";
+import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
+import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 
-jest.mock("../services/bookmark/bookmark.service");
+jest.mock("../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
+
+jest.mock("../models/bookmark/bookmark-post.model", () => ({
+  BookmarkedPostModel: {
+    find: jest.fn(),
+    create: jest.fn(),
+    findOneAndDelete: jest.fn(),
+  },
+}));
+
 jest.mock("../../../services/logger/logger.service", () => ({
   logger: {
     warn: jest.fn(),
@@ -26,7 +38,7 @@ const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
   };
 });
 
-xdescribe("Post Controller", () => {
+describe("Post Controller", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
 
@@ -47,9 +59,19 @@ xdescribe("Post Controller", () => {
     };
   }
 
+  function mockGetLoggedInUserIdFromReq(value?: any) {
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(
+      value !== undefined ? value : getMongoId()
+    );
+  }
+
+  beforeAll(() => {
+    mockGetLoggedInUserIdFromReq();
+  });
+
   describe("getBookmarkedPosts", () => {
     beforeEach(() => {
-      req = { query: {}, loggedInUserId: getMongoId() };
+      req = { query: {} };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
 
@@ -58,9 +80,15 @@ xdescribe("Post Controller", () => {
     });
 
     it("should successfully retrieve and send an array bookmarked posts", async () => {
-      const mockPosts = Array(5).fill(getMockPost());
+      // Putting the post into a post property of the bookmarked post is a
+      // workaround for the populate virtual not working in the test environment
+      const mockBookmarkedPosts = Array(5)
+        .fill(getMockPost())
+        .map(post => ({ post }));
 
-      (bookmarkService.get as jest.Mock) = jest.fn().mockResolvedValue(mockPosts);
+      (BookmarkedPostModel.find as jest.Mock).mockImplementation(() => {
+        return Promise.resolve(mockBookmarkedPosts);
+      });
 
       const sut = getBookmarkedPosts as any;
       await sut(req as Request, res as Response, nextMock);
@@ -68,15 +96,15 @@ xdescribe("Post Controller", () => {
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
         requestedAt: expect.any(String),
-        results: mockPosts.length,
-        data: mockPosts,
+        results: mockBookmarkedPosts.length,
+        data: mockBookmarkedPosts.map(({ post }) => post),
       });
     });
 
     it("should successfully retrieve and send an empty array if there are no bookmarked posts", async () => {
-      const mockPosts = [] as any[];
-
-      (bookmarkService.get as jest.Mock) = jest.fn().mockResolvedValue(mockPosts);
+      (BookmarkedPostModel.find as jest.Mock).mockImplementation(() => {
+        return Promise.resolve([]);
+      });
 
       const sut = getBookmarkedPosts as any;
       await sut(req as Request, res as Response, nextMock);
@@ -84,14 +112,13 @@ xdescribe("Post Controller", () => {
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
         requestedAt: expect.any(String),
-        results: mockPosts.length,
-        data: mockPosts,
+        results: 0,
+        data: [],
       });
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
-
+      mockGetLoggedInUserIdFromReq(null);
       const sut = getBookmarkedPosts as any;
       await sut(req as Request, res as Response, nextMock);
 
@@ -101,11 +128,14 @@ xdescribe("Post Controller", () => {
           statusCode: 401,
         })
       );
+
+      mockGetLoggedInUserIdFromReq(getMongoId());
     });
 
     it("should return a 500 error if bookmarkService.get throws an error", async () => {
       const error = new Error("Test Error");
-      (bookmarkService.get as jest.Mock) = jest.fn().mockImplementation(() => {
+
+      (BookmarkedPostModel.find as jest.Mock).mockImplementation(() => {
         throw error;
       });
 
@@ -118,10 +148,7 @@ xdescribe("Post Controller", () => {
 
   describe("addBookmarkedPost", () => {
     beforeEach(() => {
-      req = {
-        params: { id: getMongoId() },
-        loggedInUserId: getMongoId(),
-      };
+      req = { params: { id: getMongoId() } };
       res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
 
@@ -130,9 +157,11 @@ xdescribe("Post Controller", () => {
     });
 
     it("should successfully add a post to bookmarks and respond with the updated post", async () => {
-      const mockPost = getMockPost();
+      const mockPost = { post: getMockPost() };
 
-      (bookmarkService.add as jest.Mock) = jest.fn().mockResolvedValue(mockPost);
+      (BookmarkedPostModel.create as jest.Mock).mockImplementation(() => {
+        return Promise.resolve(mockPost);
+      });
 
       const sut = addBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
@@ -140,12 +169,12 @@ xdescribe("Post Controller", () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.send).toHaveBeenCalledWith({
         status: "success",
-        data: mockPost,
+        data: mockPost.post,
       });
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
+      mockGetLoggedInUserIdFromReq(null);
 
       const sut = addBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
@@ -156,6 +185,8 @@ xdescribe("Post Controller", () => {
           statusCode: 401,
         })
       );
+
+      mockGetLoggedInUserIdFromReq(getMongoId());
     });
 
     it("should throw an error if the postId is invalid", async () => {
@@ -174,7 +205,8 @@ xdescribe("Post Controller", () => {
 
     it("should return a 500 error if bookmarkService.add throws an error", async () => {
       const error = new Error("Test Error");
-      (bookmarkService.add as jest.Mock) = jest.fn().mockImplementation(() => {
+
+      (BookmarkedPostModel.create as jest.Mock) = jest.fn().mockImplementation(() => {
         throw error;
       });
 
@@ -187,10 +219,7 @@ xdescribe("Post Controller", () => {
 
   describe("removeBookmarkedPost", () => {
     beforeEach(() => {
-      req = {
-        params: { id: getMongoId() },
-        loggedInUserId: getMongoId(),
-      };
+      req = { params: { id: getMongoId() } };
       res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     });
 
@@ -199,21 +228,23 @@ xdescribe("Post Controller", () => {
     });
 
     it("should successfully remove a post from bookmarks and respond with the updated post", async () => {
-      const mockPost = getMockPost();
+      const mockPost = { post: getMockPost() };
 
-      (bookmarkService.remove as jest.Mock) = jest.fn().mockResolvedValue(mockPost);
+      (BookmarkedPostModel.findOneAndDelete as jest.Mock).mockImplementation(() => {
+        return Promise.resolve(mockPost);
+      });
 
       const sut = removeBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
 
       expect(res.json).toHaveBeenCalledWith({
         status: "success",
-        data: mockPost,
+        data: mockPost.post,
       });
     });
 
     it("should throw an error if user is not logged in", async () => {
-      req.loggedInUserId = undefined;
+      mockGetLoggedInUserIdFromReq(null);
 
       const sut = removeBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
@@ -224,6 +255,8 @@ xdescribe("Post Controller", () => {
           statusCode: 401,
         })
       );
+
+      mockGetLoggedInUserIdFromReq(getMongoId());
     });
 
     it("should throw an error if the postId is invalid", async () => {
@@ -242,7 +275,8 @@ xdescribe("Post Controller", () => {
 
     it("should return a 500 error if bookmarkService.remove throws an error", async () => {
       const error = new Error("Test Error");
-      (bookmarkService.remove as jest.Mock) = jest.fn().mockImplementation(() => {
+
+      (BookmarkedPostModel.findOneAndDelete as jest.Mock) = jest.fn().mockImplementation(() => {
         throw error;
       });
 

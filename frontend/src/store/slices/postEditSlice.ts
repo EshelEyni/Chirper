@@ -38,9 +38,7 @@ const _getDefaultNewPost = (
     text: "",
     audience: "everyone",
     repliersType: "everyone",
-    previousThreadPostId: repliedPostDetails?.length
-      ? repliedPostDetails.at(-1)?.postId
-      : undefined,
+    parentPostId: repliedPostDetails?.length ? repliedPostDetails.at(-1)?.postId : undefined,
     repliedPostDetails,
     isPublic: true,
     isPinned: false,

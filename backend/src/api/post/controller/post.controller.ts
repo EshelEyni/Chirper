@@ -11,12 +11,12 @@ import { deleteOne, getAll } from "../../../services/factory/factory.service";
 import { PostModel } from "../models/post/post.model";
 import repostService from "../services/repost/repost.service";
 import likeService from "../services/like/like.service";
-import bookmarkService from "../services/bookmark/bookmark.service";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
 import { PromotionalPostModel } from "../models/post/promitional-post.model";
 import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
+import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -234,7 +234,11 @@ const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response)
   const loggedInUserId = getLoggedInUserIdFromReq();
   validateIds({ id: loggedInUserId, entityName: "loggedInUser" });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const bookmarkedPosts = await bookmarkService.get(loggedInUserId!);
+  const bookmarkedPosts = (
+    await BookmarkedPostModel.find({
+      bookmarkOwnerId: loggedInUserId,
+    })
+  ).map((doc: IBookmarkedPostDoc) => doc.post);
 
   res.send({
     status: "success",
@@ -253,8 +257,13 @@ const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response):
     { id: loggedInUserId, entityName: "loggedInUser" }
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const updatedPost = await bookmarkService.add(postId, loggedInUserId!);
+  const updatedPost = (
+    await BookmarkedPostModel.create({
+      postId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      bookmarkOwnerId: loggedInUserId!,
+    })
+  ).post;
 
   res.status(201).send({
     status: "success",
@@ -272,12 +281,15 @@ const removeBookmarkedPost = asyncErrorCatcher(
       { id: loggedInUserId, entityName: "loggedInUser" }
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const updatedPost = await bookmarkService.remove(postId, loggedInUserId!);
+    const updatedPost = await BookmarkedPostModel.findOneAndDelete({
+      postId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      bookmarkOwnerId: loggedInUserId!,
+    });
 
     res.json({
       status: "success",
-      data: updatedPost,
+      data: updatedPost?.post,
     });
   }
 );

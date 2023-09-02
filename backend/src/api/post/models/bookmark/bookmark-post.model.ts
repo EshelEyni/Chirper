@@ -1,11 +1,12 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query } from "mongoose";
-import { PostModel } from "../post/post.model";
+import { IPost, PostModel } from "../post/post.model";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 
 interface IBookmarkedPostBase {
   postId: ObjectId;
+  post?: IPost;
   bookmarkOwnerId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -85,4 +86,4 @@ const BookmarkedPostModel: Model<IBookmarkedPostDoc> = mongoose.model<IBookmarke
   "bookmarked_posts"
 );
 
-export { BookmarkedPostModel };
+export { BookmarkedPostModel, IBookmarkedPostDoc };

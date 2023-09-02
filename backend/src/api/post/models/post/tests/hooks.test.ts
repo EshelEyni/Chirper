@@ -1,14 +1,18 @@
 import {
-  assertUser,
+  assertPost,
   connectToTestDB,
+  createManyTestPosts,
+  createManyTestUsers,
   createTestGif,
   createTestPoll,
   createTestPost,
-  createTestUser,
   disconnectFromTestDB,
 } from "../../../../../services/test-util.service";
 import { UserModel } from "../../../../user/models/user/user.model";
-import { PostModel } from "../post.model";
+import * as PostModelModule from "../post.model";
+import * as populatePostData from "../populate-post-data";
+import userRelationService from "../../../../user/services/user-relation/user-relation.service";
+import { Post } from "../../../../../../../shared/interfaces/post.interface";
 
 describe("PostModel: Hooks", () => {
   beforeAll(async () => {
@@ -16,7 +20,7 @@ describe("PostModel: Hooks", () => {
   });
 
   afterEach(async () => {
-    await PostModel.deleteMany({});
+    await PostModelModule.PostModel.deleteMany({});
     await UserModel.deleteMany({});
   });
 
@@ -156,38 +160,100 @@ describe("PostModel: Hooks", () => {
     });
   });
 
-  describe("Post save hook - Populate Post Data", () => {
-    // Tests for _populatePostData
+  describe("Post save hook - should populate user", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("Should call populatePostData when post is saved.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      const post = await createTestPost({});
+      expect(spy).toHaveBeenCalled();
+      assertPost(post);
+    });
+
+    it("Should return early if the saved doc is null or undefined.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      jest
+        .spyOn(PostModelModule.PostModel, "create")
+        .mockImplementationOnce(() => Promise.resolve(null as any));
+
+      const post = await createTestPost({});
+      expect(post).toBeFalsy();
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Pre find hook - should the Find Query with isPublic and isBlocked", () => {
     afterEach(async () => {
-      await PostModel.deleteMany({});
-      await UserModel.deleteMany({});
+      jest.clearAllMocks();
+      await PostModelModule.PostModel.deleteMany({});
     });
 
-    it("Should correctly populate createdBy from UserModel.", async () => {
-      const user = await createTestUser();
-      const post = await createTestPost({ body: { createdBy: user.id } });
-      const { createdBy } = post;
-      assertUser(createdBy);
+    it("Should always include 'isPublic: true' in the find query.", async () => {
+      const post = await createTestPost({});
+      const postFromDB = await PostModelModule.PostModel.findById(post.id);
+      expect(postFromDB?.isPublic).toBe(true);
     });
 
-    // it("Should correctly set loggedInUserActionState.", async () => {});
-    // it("Should correctly set repostsCount, repliesCount, likesCount, and viewsCount.", async () => {});
-    // it("Should handle quoted posts correctly.", async () => {});
-    // it("Should handle replied post details correctly.", async () => {});
-    // // Tests for _getUserAndPostIds
-    // it("Should collect userIds, postIds, and quotedPostIds from docs.", async () => {});
-    // it("Should handle missing or null values in docs.", async () => {});
-    // // Tests for _getPostStats
-    // it("Should correctly aggregate repost, like, view, and reply counts.", async () => {});
-    // it("Should handle empty ID array gracefully.", async () => {});
-    // // Tests for setRepliedPostDetailsUsername
-    // it("Should not modify doc if repliedPostDetails is not present or empty.", async () => {});
-    // it("Should correctly set username in repliedPostDetails.", async () => {});
-    // // Tests for _getQuotedPosts
-    // it("Should return quoted posts and their creator IDs.", async () => {});
-    // it("Should handle empty ID array gracefully.", async () => {});
-    // // Tests for _setQuotedPost
-    // it("Should not modify doc if quotedPosts is empty.", async () => {});
-    // it("Should correctly set quotedPost and quotedPost.createdBy.", async () => {});
+    it("Should include blockedUserIds in $nin if isBlocked is not present.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      await createManyTestPosts({ createdByIds: [user1.id, user2.id] });
+      jest.spyOn(userRelationService, "getBlockedUserIds").mockResolvedValueOnce([user1.id]);
+      const postsFromDB = await PostModelModule.PostModel.find({});
+      expect(postsFromDB.length).toBe(1);
+      expect(postsFromDB.every(post => post.createdById.toString() !== user1.id)).toBe(true);
+    });
+
+    it("Should skip adding blockedUserIds to $nin if isBlocked is present.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      const [post1, post2] = await createManyTestPosts({ createdByIds: [user1.id, user2.id] });
+      jest.spyOn(userRelationService, "getBlockedUserIds").mockResolvedValueOnce([user1.id]);
+      const postsFromDB = await PostModelModule.PostModel.find({}).setOptions({
+        isBlocked: true,
+      });
+      expect(postsFromDB.length).toBe(2);
+      expect(postsFromDB.every(p => p.id === post1.id || p.id === post2.id)).toBe(true);
+    });
+  });
+
+  describe("Post find hook - should populate user", () => {
+    it("Should call populatePostData when post is found.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      const post = await createTestPost({});
+      const postFromDB = (await PostModelModule.PostModel.findById(post.id)) as unknown as Post;
+      expect(postFromDB).toBeDefined();
+      expect(spy).toHaveBeenCalled();
+      assertPost(postFromDB);
+    });
+
+    it("Should return early if the found doc is null or undefined.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      const post = await createTestPost({});
+      const postFromDB = (await PostModelModule.PostModel.findById(post.id)) as unknown as Post;
+      expect(postFromDB).toBeDefined();
+      expect(spy).toHaveBeenCalled();
+      assertPost(postFromDB);
+    });
+
+    it("Should return early if skipHooks option is true.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      const post = await createTestPost({});
+      const postFromDB = (await PostModelModule.PostModel.findById(post.id)) as unknown as Post;
+      expect(postFromDB).toBeDefined();
+      expect(spy).toHaveBeenCalled();
+      assertPost(postFromDB);
+    });
+
+    it("Should handle both single and multiple result sets.", async () => {
+      const spy = jest.spyOn(populatePostData, "populatePostData");
+      const [post1, post2] = await createManyTestPosts({});
+      const postFromDB = (await PostModelModule.PostModel.find({
+        _id: { $in: [post1.id, post2.id] },
+      })) as unknown as Post[];
+      expect(postFromDB).toBeDefined();
+      expect(spy).toHaveBeenCalled();
+      postFromDB.forEach(assertPost);
+    });
   });
 });

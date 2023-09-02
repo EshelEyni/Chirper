@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/post/models/post";
+const currPath = "/api/post/router";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 const specifiedPath = baseDir + "/hooks.test.ts";
 // const collectCoverage = true;

@@ -2,6 +2,7 @@ import {
   connectToTestDB,
   createTestPoll,
   createTestPost,
+  deleteTestUser,
   disconnectFromTestDB,
   getMongoId,
 } from "../../../../../services/test-util.service";
@@ -256,6 +257,13 @@ xdescribe("PostModel: Schema", () => {
       const body = { createdById: null };
       await expect(createTestPost({ body })).rejects.toThrow("Post must have a createdById");
     });
+
+    it("Should validate createdById exists in the database.", async () => {
+      const id = getMongoId();
+      await deleteTestUser(id);
+      const body = { createdById: id };
+      await expect(createTestPost({ body })).rejects.toThrow("Referenced user does not exist");
+    });
   });
 
   describe("Quoted Post", () => {
@@ -310,20 +318,20 @@ xdescribe("PostModel: Schema", () => {
   });
 
   describe("Previous Thread Post", () => {
-    it("Should validate previousThreadPostId exists in the database.", async () => {
+    it("Should validate parentPostId exists in the database.", async () => {
       const existingPost = await createTestPost({});
-      const body = { previousThreadPostId: existingPost.id };
+      const body = { parentPostId: existingPost.id };
       const post = await createTestPost({ body });
-      expect(post.previousThreadPostId?.toString()).toBe(existingPost.id);
+      expect(post.parentPostId?.toString()).toBe(existingPost.id);
     });
 
-    it("Should invalidate when previousThreadPostId does not exist.", async () => {
+    it("Should invalidate when parentPostId does not exist.", async () => {
       const id = getMongoId();
-      const body = { previousThreadPostId: id };
+      const body = { parentPostId: id };
       await expect(createTestPost({ body })).rejects.toThrow("Referenced post does not exist");
     });
 
-    it("Should allow omitting previousThreadPostId.", async () => {
+    it("Should allow omitting parentPostId.", async () => {
       await expect(createTestPost({})).resolves.toBeDefined();
     });
   });

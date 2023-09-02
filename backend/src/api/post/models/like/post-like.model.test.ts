@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import {
   assertPost,
   connectToTestDB,
@@ -13,6 +14,10 @@ import {
 } from "../../../../services/test-util.service";
 import { PostLikeModel } from "./post-like.model";
 
+jest.mock("../../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
+
 describe("Post Like Model", () => {
   let post: Post, user: User, postId: string, userId: string;
 
@@ -23,6 +28,11 @@ describe("Post Like Model", () => {
     post = await createTestPost({});
     postId = post.id;
     userId = user.id;
+    mockGetLoggedInUserIdFromReq();
+  }
+
+  function mockGetLoggedInUserIdFromReq() {
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(user.id);
   }
 
   async function deleteMocks() {
@@ -103,18 +113,14 @@ describe("Post Like Model", () => {
     it("should populate post after save with postLike.post", async () => {
       await deleteAndCreateMocks();
 
-      const postLike = new PostLikeModel({
-        postId,
-        userId,
-      });
-
+      const postLike = new PostLikeModel({ postId, userId });
       const doc = (await postLike.save()) as any;
 
-      const p = doc.toObject().post as Post;
-      expect(p).toBeDefined();
-      assertPost(p);
+      const post = doc.toObject().post as Post;
+      expect(post).toBeDefined();
+      assertPost(post);
 
-      expect(p.loggedInUserActionState.isLiked).toBe(true);
+      expect(post.loggedInUserActionState.isLiked).toBe(true);
     });
 
     it("should populate post after findOneAndRemove with !postLike.post", async () => {

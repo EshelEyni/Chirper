@@ -19,7 +19,7 @@ jest.mock("../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 
-describe("Post Like Model", () => {
+describe("Repost Model", () => {
   let post: Post, user: User, postId: string, repostOwnerId: string;
 
   async function deleteAndCreateMocks() {

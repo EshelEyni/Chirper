@@ -16,7 +16,7 @@ const BASE_URL = "post";
 async function query(queryObj?: any): Promise<Post[]> {
   const queryString = queryObj ? "&" + qs.stringify(queryObj) : "";
   const response = await httpService.get(
-    `${BASE_URL}?sort=-createdAt&previousThreadPostId[exists]=false&limit=35${queryString}`
+    `${BASE_URL}?sort=-createdAt&parentPostId[exists]=false&limit=35${queryString}`
   );
   return handleServerResponse<Post[]>(response);
 }

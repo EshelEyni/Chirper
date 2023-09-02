@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 require("dotenv").config();
 import mongoose from "mongoose";
-import { LoggedInUserActionState, Poll, Post } from "../../../shared/interfaces/post.interface";
+import {
+  LoggedInUserActionState,
+  Poll,
+  Post,
+  QuotedPost,
+} from "../../../shared/interfaces/post.interface";
 import { User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { UserModel } from "../api/user/models/user/user.model";
 import { AppError } from "./error/error.service";
@@ -10,6 +15,9 @@ import { Gif, GifCategory } from "../../../shared/interfaces/gif.interface";
 import { BotPrompt } from "../../../shared/interfaces/bot.interface";
 import ansiColors from "ansi-colors";
 import { PostModel } from "../api/post/models/post/post.model";
+import { RepostModel } from "../api/post/models/repost/repost.model";
+import { PostLikeModel } from "../api/post/models/like/post-like.model";
+import { PostStatsModel } from "../api/post/models/post-stats/post-stats.model";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -21,6 +29,17 @@ type CreateTestPostOptions = {
   id?: string;
   createdById?: string;
   body?: any;
+  skipHooks?: boolean;
+};
+
+export type RepostParams = {
+  postId: string;
+  repostOwnerId: string;
+};
+
+export type CreatePostStatParams = {
+  postId: string;
+  userId: string;
 };
 
 async function connectToTestDB({ isRemoteDB = false } = {}) {
@@ -84,11 +103,16 @@ async function createManyTestPosts({
   const ids = Array.from({ length }, () => getMongoId());
   await PostModel.deleteMany({ _id: { $in: ids } });
 
-  const postBodies = ids.map((id, i) => ({
-    _id: id,
-    createdById: createdByIds?.[i] || getMongoId(),
-    text: "test post",
-  }));
+  const postBodies = [];
+
+  for (const id of ids) {
+    const createdById = createdByIds?.[ids.indexOf(id)] || (await createTestUser({})).id;
+    postBodies.push({
+      _id: id,
+      createdById,
+      text: "test post",
+    });
+  }
 
   const posts = await PostModel.create(postBodies).then(docs => docs.map(doc => doc.toObject()));
   return posts as unknown as Post[];
@@ -111,6 +135,7 @@ async function createTestPost({
   id,
   createdById,
   body,
+  skipHooks = false,
 }: CreateTestPostOptions = {}): Promise<Post> {
   await PostModel.findByIdAndDelete(id);
   return (await PostModel.create({
@@ -118,6 +143,7 @@ async function createTestPost({
     createdById: createdById || (await createTestUser({})).id,
     text: "test post",
     ...body,
+    skipHooks,
   })) as unknown as Post;
 }
 
@@ -125,6 +151,24 @@ async function deleteTestPost(id: string) {
   const deletedPost = await PostModel.findByIdAndDelete(id);
   if (!deletedPost) return;
   await UserModel.findByIdAndUpdate(deletedPost.createdById);
+}
+
+async function createTestReposts(...repostDetails: RepostParams[]) {
+  await RepostModel.deleteMany({});
+  const reposts = await RepostModel.create(repostDetails);
+  return reposts;
+}
+
+async function createTestLike(...likeDetails: CreatePostStatParams[]) {
+  await PostLikeModel.deleteMany({});
+  const likes = await PostLikeModel.create(likeDetails);
+  return likes;
+}
+
+async function createTestView(...viewDetails: CreatePostStatParams[]) {
+  await PostStatsModel.deleteMany({});
+  const views = await PostStatsModel.create(viewDetails);
+  return views;
 }
 
 function getMongoId() {
@@ -267,6 +311,8 @@ function assertPost(post: Post) {
   expect(post).toEqual(
     expect.objectContaining({
       id: expect.any(String),
+      audience: expect.any(String),
+      repliersType: expect.any(String),
       repliesCount: expect.any(Number),
       repostsCount: expect.any(Number),
       likesCount: expect.any(Number),
@@ -277,6 +323,18 @@ function assertPost(post: Post) {
   expect(typeof post.updatedAt === "string" || typeof post.updatedAt === "object").toBeTruthy();
 
   assertLoggedInUserState(post.loggedInUserActionState);
+  assertUser(post.createdBy);
+}
+
+function assertQuotedPost(post: QuotedPost) {
+  expect(post).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      audience: expect.any(String),
+      repliersType: expect.any(String),
+    })
+  );
+  expect(typeof post.createdAt === "string" || typeof post.createdAt === "object").toBeTruthy();
   assertUser(post.createdBy);
 }
 
@@ -391,6 +449,9 @@ export {
   createTestPost,
   createTestPoll,
   createTestGif,
+  createTestReposts,
+  createTestLike,
+  createTestView,
   getMongoId,
   getMockedUser,
   getMockPost,
@@ -399,6 +460,7 @@ export {
   deleteTestPost,
   assertUser,
   assertPost,
+  assertQuotedPost,
   assertGifCategory,
   assertGif,
   assertPoll,

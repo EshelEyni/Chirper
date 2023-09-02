@@ -9,26 +9,26 @@ type bookmarkedPostDoc = {
   bookmarkOwnerId: string;
 };
 
-async function get(loggedInUserId: string): Promise<Post[]> {
-  const bookmarkedPostsDocs = await BookmarkedPostModel.find({
-    bookmarkOwnerId: loggedInUserId,
-  })
-    .exec()
-    .then(docs => docs.map(doc => doc.toObject()));
+// async function get(loggedInUserId: string): Promise<Post[]> {
+//   const bookmarkedPostsDocs = await BookmarkedPostModel.find({
+//     bookmarkOwnerId: loggedInUserId,
+//   })
+//     .exec()
+//     .then(docs => docs.map(doc => doc.toObject()));
 
-  const prms = bookmarkedPostsDocs.map(async doc => {
-    const { post } = doc as unknown as bookmarkedPostDoc;
-    const res = await postUtilService.getPostLoggedInUserActionState(post.id);
-    const currLoggedInActionState = res[post.id];
-    post.loggedInUserActionState = currLoggedInActionState;
-    const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
-    post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
+//   const prms = bookmarkedPostsDocs.map(async doc => {
+//     const { post } = doc as unknown as bookmarkedPostDoc;
+//     const res = await postUtilService.getPostLoggedInUserActionState(post.id);
+//     const currLoggedInActionState = res[post.id];
+//     post.loggedInUserActionState = currLoggedInActionState;
+//     const isFollowingMap = await userRelationService.getIsFollowing(post.createdBy.id);
+//     post.createdBy.isFollowing = isFollowingMap[post.createdBy.id];
 
-    return post;
-  });
-  const bookmarkedPosts = await Promise.all(prms);
-  return bookmarkedPosts as unknown as Post[];
-}
+//     return post;
+//   });
+//   const bookmarkedPosts = await Promise.all(prms);
+//   return bookmarkedPosts as unknown as Post[];
+// }
 
 async function add(postId: string, loggedInUserId: string): Promise<Post> {
   const bookmarkPost = (
@@ -73,4 +73,8 @@ async function remove(postId: string, loggedInUserId: string): Promise<Post> {
   return post;
 }
 
-export default { get, add, remove };
+export default {
+  // get,
+  add,
+  remove,
+};

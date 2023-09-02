@@ -1,0 +1,200 @@
+import { Post, QuotedPost } from "../../../../../../../shared/interfaces/post.interface";
+import { User } from "../../../../../../../shared/interfaces/user.interface";
+import {
+  CreatePostStatParams,
+  RepostParams,
+  assertLoggedInUserState,
+  assertPost,
+  assertQuotedPost,
+  assertUser,
+  connectToTestDB,
+  createManyTestUsers,
+  createTestLike,
+  createTestPost,
+  createTestReposts,
+  createTestUser,
+  createTestView,
+  disconnectFromTestDB,
+} from "../../../../../services/test-util.service";
+import { UserModel } from "../../../../user/models/user/user.model";
+import { PostLikeModel } from "../../like/post-like.model";
+import { RepostModel } from "../../repost/repost.model";
+import { IPost, PostModel } from "../post.model";
+import { populatePostData } from "../populate-post-data";
+
+type GetPostDocParams = {
+  createdById?: string;
+};
+
+type CreatePostStatDetailsConfig = {
+  postId: string;
+  userIdKey?: "userId" | "repostOwnerId";
+  users: User[];
+};
+
+describe("PostModel: PostDataPopulator", () => {
+  beforeAll(async () => {
+    await connectToTestDB();
+  });
+
+  afterAll(async () => {
+    await PostModel.deleteMany({});
+    await UserModel.deleteMany({});
+    await RepostModel.deleteMany({});
+    await PostLikeModel.deleteMany({});
+    await disconnectFromTestDB();
+  });
+
+  it("should correctly get post.", async () => {
+    const post = await _createTestPostAndPopulate({});
+    assertPost(post);
+  });
+
+  it("Should correctly populate createdBy from UserModel.", async () => {
+    const user = await createTestUser();
+    const post = await _createTestPostAndPopulate({
+      createdById: user.id,
+    });
+    const { createdBy } = post;
+    expect(createdBy).toBeDefined();
+    expect(createdBy.id).toBe(user.id);
+    assertUser(createdBy);
+  });
+
+  it("Should correctly set loggedInUserActionState.", async () => {
+    const post = await _createTestPostAndPopulate({});
+    const { loggedInUserActionState } = post;
+
+    expect(loggedInUserActionState).toBeDefined();
+    assertLoggedInUserState(loggedInUserActionState);
+  });
+
+  it("Should correctly set repostsCount", async () => {
+    const post = await _createTestPostAndPopulate({});
+    const { repostsCount } = post;
+    expect(repostsCount).toBe(0);
+    const [user1, user2, user3] = await createManyTestUsers(3);
+    const repostDetails = _createPostStatDetails({
+      postId: post.id,
+      users: [user1, user2, user3],
+      userIdKey: "repostOwnerId",
+    }) as RepostParams[];
+    await createTestReposts(...repostDetails);
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    expect(updatedPost.repostsCount).toBe(3);
+  });
+
+  it("Should correctly set likesCount", async () => {
+    const post = await _createTestPostAndPopulate({});
+    const { likesCount } = post;
+    expect(likesCount).toBe(0);
+
+    const [user1, user2, user3] = await createManyTestUsers(3);
+
+    const likeDetails = _createPostStatDetails({
+      postId: post.id,
+      users: [user1, user2, user3],
+    }) as CreatePostStatParams[];
+
+    await createTestLike(...likeDetails);
+
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    expect(updatedPost.likesCount).toBe(3);
+  });
+
+  it("Should correctly set viewsCount.", async () => {
+    const post = await _createTestPostAndPopulate({});
+    const { viewsCount } = post;
+
+    expect(viewsCount).toBe(0);
+
+    const [user1, user2, user3] = await createManyTestUsers(3);
+
+    const viewDetails = _createPostStatDetails({
+      postId: post.id,
+      users: [user1, user2, user3],
+    }) as CreatePostStatParams[];
+
+    await createTestView(...viewDetails);
+
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    expect(updatedPost.viewsCount).toBe(3);
+  });
+
+  it("Should correctly set repliesCount.", async () => {
+    const post = await _createTestPostAndPopulate({});
+    const { repliesCount } = post;
+
+    expect(repliesCount).toBe(0);
+
+    const [user1, user2, user3] = await createManyTestUsers(3);
+
+    for (const user of [user1, user2, user3]) {
+      await createTestPost({
+        createdById: user.id,
+        body: {
+          text: "Hello world",
+          parentPostId: post.id,
+        },
+      });
+    }
+
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    expect(updatedPost.repliesCount).toBe(3);
+  });
+
+  it("Should handle quoted posts correctly.", async () => {
+    const quotedPost = await createTestPost({});
+    const post = await createTestPost({
+      body: { quotedPostId: quotedPost.id },
+    });
+
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    expect(updatedPost.quotedPost).toBeDefined();
+    assertQuotedPost(updatedPost.quotedPost as QuotedPost);
+  });
+});
+
+async function _createTestPostAndPopulate({ createdById }: GetPostDocParams): Promise<Post> {
+  const postDoc = await _createAndGetPostDoc({ createdById });
+  return await _populatedPostDocAndConvertToObj(postDoc);
+}
+
+async function _getTestPostAndPopulate(postId: string): Promise<Post> {
+  const postDoc = await _getPostDoc(postId);
+  return await _populatedPostDocAndConvertToObj(postDoc);
+}
+
+async function _createAndGetPostDoc({ createdById }: GetPostDocParams): Promise<IPost> {
+  const post = await createTestPost({ createdById });
+  return await _getPostDoc(post.id);
+}
+
+async function _getPostDoc(postId: string): Promise<IPost> {
+  // We need a fresh copy of the post doc to avoid hooks
+  // When saving a doc, mongoose runs the post save hook on the doc
+  // We need to avoid this because the post save hook will call PostDataPopulator
+  return (await PostModel.findById(postId).setOptions({
+    skipHooks: true,
+  })) as unknown as IPost;
+}
+
+async function _populatedPostDocAndConvertToObj(postDoc: IPost): Promise<Post> {
+  await populatePostData(postDoc);
+  return _getPostObj(postDoc);
+}
+
+function _getPostObj(postDoc: IPost): Post {
+  return postDoc.toObject() as Post;
+}
+
+function _createPostStatDetails({
+  postId,
+  userIdKey = "userId",
+  users,
+}: CreatePostStatDetailsConfig) {
+  return users.map(user => ({
+    postId,
+    [userIdKey]: user.id,
+  }));
+}

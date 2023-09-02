@@ -1,21 +1,15 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import {
-  Poll,
-  Post,
-  PostImg,
-  QuotedPost,
-} from "../../../../../../shared/interfaces/post.interface";
+import { Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../../shared/interfaces/location.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
-import postUtilService from "../../services/util/util.service";
-import { IUser, UserModel } from "../../../user/models/user/user.model";
-import { PostStatsModel } from "../post-stats/post-stats.model";
-import { RepostModel } from "../repost/repost.model";
+import { UserModel } from "../../../user/models/user/user.model";
 import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
+import { queryEntityExists } from "../../../../services/util/util.service";
+import { populatePostData } from "./populate-post-data";
 
 export interface IPost extends Document {
   audience: string;
@@ -23,7 +17,7 @@ export interface IPost extends Document {
   isPublic: boolean;
   isDraft?: boolean;
   isPinned: boolean;
-  previousThreadPostId?: string;
+  parentPostId?: string;
   createdById: mongoose.Schema.Types.ObjectId;
   text?: string;
   imgs?: PostImg[];
@@ -78,6 +72,10 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Post must have a createdById"],
       ref: "User",
+      validate: {
+        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        message: "Referenced user does not exist",
+      },
     },
     quotedPostId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -103,11 +101,11 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
         message: "Repliers type must be either everyone, followed, or mentioned",
       },
     },
-    previousThreadPostId: {
+    parentPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       validate: {
-        validator: async (id: Post["previousThreadPostId"]) =>
+        validator: async (id: Post["parentPostId"]) =>
           !!(await mongoose.models.Post.findById({ _id: id })),
         message: "Referenced post does not exist",
       },
@@ -277,14 +275,14 @@ postSchema.pre("save", function (this: Document, next: () => void) {
 
 postSchema.post("save", async function (doc: IPost) {
   if (!doc) return;
-  await new PostDataPopulator().populate(doc);
+  await populatePostData(doc);
 });
 
 postSchema.pre(/^find/, async function (this: Query<Document, Post>, next: (err?: Error) => void) {
   this.find({ isPublic: true });
 
   const { isBlocked } = this.getOptions();
-  if (isBlocked) next();
+  if (isBlocked) return next();
   const blockedUserIds = await userRelationService.getBlockedUserIds();
   this.find({ createdById: { $nin: blockedUserIds } });
 
@@ -296,137 +294,9 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
   if (!res || options.skipHooks) return;
   const isResArray = Array.isArray(res);
 
-  if (isResArray) await new PostDataPopulator().populate(...res);
-  else await new PostDataPopulator().populate(res);
+  if (isResArray) await populatePostData(...res);
+  else await populatePostData(res);
 });
-
-class PostDataPopulator {
-  public async populate(...docs: IPost[]) {
-    await this.#populate(...docs);
-  }
-
-  #populate = async (...docs: IPost[]) => {
-    if (!docs.length) return;
-    const { userIds, postIds, quotedPostIds } = this.#getUserAndPostIdsFromPostDoc(...docs);
-
-    const { quotedPosts, quotedPostCreatorIds } = await this.#getQuotedPostAndCreatorIdByPostId(
-      ...quotedPostIds
-    );
-
-    const users = await UserModel.find({ _id: { $in: [...userIds, ...quotedPostCreatorIds] } });
-    const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
-
-    const { repostCountsMap, repliesCountMap, likesCountsMap, viewsCountsMap } =
-      await this.#getPostStats(...postIds);
-
-    for (const doc of docs) {
-      if (!doc) continue;
-
-      const currCreatedById = doc.get("createdById").toString();
-      const currPostId = doc.get("_id").toString();
-
-      const user = users.find(user => user._id.toString() === currCreatedById);
-
-      if (user) doc.set("createdBy", user);
-      doc.set("loggedInUserActionState", loggedInUserStatesMap[currPostId]);
-
-      doc._repostsCount = repostCountsMap.get(currPostId) ?? 0;
-      doc._repliesCount = repliesCountMap.get(currPostId) ?? 0;
-      doc._likesCount = likesCountsMap.get(currPostId) ?? 0;
-      doc._viewsCount = viewsCountsMap.get(currPostId) ?? 0;
-
-      if (doc.get("quotedPostId")) this.#setQuotedPost(doc, quotedPosts, currPostId, users);
-    }
-  };
-
-  #getUserAndPostIdsFromPostDoc = (...docs: Document[]) => {
-    const userIds = new Set<string>();
-    const postIds = [];
-    const quotedPostIds = [];
-
-    for (const doc of docs) {
-      const userIdStr = doc.get("createdById").toString();
-      const postIdStr = doc.get("_id").toString();
-      const quotedPostIdStr = doc.get("quotedPostId")?.toString();
-
-      userIds.add(userIdStr);
-      postIds.push(postIdStr);
-
-      if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
-    }
-
-    return { userIds: Array.from(userIds), postIds, quotedPostIds };
-  };
-
-  #getPostStats = async (...ids: string[]) => {
-    const repostCounts = await RepostModel.aggregate([
-      { $match: { postId: { $in: ids } } },
-      { $group: { _id: "$postId", repostCount: { $sum: 1 } } },
-    ]);
-
-    const likesCounts = await PostStatsModel.aggregate([
-      { $match: { postId: { $in: ids } } },
-      { $group: { _id: "$postId", likesCount: { $sum: 1 } } },
-    ]);
-
-    const viewsCounts = await PostStatsModel.aggregate([
-      { $match: { postId: { $in: ids } } },
-      { $group: { _id: "$postId", viewsCount: { $sum: 1 } } },
-    ]);
-
-    const repliesCount = await PostModel.aggregate([
-      { $match: { previousThreadPostId: { $in: ids } } },
-      { $group: { _id: "$previousThreadPostId", repliesCount: { $sum: 1 } } },
-    ]);
-
-    const repostCountsMap = new Map(repostCounts.map(({ _id, repostCount }) => [_id, repostCount]));
-    const likesCountsMap = new Map(likesCounts.map(({ _id, likesCount }) => [_id, likesCount]));
-    const viewsCountsMap = new Map(viewsCounts.map(({ _id, viewsCount }) => [_id, viewsCount]));
-    const repliesCountMap = new Map(
-      repliesCount.map(({ _id, repliesCount }) => [_id, repliesCount])
-    );
-
-    return { repostCountsMap, likesCountsMap, viewsCountsMap, repliesCountMap };
-  };
-
-  #getQuotedPostAndCreatorIdByPostId = async (...ids: string[]) => {
-    const quotedPosts = (await PostModel.find({ _id: { $in: ids } })
-      .select([
-        "id",
-        "text",
-        "video",
-        "videoUrl",
-        "gif",
-        "imgs",
-        "isPublic",
-        "audience",
-        "repliersType",
-        "repliedPostDetails",
-        "createdById",
-        "createdAt",
-      ])
-      .lean()
-      .setOptions({ skipHooks: true })) as unknown as QuotedPost[];
-
-    const quotedPostCreatorIds = quotedPosts.map(post => post.createdBy.id.toString());
-
-    return { quotedPosts, quotedPostCreatorIds };
-  };
-
-  #setQuotedPost = (
-    doc: Document,
-    quotedPosts: QuotedPost[],
-    currPostId: string,
-    users: IUser[]
-  ) => {
-    if (!quotedPosts.length) return;
-    const quotedPost = quotedPosts.find(post => post.id.toString() === currPostId);
-    if (!quotedPost) return;
-    doc.set("quotedPost", quotedPost);
-    const quotedPostCreator = users.find(user => user._id.toString() === quotedPost?.createdById);
-    doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
-  };
-}
 
 const PostModel = mongoose.model<IPost>("Post", postSchema);
 

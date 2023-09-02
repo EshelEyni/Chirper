@@ -48,21 +48,24 @@ export type BasicPost = {
   repostedById?: string;
 };
 
-export interface QuotedPost extends BasicPost {
-  id: string;
-  createdAt: Date;
-  imgs: PostImg[];
-  createdBy: User;
-}
-
 export interface NewPost extends BasicPost {
   tempId: string;
   imgs: NewPostImg[];
   poll: NewPoll | null;
   quotedPostId?: string;
-  previousThreadPostId?: string;
+  parentPostId?: string;
   isDraft?: boolean;
   repliesCount?: number;
+}
+
+// Post With no LoggedInUserActionState, Stat Counts and RepostedBy
+export interface QuotedPost extends BasicPost {
+  id: string;
+  imgs: PostImg[];
+  poll: Poll | null;
+  createdBy: User;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Post extends BasicPost {
@@ -78,7 +81,7 @@ export interface Post extends BasicPost {
   quotedPost?: QuotedPost;
   createdBy: User;
   repostedBy?: User;
-  previousThreadPostId?: string;
+  parentPostId?: string;
   loggedInUserActionState: LoggedInUserActionState;
   isPromotional?: boolean;
   linkToSite?: string;

@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 async function get(postId: string): Promise<PostStatsBody> {
   const likesCount = await PostLikeModel.countDocuments({ postId });
   const repostCount = await RepostModel.countDocuments({ postId });
-  const repliesCount = await PostModel.countDocuments({ previousThreadPostId: postId });
+  const repliesCount = await PostModel.countDocuments({ parentPostId: postId });
 
   const postStatsAggregation = await PostStatsModel.aggregate([
     {

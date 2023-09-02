@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { APIFeatures, QueryObj, validateIds } from "../util/util.service";
 import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "../error/error.service";
-import { Model as ModelType } from "mongoose";
+import { Model } from "mongoose";
 import { logger } from "../logger/logger.service";
 
-const getAll = (Model: ModelType<any>) =>
+const getAll = (model: Model<any>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const features = new APIFeatures(Model.find(), req.query as QueryObj)
+    const features = new APIFeatures(model.find(), req.query as QueryObj)
       .filter()
       .sort()
       .limitFields()
@@ -22,13 +22,13 @@ const getAll = (Model: ModelType<any>) =>
     });
   });
 
-const getOne = (Model: ModelType<any>, popOptions?: string) =>
+const getOne = (model: Model<any>, popOptions?: string) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionName } = Model.collection;
+    const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);
     const { id } = req.params;
     validateIds({ id, entityName: dataName });
-    const query = Model.findById(id);
+    const query = model.findById(id);
     if (popOptions) query.populate(popOptions);
     const doc = await query.exec();
     if (!doc) throw new AppError(`No ${dataName} was found with the id: ${id}`, 404);
@@ -38,18 +38,18 @@ const getOne = (Model: ModelType<any>, popOptions?: string) =>
     });
   });
 
-const createOne = (Model: ModelType<any>) =>
+const createOne = (model: Model<any>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const doc = await Model.create(req.body);
+    const doc = await model.create(req.body);
     res.status(201).json({
       status: "success",
       data: doc,
     });
   });
 
-const updateOne = (Model: ModelType<any>, allowedFields?: string[]) =>
+const updateOne = (model: Model<any>, allowedFields?: string[]) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionName } = Model.collection;
+    const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);
     const { id } = req.params;
     validateIds({ id, entityName: dataName });
@@ -57,7 +57,7 @@ const updateOne = (Model: ModelType<any>, allowedFields?: string[]) =>
     if (allowedFields)
       for (const key in req.body) if (!allowedFields.includes(key)) delete req.body[key];
 
-    const doc = await Model.findByIdAndUpdate(id, req.body, {
+    const doc = await model.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -70,13 +70,13 @@ const updateOne = (Model: ModelType<any>, allowedFields?: string[]) =>
     });
   });
 
-const deleteOne = (Model: ModelType<any>) =>
+const deleteOne = (model: Model<any>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const { collectionName } = Model.collection;
+    const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);
     const { id } = req.params;
     validateIds({ id, entityName: dataName });
-    const doc = await Model.findByIdAndDelete(id);
+    const doc = await model.findByIdAndDelete(id);
     if (!doc) throw new AppError(`No ${dataName} was found with the id: ${id}`, 404);
     logger.warn(`Deleted ${dataName} with id: ${id}`);
 

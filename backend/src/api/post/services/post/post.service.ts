@@ -127,7 +127,7 @@ async function addMany(posts: NewPost[]): Promise<Post> {
     for (let i = 0; i < posts.length; i++) {
       const currPost = posts[i];
       if (i === 0) currPost.repliesCount = 1;
-      else currPost.previousThreadPostId = savedThread[i - 1].id;
+      else currPost.parentPostId = savedThread[i - 1].id;
 
       const savedPost = await new PostModel(currPost).save({ session });
       savedThread.push(savedPost as unknown as Post);

@@ -21,7 +21,7 @@ export const QuotedPostContent: React.FC = () => {
         <PostPreviewHeader isMiniPreview={true} />
         <PostPreviewBody>
           <PostPreviewText text={quotedPost.text} isPlainText={true} />
-          {isImgShown && <PostImg imgs={quotedPost.imgs} />}
+          {isImgShown && <PostImg post={quotedPost} />}
           {quotedPost.videoUrl && (
             <VideoPlayerProvider>
               <VideoPlayer videoUrl={quotedPost.videoUrl} isCustomControls={true} />

@@ -45,7 +45,7 @@ router.delete("/:id/bookmark", removeBookmarkedPost);
 router.post("/thread", addPostThread);
 
 router.post("/reply", addReply);
-router.post("/repost", repostPost);
+router.post("/:id/repost", repostPost);
 
 router.delete("/repost", removeRepost);
 router.post("/quote", quotePost);

@@ -69,6 +69,41 @@ describe("Post Controller", () => {
     mockGetLoggedInUserIdFromReq();
   });
 
+  // describe("addLike", () => {
+  //   beforeEach(() => {
+  //     req = { params: { id: getMongoId() } };
+  //     res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+  //   });
+
+  //   afterEach(() => {
+  //     jest.clearAllMocks();
+  //   });
+
+  //   it("should successfully add a like to a post and respond with the updated post", async () => {
+  //     const mockPost = getMockPost();
+
+  //     (PostModel.findOneAndUpdate as jest.Mock).mockImplementation(() => {
+  //       return Promise.resolve(mockPost);
+  //     });
+
+  //     const sut = addLike as any;
+
+  //     await sut(req as Request, res as Response, nextMock);
+
+  //     expect(res.status).toHaveBeenCalledWith(200);
+  //     expect(res.send).toHaveBeenCalledWith({
+  //       status: "success",
+  //       data: mockPost,
+  //     });
+
+  //     expect(PostModel.findOneAndUpdate).toHaveBeenCalledWith(
+  //       { _id: req.params.id },
+  //       { $addToSet: { likes: req.loggedInUserId } },
+  //       { new: true }
+  //     );
+  //   });
+  // });
+
   describe("getBookmarkedPosts", () => {
     beforeEach(() => {
       req = { query: {} };
@@ -220,7 +255,7 @@ describe("Post Controller", () => {
   describe("removeBookmarkedPost", () => {
     beforeEach(() => {
       req = { params: { id: getMongoId() } };
-      res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     });
 
     afterEach(() => {
@@ -237,7 +272,7 @@ describe("Post Controller", () => {
       const sut = removeBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
 
-      expect(res.json).toHaveBeenCalledWith({
+      expect(res.send).toHaveBeenCalledWith({
         status: "success",
         data: mockPost.post,
       });
@@ -269,6 +304,22 @@ describe("Post Controller", () => {
         expect.objectContaining({
           message: "Invalid post id: invalidPostId",
           statusCode: 400,
+        })
+      );
+    });
+
+    it("should return a 404 error if the post is not bookmarked", async () => {
+      (BookmarkedPostModel.findOneAndDelete as jest.Mock).mockImplementation(() => {
+        return Promise.resolve(null);
+      });
+
+      const sut = removeBookmarkedPost as any;
+      await sut(req as Request, res as Response, nextMock);
+
+      expect(nextMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Post is not bookmarked",
+          statusCode: 404,
         })
       );
     });

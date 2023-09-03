@@ -1,18 +1,20 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query } from "mongoose";
-import { IPost, PostModel } from "../post/post.model";
+import { PostModel } from "../post/post.model";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
 
 interface IBookmarkedPostBase {
   postId: ObjectId;
-  post?: IPost;
   bookmarkOwnerId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface IBookmarkedPostDoc extends IBookmarkedPostBase, mongoose.Document {}
+interface IBookmarkedPostDoc extends IBookmarkedPostBase, mongoose.Document {
+  post: Post;
+}
 
 const bookmarkedPostSchema = new mongoose.Schema(
   {

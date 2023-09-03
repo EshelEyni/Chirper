@@ -10,6 +10,7 @@ import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { populatePostData } from "./populate-post-data";
+import { User } from "../../../../../../shared/interfaces/user.interface";
 
 export interface IPost extends Document {
   audience: string;
@@ -27,8 +28,9 @@ export interface IPost extends Document {
   schedule?: Date;
   location?: Location;
   quotedPostId?: string;
-  _repliesCount: number;
+  _repostedBy?: User;
   _repostsCount: number;
+  _repliesCount: number;
   _likesCount: number;
   _viewsCount: number;
   createdAt: Date;

@@ -6,6 +6,7 @@ import {
   Poll,
   Post,
   QuotedPost,
+  Repost,
 } from "../../../shared/interfaces/post.interface";
 import { User, UserCredenitials } from "../../../shared/interfaces/user.interface";
 import { UserModel } from "../api/user/models/user/user.model";
@@ -337,6 +338,12 @@ function assertPost(post: Post) {
   assertUser(post.createdBy);
 }
 
+function assertRepost(repost: Repost) {
+  assertPost(repost);
+  const { repostedBy } = repost;
+  assertUser(repostedBy);
+}
+
 function assertQuotedPost(post: QuotedPost) {
   expect(post).toEqual(
     expect.objectContaining({
@@ -472,6 +479,7 @@ export {
   deleteTestPost,
   assertUser,
   assertPost,
+  assertRepost,
   assertQuotedPost,
   assertGifCategory,
   assertGif,

@@ -85,7 +85,7 @@ async function _getPostLoggedInUserActionState(
 ): Promise<{ [key: string]: LoggedInUserActionState }> {
   if (ids.length === 0) return {};
 
-  const loggedInUserId = getLoggedInUserIdFromReq() as string;
+  const loggedInUserId = getLoggedInUserIdFromReq();
 
   const uniquePostIds = Array.from(new Set(ids));
 

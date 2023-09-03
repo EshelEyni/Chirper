@@ -3,6 +3,7 @@ import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { PostModel } from "../post/post.model";
 import { UserModel } from "../../../user/models/user/user.model";
+import { Post } from "../../../../../../shared/interfaces/post.interface";
 
 interface IPostLikeBase {
   postId: ObjectId;
@@ -11,7 +12,9 @@ interface IPostLikeBase {
   updatedAt: Date;
 }
 
-interface IPostLikeDoc extends IPostLikeBase, mongoose.Document {}
+interface IPostLikeDoc extends IPostLikeBase, mongoose.Document {
+  post: Post;
+}
 
 const postLikeSchema: Schema<IPostLikeDoc> = new mongoose.Schema(
   {

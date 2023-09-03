@@ -80,12 +80,15 @@ export interface Post extends BasicPost {
   poll: Poll | null;
   quotedPost?: QuotedPost;
   createdBy: User;
-  repostedBy?: User;
   parentPostId?: string;
   loggedInUserActionState: LoggedInUserActionState;
   isPromotional?: boolean;
   linkToSite?: string;
   linkToRepo?: string;
+}
+
+export interface Repost extends Post {
+  repostedBy: User;
 }
 
 export type LoggedInUserActionState = {

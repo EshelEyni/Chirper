@@ -6,6 +6,7 @@ import { errorHandler } from "../../../services/error/error.service";
 import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import {
   assertPost,
+  assertRepost,
   connectToTestDB,
   createTestPost,
   createTestUser,
@@ -39,6 +40,101 @@ describe("Post Router", () => {
     await deleteTestPost(validPostId);
     await deleteTestUser(validUserId);
     await disconnectFromTestDB();
+  });
+
+  fdescribe("POST /:id/repost", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 201 status code and the reposted post", async () => {
+      const res = await request(app).post(`/${validPostId}/repost`).set("Cookie", [token]);
+      expect(res.status).toBe(201);
+
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const { post, repost } = res.body.data;
+
+      assertPost(post);
+      expect(post.loggedInUserActionState.isReposted).toBe(true);
+      expect(post.repostsCount).toBe(1);
+      assertRepost(repost);
+    });
+  });
+
+  describe("POST /:id/like", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 201 status code and the liked post", async () => {
+      const res = await request(app).post(`/${validPostId}/like`).set("Cookie", [token]);
+
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const post = res.body.data;
+
+      assertPost(post);
+      expect(post.loggedInUserActionState.isLiked).toBe(true);
+      expect(post.likesCount).toBe(1);
+    });
+
+    it("should return a 400 status code if the post is already liked", async () => {
+      await request(app).post(`/${validPostId}/like`).set("Cookie", [token]);
+
+      const res = await request(app).post(`/${validPostId}/like`).set("Cookie", [token]);
+
+      expect(res.status).toBe(500);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          status: "error",
+          message: expect.stringContaining("duplicate key error"),
+        })
+      );
+    });
+  });
+
+  describe("DELETE /:id/like", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 200 status code and the unliked post", async () => {
+      await request(app).post(`/${validPostId}/like`).set("Cookie", [token]);
+
+      const res = await request(app).delete(`/${validPostId}/like`).set("Cookie", [token]);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const post = res.body.data;
+
+      assertPost(post);
+
+      expect(post.loggedInUserActionState.isLiked).toBe(false);
+      expect(post.likesCount).toBe(0);
+    });
+
+    it("should return a 404 status code if the post is not liked", async () => {
+      const res = await request(app).delete(`/${validPostId}/like`).set("Cookie", [token]);
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          status: "fail",
+          message: expect.stringContaining("Post is not liked"),
+        })
+      );
+    });
   });
 
   describe("GET /bookmark", () => {
@@ -129,6 +225,18 @@ describe("Post Router", () => {
       const post = res.body.data;
       assertPost(post);
       expect(post.loggedInUserActionState.isBookmarked).toBe(false);
+    });
+
+    it("should return a 404 status code if the post is not bookmarked", async () => {
+      const res = await request(app).delete(`/${validPostId}/bookmark`).set("Cookie", [token]);
+
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          status: "fail",
+          message: expect.stringContaining("Post is not bookmarked"),
+        })
+      );
     });
   });
 });

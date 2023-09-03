@@ -25,6 +25,7 @@ import { RepostModel } from "../../repost/repost.model";
 import { IPost, PostModel } from "../post.model";
 import { populatePostData } from "../populate-post-data";
 import { getLoggedInUserIdFromReq } from "../../../../../services/als.service";
+import { PollVoteModel } from "../../poll-vote/poll-vote.model";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
@@ -50,6 +51,7 @@ describe("PostModel: PostDataPopulator", () => {
     await UserModel.deleteMany({});
     await RepostModel.deleteMany({});
     await PostLikeModel.deleteMany({});
+    await PollVoteModel.deleteMany({});
     await disconnectFromTestDB();
   });
 
@@ -183,18 +185,59 @@ describe("PostModel: PostDataPopulator", () => {
     createPollVote(...pollVotes);
 
     const updatedPost = await _getTestPostAndPopulate(post1.id);
+    assertPost(updatedPost);
+
     const { poll } = updatedPost;
-    assertPoll(poll!);
+    if (!poll) throw new Error("Poll is undefined.");
+    assertPoll(poll);
 
-    expect(poll!.options[0].voteCount).toBe(1);
-    expect(poll!.options[1].voteCount).toBe(2);
-    expect(poll!.options[2].voteCount).toBe(0);
+    expect(poll.options[0].voteCount).toBe(1);
+    expect(poll.options[1].voteCount).toBe(2);
+    expect(poll.options[2].voteCount).toBe(0);
 
-    expect(poll!.options[0].isLoggedInUserVoted).toBe(true);
-    expect(poll!.options[1].isLoggedInUserVoted).toBe(false);
-    expect(poll!.options[2].isLoggedInUserVoted).toBe(false);
+    expect(poll.options[0].isLoggedInUserVoted).toBe(true);
+    expect(poll.options[1].isLoggedInUserVoted).toBe(false);
+    expect(poll.options[2].isLoggedInUserVoted).toBe(false);
 
-    expect(poll!.isVotingOff).toBe(true);
+    expect(poll.isVotingOff).toBe(true);
+
+    mockGetLoggedInUserIdFromReq(user2.id);
+    const updatedPost2 = await _getTestPostAndPopulate(post1.id);
+    assertPost(updatedPost2);
+
+    const { poll: poll2 } = updatedPost2;
+    if (!poll2) throw new Error("Poll is undefined.");
+    assertPoll(poll2);
+
+    expect(poll2.options[0].voteCount).toBe(1);
+    expect(poll2.options[1].voteCount).toBe(2);
+    expect(poll2.options[2].voteCount).toBe(0);
+
+    expect(poll2.options[0].isLoggedInUserVoted).toBe(false);
+    expect(poll2.options[1].isLoggedInUserVoted).toBe(true);
+    expect(poll2.options[2].isLoggedInUserVoted).toBe(false);
+
+    expect(poll2.isVotingOff).toBe(true);
+
+    // Test voting off after poll length has passed
+    const post2 = await createTestPost({
+      body: {
+        poll: createTestPoll({
+          options: [{ text: "Option 1" }, { text: "Option 2" }, { text: "Option 3" }],
+          length: { days: 0, hours: 0, minutes: 1 },
+        }),
+        createdAt: new Date(Date.now() - 1000 * 120),
+      },
+    });
+
+    const updatedPost3 = await _getTestPostAndPopulate(post2.id);
+    assertPost(updatedPost3);
+
+    const { poll: poll3 } = updatedPost3;
+    if (!poll3) throw new Error("Poll is undefined.");
+    assertPoll(poll3);
+
+    expect(poll3.isVotingOff).toBe(true);
   });
 });
 

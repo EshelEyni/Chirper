@@ -4,65 +4,74 @@ import { PostModel } from "../../models/post/post.model";
 import { AppError } from "../../../../services/error/error.service";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { logger } from "../../../../services/logger/logger.service";
-import { Post, PostRepostResult } from "../../../../../../shared/interfaces/post.interface";
+import { Post, Repost } from "../../../../../../shared/interfaces/post.interface";
 import postUtilService from "../util/util.service";
 
-async function add(postId: string, loggedInUserId: string): Promise<PostRepostResult> {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+async function add(postId: string, loggedInUserId: string): Promise<Repost> {
+  // const session = await mongoose.startSession();
+  // session.startTransaction();
 
-  try {
-    const savedRepost = await new RepostModel({
+  const repostAndUpdatedPost = (
+    await RepostModel.create({
       postId,
       repostOwnerId: loggedInUserId,
-    }).save({ session });
+    })
+  ).toObject() as unknown as Repost;
 
-    const repostedPostDoc = await PostModel.findByIdAndUpdate(
-      postId,
-      { $inc: { repostsCount: 1 } },
-      { session, new: true }
-    );
-    if (!repostedPostDoc) throw new AppError("post not found", 404);
-    await session.commitTransaction();
-    const updatedPost = repostedPostDoc.toObject() as unknown as Post;
+  return repostAndUpdatedPost;
 
-    const res = await postUtilService.getPostLoggedInUserActionState(updatedPost.id);
-    const currLoggedInActionState = res[updatedPost.id];
+  // try {
+  //   const savedRepost = await new RepostModel({
+  //     postId,
+  //     repostOwnerId: loggedInUserId,
+  //   }).save({ session });
 
-    updatedPost.loggedInUserActionState = currLoggedInActionState;
+  //   const repostedPostDoc = await PostModel.findByIdAndUpdate(
+  //     postId,
+  //     { $inc: { repostsCount: 1 } },
+  //     { session, new: true }
+  //   );
+  //   if (!repostedPostDoc) throw new AppError("post not found", 404);
+  //   await session.commitTransaction();
+  //   const updatedPost = repostedPostDoc.toObject() as unknown as Post;
 
-    const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
-    updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
+  //   const res = await postUtilService.getPostLoggedInUserActionState(updatedPost.id);
+  //   const currLoggedInActionState = res[updatedPost.id];
 
-    const repostDoc = await RepostModel.findById(savedRepost.id)
-      .populate("post")
-      .populate(postUtilService.populateRepostedBy())
-      .exec();
+  //   updatedPost.loggedInUserActionState = currLoggedInActionState;
 
-    if (!repostDoc) throw new AppError("repost not found", 404);
-    const repostObj = repostDoc.toObject() as unknown as any;
+  //   const isFollowingMap = await userRelationService.getIsFollowing(updatedPost.createdBy.id);
+  //   updatedPost.createdBy.isFollowing = isFollowingMap[updatedPost.createdBy.id];
 
-    const { createdAt, updatedAt, post, repostedBy } = repostObj;
-    post.createdBy.isFollowing = false;
-    const repost = {
-      ...post,
-      createdAt,
-      updatedAt,
-      repostedBy,
-    } as unknown as Post;
+  //   const repostDoc = await RepostModel.findById(savedRepost.id)
+  //     .populate("post")
+  //     .populate(postUtilService.populateRepostedBy())
+  //     .exec();
 
-    const res2 = await postUtilService.getPostLoggedInUserActionState(repost.id);
-    const currLoggedInActionState2 = res2[repost.id];
+  //   if (!repostDoc) throw new AppError("repost not found", 404);
+  //   const repostObj = repostDoc.toObject() as unknown as any;
 
-    repost.loggedInUserActionState = currLoggedInActionState2;
+  //   const { createdAt, updatedAt, post, repostedBy } = repostObj;
+  //   post.createdBy.isFollowing = false;
+  //   const repost = {
+  //     ...post,
+  //     createdAt,
+  //     updatedAt,
+  //     repostedBy,
+  //   } as unknown as Post;
 
-    return { updatedPost, repost };
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
-  }
+  //   const res2 = await postUtilService.getPostLoggedInUserActionState(repost.id);
+  //   const currLoggedInActionState2 = res2[repost.id];
+
+  //   repost.loggedInUserActionState = currLoggedInActionState2;
+
+  //   return { updatedPost, repost };
+  // } catch (error) {
+  //   await session.abortTransaction();
+  //   throw error;
+  // } finally {
+  //   session.endSession();
+  // }
 }
 
 async function remove(postId: string, loggedInUserId: string): Promise<Post> {

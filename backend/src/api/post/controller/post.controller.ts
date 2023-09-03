@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { QueryObj, validateIds } from "../../../services/util/util.service";
-import { NewPost, Post, PostRepostResult } from "../../../../../shared/interfaces/post.interface";
+import {
+  NewPost,
+  Post,
+  PostRepostResult,
+  Repost,
+} from "../../../../../shared/interfaces/post.interface";
 import postService from "../services/post/post.service";
 import {
   asyncErrorCatcher,
@@ -10,13 +15,14 @@ import {
 import { deleteOne, getAll } from "../../../services/factory/factory.service";
 import { PostModel } from "../models/post/post.model";
 import repostService from "../services/repost/repost.service";
-import likeService from "../services/like/like.service";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
 import { PromotionalPostModel } from "../models/post/promitional-post.model";
 import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
+import { PostLikeModel } from "../models/like/post-like.model";
+import { RepostModel } from "../models/repost/repost.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -83,20 +89,6 @@ const addReply = asyncErrorCatcher(async (req: Request, res: Response): Promise<
   });
 });
 
-const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const loggedInUserId = getLoggedInUserIdFromReq();
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  const { postId } = req.query;
-  if (!postId) throw new AppError("No post id provided", 400);
-  else if (typeof postId !== "string") throw new AppError("Post id must be a string", 400);
-  const repostAndUpdatedPost = await repostService.add(postId, loggedInUserId);
-
-  res.status(201).send({
-    status: "success",
-    data: repostAndUpdatedPost,
-  });
-});
-
 const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
@@ -134,6 +126,33 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
 
 const removePost = deleteOne(PostModel);
 
+const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
+  const loggedInUserId = getLoggedInUserIdFromReq();
+  const postId = req.params.id;
+
+  validateIds(
+    { id: postId, entityName: "post" },
+    { id: loggedInUserId, entityName: "loggedInUser" }
+  );
+
+  const repost = (
+    await RepostModel.create({
+      postId,
+      repostOwnerId: loggedInUserId,
+    })
+  ).toObject() as unknown as Repost;
+
+  const post = await PostModel.findById(postId);
+
+  res.status(201).send({
+    status: "success",
+    data: {
+      post,
+      repost,
+    },
+  });
+});
+
 const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
   const { postId } = req.query;
@@ -167,9 +186,18 @@ const savePollVote = asyncErrorCatcher(async (req: Request, res: Response): Prom
 const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = req.params.id;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!postId) throw new AppError("No post id provided", 400);
-  const updatedPost = await likeService.add(postId, loggedInUserId);
+
+  validateIds(
+    { id: postId, entityName: "post" },
+    { id: loggedInUserId, entityName: "loggedInUser" }
+  );
+
+  const updatedPost = (
+    await PostLikeModel.create({
+      postId,
+      userId: loggedInUserId,
+    })
+  ).post;
 
   res.status(201).send({
     status: "success",
@@ -180,9 +208,20 @@ const addLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
 const removeLike = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = req.params.id;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!postId) throw new AppError("No post id provided", 400);
-  const updatedPost = await likeService.remove(postId, loggedInUserId);
+
+  validateIds(
+    { id: postId, entityName: "post" },
+    { id: loggedInUserId, entityName: "loggedInUser" }
+  );
+
+  const updatedPost = (
+    await PostLikeModel.findOneAndDelete({
+      postId,
+      userId: loggedInUserId,
+    })
+  )?.post;
+
+  if (!updatedPost) throw new AppError("Post is not liked", 404);
 
   res.send({
     status: "success",
@@ -281,15 +320,18 @@ const removeBookmarkedPost = asyncErrorCatcher(
       { id: loggedInUserId, entityName: "loggedInUser" }
     );
 
-    const updatedPost = await BookmarkedPostModel.findOneAndDelete({
-      postId,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      bookmarkOwnerId: loggedInUserId!,
-    });
+    const updatedPost = (
+      await BookmarkedPostModel.findOneAndDelete({
+        postId,
+        bookmarkOwnerId: loggedInUserId,
+      })
+    )?.post;
 
-    res.json({
+    if (!updatedPost) throw new AppError("Post is not bookmarked", 404);
+
+    res.send({
       status: "success",
-      data: updatedPost?.post,
+      data: updatedPost,
     });
   }
 );

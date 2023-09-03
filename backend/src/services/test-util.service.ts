@@ -18,6 +18,7 @@ import { PostModel } from "../api/post/models/post/post.model";
 import { RepostModel } from "../api/post/models/repost/repost.model";
 import { PostLikeModel } from "../api/post/models/like/post-like.model";
 import { PostStatsModel } from "../api/post/models/post-stats/post-stats.model";
+import { PollVoteModel } from "../api/post/models/poll-vote/poll-vote.model";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -42,6 +43,12 @@ export type CreatePostStatParams = {
   userId: string;
 };
 
+export type CreatePollVoteParams = {
+  postId: string;
+  userId: string;
+  optionIdx: number;
+};
+
 async function connectToTestDB({ isRemoteDB = false } = {}) {
   const { DB_URL, TEST_DB_NAME, LOCAL_DB_URL } = process.env;
   if (!LOCAL_DB_URL) throw new AppError("LOCAL_DB_URL is not defined.", 500);
@@ -58,7 +65,7 @@ async function connectToTestDB({ isRemoteDB = false } = {}) {
 async function disconnectFromTestDB() {
   await mongoose.connection.close();
   // eslint-disable-next-line no-console
-  console.log(ansiColors.bgRed("Disconnected from DB"));
+  console.log(ansiColors.red.italic("Disconnected from DB"));
 }
 
 async function createManyTestUsers(numOfUsers: number): Promise<User[]> {
@@ -217,6 +224,10 @@ function createTestPoll({
   };
 
   return poll;
+}
+
+async function createPollVote(...polVote: CreatePollVoteParams[]): Promise<void> {
+  await PollVoteModel.create(polVote);
 }
 
 function createTestGif({
@@ -448,6 +459,7 @@ export {
   deleteManyTestPosts,
   createTestPost,
   createTestPoll,
+  createPollVote,
   createTestGif,
   createTestReposts,
   createTestLike,

@@ -4,12 +4,15 @@ import {
   CreatePostStatParams,
   RepostParams,
   assertLoggedInUserState,
+  assertPoll,
   assertPost,
   assertQuotedPost,
   assertUser,
   connectToTestDB,
   createManyTestUsers,
+  createPollVote,
   createTestLike,
+  createTestPoll,
   createTestPost,
   createTestReposts,
   createTestUser,
@@ -21,6 +24,11 @@ import { PostLikeModel } from "../../like/post-like.model";
 import { RepostModel } from "../../repost/repost.model";
 import { IPost, PostModel } from "../post.model";
 import { populatePostData } from "../populate-post-data";
+import { getLoggedInUserIdFromReq } from "../../../../../services/als.service";
+
+jest.mock("../../../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
 
 type GetPostDocParams = {
   createdById?: string;
@@ -143,7 +151,7 @@ describe("PostModel: PostDataPopulator", () => {
     expect(updatedPost.repliesCount).toBe(3);
   });
 
-  it("Should handle quoted posts correctly.", async () => {
+  it("Should populate quoted posts correctly.", async () => {
     const quotedPost = await createTestPost({});
     const post = await createTestPost({
       body: { quotedPostId: quotedPost.id },
@@ -152,6 +160,41 @@ describe("PostModel: PostDataPopulator", () => {
     const updatedPost = await _getTestPostAndPopulate(post.id);
     expect(updatedPost.quotedPost).toBeDefined();
     assertQuotedPost(updatedPost.quotedPost as QuotedPost);
+  });
+
+  fit("Should populate post poll data correctly.", async () => {
+    const [user1, user2, user3] = await createManyTestUsers(3);
+    mockGetLoggedInUserIdFromReq(user1.id);
+
+    const post1 = await createTestPost({
+      body: {
+        poll: createTestPoll({
+          options: [{ text: "Option 1" }, { text: "Option 2" }, { text: "Option 3" }],
+        }),
+      },
+    });
+
+    const pollVotes = [
+      { userId: user1.id, postId: post1.id, optionIdx: 0 },
+      { userId: user2.id, postId: post1.id, optionIdx: 1 },
+      { userId: user3.id, postId: post1.id, optionIdx: 1 },
+    ];
+
+    createPollVote(...pollVotes);
+
+    const updatedPost = await _getTestPostAndPopulate(post1.id);
+    const { poll } = updatedPost;
+    assertPoll(poll!);
+
+    expect(poll!.options[0].voteCount).toBe(1);
+    expect(poll!.options[1].voteCount).toBe(2);
+    expect(poll!.options[2].voteCount).toBe(0);
+
+    expect(poll!.options[0].isLoggedInUserVoted).toBe(true);
+    expect(poll!.options[1].isLoggedInUserVoted).toBe(false);
+    expect(poll!.options[2].isLoggedInUserVoted).toBe(false);
+
+    expect(poll!.isVotingOff).toBe(true);
   });
 });
 
@@ -197,4 +240,8 @@ function _createPostStatDetails({
     postId,
     [userIdKey]: user.id,
   }));
+}
+
+function mockGetLoggedInUserIdFromReq(value: any) {
+  (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(value);
 }

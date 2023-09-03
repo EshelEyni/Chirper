@@ -1,9 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 
-type IPollOption = {
+export type IPollOption = {
   text: string;
   voteCount: number;
+  _voteCount: number;
+  isLoggedInUserVoted: boolean;
+  _isLoggedInUserVoted: boolean;
 };
 
 export type IPollLength = {
@@ -12,9 +15,10 @@ export type IPollLength = {
   minutes: number;
 };
 
-type IPollBase = {
+export type IPoll = {
   options: IPollOption[];
   length: IPollLength;
+  _isVotingOff: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -71,8 +75,33 @@ const pollOptionSchema: Schema<IPollOption> = new mongoose.Schema(
   },
   {
     _id: false,
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+pollOptionSchema
+  .virtual("voteCount")
+  .get(function (this: IPollOption) {
+    return this._voteCount;
+  })
+  .set(function (this: IPollOption, voteCount: number) {
+    this._voteCount = voteCount;
+  });
+
+pollOptionSchema
+  .virtual("isLoggedInUserVoted")
+  .get(function (this: IPollOption) {
+    return this._isLoggedInUserVoted;
+  })
+  .set(function (this: IPollOption, isLoggedInUserVoted: boolean) {
+    this._isLoggedInUserVoted = isLoggedInUserVoted;
+  });
 
 const pollLengthSchema: Schema<IPollLength> = new mongoose.Schema(
   {
@@ -121,7 +150,7 @@ pollLengthSchema.pre("save", function (next) {
   next();
 });
 
-const pollSchema: Schema<IPollBase> = new mongoose.Schema(
+const pollSchema: Schema<IPoll> = new mongoose.Schema(
   {
     options: [pollOptionSchema],
     length: {
@@ -130,25 +159,27 @@ const pollSchema: Schema<IPollBase> = new mongoose.Schema(
   },
   {
     timestamps: true,
+    _id: false,
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret._id;
-        return ret;
-      },
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret._id;
-        return ret;
-      },
     },
   }
 );
 
+pollSchema
+  .virtual("isVotingOff")
+  .get(function (this: IPoll) {
+    return this._isVotingOff;
+  })
+  .set(function (this: IPoll, isVotingOff: boolean) {
+    this._isVotingOff = isVotingOff;
+  });
+
 pollSchema.pre("save", function (next) {
-  const { options } = this as IPollBase;
+  const { options } = this as IPoll;
 
   if (options.length < 2) {
     next(new AppError("Poll must have at least 2 options", 400));

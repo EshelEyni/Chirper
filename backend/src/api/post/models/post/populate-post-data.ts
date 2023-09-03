@@ -1,3 +1,4 @@
+import moment from "moment";
 import { ObjectId } from "mongodb";
 import { Model } from "mongoose";
 import { IUser, UserModel } from "../../../user/models/user/user.model";
@@ -12,6 +13,8 @@ import {
   PostStatsBody,
 } from "../../../../../../shared/interfaces/post.interface";
 import { BookmarkedPostModel } from "../bookmark/bookmark-post.model";
+import { PollVoteModel } from "../poll-vote/poll-vote.model";
+import { IPollOption } from "./post-sub-schemas";
 
 type SetQuotedConfig = {
   doc: IPost;
@@ -41,10 +44,11 @@ async function populatePostData(...docs: IPost[]) {
     const currCreatedById = doc.get("createdById").toString();
     const currPostId = doc.get("_id").toString();
     const quotedPostId = doc.get("quotedPostId")?.toString();
+    const poll = doc.get("poll");
 
     const user = users.find(user => user._id.toString() === currCreatedById);
-
     if (user) doc.set("createdBy", user);
+
     doc.set("loggedInUserActionState", loggedInUserStatesMap[currPostId]);
 
     doc._repostsCount = repostCountsMap.get(currPostId) ?? 0;
@@ -53,86 +57,12 @@ async function populatePostData(...docs: IPost[]) {
     doc._viewsCount = viewsCountsMap.get(currPostId) ?? 0;
 
     if (quotedPostId) _setQuotedPost({ doc, quotedPosts, quotedPostId, users });
+    if (poll) await _populatePollData(doc);
   }
 }
 
 function _convertToObjectId(ids: string[]) {
   return ids.map(id => new ObjectId(id));
-}
-
-// Using one function for both user and post ids because we want to loop through the docs only once.
-function _getUserAndPostIdsFromPostDoc(...docs: IPost[]) {
-  const userIds = new Set<string>();
-  const postIds = [];
-  const quotedPostIds = [];
-
-  for (const doc of docs) {
-    const userIdStr = doc.get("createdById").toString();
-    const postIdStr = doc.get("_id").toString();
-    const quotedPostIdStr = doc.get("quotedPostId")?.toString();
-
-    userIds.add(userIdStr);
-    postIds.push(postIdStr);
-
-    if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
-  }
-
-  return { userIds: Array.from(userIds), postIds, quotedPostIds };
-}
-
-async function getAggregateCountsAsMap<T>(model: Model<T>, field: string, objIds: ObjectId[]) {
-  const counts = await model.aggregate([
-    { $match: { [field]: { $in: objIds } } },
-    { $group: { _id: `$${field}`, count: { $sum: 1 } } },
-  ]);
-  return new Map(counts.map(({ _id, count }) => [_id.toString(), count]));
-}
-
-async function _getPostStats(...ids: string[]) {
-  const objIds = _convertToObjectId(ids);
-  return {
-    repostCountsMap: await getAggregateCountsAsMap(RepostModel, "postId", objIds),
-    likesCountsMap: await getAggregateCountsAsMap(PostLikeModel, "postId", objIds),
-    viewsCountsMap: await getAggregateCountsAsMap(PostStatsModel, "postId", objIds),
-    repliesCountMap: await getAggregateCountsAsMap(PostModel, "parentPostId", objIds),
-  };
-}
-
-async function _getQuotedPostAndCreatorIdByPostId(...ids: string[]) {
-  const quotedPosts = (await PostModel.find({
-    _id: { $in: _convertToObjectId(ids) },
-  })
-    .select([
-      "text",
-      "video",
-      "videoUrl",
-      "gif",
-      "imgs",
-      "isPublic",
-      "audience",
-      "repliersType",
-      "repliedPostDetails",
-      "createdById",
-      "createdAt",
-    ])
-    .setOptions({ skipHooks: true, lean: true })) as unknown as IPost[];
-
-  const quotedPostCreatorIds = quotedPosts.map(post => post.createdById.toString());
-  return { quotedPosts, quotedPostCreatorIds };
-}
-
-function _setQuotedPost({ doc, quotedPosts, quotedPostId, users }: SetQuotedConfig) {
-  if (!quotedPosts.length) return;
-  const quotedPost = quotedPosts.find(post => post._id.toString() === quotedPostId);
-  if (!quotedPost) return;
-  doc.set("quotedPost", {
-    ...quotedPost,
-    id: quotedPost._id.toString(),
-  });
-  const quotedPostCreator = users.find(
-    user => user._id.toString() === quotedPost?.createdById.toString()
-  );
-  doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
 }
 
 const loggedInUserActionDefaultState: LoggedInUserActionState = {
@@ -231,6 +161,111 @@ async function _getPostLoggedInUserActionState(
   }, {});
 
   return state;
+}
+
+// Using one function for both user and post ids because we want to loop through the docs only once.
+function _getUserAndPostIdsFromPostDoc(...docs: IPost[]) {
+  const userIds = new Set<string>();
+  const postIds = [];
+  const quotedPostIds = [];
+
+  for (const doc of docs) {
+    const userIdStr = doc.get("createdById").toString();
+    const postIdStr = doc.get("_id").toString();
+    const quotedPostIdStr = doc.get("quotedPostId")?.toString();
+
+    userIds.add(userIdStr);
+    postIds.push(postIdStr);
+
+    if (quotedPostIdStr) quotedPostIds.push(quotedPostIdStr);
+  }
+
+  return { userIds: Array.from(userIds), postIds, quotedPostIds };
+}
+
+async function getAggregateCountsAsMap<T>(model: Model<T>, field: string, objIds: ObjectId[]) {
+  const counts = await model.aggregate([
+    { $match: { [field]: { $in: objIds } } },
+    { $group: { _id: `$${field}`, count: { $sum: 1 } } },
+  ]);
+  return new Map(counts.map(({ _id, count }) => [_id.toString(), count]));
+}
+
+async function _getPostStats(...ids: string[]) {
+  const objIds = _convertToObjectId(ids);
+  return {
+    repostCountsMap: await getAggregateCountsAsMap(RepostModel, "postId", objIds),
+    likesCountsMap: await getAggregateCountsAsMap(PostLikeModel, "postId", objIds),
+    viewsCountsMap: await getAggregateCountsAsMap(PostStatsModel, "postId", objIds),
+    repliesCountMap: await getAggregateCountsAsMap(PostModel, "parentPostId", objIds),
+  };
+}
+
+async function _getQuotedPostAndCreatorIdByPostId(...ids: string[]) {
+  const quotedPosts = (await PostModel.find({
+    _id: { $in: _convertToObjectId(ids) },
+  })
+    .select([
+      "text",
+      "video",
+      "videoUrl",
+      "gif",
+      "imgs",
+      "isPublic",
+      "audience",
+      "repliersType",
+      "repliedPostDetails",
+      "createdById",
+      "createdAt",
+    ])
+    .setOptions({ skipHooks: true, lean: true })) as unknown as IPost[];
+
+  const quotedPostCreatorIds = quotedPosts.map(post => post.createdById.toString());
+  return { quotedPosts, quotedPostCreatorIds };
+}
+
+function _setQuotedPost({ doc, quotedPosts, quotedPostId, users }: SetQuotedConfig) {
+  if (!quotedPosts.length) return;
+  const quotedPost = quotedPosts.find(post => post._id.toString() === quotedPostId);
+  if (!quotedPost) return;
+  doc.set("quotedPost", {
+    ...quotedPost,
+    id: quotedPost._id.toString(),
+  });
+  const quotedPostCreator = users.find(
+    user => user._id.toString() === quotedPost?.createdById.toString()
+  );
+  doc.set("quotedPost.createdBy", quotedPostCreator ?? "unknown");
+}
+
+async function _populatePollData(doc: IPost) {
+  if (!doc.poll) return doc;
+  const loggedInUserId = getLoggedInUserIdFromReq();
+  if (!isValidMongoId(loggedInUserId)) return;
+  const postId = doc._id;
+
+  const allVotes = await PollVoteModel.find({ postId }).lean();
+  let isVotingOff = false;
+
+  const pollEndTime = moment(doc.createdAt)
+    .add(doc.poll.length.days, "days")
+    .add(doc.poll.length.hours, "hours")
+    .add(doc.poll.length.minutes, "minutes");
+
+  if (moment().isAfter(pollEndTime)) isVotingOff = true;
+
+  doc.poll.options.forEach((option: IPollOption, idx: number) => {
+    const optionVotes = allVotes.filter(vote => vote.optionIdx === idx);
+    option._voteCount = optionVotes.length;
+
+    const userVote = optionVotes.find(vote => vote.userId.toString() === loggedInUserId);
+    option._isLoggedInUserVoted = !!userVote;
+    if (option._isLoggedInUserVoted) isVotingOff = true;
+  });
+
+  doc.poll._isVotingOff = isVotingOff;
+
+  return doc;
 }
 
 export { populatePostData };

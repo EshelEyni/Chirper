@@ -1,11 +1,11 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import { Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
+import { Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../../shared/interfaces/location.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { UserModel } from "../../../user/models/user/user.model";
-import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
+import { IPoll, imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
 import { queryEntityExists } from "../../../../services/util/util.service";
@@ -23,7 +23,7 @@ export interface IPost extends Document {
   imgs?: PostImg[];
   videoUrl?: string;
   gif?: Gif;
-  poll?: Poll;
+  poll?: IPoll;
   schedule?: Date;
   location?: Location;
   quotedPostId?: string;

@@ -122,6 +122,7 @@ export interface Poll {
   };
   isVotingOff: boolean;
   createdAt: number;
+  updatedAt: number;
 }
 
 export interface NewPoll {

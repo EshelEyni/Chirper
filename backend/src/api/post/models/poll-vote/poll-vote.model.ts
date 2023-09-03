@@ -68,7 +68,7 @@ pollVoteSchema.pre("save", async function (next) {
   const pollEndTime = createdAt.getTime() + pollLength;
   const currTime = Date.now();
 
-  if (currTime > pollEndTime) next(new AppError("Poll has expired", 400));
+  if (currTime > pollEndTime) return next(new AppError("Poll has expired", 400));
 
   next();
 });

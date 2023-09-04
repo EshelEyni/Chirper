@@ -11,7 +11,7 @@ import { deleteOne, getAll } from "../../../services/factory/factory.service";
 import { PostModel } from "../models/post/post.model";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
-import { PromotionalPostModel } from "../models/post/promitional-post.model";
+import { PromotionalPostModel } from "../models/post/promotional-post.model";
 import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
@@ -46,6 +46,7 @@ const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<v
   const post = req.body as unknown as NewPost;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;
+  // change to use model
   const savedPost = await postService.add(post);
 
   res.status(201).send({
@@ -90,7 +91,7 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
   if (!post.quotedPostId) throw new AppError("No quoted post id provided", 400);
   post.createdById = loggedInUserId;
 
-  let data: Post | PostRepostResult | null = null;
+  let data: Post | PostRepostResult;
   const isRepost = !post.text && !post.imgs?.length && !post.gif && !post.video;
   if (isRepost) {
     data = await RepostModel.create({
@@ -98,8 +99,7 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
       repostOwnerId: loggedInUserId,
     });
   } else {
-    const savedPost = await postService.add(post);
-    data = savedPost;
+    data = (await PostModel.create(post)) as unknown as Post;
   }
 
   res.status(201).send({

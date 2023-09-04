@@ -1,4 +1,4 @@
-import testUtil from "./test-util";
+import testUtil from "./bot-post-test-util";
 import { botServiceLogger } from "../../logger/logger";
 import botPostService, { PostType } from "../post.service";
 

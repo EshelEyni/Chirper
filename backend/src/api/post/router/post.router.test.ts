@@ -6,18 +6,22 @@ import { errorHandler } from "../../../services/error/error.service";
 import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import {
   assertPost,
+  assertQuotedPost,
   assertRepost,
   connectToTestDB,
+  createManyTestPosts,
   createTestPost,
+  createTestReposts,
   createTestUser,
-  deleteTestPost,
-  deleteTestUser,
   disconnectFromTestDB,
   getLoginTokenStrForTest,
 } from "../../../services/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 import { Post } from "../../../../../shared/interfaces/post.interface";
+import { PostModel } from "../models/post/post.model";
+import { UserModel } from "../../user/models/user/user.model";
+import { RepostModel } from "../models/repost/repost.model";
 
 const app = express();
 app.use(express.json());
@@ -37,12 +41,100 @@ describe("Post Router", () => {
   });
 
   afterAll(async () => {
-    await deleteTestPost(validPostId);
-    await deleteTestUser(validUserId);
+    await PostModel.deleteMany({});
+    await UserModel.deleteMany({});
+    await RepostModel.deleteMany({});
     await disconnectFromTestDB();
   });
 
-  fdescribe("POST /:id/repost", () => {
+  fdescribe("GET /", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 200 status code and an array of posts", async () => {
+      const posts = await createManyTestPosts({ numOfPosts: 12 });
+      await createTestReposts(
+        {
+          postId: posts[0].id,
+          repostOwnerId: validUserId,
+        },
+        {
+          postId: posts[1].id,
+          repostOwnerId: validUserId,
+        }
+      );
+
+      const res = await request(app).get("/");
+      // const promotionalPost = res.body.data.find((post: Post) => post.isPromotional);
+      // console.log("promotionalPost", promotionalPost);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: "success",
+        requestedAt: expect.any(String),
+        results: expect.any(Number),
+        data: expect.any(Array),
+      });
+
+      if (!res.body.data.length) throw new Error("No posts found");
+
+      res.body.data.forEach((post: Post) => {
+        assertPost(post);
+      });
+
+      expect(res.body.data.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Post /quote", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 201 status code and the quoted post", async () => {
+      const postToQuote = await createTestPost({});
+
+      const res = await request(app)
+        .post("/quote")
+        .set("Cookie", [token])
+        .send({ text: "quoted post test text", quotedPostId: postToQuote.id });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const post = res.body.data;
+      assertPost(post);
+      assertQuotedPost(post.quotedPost);
+    });
+
+    it("should repost if the quoted post i without content", async () => {
+      const postToQuote = await createTestPost({});
+
+      const res = await request(app)
+        .post("/quote")
+        .set("Cookie", [token])
+        .send({ quotedPostId: postToQuote.id });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const { post, repost } = res.body.data;
+
+      assertPost(post);
+      expect(post.loggedInUserActionState.isReposted).toBe(true);
+      expect(post.repostsCount).toBe(1);
+      assertRepost(repost);
+    });
+  });
+
+  describe("POST /:id/repost", () => {
     beforeEach(async () => {
       jest.clearAllMocks();
     });
@@ -65,7 +157,7 @@ describe("Post Router", () => {
     });
   });
 
-  fdescribe("DELETE /:id/repost", () => {
+  describe("DELETE /:id/repost", () => {
     beforeEach(async () => {
       jest.clearAllMocks();
     });

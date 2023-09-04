@@ -1,6 +1,10 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import { Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
+import {
+  LoggedInUserActionState,
+  Post,
+  PostImg,
+} from "../../../../../../shared/interfaces/post.interface";
 import { Gif } from "../../../../../../shared/interfaces/gif.interface";
 import { Location } from "../../../../../../shared/interfaces/location.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
@@ -28,13 +32,22 @@ export interface IPost extends Document {
   schedule?: Date;
   location?: Location;
   quotedPostId?: string;
-  _repostedBy?: User;
   _repostsCount: number;
   _repliesCount: number;
   _likesCount: number;
   _viewsCount: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IPostDoc extends IPost {
+  createdBy: User;
+  quotedPost?: Post;
+  loggedInUserActionState: LoggedInUserActionState;
+  repostsCount: number;
+  repliesCount: number;
+  likesCount: number;
+  viewsCount: number;
 }
 
 const postSchema: Schema<IPost> = new mongoose.Schema(
@@ -295,11 +308,10 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
   const options = this.getOptions();
   if (!res || options.skipHooks) return;
   const isResArray = Array.isArray(res);
-
   if (isResArray) await populatePostData(...res);
   else await populatePostData(res);
 });
 
-const PostModel = mongoose.model<IPost>("Post", postSchema);
+const PostModel = mongoose.model<IPostDoc>("Post", postSchema);
 
 export { PostModel, postSchema };

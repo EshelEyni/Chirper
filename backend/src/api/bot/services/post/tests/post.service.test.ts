@@ -4,7 +4,7 @@ import postService from "../../../../post/services/post/post.service";
 import openAIService from "../../openai/openai.service";
 import youtubeService from "../../youtube/youtube.service";
 import { AppError } from "../../../../../services/error/error.service";
-import testUtil from "./test-util";
+import testUtil from "./bot-post-test-util";
 
 jest.mock("../../prompt/prompt.service");
 jest.mock("../../../../post/services/post/post.service");

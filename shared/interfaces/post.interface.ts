@@ -82,13 +82,17 @@ export interface Post extends BasicPost {
   createdBy: User;
   parentPostId?: string;
   loggedInUserActionState: LoggedInUserActionState;
-  isPromotional?: boolean;
-  linkToSite?: string;
-  linkToRepo?: string;
 }
 
 export interface Repost extends Post {
   repostedBy: User;
+}
+
+export interface PromotionalPost extends Post {
+  isPromotional: boolean;
+  companyName: string;
+  linkToSite: string;
+  linkToRepo?: string;
 }
 
 export type LoggedInUserActionState = {

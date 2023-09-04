@@ -3,7 +3,7 @@ import promptService from "../../prompt/prompt.service";
 import postService from "../../../../post/services/post/post.service";
 import openAIService from "../../openai/openai.service";
 import { botServiceLogger } from "../../logger/logger";
-import testUtil from "./test-util";
+import testUtil from "./bot-post-test-util";
 
 jest.mock("../../prompt/prompt.service");
 jest.mock("../../../../post/services/post/post.service");

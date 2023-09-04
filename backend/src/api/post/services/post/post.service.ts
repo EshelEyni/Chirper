@@ -1,13 +1,11 @@
 import { Post, NewPost, PostReplyResult } from "../../../../../../shared/interfaces/post.interface";
 import { APIFeatures, QueryObj } from "../../../../services/util/util.service";
-import { PostModel } from "../../models/post/post.model";
+import { IPostDoc, PostModel } from "../../models/post/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
-import { User } from "../../../../../../shared/interfaces/user.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
-import { UserModel } from "../../../user/models/user/user.model";
 import { RepostModel } from "../../models/repost/repost.model";
 import promotionalPostsService from "../promotional-posts/promotional-posts.service";
 
@@ -18,74 +16,25 @@ async function query(queryString: QueryObj): Promise<Post[]> {
     .limitFields()
     .paginate();
 
-  const postsDocs = (await features.getQuery().lean().exec()) as unknown as any[];
-
-  const repostDocs = await RepostModel.find({})
-    .populate("post")
-    .lean()
-    .populate(postUtilService.populateRepostedBy())
-    .exec();
-
-  const reposts = repostDocs.map((repost: any) => {
-    const { createdAt, updatedAt, post, repostedBy } = repost;
-
-    return {
-      ...post,
-      repostedBy,
-      createdAt,
-      updatedAt,
-    };
-  });
+  const posts = (await features.getQuery().exec()) as unknown as IPostDoc[];
+  const reposts = await RepostModel.find({});
   const promotionalPosts = await promotionalPostsService.get();
 
-  // const posts = [...postsDocs, ...reposts, ...promotionalPosts];
-
-  const combinedPosts = [...postsDocs, ...reposts];
-  combinedPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const combinedPosts = [...posts, ...reposts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   // Insert promotional posts every 10 items
-  const posts = [];
+  const p = [];
   for (let i = 0; i < combinedPosts.length; i++) {
-    posts.push(combinedPosts[i]);
+    p.push(combinedPosts[i]);
     if ((i + 1) % 10 === 0 && promotionalPosts.length > 0) {
       const promoPost = promotionalPosts.shift();
-      if (promoPost) posts.push(promoPost);
+      if (promoPost) p.push(promoPost);
     }
   }
 
-  // posts.push(...promotionalPosts);
-
-  const userIds = [];
-  const postIds = [];
-
-  for (const post of posts) {
-    const userIdStr = post.createdById.toString();
-    post.id = post._id.toString();
-    delete post._id;
-    userIds.push(userIdStr);
-    postIds.push(post.id);
-  }
-
-  const uniqeUserIds = Array.from(new Set(userIds));
-  const userResults = await UserModel.find({ _id: { $in: uniqeUserIds } }).exec();
-  const usersMap = new Map(userResults.map(user => [user.id, user.toObject()]));
-  const loggedInUserStatesMap = await postUtilService.getPostLoggedInUserActionState(...postIds);
-  const isFollowingMap = await userRelationService.getIsFollowing(...uniqeUserIds);
-
-  for (const post of posts) {
-    const currCreatedById = post.createdById.toString();
-
-    const user = usersMap.get(currCreatedById) as unknown as User;
-    post.createdBy = user;
-    post.loggedInUserActionState = loggedInUserStatesMap[post.id];
-    post.createdBy.isFollowing = isFollowingMap[currCreatedById];
-  }
-
-  // TODO: Refactor this function to return the map and then set it to the posts
-  if (posts.length > 0) {
-    await pollService.getLoggedInUserPollDetails(...(posts as unknown as Post[]));
-  }
-  return posts as unknown as Post[];
+  return p as unknown as Post[];
 }
 
 async function getById(postId: string): Promise<Post | null> {

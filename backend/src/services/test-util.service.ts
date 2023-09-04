@@ -5,6 +5,7 @@ import {
   LoggedInUserActionState,
   Poll,
   Post,
+  PromotionalPost,
   QuotedPost,
   Repost,
 } from "../../../shared/interfaces/post.interface";
@@ -20,6 +21,7 @@ import { RepostModel } from "../api/post/models/repost/repost.model";
 import { PostLikeModel } from "../api/post/models/like/post-like.model";
 import { PostStatsModel } from "../api/post/models/post-stats/post-stats.model";
 import { PollVoteModel } from "../api/post/models/poll-vote/poll-vote.model";
+import { PromotionalPostModel } from "../api/post/models/post/promotional-post.model";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -159,6 +161,54 @@ async function deleteTestPost(id: string) {
   const deletedPost = await PostModel.findByIdAndDelete(id);
   if (!deletedPost) return;
   await UserModel.findByIdAndUpdate(deletedPost.createdById);
+}
+
+async function createManyTestPromotionalPosts({
+  numOfPosts,
+  createdByIds,
+}: {
+  numOfPosts?: number;
+  createdByIds?: string[];
+}): Promise<PromotionalPost[]> {
+  const length = numOfPosts || createdByIds?.length || 2;
+  const ids = Array.from({ length }, () => getMongoId());
+  await PromotionalPostModel.deleteMany({ _id: { $in: ids } });
+
+  const postBodies = [];
+
+  for (const id of ids) {
+    const createdById = createdByIds?.[ids.indexOf(id)] || (await createTestUser({})).id;
+    postBodies.push({
+      _id: id,
+      createdById,
+      text: "test post",
+      companyName: "test company",
+      linkToSite: "test link",
+    });
+  }
+
+  const posts = await PromotionalPostModel.create(postBodies).then(docs =>
+    docs.map(doc => doc.toObject())
+  );
+  return posts as unknown as PromotionalPost[];
+}
+
+async function createTestPromotionalPost({
+  id,
+  createdById,
+  body,
+  skipHooks = false,
+}: CreateTestPostOptions = {}): Promise<PromotionalPost> {
+  await PromotionalPostModel.findByIdAndDelete(id);
+  return (await PromotionalPostModel.create({
+    _id: id || getMongoId(),
+    createdById: createdById || (await createTestUser({})).id,
+    text: "test post",
+    companyName: "test company",
+    linkToSite: "test link",
+    ...body,
+    skipHooks,
+  })) as unknown as PromotionalPost;
 }
 
 async function createTestReposts(...repostDetails: RepostParams[]) {
@@ -465,6 +515,8 @@ export {
   createManyTestPosts,
   deleteManyTestPosts,
   createTestPost,
+  createManyTestPromotionalPosts,
+  createTestPromotionalPost,
   createTestPoll,
   createPollVote,
   createTestGif,

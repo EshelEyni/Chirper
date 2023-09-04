@@ -46,8 +46,8 @@ router.post("/thread", addPostThread);
 
 router.post("/reply", addReply);
 router.post("/:id/repost", repostPost);
+router.delete("/:id/repost", removeRepost);
 
-router.delete("/repost", removeRepost);
 router.post("/quote", quotePost);
 
 router.delete("/:id/like", removeLike);

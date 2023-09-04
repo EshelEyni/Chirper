@@ -3,8 +3,7 @@ import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostModel } from "../post/post.model";
-import { Post } from "../../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { Post, Repost } from "../../../../../../shared/interfaces/post.interface";
 
 interface IRepostBase {
   postId: ObjectId;
@@ -13,9 +12,9 @@ interface IRepostBase {
   updatedAt: Date;
 }
 
-interface IRepostDoc extends IRepostBase, Document {
+export interface IRepostDoc extends IRepostBase, Document {
   post: Post;
-  repostedBy: User;
+  repost: Repost;
 }
 
 const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
@@ -48,10 +47,12 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
         delete ret._id;
 
         const post = ret.post as Post;
-        return {
+        const repost = {
           ...post,
           repostedBy: ret.repostedBy,
         };
+
+        return { repost, post };
       },
     },
     toJSON: {
@@ -61,10 +62,12 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
         delete ret._id;
 
         const post = ret.post as Post;
-        return {
+        const repost = {
           ...post,
           repostedBy: ret.repostedBy,
         };
+
+        return { repost, post };
       },
     },
     timestamps: true,

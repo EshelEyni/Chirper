@@ -8,8 +8,8 @@ export type PostReplyResult = {
 };
 
 export type PostRepostResult = {
-  updatedPost: Post;
-  repost: Post;
+  post: Post;
+  repost: Repost;
 };
 
 export type PostImg = {

@@ -309,19 +309,15 @@ describe("Post Controller", () => {
     });
 
     it("should return a 404 error if the post is not bookmarked", async () => {
-      (BookmarkedPostModel.findOneAndDelete as jest.Mock).mockImplementation(() => {
-        return Promise.resolve(null);
+      (BookmarkedPostModel.findOneAndDelete as jest.Mock).mockResolvedValueOnce(null);
+
+      (nextMock as jest.Mock).mockImplementationOnce(({ message, statusCode }) => {
+        expect(message).toBe("Post is not bookmarked");
+        expect(statusCode).toBe(404);
       });
 
       const sut = removeBookmarkedPost as any;
       await sut(req as Request, res as Response, nextMock);
-
-      expect(nextMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Post is not bookmarked",
-          statusCode: 404,
-        })
-      );
     });
 
     it("should return a 500 error if bookmarkService.remove throws an error", async () => {

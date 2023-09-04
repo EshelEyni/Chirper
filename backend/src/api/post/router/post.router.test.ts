@@ -65,6 +65,30 @@ describe("Post Router", () => {
     });
   });
 
+  fdescribe("DELETE /:id/repost", () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 200 status code and the deleted reposted post", async () => {
+      await request(app).post(`/${validPostId}/repost`).set("Cookie", [token]);
+
+      const res = await request(app).delete(`/${validPostId}/repost`).set("Cookie", [token]);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const post = res.body.data;
+
+      assertPost(post);
+      expect(post.loggedInUserActionState.isReposted).toBe(false);
+      expect(post.repostsCount).toBe(0);
+    });
+  });
+
   describe("POST /:id/like", () => {
     beforeEach(async () => {
       jest.clearAllMocks();

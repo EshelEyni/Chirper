@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
 import { QueryObj, validateIds } from "../../../services/util/util.service";
-import {
-  NewPost,
-  Post,
-  PostRepostResult,
-  Repost,
-} from "../../../../../shared/interfaces/post.interface";
+import { NewPost, Post, PostRepostResult } from "../../../../../shared/interfaces/post.interface";
 import postService from "../services/post/post.service";
 import {
   asyncErrorCatcher,
@@ -14,7 +9,6 @@ import {
 } from "../../../services/error/error.service";
 import { deleteOne, getAll } from "../../../services/factory/factory.service";
 import { PostModel } from "../models/post/post.model";
-import repostService from "../services/repost/repost.service";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
 import { PromotionalPostModel } from "../models/post/promitional-post.model";
@@ -22,7 +16,7 @@ import promotionalPostsService from "../services/promotional-posts/promotional-p
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
 import { PostLikeModel } from "../models/like/post-like.model";
-import { RepostModel } from "../models/repost/repost.model";
+import { IRepostDoc, RepostModel } from "../models/repost/repost.model";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query;
@@ -99,8 +93,10 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
   let data: Post | PostRepostResult | null = null;
   const isRepost = !post.text && !post.imgs?.length && !post.gif && !post.video;
   if (isRepost) {
-    const repostAndUpdatedPost = await repostService.add(post.quotedPostId, loggedInUserId);
-    data = repostAndUpdatedPost;
+    data = await RepostModel.create({
+      postId: post.quotedPostId,
+      repostOwnerId: loggedInUserId,
+    });
   } else {
     const savedPost = await postService.add(post);
     data = savedPost;
@@ -135,36 +131,38 @@ const repostPost = asyncErrorCatcher(async (req: Request, res: Response): Promis
     { id: loggedInUserId, entityName: "loggedInUser" }
   );
 
-  const repost = (
-    await RepostModel.create({
-      postId,
-      repostOwnerId: loggedInUserId,
-    })
-  ).toObject() as unknown as Repost;
+  // NOTE: RepostModel.create() returns a RepostDoc, and it is parsed by express
+  // as a PostRepostResult, that's why we need to cast it to IRepostDoc for clarity and type safety
+  // you can't access the repost property directly, because it is created by the toObject() || toJSON() methods
 
-  const post = await PostModel.findById(postId);
+  const data = (await RepostModel.create({
+    postId,
+    repostOwnerId: loggedInUserId,
+  })) as unknown as IRepostDoc;
 
   res.status(201).send({
     status: "success",
-    data: {
-      post,
-      repost,
-    },
+    data,
   });
 });
 
 const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
-  const { postId } = req.query;
-  if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
-  if (!postId) throw new AppError("No post id provided", 400);
-  else if (typeof postId !== "string") throw new AppError("Post id must be a string", 400);
+  const postId = req.params.id;
 
-  const updatedPost = await repostService.remove(postId, loggedInUserId);
+  validateIds(
+    { id: postId, entityName: "post" },
+    { id: loggedInUserId, entityName: "loggedInUser" }
+  );
 
-  res.json({
+  const result = (await RepostModel.findOneAndDelete({
+    postId,
+    repostOwnerId: loggedInUserId,
+  })) as unknown as IRepostDoc;
+
+  res.send({
     status: "success",
-    data: updatedPost,
+    data: result?.post,
   });
 });
 

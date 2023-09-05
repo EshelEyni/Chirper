@@ -7,11 +7,11 @@ export interface UserCredenitials {
 }
 
 export interface UserCredenitialsWithId extends UserCredenitials {
-  id: string;
+  readonly id: string;
 }
 
 export interface User extends UserCredenitials {
-  id: string;
+  readonly id: string;
   bio: string;
   imgUrl: string;
   isAdmin: boolean;

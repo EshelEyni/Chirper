@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
+import compression from "compression";
 import router from "./post.router";
 import { errorHandler } from "../../../services/error/error.service";
 import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 import {
   createManyTestPosts,
+  createTestPoll,
   createTestPost,
   createTestReposts,
   createTestUser,
@@ -19,6 +21,7 @@ import { PostModel } from "../models/post/post.model";
 import { UserModel } from "../../user/models/user/user.model";
 import { RepostModel } from "../models/repost/repost.model";
 import {
+  assertPoll,
   assertPost,
   assertQuotedPost,
   assertRepost,
@@ -26,6 +29,7 @@ import {
 import { PromotionalPostModel } from "../models/post/promotional-post.model";
 
 const app = express();
+app.use(compression());
 app.use(express.json());
 app.use(cookieParser());
 app.all("*", setupAsyncLocalStorage);
@@ -51,11 +55,11 @@ describe("Post Router", () => {
   });
 
   describe("GET /", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    fit("should return a 200 status code and an array of posts", async () => {
+    it("should return a 200 status code and an array of posts", async () => {
       const posts = await createManyTestPosts({ numOfPosts: 12 });
       await createTestReposts(
         {
@@ -83,8 +87,123 @@ describe("Post Router", () => {
     });
   });
 
+  describe("GET /:id", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 200 status code and the post", async () => {
+      const post = await createTestPost({});
+
+      const res = await request(app).get(`/${post.id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const postFromRes = res.body.data;
+      assertPost(postFromRes);
+      expect(postFromRes.id).toBe(post.id);
+    });
+
+    it("should return a 200 status code and the post with poll", async () => {
+      const post = await createTestPost({ body: { poll: createTestPoll({}) } });
+
+      const res = await request(app).get(`/${post.id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const postFromRes = res.body.data;
+      assertPost(postFromRes);
+      expect(postFromRes.id).toBe(post.id);
+      const { poll } = postFromRes;
+      assertPoll(poll);
+    });
+  });
+
+  describe("POST /", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 201 status code and the created post", async () => {
+      const res = await request(app)
+        .post("/")
+        .set("Cookie", [token])
+        .send({ text: "test post text" });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const post = res.body.data;
+      assertPost(post);
+    });
+  });
+
+  fdescribe("PATCH /:id", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 200 status code and the updated post", async () => {
+      const post = await createTestPost({ createdById: validUserId });
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const res = await request(app)
+        .patch(`/${post.id}`)
+
+        .set("Cookie", [token])
+
+        .send({ text: "updated post text" });
+
+      expect(res.status).toBe(200);
+
+      expect(res.body).toEqual({
+        status: "success",
+        data: expect.any(Object),
+      });
+
+      const updatedPost = res.body.data as Post;
+      assertPost(updatedPost);
+
+      expect(updatedPost.id).toBe(post.id);
+      expect(updatedPost.text).toBe("updated post text");
+      expect(updatedPost.updatedAt).not.toBe(post.updatedAt);
+      const updatedPostUpdatedAt = new Date(updatedPost.updatedAt).getTime();
+      const postUpdatedAt = new Date(post.updatedAt).getTime();
+      expect(updatedPostUpdatedAt).toBeGreaterThan(postUpdatedAt);
+      const updatedPostCreatedAt = new Date(updatedPost.createdAt).getTime();
+      const postCreatedAt = new Date(post.createdAt).getTime();
+      expect(updatedPostCreatedAt).toBe(postCreatedAt);
+      expect(updatedPost.createdBy.id).toBe(post.createdBy.id);
+    });
+  });
+
+  fdescribe("DELETE /:id", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a 204 status code and the deleted post", async () => {
+      const post = await createTestPost({ createdById: validUserId });
+
+      const res = await request(app).delete(`/${post.id}`).set("Cookie", [token]);
+
+      expect(res.status).toBe(204);
+    });
+  });
+
   describe("Post /quote", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 
@@ -131,7 +250,7 @@ describe("Post Router", () => {
   });
 
   describe("POST /:id/repost", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 
@@ -154,7 +273,7 @@ describe("Post Router", () => {
   });
 
   describe("DELETE /:id/repost", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 
@@ -178,7 +297,7 @@ describe("Post Router", () => {
   });
 
   describe("POST /:id/like", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 
@@ -214,7 +333,7 @@ describe("Post Router", () => {
   });
 
   describe("DELETE /:id/like", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
     });
 

@@ -18,15 +18,18 @@ import locationRouter from "../../api/location/router/location.router";
 import botRouter from "../../api/bot/router/bot.router";
 import authRouter from "../../api/auth/router/auth.router";
 import { requestLimiter } from "../../services/rate-limiter.service";
+import compression from "compression";
+
 const isProdEnv = process.env.NODE_ENV === "production";
 
 const app = express();
+app.use(compression());
 
 app.use(helmet());
 app.use(cookieParser());
 app.use(
   express.json({
-    limit: "10kb",
+    limit: "15kb",
   })
 );
 

@@ -42,7 +42,7 @@ export type CreatePollVoteParams = {
 };
 
 async function createManyTestUsers(numOfUsers: number): Promise<User[]> {
-  const ids = Array.from({ length: numOfUsers - 1 }, () => getMongoId());
+  const ids = Array.from({ length: numOfUsers }, () => getMongoId());
   await UserModel.deleteMany({ _id: { $in: ids } });
 
   const userCreds = ids.map(id => createValidUserCreds(id));

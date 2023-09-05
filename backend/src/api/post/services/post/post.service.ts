@@ -42,6 +42,7 @@ async function query(queryString: QueryObj): Promise<CombinedPostType[]> {
   return posts;
 }
 
+// TODO: Remove this function, use model's findById instead
 async function getById(postId: string): Promise<Post | null> {
   const postDoc = await PostModel.findById(postId).exec();
   if (!postDoc) return null;
@@ -137,6 +138,7 @@ async function addReply(replyPost: NewPost): Promise<PostReplyResult> {
   }
 }
 
+// TODO: Remove this function, use model's findByIdAndUpdate instead
 async function update(id: string, post: Post): Promise<Post> {
   // TODO: add guard that user can only update his own posts
   const postDoc = await PostModel.findByIdAndUpdate(id, post, {
@@ -173,22 +175,3 @@ export default {
   update,
   remove,
 };
-
-// let repostDocs = await RepostModel.find({})
-//   .populate("post")
-//   .populate(postUtilService.populateRepostedBy())
-//   .exec();
-
-// // TODO: refactor this, can be in one map function
-// repostDocs = repostDocs.map(doc => doc.toObject());
-
-// const reposts = repostDocs.map((doc: any) => {
-//   const { createdAt, updatedAt, post, repostedBy } = doc;
-
-//   return {
-//     ...post,
-//     repostedBy,
-//     createdAt,
-//     updatedAt,
-//   };
-// });

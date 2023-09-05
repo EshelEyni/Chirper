@@ -31,7 +31,7 @@ const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<
 
 const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  const post = await postService.getById(id);
+  const post = await PostModel.findById(id);
   if (!post) throw new AppError(`Post with id ${id} not found`, 404);
 
   res.send({
@@ -42,11 +42,11 @@ const getPostById = asyncErrorCatcher(async (req: Request, res: Response): Promi
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const loggedInUserId = getLoggedInUserIdFromReq();
-  const post = req.body as unknown as NewPost;
+  const post = req.body as unknown as Partial<NewPost>;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;
-  // change to use model
-  const savedPost = await postService.add(post);
+
+  const savedPost = await PostModel.create(post);
 
   res.status(201).send({
     status: "success",
@@ -111,7 +111,12 @@ const updatePost = asyncErrorCatcher(async (req: Request, res: Response): Promis
   const { id } = req.params;
   const postToUpdate = req.body;
   validatePatchRequestBody(postToUpdate);
-  const updatedPost = await postService.update(id, postToUpdate);
+
+  const updatedPost = await PostModel.findByIdAndUpdate(id, postToUpdate, {
+    new: true,
+    runValidators: true,
+  }).exec();
+
   if (!updatedPost) throw new AppError(`Post with id ${id} not found`, 404);
   res.send({
     status: "success",

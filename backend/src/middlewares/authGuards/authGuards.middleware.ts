@@ -21,7 +21,6 @@ const checkUserAuthentication = asyncErrorCatcher(
     const changedPasswordAfter = currentUser.changedPasswordAfter(timeStamp);
     if (changedPasswordAfter)
       return next(new AppError("User recently changed password! Please log in again.", 401));
-    // req.loggedInUserId = id;
     next();
   }
 );

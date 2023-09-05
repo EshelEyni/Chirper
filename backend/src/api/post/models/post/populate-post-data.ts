@@ -240,8 +240,7 @@ function _setQuotedPost({ doc, quotedPosts, quotedPostId, users }: SetQuotedConf
 
 async function _populatePollData(doc: IPost) {
   if (!doc.poll) return doc;
-  const loggedInUserId = getLoggedInUserIdFromReq();
-  if (!isValidMongoId(loggedInUserId)) return;
+
   const postId = doc._id;
 
   const allVotes = await PollVoteModel.find({ postId }).lean();
@@ -258,7 +257,9 @@ async function _populatePollData(doc: IPost) {
     const optionVotes = allVotes.filter(vote => vote.optionIdx === idx);
     option._voteCount = optionVotes.length;
 
-    const userVote = optionVotes.find(vote => vote.userId.toString() === loggedInUserId);
+    const userVote = optionVotes.find(
+      vote => vote.userId.toString() === getLoggedInUserIdFromReq()
+    );
     option._isLoggedInUserVoted = !!userVote;
     if (option._isLoggedInUserVoted) isVotingOff = true;
   });

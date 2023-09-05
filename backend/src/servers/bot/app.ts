@@ -11,25 +11,28 @@ import { requestLogger } from "../../middlewares/logger/logger.middleware";
 import { AppError, errorHandler } from "../../services/error/error.service";
 import setupAsyncLocalStorage from "../../middlewares/setupAls/setupAls.middleware";
 import botRouter from "../../api/bot/router/bot.router";
+import compression from "compression";
 import { requestLimiter } from "../../services/rate-limiter.service";
 const isProdEnv = process.env.NODE_ENV === "production";
 
 const app = express();
-
+app.use(compression());
 app.use(helmet());
 app.use(cookieParser());
 app.use(
   express.json({
-    limit: "10kb",
+    limit: "15kb",
   })
 );
 
 app.use(requestLimiter);
 app.use(ExpressMongoSanitize());
 app.use(requestSanitizer);
+
+// Parameter Pollution Protection - prevents duplicate query params ex: ?sort=duration&sort=price, whitelist allows duplicate params
 app.use(
   hpp({
-    whitelist: [], // add whitelisted query params here
+    whitelist: [],
   })
 );
 

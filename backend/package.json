@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon",
-    "prod": "set NODE_ENV=production&& nodemon",
+    "prod": "set NODE_ENV=production&& node dist/servers/main/server.js",
     "server:main": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/main/server.ts\"",
     "server:bot": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/bot/server.ts\"",
     "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles"
@@ -20,6 +20,7 @@
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.40.0",
+    "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
+    "@types/compression": "^1.7.3",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/cryptr": "^4.0.1",

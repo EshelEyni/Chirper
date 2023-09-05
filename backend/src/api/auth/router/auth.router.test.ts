@@ -4,14 +4,11 @@ import cookieParser from "cookie-parser";
 import router from "./auth.router";
 import { errorHandler } from "../../../services/error/error.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
-import {
-  assertUser,
-  connectToTestDB,
-  disconnectFromTestDB,
-  getLoginTokenStrForTest,
-} from "../../../services/test-util.service";
+import { getLoginTokenStrForTest } from "../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 import { UserModel } from "../../user/models/user/user.model";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
+import { assertUser } from "../../../services/test/test-assertion.service";
 
 const app = express();
 app.use(cookieParser());

@@ -1,14 +1,16 @@
 import {
   connectToTestDB,
+  disconnectFromTestDB,
+} from "../../../../../services/test/test-db.service";
+import {
   createTestPoll,
   createTestPost,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../../../services/test-util.service";
+} from "../../../../../services/test/test-util.service";
 import { PostModel } from "../post.model";
 
-xdescribe("PostModel: Schema", () => {
+describe("PostModel: Schema", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });

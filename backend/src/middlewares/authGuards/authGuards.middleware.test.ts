@@ -3,7 +3,7 @@ import { checkAdminAuthorization, checkUserAuthentication } from "./authGuards.m
 import tokenService from "../../services/token/token.service";
 import { AppError } from "../../services/error/error.service";
 import { UserModel } from "../../api/user/models/user/user.model";
-import { getMongoId } from "../../services/test-util.service";
+import { getMongoId } from "../../services/test/test-util.service";
 import { getLoggedInUserIdFromReq } from "../../services/als.service";
 
 jest.mock("../../services/als.service", () => ({

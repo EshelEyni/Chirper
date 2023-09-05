@@ -5,14 +5,12 @@ import router from "./gif.router";
 import gifService from "../service/gif.service";
 import { errorHandler } from "../../../services/error/error.service";
 import {
-  assertGif,
-  assertGifCategory,
-  connectToTestDB,
   createTestUser,
   deleteTestUser,
-  disconnectFromTestDB,
   getLoginTokenStrForTest,
-} from "../../../services/test-util.service";
+} from "../../../services/test/test-util.service";
+import { assertGif, assertGifCategory } from "../../../services/test/test-assertion.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 
 const app = express();
 app.use(router);

@@ -1,15 +1,14 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import {
-  connectToTestDB,
   createTestPoll,
   createTestPost,
   createTestUser,
   deleteTestPost,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
 import { PostModel } from "../post/post.model";
 import { PollVoteModel } from "./poll-vote.model";
 
@@ -151,6 +150,7 @@ describe("Poll Result Model", () => {
 
     it("should fail if optionIdx is greater than or equal to the total number of options in the poll", async () => {
       await createMocks();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const optionIdx = post.poll!.options.length;
       const pollVote = PollVoteModel.create({ postId, optionIdx, userId });
       await expect(pollVote).rejects.toThrow("Invalid option index");

@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 import {
-  connectToTestDB,
   createTestUser,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../services/test-util.service";
+} from "../../../services/test/test-util.service";
 import { BotPromptModel } from "./bot-options.model";
 
 describe("BotPromptModel", () => {

@@ -4,7 +4,7 @@ import { getLoggedInUserIdFromReq } from "../../../../../services/als.service";
 import { UserRelationModel } from "../../../models/user-relation/user-relation.model";
 import userRelationService from "../user-relation.service";
 import { isValidMongoId } from "../../../../../services/util/util.service";
-import { getMongoId } from "../../../../../services/test-util.service";
+import { getMongoId } from "../../../../../services/test/test-util.service";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),

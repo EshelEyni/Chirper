@@ -5,13 +5,10 @@ import router from "../user-relation.router";
 import { errorHandler } from "../../../../services/error/error.service";
 import userRelationService from "../../services/user-relation/user-relation.service";
 import {
-  assertPost,
-  assertUser,
-  connectToTestDB,
   createTestUser,
-  disconnectFromTestDB,
   getLoginTokenStrForTest,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import cookieParser from "cookie-parser";
@@ -20,6 +17,7 @@ import { PostModel } from "../../../post/models/post/post.model";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";
 import mongoose from "mongoose";
+import { assertPost, assertUser } from "../../../../services/test/test-assertion.service";
 
 const app = express();
 app.use(cookieParser());

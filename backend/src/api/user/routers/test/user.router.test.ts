@@ -3,16 +3,12 @@ import request from "supertest";
 import express from "express";
 import router from "../user-relation.router";
 import { errorHandler } from "../../../../services/error/error.service";
-import {
-  assertUser,
-  connectToTestDB,
-  createTestUser,
-  deleteTestUser,
-  disconnectFromTestDB,
-} from "../../../../services/test-util.service";
+import { createTestUser, deleteTestUser } from "../../../../services/test/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 import { User } from "../../../../../../shared/interfaces/user.interface";
+import { assertUser } from "../../../../services/test/test-assertion.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 
 const app = express();
 app.use(cookieParser());

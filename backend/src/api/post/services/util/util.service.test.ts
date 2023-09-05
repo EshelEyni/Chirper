@@ -5,7 +5,8 @@ import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import { RepostModel } from "../../models/repost/repost.model";
 import postUtilService, { loggedInUserActionDefaultState } from "./util.service";
 import { Types } from "mongoose";
-import { assertLoggedInUserState, getMongoId } from "../../../../services/test-util.service";
+import { getMongoId } from "../../../../services/test/test-util.service";
+import { assertLoggedInUserState } from "../../../../services/test/test-assertion.service";
 
 jest.mock("../../../../services/als.service");
 jest.mock("../../../../services/util/util.service", () => ({

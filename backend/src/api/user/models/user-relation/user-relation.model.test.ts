@@ -1,12 +1,11 @@
 import { BlockModel, FollowerModel, MuteModel, UserRelationModel } from "./user-relation.model";
 import { UserModel } from "../user/user.model";
 import {
-  connectToTestDB,
   createTestUser,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 
 describe("User Relation Model", () => {

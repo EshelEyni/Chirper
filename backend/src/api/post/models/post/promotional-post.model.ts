@@ -10,35 +10,49 @@ export interface IPromotionalPost extends IPost {
   linkToRepo?: string;
 }
 
-const promotionalPostSchema: Schema<IPromotionalPost> = new mongoose.Schema({
-  ...postSchema.obj,
-  isPromotional: {
-    type: Boolean,
-    default: true,
+const promotionalPostSchema: Schema<IPromotionalPost> = new mongoose.Schema(
+  {
+    ...postSchema.obj,
+    isPromotional: {
+      type: Boolean,
+      default: true,
+    },
+    companyName: {
+      type: String,
+      required: [true, "Please provide a company name"],
+    },
+    linkToSite: {
+      type: String,
+      required: [true, "Please provide a link to your site"],
+    },
+    linkToRepo: {
+      type: String,
+    },
   },
-  companyName: {
-    type: String,
-    required: [true, "Please provide a company name"],
-  },
-  linkToSite: {
-    type: String,
-    required: [true, "Please provide a link to your site"],
-  },
-  linkToRepo: {
-    type: String,
-  },
-});
+  {
+    timestamps: true,
+    toObject: {
+      virtuals: true,
+      transform: (_: Document, ret: Record<string, unknown>) => {
+        delete ret.createdById;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toJSON: {
+      virtuals: true,
+      transform: (_: Document, ret: Record<string, unknown>) => {
+        delete ret.createdById;
+        delete ret._id;
+        return ret;
+      },
+    },
+  }
+);
 
 promotionalPostSchema.virtual("createdBy", {
   ref: "User",
   localField: "createdById",
-  foreignField: "_id",
-  justOne: true,
-});
-
-promotionalPostSchema.virtual("quotedPost", {
-  ref: "Post",
-  localField: "quotedPostId",
   foreignField: "_id",
   justOne: true,
 });
@@ -85,11 +99,6 @@ promotionalPostSchema
   .set(function (value) {
     this._viewsCount = value;
   });
-
-promotionalPostSchema.post("save", async function (doc: IPost) {
-  if (!doc) return;
-  await populatePostData(doc);
-});
 
 promotionalPostSchema.post(
   /^find/,

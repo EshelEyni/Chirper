@@ -6,7 +6,7 @@ import { createOne, deleteOne, getAll, getOne, updateOne } from "./factory.servi
 import { DeepMockProxy, mockDeep } from "jest-mock-extended";
 import { asyncErrorCatcher } from "../error/error.service";
 import { logger } from "../logger/logger.service";
-import { getMongoId } from "../test-util.service";
+import { getMongoId } from "../test/test-util.service";
 
 const ModelMock = mockDeep<Model<any>>();
 const APIFeaturesMock = mockDeep<APIFeatures<any>>();

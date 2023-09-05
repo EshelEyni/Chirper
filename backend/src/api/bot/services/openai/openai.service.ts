@@ -54,20 +54,11 @@ async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promis
   for (let i = 0; i < openAIImgUrls.length; i++) {
     botServiceLogger.upload({ entity: "image", iterationNum: i });
     const url = openAIImgUrls[i];
-    if (!url || typeof url !== "string") {
-      continue;
-    }
-
-    const response = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
+    if (!url || typeof url !== "string") continue;
+    const response = await axios.get(url, { responseType: "arraybuffer" });
     const cloudinaryUrl = (await _uploadToCloudinary(response.data)) as unknown as string;
     if (!cloudinaryUrl) continue;
-
-    imgs.push({
-      url: cloudinaryUrl,
-      sortOrder: i,
-    });
+    imgs.push({ url: cloudinaryUrl, sortOrder: i });
     botServiceLogger.uploaded({ entity: "image", iterationNum: i });
   }
 

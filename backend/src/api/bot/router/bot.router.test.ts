@@ -3,19 +3,14 @@ import request from "supertest";
 import express from "express";
 import router from "./bot.router";
 import { errorHandler } from "../../../services/error/error.service";
-
 import {
-  assertBotPrompt,
-  assertUser,
-  connectToTestDB,
   createTestUser,
   deleteTestUser,
-  disconnectFromTestDB,
   getLoginTokenStrForTest,
   getMockPost,
   getMockPromptText,
   getMongoId,
-} from "../../../services/test-util.service";
+} from "../../../services/test/test-util.service";
 import { User } from "../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
 import { BotPromptModel } from "../model/bot-options.model";
@@ -25,6 +20,8 @@ import {
 } from "../../../middlewares/authGuards/authGuards.middleware";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 import botPostService from "../services/post/post.service";
+import { assertBotPrompt, assertUser } from "../../../services/test/test-assertion.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 
 jest.mock("../services/post/post.service");
 

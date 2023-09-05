@@ -4,24 +4,25 @@ import express from "express";
 import router from "./post.router";
 import { errorHandler } from "../../../services/error/error.service";
 import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
+import { connectToTestDB, disconnectFromTestDB } from "../../../services/test/test-db.service";
 import {
-  assertPost,
-  assertQuotedPost,
-  assertRepost,
-  connectToTestDB,
   createManyTestPosts,
   createTestPost,
   createTestReposts,
   createTestUser,
-  disconnectFromTestDB,
   getLoginTokenStrForTest,
-} from "../../../services/test-util.service";
+} from "../../../services/test/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
 import { Post } from "../../../../../shared/interfaces/post.interface";
 import { PostModel } from "../models/post/post.model";
 import { UserModel } from "../../user/models/user/user.model";
 import { RepostModel } from "../models/repost/repost.model";
+import {
+  assertPost,
+  assertQuotedPost,
+  assertRepost,
+} from "../../../services/test/test-assertion.service";
 
 const app = express();
 app.use(express.json());

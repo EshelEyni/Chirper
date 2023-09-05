@@ -1,7 +1,8 @@
-import { assertBotPrompt, getMongoId } from "../../../../services/test-util.service";
+import { getMongoId } from "../../../../services/test/test-util.service";
 import promptService from "./prompt.service";
 import { BotPromptModel } from "../../model/bot-options.model";
 import { PostType } from "../post/post.service";
+import { assertBotPrompt } from "../../../../services/test/test-assertion.service";
 
 const SAMPLE_PROMPT = "Some prompt";
 

@@ -3,7 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncErrorCatcher } from "../../../services/error/error.service";
 import { addBookmarkedPost, getBookmarkedPosts, removeBookmarkedPost } from "./post.controller";
-import { getMongoId } from "../../../services/test-util.service";
+import { getMongoId } from "../../../services/test/test-util.service";
 import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 

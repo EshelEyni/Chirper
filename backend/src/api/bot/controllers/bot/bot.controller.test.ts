@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import botService from "../../services/bot/bot.service";
-import { getMockedUser } from "../../../../services/test-util.service";
+import { getMockedUser } from "../../../../services/test/test-util.service";
 import { getBots } from "./bot.controller";
 import { asyncErrorCatcher } from "../../../../services/error/error.service";
 

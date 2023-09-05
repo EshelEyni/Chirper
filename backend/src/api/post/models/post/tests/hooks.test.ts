@@ -1,18 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  assertPost,
-  connectToTestDB,
   createManyTestPosts,
   createManyTestUsers,
   createTestGif,
   createTestPoll,
   createTestPost,
-  disconnectFromTestDB,
-} from "../../../../../services/test-util.service";
+} from "../../../../../services/test/test-util.service";
 import { UserModel } from "../../../../user/models/user/user.model";
 import * as PostModelModule from "../post.model";
 import * as populatePostData from "../populate-post-data";
 import userRelationService from "../../../../user/services/user-relation/user-relation.service";
 import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import { assertPost } from "../../../../../services/test/test-assertion.service";
+import {
+  connectToTestDB,
+  disconnectFromTestDB,
+} from "../../../../../services/test/test-db.service";
 
 describe("PostModel: Hooks", () => {
   beforeAll(async () => {

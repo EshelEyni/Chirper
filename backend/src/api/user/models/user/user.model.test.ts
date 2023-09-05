@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import {
-  connectToTestDB,
-  createValidUserCreds,
-  disconnectFromTestDB,
-} from "../../../../services/test-util.service";
+import { createValidUserCreds } from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";

@@ -140,7 +140,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret.createdById;
         delete ret._id;
         return ret;
@@ -148,7 +148,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret.createdById;
         delete ret._id;
         return ret;
@@ -295,12 +295,10 @@ postSchema.post("save", async function (doc: IPost) {
 
 postSchema.pre(/^find/, async function (this: Query<Document, Post>, next: (err?: Error) => void) {
   this.find({ isPublic: true });
-
   const { isBlocked } = this.getOptions();
   if (isBlocked) return next();
   const blockedUserIds = await userRelationService.getBlockedUserIds();
   this.find({ createdById: { $nin: blockedUserIds } });
-
   next();
 });
 

@@ -6,11 +6,10 @@ import { errorHandler } from "../../../../services/error/error.service";
 import userService from "../../services/user/user.service";
 import { UserModel } from "../../models/user/user.model";
 import {
-  connectToTestDB,
   createTestUser,
-  disconnectFromTestDB,
   getLoginTokenStrForTest,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";

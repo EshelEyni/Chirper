@@ -2,14 +2,13 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import {
-  connectToTestDB,
   createTestPost,
   createTestUser,
   deleteTestPost,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { PostStatsModel } from "./post-stats.model";
 
 describe("Post Like Model", () => {

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { AppError, asyncErrorCatcher } from "../../../../services/error/error.service";
 import { addFollow, removeFollow } from "./user-relation.controller";
 import userRelationService from "../../services/user-relation/user-relation.service";
-import { getMongoId } from "../../../../services/test-util.service";
+import { getMongoId } from "../../../../services/test/test-util.service";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 
 jest.mock("../../services/user-relation/user-relation.service");

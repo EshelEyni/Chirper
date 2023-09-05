@@ -1,8 +1,8 @@
-import { assertPoll, assertPostImgs } from "../../../../services/test-util.service";
 import openAIService from "./openai.service";
 import { Configuration, OpenAIApi } from "openai";
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
+import { assertPoll, assertPostImgs } from "../../../../services/test/test-assertion.service";
 
 jest.mock("openai", () => {
   const mockOpenAIConfiguration = {

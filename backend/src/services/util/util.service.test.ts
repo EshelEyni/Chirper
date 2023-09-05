@@ -14,7 +14,7 @@ require("dotenv").config();
 import nodemailer from "nodemailer";
 import { AppError } from "../error/error.service";
 import { ObjectId } from "mongodb";
-import { getMongoId } from "../test-util.service";
+import { getMongoId } from "../test/test-util.service";
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn().mockReturnValue({

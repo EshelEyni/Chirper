@@ -2,17 +2,15 @@
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
+import { assertPost, assertUser } from "../../../../services/test/test-assertion.service";
 import {
-  assertPost,
-  assertUser,
-  connectToTestDB,
   createTestPost,
   createTestUser,
   deleteTestPost,
   deleteTestUser,
-  disconnectFromTestDB,
   getMongoId,
-} from "../../../../services/test-util.service";
+} from "../../../../services/test/test-util.service";
+import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { RepostModel } from "./repost.model";
 
 jest.mock("../../../../services/als.service", () => ({

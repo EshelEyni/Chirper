@@ -1,3 +1,4 @@
+import { assertPost, assertQuotedPost } from "../../../../../services/test/test-assertion.service";
 import {
   connectToTestDB,
   disconnectFromTestDB,
@@ -269,13 +270,13 @@ describe("PostModel: Schema", () => {
   });
 
   describe("Quoted Post", () => {
-    xit("Should validate that quotedPostId exists in the database.", async () => {
-      // TODO: after implementing post model quote populating check this again
+    it("Should validate that quotedPostId exists in the database.", async () => {
       const post = await createTestPost({});
       const body = { quotedPostId: post.id };
       const quotedPost = await createTestPost({ body });
-      expect(quotedPost.quotedPost!).toBeDefined();
-      expect(quotedPost.quotedPost!).toBe(post.id);
+      assertPost(quotedPost);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      assertQuotedPost(quotedPost.quotedPost!);
     });
 
     it("Should invalidate when quotedPostId does not exist in the database.", async () => {

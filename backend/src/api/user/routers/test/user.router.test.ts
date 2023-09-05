@@ -17,7 +17,7 @@ app.all("*", setupAsyncLocalStorage);
 app.use(router);
 app.use(errorHandler);
 
-xdescribe("User Router: GET Actions", () => {
+describe("User Router: GET Actions", () => {
   let validUser: User;
 
   beforeAll(async () => {

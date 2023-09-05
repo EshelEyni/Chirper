@@ -23,6 +23,7 @@ import {
   assertQuotedPost,
   assertRepost,
 } from "../../../services/test/test-assertion.service";
+import { PromotionalPostModel } from "../models/post/promotional-post.model";
 
 const app = express();
 app.use(express.json());
@@ -44,16 +45,17 @@ describe("Post Router", () => {
   afterAll(async () => {
     await PostModel.deleteMany({});
     await UserModel.deleteMany({});
+    await PromotionalPostModel.deleteMany({});
     await RepostModel.deleteMany({});
     await disconnectFromTestDB();
   });
 
-  fdescribe("GET /", () => {
+  describe("GET /", () => {
     beforeEach(async () => {
       jest.clearAllMocks();
     });
 
-    it("should return a 200 status code and an array of posts", async () => {
+    fit("should return a 200 status code and an array of posts", async () => {
       const posts = await createManyTestPosts({ numOfPosts: 12 });
       await createTestReposts(
         {
@@ -65,10 +67,7 @@ describe("Post Router", () => {
           repostOwnerId: validUserId,
         }
       );
-
       const res = await request(app).get("/");
-      // const promotionalPost = res.body.data.find((post: Post) => post.isPromotional);
-      // console.log("promotionalPost", promotionalPost);
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
@@ -79,12 +78,8 @@ describe("Post Router", () => {
       });
 
       if (!res.body.data.length) throw new Error("No posts found");
-
-      res.body.data.forEach((post: Post) => {
-        assertPost(post);
-      });
-
-      expect(res.body.data.length).toBeGreaterThan(0);
+      res.body.data.forEach(assertPost);
+      expect(res.body.data.length).toEqual(14);
     });
   });
 

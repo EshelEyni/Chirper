@@ -1,13 +1,26 @@
 import mongoose, { Query, Schema } from "mongoose";
 import { IPost, postSchema } from "./post.model";
 import { populatePostData } from "./populate-post-data";
-import { PromotionalPost } from "../../../../../../shared/interfaces/post.interface";
+import {
+  LoggedInUserActionState,
+  PromotionalPost,
+} from "../../../../../../shared/interfaces/post.interface";
+import { User } from "../../../../../../shared/interfaces/user.interface";
 
 export interface IPromotionalPost extends IPost {
   isPromotional: boolean;
   companyName: string;
   linkToSite: string;
   linkToRepo?: string;
+}
+
+export interface IPromotionalPostDoc extends IPromotionalPost, mongoose.Document {
+  createdBy: User;
+  loggedInUserActionState: LoggedInUserActionState;
+  repostsCount: number;
+  repliesCount: number;
+  likesCount: number;
+  viewsCount: number;
 }
 
 const promotionalPostSchema: Schema<IPromotionalPost> = new mongoose.Schema(
@@ -111,7 +124,7 @@ promotionalPostSchema.post(
   }
 );
 
-const PromotionalPostModel = mongoose.model<IPromotionalPost>(
+const PromotionalPostModel = mongoose.model<IPromotionalPostDoc>(
   "PromotionalPost",
   promotionalPostSchema,
   "promotional_posts"

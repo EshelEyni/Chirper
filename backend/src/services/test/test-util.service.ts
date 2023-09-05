@@ -42,7 +42,7 @@ export type CreatePollVoteParams = {
 };
 
 async function createManyTestUsers(numOfUsers: number): Promise<User[]> {
-  const ids = Array.from({ length: numOfUsers }, () => getMongoId());
+  const ids = Array.from({ length: numOfUsers - 1 }, () => getMongoId());
   await UserModel.deleteMany({ _id: { $in: ids } });
 
   const userCreds = ids.map(id => createValidUserCreds(id));
@@ -79,14 +79,15 @@ async function createManyTestPosts({
   numOfPosts?: number;
   createdByIds?: string[];
 }): Promise<Post[]> {
-  const length = numOfPosts || createdByIds?.length || 2;
-  const ids = Array.from({ length }, () => getMongoId());
+  const n = numOfPosts || createdByIds?.length || 2;
+  const ids = Array.from({ length: n - 1 }, () => getMongoId());
   await PostModel.deleteMany({ _id: { $in: ids } });
 
   const postBodies = [];
+  const defaultUserId = !createdByIds ? (await createTestUser({})).id : undefined;
 
   for (const id of ids) {
-    const createdById = createdByIds?.[ids.indexOf(id)] || (await createTestUser({})).id;
+    const createdById = createdByIds?.[ids.indexOf(id)] || defaultUserId;
     postBodies.push({
       _id: id,
       createdById,
@@ -140,14 +141,15 @@ async function createManyTestPromotionalPosts({
   numOfPosts?: number;
   createdByIds?: string[];
 }): Promise<PromotionalPost[]> {
-  const length = numOfPosts || createdByIds?.length || 2;
-  const ids = Array.from({ length }, () => getMongoId());
+  const n = numOfPosts || createdByIds?.length || 2;
+  const ids = Array.from({ length: n - 1 }, () => getMongoId());
   await PromotionalPostModel.deleteMany({ _id: { $in: ids } });
 
   const postBodies = [];
+  const defaultUserId = !createdByIds ? (await createTestUser({})).id : undefined;
 
   for (const id of ids) {
-    const createdById = createdByIds?.[ids.indexOf(id)] || (await createTestUser({})).id;
+    const createdById = createdByIds?.[ids.indexOf(id)] || defaultUserId;
     postBodies.push({
       _id: id,
       createdById,

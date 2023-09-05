@@ -12,7 +12,6 @@ import { PostModel } from "../models/post/post.model";
 import postStatsService from "../services/post-stats/post-stats.service";
 import pollService from "../services/poll/poll.service";
 import { PromotionalPostModel } from "../models/post/promotional-post.model";
-import promotionalPostsService from "../services/promotional-posts/promotional-posts.service";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
 import { PostLikeModel } from "../models/like/post-like.model";
@@ -341,7 +340,7 @@ const addPromotionalPost = asyncErrorCatcher(async (req: Request, res: Response)
   const post = req.body as unknown as NewPost;
   if (!loggedInUserId) throw new AppError("No logged in user id provided", 400);
   post.createdById = loggedInUserId;
-  const savedPost = await promotionalPostsService.add(post);
+  const savedPost = await PromotionalPostModel.create(post);
 
   res.status(201).send({
     status: "success",

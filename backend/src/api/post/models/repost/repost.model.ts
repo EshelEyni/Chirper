@@ -42,7 +42,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret.repostOwnerId;
         delete ret._id;
 
@@ -57,7 +57,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret.repostOwnerId;
         delete ret._id;
 

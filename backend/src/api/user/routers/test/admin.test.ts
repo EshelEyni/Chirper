@@ -24,7 +24,7 @@ app.all("*", setupAsyncLocalStorage);
 app.use(router);
 app.use(errorHandler);
 
-xdescribe("User Router: Admin Actions", () => {
+describe("User Router: Admin Actions", () => {
   const mockedUserID = "64dd30f4937431fdad0f6d92";
 
   let testLoggedInUser: User, token: string;

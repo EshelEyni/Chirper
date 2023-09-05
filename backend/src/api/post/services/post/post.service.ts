@@ -1,5 +1,10 @@
-import { Post, NewPost, PostReplyResult } from "../../../../../../shared/interfaces/post.interface";
-import { APIFeatures, QueryObj } from "../../../../services/util/util.service";
+import {
+  Post,
+  NewPost,
+  PostReplyResult,
+  Repost,
+} from "../../../../../../shared/interfaces/post.interface";
+import { APIFeatures, QueryObj, shuffleArray } from "../../../../services/util/util.service";
 import { IPostDoc, PostModel } from "../../models/post/post.model";
 import mongoose from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
@@ -7,34 +12,34 @@ import userRelationService from "../../../user/services/user-relation/user-relat
 import postUtilService, { loggedInUserActionDefaultState } from "../util/util.service";
 import pollService from "../poll/poll.service";
 import { RepostModel } from "../../models/repost/repost.model";
-import promotionalPostsService from "../promotional-posts/promotional-posts.service";
+import {
+  IPromotionalPostDoc,
+  PromotionalPostModel,
+} from "../../models/post/promotional-post.model";
 
-async function query(queryString: QueryObj): Promise<Post[]> {
+type CombinedPostType = IPostDoc | Repost | IPromotionalPostDoc;
+
+async function query(queryString: QueryObj): Promise<CombinedPostType[]> {
   const features = new APIFeatures(PostModel.find({}), queryString)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  const posts = (await features.getQuery().exec()) as unknown as IPostDoc[];
-  const reposts = await RepostModel.find({});
-  const promotionalPosts = await promotionalPostsService.get();
+  const postDocs = (await features.getQuery().exec()) as unknown as IPostDoc[];
+  const reposts = (await RepostModel.find({})).map(doc => doc.toObject().repost);
+  const promotionalPosts = shuffleArray(await PromotionalPostModel.find({}));
 
-  const combinedPosts = [...posts, ...reposts].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-
-  // Insert promotional posts every 10 items
-  const p = [];
-  for (let i = 0; i < combinedPosts.length; i++) {
-    p.push(combinedPosts[i]);
-    if ((i + 1) % 10 === 0 && promotionalPosts.length > 0) {
+  const posts = [...postDocs, ...reposts].reduce((acc, curr, index) => {
+    acc.push(curr);
+    if ((index + 1) % 10 === 0 && promotionalPosts.length > 0) {
       const promoPost = promotionalPosts.shift();
-      if (promoPost) p.push(promoPost);
+      if (promoPost) acc.push(promoPost);
     }
-  }
+    return acc;
+  }, [] as CombinedPostType[]);
 
-  return p as unknown as Post[];
+  return posts;
 }
 
 async function getById(postId: string): Promise<Post | null> {

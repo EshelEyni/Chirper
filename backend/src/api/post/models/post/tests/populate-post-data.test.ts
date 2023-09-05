@@ -169,7 +169,7 @@ describe("PostModel: PostDataPopulator", () => {
     assertQuotedPost(updatedPost.quotedPost as QuotedPost);
   });
 
-  fit("Should populate post poll data correctly.", async () => {
+  it("Should populate post poll data correctly.", async () => {
     const [user1, user2, user3] = await createManyTestUsers(3);
     mockGetLoggedInUserIdFromReq(user1.id);
 

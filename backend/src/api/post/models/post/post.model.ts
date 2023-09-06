@@ -120,8 +120,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       validate: {
-        validator: async (id: Post["parentPostId"]) =>
-          !!(await mongoose.models.Post.findById({ _id: id })),
+        validator: async (id: string) => !!(await mongoose.models.Post.findById({ _id: id })),
         message: "Referenced post does not exist",
       },
     },

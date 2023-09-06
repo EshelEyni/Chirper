@@ -4,6 +4,8 @@ import {
   LoggedInUserActionState,
   Poll,
   Post,
+  PostStats,
+  PromotionalPost,
   QuotedPost,
   Repost,
 } from "../../../../shared/interfaces/post.interface";
@@ -46,6 +48,16 @@ function assertPost(post: Post) {
 
   assertLoggedInUserState(post.loggedInUserActionState);
   assertUser(post.createdBy);
+}
+
+function assertPromotionalPost(post: PromotionalPost) {
+  assertPost(post);
+  expect(post).toEqual(
+    expect.objectContaining({
+      companyName: expect.any(String),
+      linkToSite: expect.any(String),
+    })
+  );
 }
 
 function assertRepost(repost: Repost) {
@@ -164,9 +176,27 @@ function assertBotPrompt(botPrompt: BotPrompt) {
   );
 }
 
+function assertPostStats(stats: PostStats) {
+  expect(stats).toEqual(
+    expect.objectContaining({
+      likesCount: expect.any(Number),
+      repostCount: expect.any(Number),
+      repliesCount: expect.any(Number),
+      viewsCount: expect.any(Number),
+      detailsViewsCount: expect.any(Number),
+      profileViewsCount: expect.any(Number),
+      followFromPostCount: expect.any(Number),
+      hashTagClicksCount: expect.any(Number),
+      linkClicksCount: expect.any(Number),
+      engagementCount: expect.any(Number),
+    })
+  );
+}
+
 export {
   assertUser,
   assertPost,
+  assertPromotionalPost,
   assertRepost,
   assertQuotedPost,
   assertGifCategory,
@@ -175,4 +205,5 @@ export {
   assertPostImgs,
   assertBotPrompt,
   assertLoggedInUserState,
+  assertPostStats,
 };

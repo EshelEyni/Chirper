@@ -8,9 +8,9 @@ import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";
-import postService from "../../../post/services/post/post.service";
 import { Post } from "../../../../../../shared/interfaces/post.interface";
 import { AppError } from "../../../../services/error/error.service";
+import { PostModel } from "../../../post/models/post/post.model";
 
 type UpdateAndGetUsersParams = {
   fromUserId: string;
@@ -230,7 +230,7 @@ async function _updatePostStatsAndReturnPost({
 
   await session.commitTransaction();
 
-  const updatedPost = await postService.getById(postId);
+  const updatedPost = (await PostModel.findById(postId)) as unknown as Post;
   if (!updatedPost) throw new AppError("Post not found", 404);
   return updatedPost;
 }

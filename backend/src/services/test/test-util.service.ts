@@ -141,8 +141,8 @@ async function createManyTestPromotionalPosts({
   numOfPosts?: number;
   createdByIds?: string[];
 }): Promise<PromotionalPost[]> {
-  const n = numOfPosts || createdByIds?.length || 2;
-  const ids = Array.from({ length: n - 1 }, () => getMongoId());
+  const length = numOfPosts || createdByIds?.length || 2;
+  const ids = Array.from({ length }, () => getMongoId());
   await PromotionalPostModel.deleteMany({ _id: { $in: ids } });
 
   const postBodies = [];
@@ -249,7 +249,7 @@ function createTestPoll({
   return poll;
 }
 
-async function createPollVote(...polVote: CreatePollVoteParams[]): Promise<void> {
+async function createTestPollVote(...polVote: CreatePollVoteParams[]): Promise<void> {
   await PollVoteModel.create(polVote);
 }
 
@@ -333,7 +333,7 @@ export {
   createManyTestPromotionalPosts,
   createTestPromotionalPost,
   createTestPoll,
-  createPollVote,
+  createTestPollVote,
   createTestGif,
   createTestReposts,
   createTestLike,

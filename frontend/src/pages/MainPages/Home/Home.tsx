@@ -10,6 +10,7 @@ import { Post } from "../../../../../shared/interfaces/post.interface";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
 import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
 import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
+import { makeId } from "../../../services/util/utils.service";
 // import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 const PostEdit = lazy(() => import("../../../components/Post/PostEdit/PostEdit"));
 
@@ -36,7 +37,7 @@ const Homepage = () => {
 
         <AsyncList
           render={(post: Post) => (
-            <PostPreviewProvider post={post} key={`${post.id}-${post.createdAt}`}>
+            <PostPreviewProvider post={post} key={makeId()}>
               <PostPreview />
             </PostPreviewProvider>
           )}

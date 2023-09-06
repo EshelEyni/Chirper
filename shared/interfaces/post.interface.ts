@@ -4,7 +4,7 @@ import { User } from "./user.interface";
 
 export type PostReplyResult = {
   updatedPost: Post;
-  reply: Post;
+  reply: Reply;
 };
 
 export type PostRepostResult = {
@@ -49,18 +49,18 @@ export type BasicPost = {
 };
 
 export interface NewPost extends BasicPost {
-  tempId: string;
+  readonly tempId: string;
   imgs: NewPostImg[];
   poll: NewPoll | null;
   quotedPostId?: string;
-  parentPostId?: string;
   isDraft?: boolean;
   repliesCount?: number;
+  parentPostId?: string;
 }
 
 // Post With no LoggedInUserActionState, Stat Counts and RepostedBy
 export interface QuotedPost extends BasicPost {
-  id: string;
+  readonly id: string;
   imgs: PostImg[];
   poll: Poll | null;
   createdBy: User;
@@ -69,8 +69,8 @@ export interface QuotedPost extends BasicPost {
 }
 
 export interface Post extends BasicPost {
-  id: string;
-  createdAt: Date;
+  readonly id: string;
+  readonly createdAt: Date;
   updatedAt: Date;
   repliesCount: number;
   repostsCount: number;
@@ -80,12 +80,15 @@ export interface Post extends BasicPost {
   poll: Poll | null;
   quotedPost?: QuotedPost;
   createdBy: User;
-  parentPostId?: string;
   loggedInUserActionState: LoggedInUserActionState;
 }
 
 export interface Repost extends Post {
   repostedBy: User;
+}
+
+export interface Reply extends Post {
+  parentPostId: string;
 }
 
 export interface PromotionalPost extends Post {
@@ -142,7 +145,7 @@ export interface NewPoll {
 }
 
 export interface Emoji {
-  id: string;
+  readonly id: string;
   keywords: string[];
   name: string;
   native: string;
@@ -169,11 +172,15 @@ export type PostStats = {
   likesCount: number;
   repostCount: number;
   repliesCount: number;
-  isViewedCount: number;
-  isDetailedViewedCount: number;
-  isProfileViewedCount: number;
-  isFollowedFromPostCount: number;
-  isHashTagClickedCount: number;
-  isLinkClickedCount: number;
+  viewsCount: number;
+  detailsViewsCount: number;
+  profileViewsCount: number;
+  followFromPostCount: number;
+  hashTagClicksCount: number;
+  linkClicksCount: number;
   engagementCount: number;
+  postLinkCopyCount: number;
+  postSharedCount: number;
+  postViaMsgCount: number;
+  postBookmarksCount: number;
 };

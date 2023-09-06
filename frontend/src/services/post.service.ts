@@ -48,7 +48,7 @@ async function addReply(reply: NewPost): Promise<PostReplyResult> {
 }
 
 async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
-  const res = await httpService.post(`${BASE_URL}/repost?postId=${repostedPost.id}`);
+  const res = await httpService.post(`${BASE_URL}/${repostedPost.id}/repost`);
   return handleServerResponse<PostRepostResult>(res);
 }
 
@@ -58,7 +58,7 @@ async function addQuote(post: NewPost): Promise<Post | PostRepostResult> {
 }
 
 async function removeRepost(repostedPostId: string): Promise<Post> {
-  const res = await httpService.delete(`${BASE_URL}/repost?postId=${repostedPostId}`);
+  const res = await httpService.delete(`${BASE_URL}/${repostedPostId}/repost`);
   return handleServerResponse<Post>(res);
 }
 
@@ -66,8 +66,9 @@ async function update(post: Post) {
   const updatedPost = await httpService.patch(`${BASE_URL}/${post.id}`, post);
   return handleServerResponse<Post>(updatedPost);
 }
-async function savePollVote(postId: string, optionIdx: number) {
-  return await httpService.post(`${BASE_URL}/poll/vote`, { postId, optionIdx });
+async function savePollVote(postId: string, optionIdx: number): Promise<Post> {
+  const res = await httpService.post(`${BASE_URL}/poll/vote`, { postId, optionIdx });
+  return handleServerResponse<Post>(res);
 }
 
 async function addLike(postId: string): Promise<Post> {
@@ -85,12 +86,12 @@ async function getPostStats(postId: string): Promise<PostStats> {
   return handleServerResponse<PostStats>(res);
 }
 
-async function addImpression(postId: string) {
-  await httpService.post(`${BASE_URL}/${postId}/stats`);
+async function addImpression(postId: string): Promise<void> {
+  httpService.post(`${BASE_URL}/${postId}/stats`);
 }
 
-async function updatePostStats(postId: string, stats: Partial<PostStatsBody>) {
-  await httpService.patch(`${BASE_URL}/${postId}/stats`, stats);
+async function updatePostStats(postId: string, stats: Partial<PostStatsBody>): Promise<void> {
+  httpService.patch(`${BASE_URL}/${postId}/stats`, stats);
 }
 
 async function getBookmarkedPosts(): Promise<Post[]> {

@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   UserRelationKind,
   UserRelationModel,
 } from "../../../models/user-relation/user-relation.model";
 import userRelationService from "../user-relation.service";
 import { UserModel } from "../../../models/user/user.model";
-import postService from "../../../../post/services/post/post.service";
 import * as mongoose from "mongoose";
 import { PostStatsModel } from "../../../../post/models/post-stats/post-stats.model";
 import { AppError } from "../../../../../services/error/error.service";
+import { PostModel } from "../../../../post/models/post/post.model";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
@@ -38,12 +39,18 @@ jest.mock("../../../models/user-relation/user-relation.model", () => ({
   },
 }));
 
-jest.mock("../../../../post/models/post-stats.model", () => ({
+jest.mock("../../../../post/models/post-stats/post-stats.model", () => ({
   PostStatsModel: {
     findOneAndUpdate: jest.fn(),
   },
 }));
-jest.mock("../../../../post/services/post/post.service");
+
+jest.mock("../../../../post/models/post/post.model", () => ({
+  PostModel: {
+    findById: jest.fn(),
+  },
+}));
+
 jest.mock("../../../../../services/util/util.service", () => ({
   isValidMongoId: jest.fn().mockReturnValue(true),
 }));
@@ -55,6 +62,10 @@ describe("User Relation Service", () => {
       isFollowing: false,
       toObject: jest.fn().mockReturnThis(),
     };
+  }
+
+  function mockPostModelGetById(value: any) {
+    (PostModel.findById as jest.Mock).mockResolvedValueOnce(value);
   }
 
   describe("add", () => {
@@ -124,7 +135,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(null);
+        mockPostModelGetById(null);
 
         await expect(
           userRelationService.add({
@@ -185,7 +196,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.add({
           fromUserId: "1",
@@ -212,7 +223,7 @@ describe("User Relation Service", () => {
           { session: mockSession, upsert: true }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -225,7 +236,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.add({
           fromUserId: "1",
@@ -286,7 +297,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.add({
           fromUserId: "1",
@@ -313,7 +324,7 @@ describe("User Relation Service", () => {
           { session: mockSession, upsert: true }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -326,7 +337,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.add({
           fromUserId: "1",
@@ -388,7 +399,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.add({
           fromUserId: "1",
@@ -415,7 +426,7 @@ describe("User Relation Service", () => {
           { session: mockSession, upsert: true }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -428,7 +439,7 @@ describe("User Relation Service", () => {
           },
         };
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.add({
           fromUserId: "1",

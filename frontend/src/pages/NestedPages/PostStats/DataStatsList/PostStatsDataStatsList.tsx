@@ -13,7 +13,7 @@ export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({ postSt
   const postStatsData = [
     {
       name: "Impressions",
-      count: postStats.isViewedCount,
+      count: postStats.viewsCount,
       grid: { row: 1, column: 1 },
       desc: "Times this Chirp was seen on Chirper",
     },
@@ -25,25 +25,25 @@ export const PostStatsDataStatsList: FC<PostStatsDataStatsListProps> = ({ postSt
     },
     {
       name: "New followers",
-      count: postStats.isFollowedFromPostCount,
+      count: postStats.followFromPostCount,
       grid: { row: 1, column: 3 },
       desc: "Follows gained directly from this Chirp",
     },
     {
       name: "Link clicks",
-      count: postStats.isLinkClickedCount,
+      count: postStats.linkClicksCount,
       grid: { row: 2, column: 2 },
       desc: "Number of clicks on any URL in this Chirp",
     },
     {
       name: "Detail expands",
-      count: postStats.isDetailedViewedCount,
+      count: postStats.detailsViewsCount,
       grid: { row: 2, column: 3 },
       desc: "Times people viewed the details about this Chirp",
     },
     {
       name: "Profile visits",
-      count: postStats.isProfileViewedCount,
+      count: postStats.profileViewsCount,
       grid: { row: 3, column: 2 },
       desc: "Number of profile views from this Chirp",
     },

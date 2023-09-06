@@ -5,7 +5,7 @@ const isGlobalTesting = false;
 
 const currPath = "/api/post/router";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
-// const specifiedPath = baseDir + "/promotional-post.model.test.ts";
+// const specifiedPath = baseDir + "/populate-post-data.test.ts";
 // const collectCoverage = true;
 const collectCoverage = false;
 // const coveragePath = isGlobalTesting

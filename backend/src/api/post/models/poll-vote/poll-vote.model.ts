@@ -6,13 +6,18 @@ import { PostModel } from "../post/post.model";
 import { UserModel } from "../../../user/models/user/user.model";
 import { IPollLength } from "../post/post-sub-schemas";
 
-type IPollVoteBase = {
+interface IPollVoteBase {
   postId: mongoose.Types.ObjectId;
   optionIdx: number;
   userId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
-};
+  _isLoggedInUserVoted: boolean;
+}
+
+export interface IPollVoteDoc extends IPollVoteBase {
+  _id: mongoose.Types.ObjectId;
+}
 
 const pollVoteSchema: Schema<IPollVoteBase> = new mongoose.Schema(
   {
@@ -35,10 +40,34 @@ const pollVoteSchema: Schema<IPollVoteBase> = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+      },
+    },
   }
 );
 
+pollVoteSchema.index({ postId: 1 });
 pollVoteSchema.index({ postId: 1, userId: 1 }, { unique: true });
+
+pollVoteSchema
+  .virtual("isLoggedInUserVoted")
+  .get(function () {
+    return this._isLoggedInUserVoted;
+  })
+  .set(function (value: boolean) {
+    this._isLoggedInUserVoted = value;
+  });
 
 pollVoteSchema.pre("save", async function (next) {
   const pollDoc = await PostModel.findById(this.postId)
@@ -73,6 +102,10 @@ pollVoteSchema.pre("save", async function (next) {
   next();
 });
 
-const PollVoteModel = mongoose.model("PollVote", pollVoteSchema, "poll_votes");
+pollVoteSchema.post("save", async function (doc: IPollVoteDoc) {
+  doc._isLoggedInUserVoted = true;
+});
+
+const PollVoteModel = mongoose.model<IPollVoteDoc>("PollVote", pollVoteSchema, "poll_votes");
 
 export { PollVoteModel };

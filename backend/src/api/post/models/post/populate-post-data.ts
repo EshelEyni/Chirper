@@ -13,7 +13,7 @@ import {
   PostStatsBody,
 } from "../../../../../../shared/interfaces/post.interface";
 import { BookmarkedPostModel } from "../bookmark/bookmark-post.model";
-import { PollVoteModel } from "../poll-vote/poll-vote.model";
+import { IPollVoteDoc, PollVoteModel } from "../poll-vote/poll-vote.model";
 import { IPollOption } from "./post-sub-schemas";
 
 type SetQuotedConfig = {
@@ -240,33 +240,48 @@ function _setQuotedPost({ doc, quotedPosts, quotedPostId, users }: SetQuotedConf
 
 async function _populatePollData(doc: IPost) {
   if (!doc.poll) return doc;
-
+  const loggedInUserId = getLoggedInUserIdFromReq();
   const postId = doc._id;
 
-  const allVotes = await PollVoteModel.find({ postId }).lean();
-  let isVotingOff = false;
+  const allVotes = (await PollVoteModel.find({ postId }).lean()) as IPollVoteDoc[];
+  let isVotingOff = !loggedInUserId;
 
-  const pollEndTime = moment(doc.createdAt)
-    .add(doc.poll.length.days, "days")
-    .add(doc.poll.length.hours, "hours")
-    .add(doc.poll.length.minutes, "minutes");
-
-  if (moment().isAfter(pollEndTime)) isVotingOff = true;
+  if (!isVotingOff) isVotingOff = _checkPollExpiration(doc);
 
   doc.poll.options.forEach((option: IPollOption, idx: number) => {
     const optionVotes = allVotes.filter(vote => vote.optionIdx === idx);
     option._voteCount = optionVotes.length;
 
-    const userVote = optionVotes.find(
-      vote => vote.userId.toString() === getLoggedInUserIdFromReq()
-    );
-    option._isLoggedInUserVoted = !!userVote;
+    option._isLoggedInUserVoted = loggedInUserId
+      ? checkLoggedInUserPollVote({ optionVotes, loggedInUserId })
+      : false;
+
     if (option._isLoggedInUserVoted) isVotingOff = true;
   });
 
   doc.poll._isVotingOff = isVotingOff;
 
   return doc;
+}
+
+function _checkPollExpiration(doc: IPost): boolean {
+  if (!doc.poll) return false;
+  const pollEndTime = moment(doc.createdAt)
+    .add(doc.poll.length.days, "days")
+    .add(doc.poll.length.hours, "hours")
+    .add(doc.poll.length.minutes, "minutes");
+
+  return moment().isAfter(pollEndTime);
+}
+
+function checkLoggedInUserPollVote({
+  optionVotes,
+  loggedInUserId,
+}: {
+  optionVotes: { userId: ObjectId }[];
+  loggedInUserId: string;
+}): boolean {
+  return !!optionVotes.find(v => v.userId.toString() === loggedInUserId);
 }
 
 export { populatePostData };

@@ -5,7 +5,7 @@ import {
   CreatePostStatParams,
   RepostParams,
   createManyTestUsers,
-  createPollVote,
+  createTestPollVote,
   createTestLike,
   createTestPoll,
   createTestPost,
@@ -187,7 +187,7 @@ describe("PostModel: PostDataPopulator", () => {
       { userId: user3.id, postId: post1.id, optionIdx: 1 },
     ];
 
-    createPollVote(...pollVotes);
+    createTestPollVote(...pollVotes);
 
     const updatedPost = await _getTestPostAndPopulate(post1.id);
     assertPost(updatedPost);
@@ -223,9 +223,10 @@ describe("PostModel: PostDataPopulator", () => {
     expect(poll2.options[2].isLoggedInUserVoted).toBe(false);
 
     expect(poll2.isVotingOff).toBe(true);
+  });
 
-    // Test voting off after poll length has passed
-    const post2 = await createTestPost({
+  it("Should correctly set poll voting is off when poll length has passed", async () => {
+    const post = await createTestPost({
       body: {
         poll: createTestPoll({
           options: [{ text: "Option 1" }, { text: "Option 2" }, { text: "Option 3" }],
@@ -235,14 +236,34 @@ describe("PostModel: PostDataPopulator", () => {
       },
     });
 
-    const updatedPost3 = await _getTestPostAndPopulate(post2.id);
-    assertPost(updatedPost3);
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    assertPost(updatedPost);
 
-    const { poll: poll3 } = updatedPost3;
-    if (!poll3) throw new Error("Poll is undefined.");
-    assertPoll(poll3);
+    const { poll } = updatedPost;
+    if (!poll) throw new Error("Poll is undefined.");
+    assertPoll(poll);
 
-    expect(poll3.isVotingOff).toBe(true);
+    expect(poll.isVotingOff).toBe(true);
+  });
+
+  it("Should correctly set poll voting is off when user is not logged in", async () => {
+    mockGetLoggedInUserIdFromReq(null);
+    const post = await createTestPost({
+      body: {
+        poll: createTestPoll({
+          options: [{ text: "Option 1" }, { text: "Option 2" }, { text: "Option 3" }],
+        }),
+      },
+    });
+
+    const updatedPost = await _getTestPostAndPopulate(post.id);
+    assertPost(updatedPost);
+
+    const { poll } = updatedPost;
+    if (!poll) throw new Error("Poll is undefined.");
+    assertPoll(poll);
+
+    expect(poll.isVotingOff).toBe(true);
   });
 });
 

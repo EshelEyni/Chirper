@@ -1,12 +1,12 @@
 import { createContext, useContext, useState } from "react";
-import { Poll, Post } from "../../../shared/interfaces/post.interface";
+import { Poll, Post, PromotionalPost, Repost } from "../../../shared/interfaces/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
 import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";
 import useAddFollow from "../hooks/reactQuery/post/useAddFollow";
 
 type PostPreviewContextType = {
-  post: Post;
+  post: Post | Repost | PromotionalPost;
   onNavigateToPostDetails: () => void;
   onNavigateToProfile: (username: string) => void;
   onToggleFollow: () => void;

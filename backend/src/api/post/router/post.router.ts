@@ -18,7 +18,7 @@ import {
   addLike,
   removeLike,
   getPostStats,
-  createPostStatsWithView,
+  createPostStats,
   updatePostStats,
   getBookmarkedPosts,
   addBookmarkedPost,
@@ -35,7 +35,7 @@ router.get("/:id([a-fA-F0-9]{24})", getPostById);
 router.use(checkUserAuthentication);
 
 router.get("/:id/stats", getPostStats);
-router.post("/:id/stats", createPostStatsWithView);
+router.post("/:id/stats", createPostStats);
 router.patch("/:id/stats", updatePostStats);
 
 router.get("/bookmark", getBookmarkedPosts);
@@ -44,7 +44,8 @@ router.delete("/:id/bookmark", removeBookmarkedPost);
 
 router.post("/thread", addPostThread);
 
-router.post("/reply", addReply);
+router.post("/:id/reply", addReply);
+
 router.post("/:id/repost", repostPost);
 router.delete("/:id/repost", removeRepost);
 
@@ -58,7 +59,7 @@ router.post("/", addPost);
 router.patch("/:id", updatePost);
 router.delete("/:id", removePost);
 
-router.post("/poll/vote", savePollVote);
+router.post("/poll/:id/vote", savePollVote);
 
 router.use(checkAdminAuthorization);
 router.get("/promotional", getPromotionalPosts);

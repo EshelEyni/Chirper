@@ -5,9 +5,9 @@ import {
 } from "../../../models/user-relation/user-relation.model";
 import userRelationService from "../user-relation.service";
 import { UserModel } from "../../../models/user/user.model";
-import postService from "../../../../post/services/post/post.service";
 import * as mongoose from "mongoose";
 import { AppError } from "../../../../../services/error/error.service";
+import { PostModel } from "../../../../post/models/post/post.model";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
@@ -38,12 +38,18 @@ jest.mock("../../../models/user-relation/user-relation.model", () => ({
   },
 }));
 
-jest.mock("../../../../post/models/post-stats.model", () => ({
+jest.mock("../../../../post/models/post-stats/post-stats.model", () => ({
   PostStatsModel: {
     findOneAndUpdate: jest.fn(),
   },
 }));
-jest.mock("../../../../post/services/post/post.service");
+
+jest.mock("../../../../post/models/post/post.model", () => ({
+  PostModel: {
+    findById: jest.fn(),
+  },
+}));
+
 jest.mock("../../../../../services/util/util.service", () => ({
   isValidMongoId: jest.fn().mockReturnValue(true),
 }));
@@ -55,6 +61,10 @@ describe("User Relation Service", () => {
       isFollowing: false,
       toObject: jest.fn().mockReturnThis(),
     };
+  }
+
+  function mockPostModelGetById(value: any) {
+    (PostModel.findById as jest.Mock).mockResolvedValueOnce(value);
   }
 
   describe("remove", () => {
@@ -146,7 +156,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(getMockUser("1"))
           .mockResolvedValueOnce(getMockUser("2"));
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(null);
+        mockPostModelGetById(null);
 
         await expect(
           userRelationService.remove({
@@ -208,7 +218,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.remove({
           fromUserId: "1",
@@ -228,7 +238,7 @@ describe("User Relation Service", () => {
           { session: mockSession }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -246,7 +256,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.remove({
           fromUserId: "1",
@@ -304,7 +314,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.remove({
           fromUserId: "1",
@@ -324,7 +334,7 @@ describe("User Relation Service", () => {
           { session: mockSession }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -342,7 +352,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.remove({
           fromUserId: "1",
@@ -400,7 +410,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         await userRelationService.remove({
           fromUserId: "1",
@@ -420,7 +430,7 @@ describe("User Relation Service", () => {
           { session: mockSession }
         );
         expect(mockSession.commitTransaction).toHaveBeenCalled();
-        expect(postService.getById).toHaveBeenCalledWith("postId");
+        expect(PostModel.findById).toHaveBeenCalledWith("postId");
         expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       });
 
@@ -438,7 +448,7 @@ describe("User Relation Service", () => {
           .mockResolvedValueOnce(mockUser)
           .mockResolvedValueOnce(mockUser2);
 
-        (postService.getById as jest.Mock).mockResolvedValueOnce(mockPost);
+        mockPostModelGetById(mockPost);
 
         const result = (await userRelationService.remove({
           fromUserId: "1",

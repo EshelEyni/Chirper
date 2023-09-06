@@ -15,7 +15,7 @@ export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate }) => {
 
   async function onVote(idx: number) {
     if (!poll || poll.isVotingOff) return;
-    const { data: savedOption } = await postService.savePollVote(postId, idx);
+    const savedOption = await postService.savePollVote(postId, idx);
     const updatedPoll = {
       ...poll,
       options: poll.options.map((option, i) => (i === idx ? savedOption : option)),

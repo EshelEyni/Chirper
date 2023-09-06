@@ -1,10 +1,26 @@
 import { ObjectId } from "mongodb";
-import { PostStatsBody } from "../../../../../../shared/interfaces/post.interface";
+import { PostStats, PostStatsBody } from "../../../../../../shared/interfaces/post.interface";
 import { PostLikeModel } from "../../models/like/post-like.model";
 import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import { PostModel } from "../../models/post/post.model";
 import { RepostModel } from "../../models/repost/repost.model";
-import mongoose from "mongoose";
+
+const defaultPostStats: PostStats = {
+  likesCount: 0,
+  repostCount: 0,
+  repliesCount: 0,
+  viewsCount: 0,
+  detailsViewsCount: 0,
+  profileViewsCount: 0,
+  followFromPostCount: 0,
+  hashTagClicksCount: 0,
+  linkClicksCount: 0,
+  postLinkCopyCount: 0,
+  postSharedCount: 0,
+  postViaMsgCount: 0,
+  postBookmarksCount: 0,
+  engagementCount: 0,
+};
 
 async function get(postId: string): Promise<PostStatsBody> {
   const likesCount = await PostLikeModel.countDocuments({ postId });
@@ -20,29 +36,28 @@ async function get(postId: string): Promise<PostStatsBody> {
     {
       $group: {
         _id: null,
-        isViewedCount: { $sum: { $cond: ["$isViewed", 1, 0] } },
-        isDetailedViewedCount: { $sum: { $cond: ["$isDetailedViewed", 1, 0] } },
-        isProfileViewedCount: { $sum: { $cond: ["$isProfileViewed", 1, 0] } },
-        isFollowedFromPostCount: { $sum: { $cond: ["$isFollowedFromPost", 1, 0] } },
-        isHashTagClickedCount: { $sum: { $cond: ["$isHashTagClicked", 1, 0] } },
-        isLinkClickedCount: { $sum: { $cond: ["$isLinkClicked", 1, 0] } },
-        isPostLinkCopiedCount: { $sum: { $cond: ["$isPostLinkCopied", 1, 0] } },
-        isPostSharedCount: { $sum: { $cond: ["$isPostShared", 1, 0] } },
-        isPostSendInMessageCount: { $sum: { $cond: ["$isPostSendInMessage", 1, 0] } },
-        isPostBookmarkedCount: { $sum: { $cond: ["$isPostBookmarked", 1, 0] } },
+        viewsCount: { $sum: { $cond: ["$isViewed", 1, 0] } },
+        detailsViewsCount: { $sum: { $cond: ["$isDetailedViewed", 1, 0] } },
+        profileViewsCount: { $sum: { $cond: ["$isProfileViewed", 1, 0] } },
+        followFromPostCount: { $sum: { $cond: ["$isFollowedFromPost", 1, 0] } },
+        hashTagClicksCount: { $sum: { $cond: ["$isHashTagClicked", 1, 0] } },
+        linkClicksCount: { $sum: { $cond: ["$isLinkClicked", 1, 0] } },
+        postLinkCopyCount: { $sum: { $cond: ["$isPostLinkCopied", 1, 0] } },
+        postSharedCount: { $sum: { $cond: ["$isPostShared", 1, 0] } },
+        postViaMsgCount: { $sum: { $cond: ["$isPostSendInMessage", 1, 0] } },
+        postBookmarksCount: { $sum: { $cond: ["$isPostBookmarked", 1, 0] } },
       },
     },
   ]);
 
   const [postStats] = postStatsAggregation;
-  delete postStats._id;
-  const postStatsSum = Object.values(postStats)
-    .filter((value): value is number => typeof value === "number")
-    .reduce((a: number, b: number): number => a + b, 0);
+  if (postStats) delete postStats._id;
+  const postStatsSum = _getPostStatsSum(postStats);
 
   const engagementCount = postStatsSum + likesCount + repostCount + repliesCount;
 
   return {
+    ...defaultPostStats,
     likesCount,
     repostCount,
     repliesCount,
@@ -51,33 +66,11 @@ async function get(postId: string): Promise<PostStatsBody> {
   };
 }
 
-async function create(postId: string, userId: string): Promise<PostStatsBody> {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const postStats = await new PostStatsModel({
-      postId,
-      userId,
-    }).save({ session });
-    await PostModel.findByIdAndUpdate(postId, { $inc: { viewsCount: 1 } }, { session });
-    await session.commitTransaction();
-    return postStats as unknown as PostStatsBody;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
-  }
+function _getPostStatsSum(postStats: Partial<PostStats>): number {
+  if (!postStats) return 0;
+  return Object.values(postStats)
+    .filter((value): value is number => typeof value === "number")
+    .reduce((a: number, b: number): number => a + b, 0);
 }
 
-async function update(
-  postId: string,
-  userId: string,
-  stats: Partial<PostStatsBody>
-): Promise<PostStatsBody> {
-  return (await PostStatsModel.findOneAndUpdate({ postId, userId }, stats, {
-    new: true,
-  })) as unknown as PostStatsBody;
-}
-
-export default { get, create, update };
+export default { get };

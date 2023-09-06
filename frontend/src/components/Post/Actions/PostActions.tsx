@@ -474,6 +474,7 @@ const Poll: FC = () => {
       },
       isVotingOff: false,
       createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
     dispatch(updateNewPost({ newPost: { ...post, poll: defaultPoll }, newPostType }));
   }

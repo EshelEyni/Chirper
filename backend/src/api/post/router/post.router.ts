@@ -9,11 +9,11 @@ import {
   addPost,
   addPostThread,
   addReply,
-  repostPost,
+  addRepost,
   updatePost,
   removePost,
   removeRepost,
-  savePollVote,
+  addPollVote,
   quotePost,
   addLike,
   removeLike,
@@ -46,10 +46,10 @@ router.post("/thread", addPostThread);
 
 router.post("/:id/reply", addReply);
 
-router.post("/:id/repost", repostPost);
+router.post("/:id/repost", addRepost);
 router.delete("/:id/repost", removeRepost);
 
-router.post("/quote", quotePost);
+router.post("/:id/quote", quotePost);
 
 router.delete("/:id/like", removeLike);
 router.post("/:id/like", addLike);
@@ -59,7 +59,7 @@ router.post("/", addPost);
 router.patch("/:id", updatePost);
 router.delete("/:id", removePost);
 
-router.post("/poll/:id/vote", savePollVote);
+router.post("/poll/:id/vote", addPollVote);
 
 router.use(checkAdminAuthorization);
 router.get("/promotional", getPromotionalPosts);

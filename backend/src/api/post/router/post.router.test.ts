@@ -428,7 +428,7 @@ describe("Post Router", () => {
       const postToQuote = await createTestPost({});
 
       const res = await request(app)
-        .post("/quote")
+        .post(`/${postToQuote.id}/quote`)
         .set("Cookie", [token])
         .send({ text: "quoted post test text", quotedPostId: postToQuote.id });
 
@@ -447,7 +447,7 @@ describe("Post Router", () => {
       const postToQuote = await createTestPost({});
 
       const res = await request(app)
-        .post("/quote")
+        .post(`/${postToQuote.id}/quote`)
         .set("Cookie", [token])
         .send({ quotedPostId: postToQuote.id });
 

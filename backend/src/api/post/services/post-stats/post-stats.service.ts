@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { PostStats, PostStatsBody } from "../../../../../../shared/interfaces/post.interface";
+import { PostStats } from "../../../../../../shared/interfaces/post.interface";
 import { PostLikeModel } from "../../models/like/post-like.model";
 import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import { PostModel } from "../../models/post/post.model";
@@ -22,7 +22,7 @@ const defaultPostStats: PostStats = {
   engagementCount: 0,
 };
 
-async function get(postId: string): Promise<PostStatsBody> {
+async function get(postId: string): Promise<PostStats> {
   const likesCount = await PostLikeModel.countDocuments({ postId });
   const repostCount = await RepostModel.countDocuments({ postId });
   const repliesCount = await PostModel.countDocuments({ parentPostId: postId });

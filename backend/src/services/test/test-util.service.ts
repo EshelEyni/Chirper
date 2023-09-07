@@ -316,6 +316,25 @@ function getMockPost() {
   };
 }
 
+function getMockPostStats() {
+  return {
+    likesCount: 0,
+    repostCount: 0,
+    repliesCount: 0,
+    viewsCount: 0,
+    detailsViewsCount: 0,
+    profileViewsCount: 0,
+    followFromPostCount: 0,
+    hashTagClicksCount: 0,
+    linkClicksCount: 0,
+    postLinkCopyCount: 0,
+    postSharedCount: 0,
+    postViaMsgCount: 0,
+    postBookmarksCount: 0,
+    engagementCount: 0,
+  };
+}
+
 function getMockPromptText(): string {
   const randomNum = Math.floor(Math.random() * 100000);
   return `test prompt #${randomNum}`;
@@ -341,6 +360,7 @@ export {
   getMongoId,
   getMockedUser,
   getMockPost,
+  getMockPostStats,
   getMockPromptText,
   deleteTestUser,
   deleteTestPost,

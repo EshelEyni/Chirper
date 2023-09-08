@@ -4,9 +4,9 @@ import {
   LoggedInUserActionState,
   Post,
   PostImg,
-} from "../../../../../../shared/interfaces/post.interface";
-import { Gif } from "../../../../../../shared/interfaces/gif.interface";
-import { Location } from "../../../../../../shared/interfaces/location.interface";
+} from "../../../../../../shared/types/post.interface";
+import { Gif } from "../../../../../../shared/types/gif.interface";
+import { Location } from "../../../../../../shared/types/location.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { IPoll, imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
@@ -14,7 +14,7 @@ import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { populatePostData } from "./populate-post-data";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 
 export interface IPost extends Document {
   audience: string;

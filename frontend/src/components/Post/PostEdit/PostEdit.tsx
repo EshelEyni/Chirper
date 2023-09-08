@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
-import { NewPost, NewPostImg } from "../../../../../shared/interfaces/post.interface";
+import { NewPost, NewPostImg } from "../../../../../shared/types/post.interface";
 import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
@@ -28,7 +28,7 @@ import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 
 import {
   NewPostType,

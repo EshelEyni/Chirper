@@ -1,4 +1,4 @@
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import { IUser, UserModel } from "../../models/user/user.model";
 import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
 import { AppError } from "../../../../services/error/error.service";

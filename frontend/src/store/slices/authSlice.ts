@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store";
-import { User } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../shared/types/user.interface";
 import { UserCredentials } from "../../types/auth.types";
 import authService from "../../services/auth.service";
 import { setIsPageLoading } from "./systemSlice";

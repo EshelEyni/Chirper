@@ -1,6 +1,6 @@
 import { FC } from "react";
 import "./LocationPreview.scss";
-import { Location } from "../../../../../shared/interfaces/location.interface";
+import { Location } from "../../../../../shared/types/location.interface";
 import { AiOutlineCheck } from "react-icons/ai";
 
 type LocationPreviewProps = {

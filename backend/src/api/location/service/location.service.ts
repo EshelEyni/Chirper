@@ -9,7 +9,7 @@ import {
   createClient,
 } from "@google/maps";
 
-import { Location } from "../../../../../shared/interfaces/location.interface";
+import { Location } from "../../../../../shared/types/location.interface";
 
 type resultType = PlaceAutocompleteResult | PlaceSearchResult | GeocodingResult;
 

@@ -5,7 +5,7 @@ import {
   Post,
   PostRepostResult,
   PostStats,
-} from "../../../../../shared/interfaces/post.interface";
+} from "../../../../../shared/types/post.interface";
 import postService from "../services/post/post.service";
 import {
   asyncErrorCatcher,

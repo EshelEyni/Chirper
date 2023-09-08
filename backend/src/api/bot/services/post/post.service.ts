@@ -1,7 +1,7 @@
 import { AppError } from "../../../../services/error/error.service";
 import promptService from "../prompt/prompt.service";
 import openAIService from "../openai/openai.service";
-import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
+import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/types/post.interface";
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
 import { shuffleArray } from "../../../../services/util/util.service";

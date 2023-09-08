@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import userRelationService from "../../../services/userRelation.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../shared/types/post.interface";
 
 export default function useAddBlock() {
   const queryClient = useQueryClient();

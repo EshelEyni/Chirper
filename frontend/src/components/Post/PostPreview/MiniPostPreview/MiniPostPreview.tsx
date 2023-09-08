@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { NewPost, Post, QuotedPost } from "../../../../../../shared/interfaces/post.interface";
+import { NewPost, Post, QuotedPost } from "../../../../../../shared/types/post.interface";
 import { RootState } from "../../../../store/store";
 import { AppDispatch } from "../../../../store/types";
 import "./MiniPostPreview.scss";

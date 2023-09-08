@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Post, QuotedPost } from "../../../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../../../shared/interfaces/user.interface";
+import { Post, QuotedPost } from "../../../../../../../shared/types/post.interface";
+import { User } from "../../../../../../../shared/types/user.interface";
 import {
   CreatePostStatParams,
   RepostParams,

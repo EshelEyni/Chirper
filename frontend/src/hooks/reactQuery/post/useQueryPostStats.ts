@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { PostStats } from "../../../../../shared/interfaces/post.interface";
+import { PostStats } from "../../../../../shared/types/post.interface";
 import postService from "../../../services/post.service";
 
 type useQueryPostStatsResult = {

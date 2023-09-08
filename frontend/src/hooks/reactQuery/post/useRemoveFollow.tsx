@@ -4,7 +4,7 @@ import reactQueryService from "../../../services/reactQuery/reactQuery.service";
 import userRelationService from "../../../services/userRelation.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 
 export default function useRemoveFollow() {
   const queryClient = useQueryClient();

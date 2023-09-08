@@ -18,7 +18,7 @@ import {
 } from "../../../services/test/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../middlewares/setupAls/setupAls.middleware";
-import { Post, PostStats } from "../../../../../shared/interfaces/post.interface";
+import { Post, PostStats } from "../../../../../shared/types/post.interface";
 import { PostModel } from "../models/post/post.model";
 import { UserModel } from "../../user/models/user/user.model";
 import { RepostModel } from "../models/repost/repost.model";

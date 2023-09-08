@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NewPost, Post, repliedPostDetails } from "../../../../shared/interfaces/post.interface";
+import { NewPost, Post, repliedPostDetails } from "../../../../shared/types/post.interface";
 import { makeId } from "../../services/util/utils.service";
 
 export type NewPostState = {

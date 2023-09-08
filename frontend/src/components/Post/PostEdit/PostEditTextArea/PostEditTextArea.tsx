@@ -1,7 +1,7 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import { NewPost } from "../../../../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../../../../shared/types/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { debounce } from "../../../../services/util/utils.service";
 import { usePostEdit } from "../../../../contexts/PostEditContext";

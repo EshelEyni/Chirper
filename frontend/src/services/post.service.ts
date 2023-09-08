@@ -6,8 +6,8 @@ import {
   PostRepostResult,
   PostStats,
   PostStatsBody,
-} from "../../../shared/interfaces/post.interface";
-import { JsendResponse, UserMsg } from "../../../shared/interfaces/system.interface";
+} from "../../../shared/types/post.interface";
+import { JsendResponse, UserMsg } from "../../../shared/types/system.interface";
 import { handleServerResponse } from "./util/utils.service";
 import qs from "qs";
 

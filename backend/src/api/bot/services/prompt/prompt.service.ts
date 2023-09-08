@@ -1,5 +1,5 @@
 import { BotPromptModel } from "../../model/bot-options.model";
-import { BotPrompt } from "../../../../../../shared/interfaces/bot.interface";
+import { BotPrompt } from "../../../../../../shared/types/bot.interface";
 import { PostType } from "../post/post.service";
 
 type TypeToTemplate = {

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { GifCategory } from "../../../../../shared/interfaces/gif.interface";
+import { GifCategory } from "../../../../../shared/types/gif.interface";
 import "./GifCategoryPreview.scss";
 
 type GifCategoryPreviewProps = {

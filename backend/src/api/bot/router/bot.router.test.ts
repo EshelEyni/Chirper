@@ -11,7 +11,7 @@ import {
   getMockPromptText,
   getMongoId,
 } from "../../../services/test/test-util.service";
-import { User } from "../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../shared/types/user.interface";
 import cookieParser from "cookie-parser";
 import { BotPromptModel } from "../model/bot-options.model";
 import {

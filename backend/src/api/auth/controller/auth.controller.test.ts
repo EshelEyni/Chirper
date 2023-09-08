@@ -12,7 +12,7 @@ import {
 } from "./auth.controller";
 import authService from "../service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
-import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
+import { UserCredenitials } from "../../../../../shared/types/user.interface";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { getMongoId } from "../../../services/test/test-util.service";
 

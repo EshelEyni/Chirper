@@ -1,7 +1,7 @@
 import authService, { UserDoc } from "./auth.service";
 import { UserModel } from "../../user/models/user/user.model";
 import tokenService from "../../../services/token/token.service";
-import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
+import { UserCredenitials } from "../../../../../shared/types/user.interface";
 import { AppError } from "../../../services/error/error.service";
 import { isValidMongoId, sendEmail } from "../../../services/util/util.service";
 import * as crypto from "crypto";

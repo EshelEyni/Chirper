@@ -1,4 +1,4 @@
-import { User } from "../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../shared/types/user.interface";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import "./UserPreview.scss";
 

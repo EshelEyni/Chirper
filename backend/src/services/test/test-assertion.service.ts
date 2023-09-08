@@ -1,5 +1,5 @@
-import { BotPrompt } from "../../../../shared/interfaces/bot.interface";
-import { Gif, GifCategory } from "../../../../shared/interfaces/gif.interface";
+import { BotPrompt } from "../../../../shared/types/bot.interface";
+import { Gif, GifCategory } from "../../../../shared/types/gif.interface";
 import {
   LoggedInUserActionState,
   Poll,
@@ -8,8 +8,8 @@ import {
   PromotionalPost,
   QuotedPost,
   Repost,
-} from "../../../../shared/interfaces/post.interface";
-import { User } from "../../../../shared/interfaces/user.interface";
+} from "../../../../shared/types/post.interface";
+import { User } from "../../../../shared/types/user.interface";
 
 function assertUser(user: User) {
   expect(user).toEqual(

@@ -4,8 +4,8 @@ import { populatePostData } from "./populate-post-data";
 import {
   LoggedInUserActionState,
   PromotionalPost,
-} from "../../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+} from "../../../../../../shared/types/post.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 
 export interface IPromotionalPost extends IPost {
   isPromotional: boolean;

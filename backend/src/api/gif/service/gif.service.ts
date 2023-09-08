@@ -1,4 +1,4 @@
-import { Gif } from "../../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../../shared/types/gif.interface";
 require("dotenv").config();
 import fetch from "cross-fetch";
 import { GifModel } from "../model/gif.model";

@@ -1,5 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
-import { Post } from "../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../shared/types/post.interface";
 
 function setUpdatePostIntoQueryData(post: Post, queryClient: QueryClient) {
   const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];

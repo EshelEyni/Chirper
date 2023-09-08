@@ -1,7 +1,7 @@
 import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import { UserRelationKind, UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";

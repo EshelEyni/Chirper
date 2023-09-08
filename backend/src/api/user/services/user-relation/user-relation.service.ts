@@ -1,4 +1,4 @@
-import { FollowingResult, User } from "../../../../../../shared/interfaces/user.interface";
+import { FollowingResult, User } from "../../../../../../shared/types/user.interface";
 import { UserModel } from "../../models/user/user.model";
 import {
   UserRelationKind,
@@ -8,7 +8,7 @@ import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";
-import { Post } from "../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../shared/types/post.interface";
 import { AppError } from "../../../../services/error/error.service";
 import { PostModel } from "../../../post/models/post/post.model";
 

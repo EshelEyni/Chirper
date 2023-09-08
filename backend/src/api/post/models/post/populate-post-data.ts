@@ -11,7 +11,7 @@ import { isValidMongoId } from "../../../../services/util/util.service";
 import {
   LoggedInUserActionState,
   PostStatsBody,
-} from "../../../../../../shared/interfaces/post.interface";
+} from "../../../../../../shared/types/post.interface";
 import { BookmarkedPostModel } from "../bookmark/bookmark-post.model";
 import { IPollVoteDoc, PollVoteModel } from "../poll-vote/poll-vote.model";
 import { IPollOption } from "./post-sub-schemas";

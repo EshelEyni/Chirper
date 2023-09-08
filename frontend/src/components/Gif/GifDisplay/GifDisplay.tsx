@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Gif } from "../../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../../shared/types/gif.interface";
 import { useInView } from "react-intersection-observer";
 import { BtnTogglePlay } from "../../Btns/BtnTogglePlay/BtnTogglePlay";
 import "./GifDisplay.scss";

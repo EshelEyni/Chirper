@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Post } from "../../../../../../shared/interfaces/post.interface";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { Post } from "../../../../../../shared/types/post.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import { assertPost } from "../../../../services/test/test-assertion.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";

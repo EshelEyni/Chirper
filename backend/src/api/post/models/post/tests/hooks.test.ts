@@ -10,7 +10,7 @@ import { UserModel } from "../../../../user/models/user/user.model";
 import * as PostModelModule from "../post.model";
 import * as populatePostData from "../populate-post-data";
 import userRelationService from "../../../../user/services/user-relation/user-relation.service";
-import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../../shared/types/post.interface";
 import { assertPost } from "../../../../../services/test/test-assertion.service";
 import {
   connectToTestDB,

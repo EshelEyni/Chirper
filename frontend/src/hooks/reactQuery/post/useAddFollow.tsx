@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import reactQueryService from "../../../services/reactQuery/reactQuery.service";
 import userRelationService from "../../../services/userRelation.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
 export default function useAddFollow() {

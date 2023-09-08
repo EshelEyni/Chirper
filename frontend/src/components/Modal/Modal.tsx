@@ -14,7 +14,7 @@ import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
 import { useOutsideClick } from "../../hooks/app/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
-import { User } from "../../../../shared/interfaces/user.interface";
+import { User } from "../../../../shared/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { usePostPreview } from "../../contexts/PostPreviewContext";

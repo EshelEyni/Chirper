@@ -28,7 +28,7 @@ import { BookmarkedPostModel } from "../models/bookmark/bookmark-post.model";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { PostModel } from "../models/post/post.model";
 import postService from "../services/post/post.service";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../../../shared/types/post.interface";
 import { RepostModel } from "../models/repost/repost.model";
 import postStatsService from "../services/post-stats/post-stats.service";
 import { PostLikeModel } from "../models/like/post-like.model";

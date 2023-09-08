@@ -1,4 +1,4 @@
-import { Repost } from "../../../../../../shared/interfaces/post.interface";
+import { Repost } from "../../../../../../shared/types/post.interface";
 import { APIFeatures, QueryObj, shuffleArray } from "../../../../services/util/util.service";
 import { IPostDoc, PostModel } from "../../models/post/post.model";
 import { RepostModel } from "../../models/repost/repost.model";

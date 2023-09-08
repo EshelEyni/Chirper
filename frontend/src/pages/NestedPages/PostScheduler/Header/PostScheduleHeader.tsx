@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { BtnClose } from "../../../../components/Btns/BtnClose/BtnClose";
 import "./PostScheduleHeader.scss";
-import { NewPost } from "../../../../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../../../../shared/types/post.interface";
 import { AppDispatch } from "../../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";

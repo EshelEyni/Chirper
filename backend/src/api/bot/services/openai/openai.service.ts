@@ -2,7 +2,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { AppError } from "../../../../services/error/error.service";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
-import { Poll, PostImg } from "../../../../../../shared/interfaces/post.interface";
+import { Poll, PostImg } from "../../../../../../shared/types/post.interface";
 import { botServiceLogger } from "../logger/logger";
 
 require("dotenv").config();

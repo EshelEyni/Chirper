@@ -6,7 +6,7 @@ import {
   getMongoId,
 } from "../../../../services/test/test-util.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 
 describe("User Relation Model", () => {
   // Assuming that users are required for testing

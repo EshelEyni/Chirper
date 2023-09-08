@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
-import { Location } from "../../../../../shared/interfaces/location.interface";
+import { Location } from "../../../../../shared/types/location.interface";
 import locationService from "../../../services/location.service";
 import "./PostLocation.scss";
 import { LocationList } from "../../../components/Location/LocationList/LocationList";

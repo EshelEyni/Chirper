@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { Poll, Post, PromotionalPost, Repost } from "../../../shared/interfaces/post.interface";
+import { Poll, Post, PromotionalPost, Repost } from "../../../shared/types/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
 import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";

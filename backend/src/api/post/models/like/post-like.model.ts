@@ -3,7 +3,7 @@ import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { PostModel } from "../post/post.model";
 import { UserModel } from "../../../user/models/user/user.model";
-import { Post } from "../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../shared/types/post.interface";
 
 interface IPostLikeBase {
   postId: ObjectId;

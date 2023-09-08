@@ -6,7 +6,7 @@ import { errorHandler } from "../../../../services/error/error.service";
 import { createTestUser, deleteTestUser } from "../../../../services/test/test-util.service";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import { assertUser } from "../../../../services/test/test-assertion.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 

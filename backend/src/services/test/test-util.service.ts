@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 require("dotenv").config();
 import mongoose from "mongoose";
-import { Post, PromotionalPost } from "../../../../shared/interfaces/post.interface";
-import { User, UserCredenitials } from "../../../../shared/interfaces/user.interface";
+import { Post, PromotionalPost } from "../../../../shared/types/post.interface";
+import { User, UserCredenitials } from "../../../../shared/types/user.interface";
 import { UserModel } from "../../api/user/models/user/user.model";
 import tokenService from "../token/token.service";
 import { PostModel } from "../../api/post/models/post/post.model";

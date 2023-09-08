@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { PollOption } from "../../../../../../shared/interfaces/post.interface";
+import { PollOption } from "../../../../../../shared/types/post.interface";
 import { PollDisplayOptionResult } from "../PollDisplayResult/PollDisplayResult";
 import { PollDisplayOption } from "../PollDisplayOption/PollDisplayOption";
 import "./PollDisplayOptionsList.scss";

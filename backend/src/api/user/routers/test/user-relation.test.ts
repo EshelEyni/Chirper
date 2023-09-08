@@ -9,10 +9,10 @@ import {
   getLoginTokenStrForTest,
 } from "../../../../services/test/test-util.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import cookieParser from "cookie-parser";
-import { Post } from "../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../shared/types/post.interface";
 import { PostModel } from "../../../post/models/post/post.model";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model";

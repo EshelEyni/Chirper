@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { NewPost } from "../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../shared/types/post.interface";
 import { NewPostType } from "../store/slices/postEditSlice";
 
 type PostEditContextType = {

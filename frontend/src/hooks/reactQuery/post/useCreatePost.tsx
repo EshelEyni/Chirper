@@ -7,9 +7,9 @@ import {
   Post,
   PostReplyResult,
   PostRepostResult,
-} from "../../../../../shared/interfaces/post.interface";
+} from "../../../../../shared/types/post.interface";
 import { NewPostType } from "../../../store/slices/postEditSlice";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 
 type OnCreatePostProps = {
   posts: NewPost[];

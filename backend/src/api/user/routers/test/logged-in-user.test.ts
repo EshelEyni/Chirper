@@ -10,7 +10,7 @@ import {
   getLoginTokenStrForTest,
 } from "../../../../services/test/test-util.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
-import { User } from "../../../../../../shared/interfaces/user.interface";
+import { User } from "../../../../../../shared/types/user.interface";
 import cookieParser from "cookie-parser";
 import setupAsyncLocalStorage from "../../../../middlewares/setupAls/setupAls.middleware";
 

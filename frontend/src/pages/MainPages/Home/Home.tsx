@@ -6,7 +6,7 @@ import { useScrollRedirect } from "../../../hooks/app/useScrollRedirect";
 import { usePageLoaded } from "../../../hooks/app/usePageLoaded";
 import "./Home.scss";
 import { AsyncList } from "../../../components/App/AsyncList/AsyncList";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../shared/types/post.interface";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
 import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
 import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";

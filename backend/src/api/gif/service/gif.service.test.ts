@@ -4,7 +4,7 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 require("dotenv").config();
 import { AppError } from "../../../services/error/error.service";
 import { GifModel } from "../model/gif.model";
-import { Gif } from "../../../../../shared/interfaces/gif.interface";
+import { Gif } from "../../../../../shared/types/gif.interface";
 
 type MockedFetchedGif = {
   id: string;

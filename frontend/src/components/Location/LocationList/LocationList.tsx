@@ -1,11 +1,11 @@
 import { FC } from "react";
 import "./LocationList.scss";
-import { Location } from "../../../../../shared/interfaces/location.interface";
+import { Location } from "../../../../../shared/types/location.interface";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
-import { NewPost } from "../../../../../shared/interfaces/post.interface";
+import { NewPost } from "../../../../../shared/types/post.interface";
 import { LocationPreview } from "../LocationPreview/LocationPreview";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 

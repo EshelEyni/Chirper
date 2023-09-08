@@ -1,4 +1,4 @@
-import { JsendResponse, UserMsg } from "../../../../shared/interfaces/system.interface";
+import { JsendResponse, UserMsg } from "../../../../shared/types/system.interface";
 type AnyFunction = (...args: any[]) => any;
 
 function formatDateToRelativeTime(currDate: Date): string {

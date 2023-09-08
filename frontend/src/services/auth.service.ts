@@ -1,5 +1,5 @@
-import { JsendResponse } from "../../../shared/interfaces/system.interface";
-import { User } from "../../../shared/interfaces/user.interface";
+import { JsendResponse } from "../../../shared/types/system.interface";
+import { User } from "../../../shared/types/user.interface";
 import { UserCredentials } from "../types/auth.types";
 import httpService from "./http.service";
 

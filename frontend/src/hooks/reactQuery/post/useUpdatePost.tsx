@@ -4,7 +4,7 @@ import postService from "../../../services/post.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 import reactQueryService from "../../../services/reactQuery/reactQuery.service";
-import { Post } from "../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../shared/types/post.interface";
 
 export function useUpdatePost() {
   const queryClient = useQueryClient();

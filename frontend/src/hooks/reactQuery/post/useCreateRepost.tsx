@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import postService from "../../../services/post.service";
-import { Post, PostRepostResult } from "../../../../../shared/interfaces/post.interface";
+import { Post, PostRepostResult } from "../../../../../shared/types/post.interface";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/interfaces/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 
 export function useCreateRepost() {
   const queryClient = useQueryClient();

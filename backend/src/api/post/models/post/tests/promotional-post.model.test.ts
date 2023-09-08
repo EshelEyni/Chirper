@@ -8,7 +8,7 @@ import {
 } from "../../../../../services/test/test-db.service";
 import * as PromotionalPostModelModule from "../promotional-post.model";
 import * as populatePostData from "../populate-post-data";
-import { PromotionalPost } from "../../../../../../../shared/interfaces/post.interface";
+import { PromotionalPost } from "../../../../../../../shared/types/post.interface";
 import { assertPost } from "../../../../../services/test/test-assertion.service";
 
 const { PromotionalPostModel } = PromotionalPostModelModule;

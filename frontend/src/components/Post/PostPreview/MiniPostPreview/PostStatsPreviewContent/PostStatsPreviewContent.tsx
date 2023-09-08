@@ -1,4 +1,4 @@
-import { Post } from "../../../../../../../shared/interfaces/post.interface";
+import { Post } from "../../../../../../../shared/types/post.interface";
 import { PostPreviewProvider } from "../../../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
 import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";

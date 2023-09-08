@@ -1,11 +1,11 @@
 import { AppError } from "../../../../services/error/error.service";
 import promptService from "../prompt/prompt.service";
-import postService from "../../../post/services/post/post.service";
 import openAIService from "../openai/openai.service";
 import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/interfaces/post.interface";
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
 import { shuffleArray } from "../../../../services/util/util.service";
+import { PostModel } from "../../../post/models/post/post.model";
 
 export enum PostType {
   TEXT = "text",
@@ -36,6 +36,8 @@ interface BasicPostOptions {
 interface PostImageOptions extends BasicPostOptions {
   numberOfImages?: number;
 }
+
+type GeneratePostOption = { botId: string; options: CreatePostOptions };
 
 async function createPost(botId: string, options: CreatePostOptions): Promise<Post[]> {
   if (!botId) throw new AppError("botId is falsey", 500);
@@ -104,8 +106,8 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
 
     if (schedule) postBody["schedule"] = schedule;
 
-    const post = await postService.add(postBody as NewPost);
-    posts.push(post);
+    const post = (await PostModel.create(postBody as NewPost)) as unknown as Post;
+    if (post) posts.push(post);
     botServiceLogger.created({ entity: "post", iterationNum: i, post });
   }
   botServiceLogger.created({ entity: "posts" });
@@ -216,7 +218,7 @@ async function _getBotPostOptions(): Promise<createPostParams[]> {
   }));
 }
 
-function* _generatePosts(postOptions: { botId: string; options: CreatePostOptions }[]) {
+function* _generatePosts(postOptions: GeneratePostOption[]): Generator<GeneratePostOption> {
   // ensures that at the last yield statement, the function will create a new set of yield statements
   while (true) {
     // shuffles the postOptions array each time the yield statements are created

@@ -3,11 +3,11 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/post/services/post-stats";
+const currPath = "/api/user/routers";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
-// const specifiedPath = baseDir + "/populate-post-data.test.ts";
-// const collectCoverage = true;
-const collectCoverage = false;
+// const specifiedPath = baseDir + "/remove.test.ts";
+const collectCoverage = true;
+// const collectCoverage = false;
 // const coveragePath = isGlobalTesting
 //   ? `${baseDir}/**/*.ts`
 //   : "<rootDir>/src/api/post/services/util/util.service.ts";

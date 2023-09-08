@@ -1,15 +1,22 @@
 import botPostService from "../post.service";
 import promptService from "../../prompt/prompt.service";
-import postService from "../../../../post/services/post/post.service";
 import openAIService from "../../openai/openai.service";
 import { botServiceLogger } from "../../logger/logger";
 import testUtil from "./bot-post-test-util";
+import { PostModel } from "../../../../post/models/post/post.model";
 
 jest.mock("../../prompt/prompt.service");
 jest.mock("../../../../post/services/post/post.service");
 jest.mock("../../openai/openai.service");
 jest.mock("../../../../../services/logger/logger.service");
 jest.mock("../../youtube/youtube.service");
+
+jest.mock("../../../../post/models/post/post.model", () => ({
+  PostModel: {
+    create: jest.fn(),
+  },
+}));
+
 jest.mock("../../logger/logger", () => {
   const logger = {
     create: jest.fn(),
@@ -49,18 +56,18 @@ describe("Bot Post Service: autoSaveBotPosts", () => {
 
     expect(promptService.getAllPrompts).toHaveBeenCalled();
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(3);
-    expect(postService.add).toHaveBeenCalledTimes(3);
+    expect(PostModel.create).toHaveBeenCalledTimes(3);
   });
 
   it("should create posts at the rate of 3 per minute", async () => {
     botPostService.autoSaveBotPosts();
     await jest.advanceTimersByTimeAsync(ONE_MINUTE / 2); // 30 seconds
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(0);
-    expect(postService.add).toHaveBeenCalledTimes(0);
+    expect(PostModel.create).toHaveBeenCalledTimes(0);
 
     await jest.advanceTimersByTimeAsync(ONE_MINUTE / 2 + 1111); // another 30 seconds
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(3);
-    expect(postService.add).toHaveBeenCalledTimes(3);
+    expect(PostModel.create).toHaveBeenCalledTimes(3);
   });
 
   it("should save post infinitely (even when the length of the array is reached) while function is running", async () => {
@@ -68,15 +75,15 @@ describe("Bot Post Service: autoSaveBotPosts", () => {
     await jest.advanceTimersByTimeAsync(ONE_MINUTE);
     expect(promptService.getAllPrompts).toHaveBeenCalled();
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(3);
-    expect(postService.add).toHaveBeenCalledTimes(3);
+    expect(PostModel.create).toHaveBeenCalledTimes(3);
 
     await jest.advanceTimersByTimeAsync(ONE_MINUTE);
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(6);
-    expect(postService.add).toHaveBeenCalledTimes(6);
+    expect(PostModel.create).toHaveBeenCalledTimes(6);
 
     await jest.advanceTimersByTimeAsync(ONE_MINUTE);
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(9);
-    expect(postService.add).toHaveBeenCalledTimes(9);
+    expect(PostModel.create).toHaveBeenCalledTimes(9);
   });
 
   it("should handle no prompts gracefully", async () => {
@@ -84,7 +91,7 @@ describe("Bot Post Service: autoSaveBotPosts", () => {
     await expect(botPostService.autoSaveBotPosts()).rejects.toThrow("prompts is falsey");
     expect(promptService.getAllPrompts).toHaveBeenCalled();
     expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(0);
-    expect(postService.add).toHaveBeenCalledTimes(0);
+    expect(PostModel.create).toHaveBeenCalledTimes(0);
     testUtil.MockSetter.getAllPrompts();
   });
 

@@ -63,10 +63,6 @@ describe("User Relation Service", () => {
     };
   }
 
-  function mockPostModelGetById(value: any) {
-    (PostModel.findById as jest.Mock).mockResolvedValueOnce(value);
-  }
-
   describe("remove", () => {
     const mockSession = {
       startTransaction: jest.fn(),
@@ -79,6 +75,12 @@ describe("User Relation Service", () => {
     const mockQuery = {
       setOptions: jest.fn().mockReturnThis(),
     };
+
+    function mockPostModelGetById(value: any) {
+      PostModel.findById = jest.fn().mockImplementation(() => ({
+        setOptions: jest.fn().mockResolvedValue(value),
+      }));
+    }
 
     beforeEach(() => {
       jest.resetAllMocks();

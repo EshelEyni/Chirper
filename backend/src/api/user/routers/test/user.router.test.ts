@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "../user-relation.router";
+import router from "../user.router";
 import { errorHandler } from "../../../../services/error/error.service";
 import { createTestUser, deleteTestUser } from "../../../../services/test/test-util.service";
 import cookieParser from "cookie-parser";

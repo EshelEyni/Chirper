@@ -133,7 +133,7 @@ const userSchema: Schema<IUser> = new Schema(
 userSchema
   .virtual("followingCount")
   .get(function () {
-    return this._followingCount;
+    return this._followingCount ?? 0;
   })
   .set(function (value) {
     this._followingCount = value;
@@ -142,7 +142,7 @@ userSchema
 userSchema
   .virtual("followersCount")
   .get(function () {
-    return this._followersCount;
+    return this._followersCount ?? 0;
   })
   .set(function (value) {
     this._followersCount = value;
@@ -151,7 +151,7 @@ userSchema
 userSchema
   .virtual("isFollowing")
   .get(function () {
-    return this._isFollowing;
+    return this._isFollowing ?? false;
   })
   .set(function (value) {
     this._isFollowing = value;
@@ -192,15 +192,15 @@ userSchema.post(/^find/, async function (this: Query<IUser[], IUser & Document>,
     if (!docs.length) return;
 
     // Extract all user IDs
-    const userIds = docs.map((doc: User & Document) => doc._id.toString());
+    const userIds = docs.map((doc: IUser) => doc._id.toString());
 
     // Get the following and followers counts for all user IDs
     const followingCounts = await UserRelationModel.aggregate([
-      { $match: { fromUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
+      { $match: { fromUserId: { $in: docs.map((doc: IUser) => doc._id) } } },
       { $group: { _id: "$fromUserId", count: { $sum: 1 } } },
     ]);
     const followersCounts = await UserRelationModel.aggregate([
-      { $match: { toUserId: { $in: docs.map((doc: User & Document) => doc._id) } } },
+      { $match: { toUserId: { $in: docs.map((doc: IUser) => doc._id) } } },
       { $group: { _id: "$toUserId", count: { $sum: 1 } } },
     ]);
 

@@ -1,16 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { createValidUserCreds } from "../../../../services/test/test-util.service";
+import {
+  createTestUser,
+  createValidUserCreds,
+  getMongoId,
+} from "../../../../services/test/test-util.service";
 import { connectToTestDB, disconnectFromTestDB } from "../../../../services/test/test-db.service";
 import { UserModel } from "./user.model";
 import { User } from "../../../../../../shared/interfaces/user.interface";
 import { UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
+import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
+
+jest.mock("../../../../services/als.service", () => ({
+  getLoggedInUserIdFromReq: jest.fn(),
+}));
 
 describe("User Model", () => {
+  function mockGetLoggedInUserIdFromReq(val?: string) {
+    const userId = val ?? getMongoId();
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(userId);
+  }
+
   beforeAll(async () => {
     await connectToTestDB();
+    mockGetLoggedInUserIdFromReq();
   });
 
   afterAll(async () => {
@@ -260,22 +275,23 @@ describe("User Model", () => {
   describe("User Model Post-find Hook", () => {
     const spyAggregate = jest.spyOn(UserRelationModel, "aggregate");
     const spyCountDocuments = jest.spyOn(UserRelationModel, "countDocuments");
-    const spyGetIsFollowing = jest.spyOn(userRelationService, "getIsFollowing");
+    const spyGetUserRelation = jest.spyOn(userRelationService, "getUserRelation");
 
     beforeEach(() => {
       spyAggregate.mockClear();
       spyCountDocuments.mockClear();
-      spyGetIsFollowing.mockClear();
+      spyGetUserRelation.mockClear();
     });
 
     it("should populate followersCount and followingCount when querying an array", async () => {
+      await createTestUser();
       const res = (await UserModel.find()) as any[];
       const users = res.map(u => u.toObject());
       expect(users[0].followersCount).toEqual(expect.any(Number));
       expect(users[0].followingCount).toEqual(expect.any(Number));
 
       expect(spyAggregate).toHaveBeenCalledTimes(2);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(1);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(1);
     });
 
     it("should populate followersCount and followingCount when querying a single user", async () => {
@@ -284,7 +300,7 @@ describe("User Model", () => {
       expect(userObj.followersCount).toEqual(expect.any(Number));
       expect(userObj.followingCount).toEqual(expect.any(Number));
       expect(spyCountDocuments).toHaveBeenCalledTimes(2);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(1);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(1);
     });
 
     it("should populate isFollowing when querying an array", async () => {
@@ -292,7 +308,7 @@ describe("User Model", () => {
       const users = res.map(u => u.toObject());
       expect(users[0].isFollowing).toEqual(expect.any(Boolean));
       expect(spyAggregate).toHaveBeenCalledTimes(2);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(1);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(1);
     });
 
     it("should populate isFollowing when querying a single user", async () => {
@@ -300,7 +316,7 @@ describe("User Model", () => {
       const userObj = res.toObject() as User;
       expect(userObj.isFollowing).toEqual(expect.any(Boolean));
       expect(spyCountDocuments).toHaveBeenCalledTimes(2);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(1);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(1);
     });
 
     it("should not call function in hook when options.skipHooks is true when querying an array", async () => {
@@ -311,7 +327,7 @@ describe("User Model", () => {
       expect(users[0].isFollowing).toBe(false);
 
       expect(spyAggregate).toHaveBeenCalledTimes(0);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(0);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(0);
       expect(spyCountDocuments).toHaveBeenCalledTimes(0);
     });
 
@@ -323,7 +339,7 @@ describe("User Model", () => {
       expect(userObj.isFollowing).toBe(false);
 
       expect(spyAggregate).toHaveBeenCalledTimes(0);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(0);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(0);
       expect(spyCountDocuments).toHaveBeenCalledTimes(0);
     });
 
@@ -332,7 +348,7 @@ describe("User Model", () => {
       const res = (await UserModel.find()) as any[];
       expect(res).toBeFalsy();
       expect(spyAggregate).toHaveBeenCalledTimes(0);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(0);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(0);
       expect(spyCountDocuments).toHaveBeenCalledTimes(0);
     });
 
@@ -341,7 +357,7 @@ describe("User Model", () => {
       const res = (await UserModel.findOne()) as any;
       expect(res).toBeFalsy();
       expect(spyAggregate).toHaveBeenCalledTimes(0);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(0);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(0);
       expect(spyCountDocuments).toHaveBeenCalledTimes(0);
     });
 
@@ -350,7 +366,7 @@ describe("User Model", () => {
       const res = (await UserModel.find()) as any[];
       expect(res).toHaveLength(0);
       expect(spyAggregate).toHaveBeenCalledTimes(0);
-      expect(spyGetIsFollowing).toHaveBeenCalledTimes(0);
+      expect(spyGetUserRelation).toHaveBeenCalledTimes(0);
       expect(spyCountDocuments).toHaveBeenCalledTimes(0);
     });
   });

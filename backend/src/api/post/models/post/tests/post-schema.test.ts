@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Reply } from "../../../../../../../shared/interfaces/post.interface";
 import { assertPost, assertQuotedPost } from "../../../../../services/test/test-assertion.service";
 import {
   connectToTestDB,
@@ -324,7 +326,7 @@ describe("PostModel: Schema", () => {
     it("Should validate parentPostId exists in the database.", async () => {
       const existingPost = await createTestPost({});
       const body = { parentPostId: existingPost.id };
-      const post = await createTestPost({ body });
+      const post = (await createTestPost({ body })) as Reply;
       expect(post.parentPostId?.toString()).toBe(existingPost.id);
     });
 

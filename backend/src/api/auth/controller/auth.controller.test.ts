@@ -14,6 +14,7 @@ import authService from "../service/auth.service";
 import { AppError, asyncErrorCatcher } from "../../../services/error/error.service";
 import { UserCredenitials } from "../../../../../shared/interfaces/user.interface";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
+import { getMongoId } from "../../../services/test/test-util.service";
 
 jest.mock("../service/auth.service");
 jest.mock("../../../services/als.service", () => ({
@@ -270,7 +271,6 @@ describe("Auth Controller", () => {
           newPassword: "newPassword",
           newPasswordConfirm: "newPassword",
         },
-        loggedInUserId: "userId",
       };
     });
 
@@ -311,6 +311,8 @@ describe("Auth Controller", () => {
     });
 
     it("should update the password and send a successful response", async () => {
+      const id = getMongoId();
+      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(id);
       (authService.updatePassword as jest.Mock).mockResolvedValue({
         user: mockUser,
         token: mockToken,
@@ -318,7 +320,7 @@ describe("Auth Controller", () => {
       const sut = updatePassword as any;
       await sut(req as Request, res as Response, next);
       expect(authService.updatePassword).toHaveBeenCalledWith(
-        req.loggedInUserId,
+        id,
         req.body.currentPassword,
         req.body.newPassword,
         req.body.newPasswordConfirm

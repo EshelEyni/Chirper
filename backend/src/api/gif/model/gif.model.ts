@@ -88,14 +88,14 @@ const gifCategorySchema = new mongoose.Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret._id;
         return ret;
       },
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: Document, ret: Record<string, unknown>) => {
         delete ret._id;
         return ret;
       },

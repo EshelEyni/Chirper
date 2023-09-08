@@ -112,7 +112,7 @@ describe("Bot Router", () => {
 
   describe("POST /:id([a-fA-F0-9]{24})", () => {
     it("should return 201 and a created bot post", async () => {
-      (botPostService.createPost as jest.Mock).mockResolvedValueOnce(getMockPost());
+      (botPostService.createPost as jest.Mock).mockResolvedValueOnce(getMockPost({}));
 
       const res = await request(app).post(`/${testBotId1}`).set("Cookie", [token]);
       expect(res.statusCode).toEqual(201);

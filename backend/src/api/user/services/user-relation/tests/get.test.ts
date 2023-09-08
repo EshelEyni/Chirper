@@ -37,7 +37,6 @@ jest.mock("../../../models/user-relation/user-relation.model", () => ({
 
 jest.mock("../../../../../services/util/util.service", () => ({
   isValidMongoId: jest.fn().mockReturnValue(true),
-  getMongoId: jest.requireActual("../../../../../services/test-util.service").getMongoId,
 }));
 
 describe("User Relation Service: Get Actions", () => {
@@ -49,11 +48,15 @@ describe("User Relation Service: Get Actions", () => {
     };
   }
 
+  function mockGetLoggedInUserIdFromReq(value?: any) {
+    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(value);
+  }
+
   describe("getUserRelation", () => {
     const loggedInUserId = getMongoId();
     beforeEach(() => {
       jest.clearAllMocks();
-      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(loggedInUserId);
+      mockGetLoggedInUserIdFromReq(loggedInUserId);
       (isValidMongoId as jest.Mock).mockReturnValue(true);
     });
 
@@ -66,7 +69,7 @@ describe("User Relation Service: Get Actions", () => {
     });
 
     it("should return empty relation maps for each ID if loggedInUserId is not valid", async () => {
-      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(null);
+      mockGetLoggedInUserIdFromReq(null);
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
       const result = await userRelationService.getUserRelation(
         [UserRelationKind.Follow],
@@ -122,7 +125,7 @@ describe("User Relation Service: Get Actions", () => {
   describe("getIsFollowing", () => {
     const loggedInUserId = getMongoId();
     const mockUser = getMockUser("2");
-    (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(loggedInUserId);
+    mockGetLoggedInUserIdFromReq(loggedInUserId);
     (isValidMongoId as jest.Mock).mockReturnValue(true);
 
     beforeEach(() => {
@@ -130,7 +133,7 @@ describe("User Relation Service: Get Actions", () => {
     });
 
     it("should set isFollowing to false if loggedInUserId is not valid", async () => {
-      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(null);
+      mockGetLoggedInUserIdFromReq(null);
       (isValidMongoId as jest.Mock).mockReturnValueOnce(false);
       const result = await userRelationService.getIsFollowing(mockUser.id);
       expect(result).toEqual({ [mockUser.id]: false });
@@ -139,9 +142,7 @@ describe("User Relation Service: Get Actions", () => {
 
     it("should return correct isFollowing status when loggedInUserId is valid and followers are found", async () => {
       const mockFollowerData = [{ toUserId: mockUser.id, kind: "Follow" }];
-
-      (getLoggedInUserIdFromReq as jest.Mock).mockReturnValueOnce(loggedInUserId);
-
+      mockGetLoggedInUserIdFromReq(loggedInUserId);
       (UserRelationModel.find().exec as jest.Mock).mockResolvedValueOnce(mockFollowerData);
 
       const result = await userRelationService.getIsFollowing(mockUser.id);

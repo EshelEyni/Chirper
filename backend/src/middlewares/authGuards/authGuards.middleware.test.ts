@@ -142,7 +142,6 @@ describe("Auth Guards Middleware", () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let next: jest.Mock;
-    const validMongoId = getMongoId();
 
     beforeEach(() => {
       req = {};
@@ -192,7 +191,6 @@ describe("Auth Guards Middleware", () => {
 
     it("should call next with no arguments if the user is an admin", done => {
       const user = { isAdmin: true };
-      req.loggedInUserId = validMongoId;
 
       setMockUserModel(user);
 

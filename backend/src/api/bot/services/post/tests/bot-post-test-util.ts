@@ -1,8 +1,8 @@
 import { CreatePostOptions, PostType } from "../post.service";
 import promptService from "../../prompt/prompt.service";
-import postService from "../../../../post/services/post/post.service";
 import openAIService from "../../openai/openai.service";
 import youtubeService from "../../youtube/youtube.service";
+import { PostModel } from "../../../../post/models/post/post.model";
 
 type mockPromptObj = {
   botId: string;
@@ -15,6 +15,12 @@ jest.mock("../../../../post/services/post/post.service");
 jest.mock("../../openai/openai.service");
 jest.mock("../../../../../services/logger/logger.service");
 jest.mock("../../youtube/youtube.service");
+jest.mock("../../../../post/models/post/post.model", () => ({
+  PostModel: {
+    create: jest.fn(),
+  },
+}));
+
 jest.mock("../../logger/logger", () => {
   const logger = {
     create: jest.fn(),
@@ -50,7 +56,7 @@ const {
 
 const MockSetter = {
   add: () => {
-    postService.add = jest.fn().mockImplementation(post => {
+    PostModel.create = jest.fn().mockImplementation(post => {
       post.id = "postId";
       return Promise.resolve(post);
     });

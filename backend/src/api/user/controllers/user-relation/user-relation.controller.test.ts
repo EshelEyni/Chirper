@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { AppError, asyncErrorCatcher } from "../../../../services/error/error.service";
@@ -136,15 +137,8 @@ describe("User Relation Controller", () => {
 
   describe("removeFollowings", () => {
     beforeEach(() => {
-      req = {
-        loggedInUserId: getMongoId(),
-        params: {
-          id: getMongoId(),
-        },
-      };
-      res = {
-        send: jest.fn(),
-      };
+      req = { params: { id: getMongoId() } };
+      res = { send: jest.fn() };
       nextMock.mockClear();
       jest.clearAllMocks();
     });

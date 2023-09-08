@@ -79,8 +79,8 @@ async function createManyTestPosts({
   numOfPosts?: number;
   createdByIds?: string[];
 }): Promise<Post[]> {
-  const n = numOfPosts || createdByIds?.length || 2;
-  const ids = Array.from({ length: n - 1 }, () => getMongoId());
+  const length = numOfPosts || createdByIds?.length || 2;
+  const ids = Array.from({ length }, () => getMongoId());
   await PostModel.deleteMany({ _id: { $in: ids } });
 
   const postBodies = [];

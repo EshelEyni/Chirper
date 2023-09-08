@@ -1,16 +1,22 @@
 import botPostService, { CreatePostOptions, PostType } from "../post.service";
 import promptService from "../../prompt/prompt.service";
-import postService from "../../../../post/services/post/post.service";
 import openAIService from "../../openai/openai.service";
 import youtubeService from "../../youtube/youtube.service";
 import { AppError } from "../../../../../services/error/error.service";
 import testUtil from "./bot-post-test-util";
+import { PostModel } from "../../../../post/models/post/post.model";
 
 jest.mock("../../prompt/prompt.service");
 jest.mock("../../../../post/services/post/post.service");
 jest.mock("../../openai/openai.service");
 jest.mock("../../../../../services/logger/logger.service");
 jest.mock("../../youtube/youtube.service");
+
+jest.mock("../../../../post/models/post/post.model", () => ({
+  PostModel: {
+    create: jest.fn(),
+  },
+}));
 
 const {
   TEST_BOT_ID,
@@ -48,7 +54,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.TEXT);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: SAMPLE_POST_TEXT,
@@ -56,7 +62,7 @@ describe("Bot Post Service:  createPost", () => {
       );
       expect(promptService.getBotPrompt).toHaveBeenCalledTimes(numOfPosts);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledTimes(numOfPosts);
-      expect(postService.add).toHaveBeenCalledTimes(numOfPosts);
+      expect(PostModel.create).toHaveBeenCalledTimes(numOfPosts);
 
       const posts = result;
 
@@ -71,7 +77,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.TEXT);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: SAMPLE_POST_TEXT,
@@ -96,7 +102,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.TEXT);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: SAMPLE_POST_TEXT,
@@ -116,7 +122,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).not.toHaveBeenCalled();
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith("prompt from request");
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: SAMPLE_POST_TEXT,
@@ -158,7 +164,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.POLL);
       expect(openAIService.getAndSetPostPollFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: "Sample poll text",
@@ -183,7 +189,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(openAIService.getAndSetPostPollFromOpenAI).toHaveBeenCalledWith(prompt);
       expect(promptService.getBotPrompt).not.toHaveBeenCalled();
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           text: "Sample poll text",
@@ -216,7 +222,7 @@ describe("Bot Post Service:  createPost", () => {
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.IMAGE);
       expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           imgs: expect.any(Array),
@@ -240,7 +246,7 @@ describe("Bot Post Service:  createPost", () => {
       expect(promptService.getBotPrompt).not.toHaveBeenCalled();
       expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith("prompt from request", 1);
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           imgs: expect.any(Array),
@@ -263,7 +269,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 3);
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           imgs: expect.any(Array),
@@ -289,7 +295,7 @@ describe("Bot Post Service:  createPost", () => {
       expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           imgs: expect.any(Array),
@@ -360,7 +366,7 @@ describe("Bot Post Service:  createPost", () => {
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
       expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           videoUrl: SAMPLE_VIDEO_URL,
@@ -383,7 +389,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).not.toHaveBeenCalled();
       expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith("prompt from request");
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           videoUrl: SAMPLE_VIDEO_URL,
@@ -403,7 +409,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           videoUrl: SAMPLE_VIDEO_URL,
@@ -464,7 +470,7 @@ describe("Bot Post Service:  createPost", () => {
       expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_SONG_NAME);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, "gpt-4");
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           videoUrl: SAMPLE_VIDEO_URL,
@@ -492,7 +498,7 @@ describe("Bot Post Service:  createPost", () => {
       expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_SONG_NAME);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith("prompt from request", "gpt-4");
 
-      expect(postService.add).toHaveBeenCalledWith(
+      expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
           videoUrl: SAMPLE_VIDEO_URL,

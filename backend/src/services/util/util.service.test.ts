@@ -1,4 +1,5 @@
-import { Model, Query } from "mongoose";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Query } from "mongoose";
 import {
   APIFeatures,
   AnyObject,
@@ -252,14 +253,23 @@ describe("Util Service", () => {
   });
 
   describe("queryEntityExists", () => {
-    let mockModel: Model<any> & { exists: jest.Mock };
+    const mockModel: any = { exists: jest.fn() };
 
-    beforeEach(() => {
-      mockModel = { exists: jest.fn() } as unknown as Model<any> & { exists: jest.Mock };
-    });
+    function setMockModel(value: any) {
+      mockModel.exists = jest.fn().mockImplementation(() => {
+        return {
+          setOptions: jest.fn().mockImplementation((options: any) => {
+            expect(options).toEqual({ skipHooks: true });
+            return {
+              exec: jest.fn().mockResolvedValue(value),
+            };
+          }),
+        };
+      });
+    }
 
     it("should return true if entity exists", async () => {
-      mockModel.exists.mockResolvedValue(true);
+      setMockModel(true);
       const result = await queryEntityExists(mockModel, { _id: "someId" });
 
       expect(result).toBe(true);
@@ -267,9 +277,10 @@ describe("Util Service", () => {
     });
 
     it("should return false if entity does not exist", async () => {
-      mockModel.exists.mockResolvedValue(false);
+      setMockModel(false);
       const result = await queryEntityExists(mockModel, { _id: "someId" });
 
+      expect(result).toBe(false);
       expect(result).toBe(false);
       expect(mockModel.exists).toHaveBeenCalledWith({ _id: "someId" });
     });

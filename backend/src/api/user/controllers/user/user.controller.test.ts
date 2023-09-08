@@ -168,10 +168,7 @@ describe("User Controller", () => {
 
   describe("updateLoggedInUser", () => {
     beforeEach(() => {
-      req = {
-        body: {},
-        loggedInUserId: "12345",
-      };
+      req = { body: {} };
       res = {
         send: jest.fn(),
         status: jest.fn().mockReturnThis(),
@@ -229,9 +226,7 @@ describe("User Controller", () => {
 
   describe("removeLoggedInUser", () => {
     beforeEach(() => {
-      req = {
-        loggedInUserId: "12345",
-      };
+      req = {};
       res = {
         send: jest.fn(),
         status: jest.fn().mockReturnThis(),

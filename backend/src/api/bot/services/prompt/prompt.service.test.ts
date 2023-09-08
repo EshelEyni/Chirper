@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getMongoId } from "../../../../services/test/test-util.service";
 import promptService from "./prompt.service";
 import { BotPromptModel } from "../../model/bot-options.model";

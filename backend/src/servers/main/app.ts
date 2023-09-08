@@ -65,8 +65,8 @@ if (!isProdEnv)
     requestLogger(req, res, next);
   });
 
-app.use("/api/user", userRouter);
 app.use("/api/user", userRelationRouter);
+app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/location", locationRouter);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import botPostService from "../../services/post/post.service";
 import { addPost } from "./post.controller";

@@ -227,10 +227,11 @@ async function _updatePostStatsAndReturnPost({
     { ...relationState },
     { session, upsert: true }
   );
-
   await session.commitTransaction();
 
-  const updatedPost = (await PostModel.findById(postId)) as unknown as Post;
+  const updatedPost = (await PostModel.findById(postId).setOptions({
+    isBlocked: true,
+  })) as unknown as Post;
   if (!updatedPost) throw new AppError("Post not found", 404);
   return updatedPost;
 }

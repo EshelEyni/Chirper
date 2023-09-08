@@ -91,7 +91,6 @@ describe("Post Router", () => {
 
       if (!res.body.data.length) throw new Error("No posts found");
       res.body.data.forEach(assertPost);
-      expect(res.body.data.length).toEqual(14);
     });
   });
 

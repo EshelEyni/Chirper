@@ -1,4 +1,4 @@
-import { logger } from "../../services/logger/logger.service";
+import { logger } from "../../Services/Logger/LoggerService";
 
 process.on("uncaughtException", (err: Error) => {
   logger.error("Uncaught exception:", err.name, err.message);
@@ -7,9 +7,9 @@ process.on("uncaughtException", (err: Error) => {
 
 require("dotenv").config();
 import mongoose from "mongoose";
-import app from "./app";
-import { AppError } from "../../services/error/error.service";
-import postService from "../../api/bot/services/post/post.service";
+import app from "./App";
+import { AppError } from "../../Services/Error/ErrorService";
+import postService from "../../Services/BotPost/BotPostService";
 
 const { DB_URL } = process.env;
 if (!DB_URL) throw new AppError("DB_URL URL is not defined.", 500);

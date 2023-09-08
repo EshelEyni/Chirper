@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import express from "express";
 import helmet from "helmet";
+import compression from "compression";
 import ExpressMongoSanitize from "express-mongo-sanitize";
-import requestSanitizer from "../../middlewares/html-sanitizer/html-sanitizer.middleware";
+import requestSanitizer from "../../Middlewares/HTMLSanitizer/HTMLSanitizerMiddleware";
 import hpp from "hpp";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { requestLogger } from "../../middlewares/logger/logger.middleware";
-import { AppError, errorHandler } from "../../services/error/error.service";
-import setupAsyncLocalStorage from "../../middlewares/setupAls/setupAls.middleware";
-import userRouter from "../../api/user/routers/user.router";
-import userRelationRouter from "../../api/user/routers/user-relation.router";
-import postRouter from "../../api/post/router/post.router";
-import gifRouter from "../../api/gif/router/gif.router";
-import locationRouter from "../../api/location/router/location.router";
-import botRouter from "../../api/bot/router/bot.router";
-import authRouter from "../../api/auth/router/auth.router";
-import { requestLimiter } from "../../services/rate-limiter.service";
-import compression from "compression";
+import { requestLogger } from "../../Middlewares/Logger/LoggerMiddleware";
+import { AppError, errorHandler } from "../../Services/Error/ErrorService";
+import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
+import userRouter from "../../Routers/User/UserRouter";
+import userRelationRouter from "../../Routers/UserRelation/UserRelationRouter";
+import postRouter from "../../Routers/Post/PostRouter";
+import gifRouter from "../../Routers/GIF/GIFRouter";
+import locationRouter from "../../Routers/Location/LocationRouter";
+import botRouter from "../../Routers/Bot/BotRouter";
+import authRouter from "../../Routers/Auth/AuthRouter";
+import { requestLimiter } from "../../Services/RateLimiterService";
 
 const isProdEnv = process.env.NODE_ENV === "production";
 

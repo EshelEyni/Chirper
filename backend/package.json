@@ -5,9 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon",
-    "prod": "set NODE_ENV=production&& node dist/servers/main/server.js",
-    "server:main": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/main/server.ts\"",
-    "server:bot": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/servers/bot/server.ts\"",
+    "prod": "set NODE_ENV=production&& node dist/Servers/Main/Server.js",
+    "server:main": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/Servers/Main/Server.ts\"",
+    "server:bot": "set NODE_ENV=development&& nodemon --watch src --ext ts --ignore node_modules --exec \"npx ts-node --transpile-only src/Servers/Bot/Server.ts\"",
     "test": "set NODE_ENV=test&& jest --watchAll --runInBand --detectOpenHandles"
   },
   "author": "",

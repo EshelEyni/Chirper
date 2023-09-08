@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/api/post/controller";
+const currPath = "/api/post/services/post-stats";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const specifiedPath = baseDir + "/populate-post-data.test.ts";
 // const collectCoverage = true;

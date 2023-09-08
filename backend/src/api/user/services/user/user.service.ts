@@ -1,18 +1,17 @@
 import { User } from "../../../../../../shared/interfaces/user.interface";
-import { UserModel } from "../../models/user/user.model";
+import { IUser, UserModel } from "../../models/user/user.model";
 import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
-import { Document } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
 import { logger } from "../../../../services/logger/logger.service";
 
-async function query(queryString: QueryObj): Promise<User[]> {
+async function query(queryString: QueryObj): Promise<IUser[]> {
   const features = new APIFeatures(UserModel.find(), queryString)
     .filter()
     .sort()
     .limitFields()
     .paginate();
-  const users = (await features.getQuery().exec()) as unknown as Document[];
-  return users as unknown as User[];
+  const users = (await features.getQuery().exec()) as unknown as IUser[];
+  return users;
 }
 
 async function getUsers(...userIds: string[]): Promise<User[]> {

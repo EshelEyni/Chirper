@@ -5,7 +5,7 @@ import { PostStatsModel } from "../../models/post-stats/post-stats.model";
 import { PostModel } from "../../models/post/post.model";
 import { RepostModel } from "../../models/repost/repost.model";
 
-const defaultPostStats: PostStats = {
+export const defaultPostStats: PostStats = {
   likesCount: 0,
   repostCount: 0,
   repliesCount: 0,

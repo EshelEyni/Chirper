@@ -20,9 +20,9 @@ async function query(queryString: QueryObj): Promise<CombinedPostType[]> {
   const reposts = (await RepostModel.find({})).map(doc => doc.toObject().repost);
   const promotionalPosts = shuffleArray(await PromotionalPostModel.find({}));
 
-  const posts = [...postDocs, ...reposts].reduce((acc, curr, index) => {
+  const posts = [...postDocs, ...reposts].reduce((acc, curr, i) => {
     acc.push(curr);
-    if ((index + 1) % 10 === 0 && promotionalPosts.length > 0) {
+    if (i !== 0 && i % 9 === 0 && promotionalPosts.length > 0) {
       const promoPost = promotionalPosts.shift();
       if (promoPost) acc.push(promoPost);
     }

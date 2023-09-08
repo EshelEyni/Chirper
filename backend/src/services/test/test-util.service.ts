@@ -306,11 +306,12 @@ function getMockedUser({
   };
 }
 
-function getMockPost() {
+function getMockPost({ id, body }: { id?: any; body?: any }) {
   return {
-    _id: getMongoId(),
+    _id: id || getMongoId(),
     createdById: getMongoId(),
     text: "test post",
+    ...body,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

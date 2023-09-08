@@ -182,7 +182,7 @@ userSchema.pre(/^find/, function (this: Query<User[], User & Document>, next) {
   next();
 });
 
-userSchema.post(/^find/, async function (this: Query<User[], User & Document>, res) {
+userSchema.post(/^find/, async function (this: Query<IUser[], IUser & Document>, res) {
   const options = this.getOptions();
   if (!res || options.skipHooks) return;
   const isResArray = Array.isArray(res);

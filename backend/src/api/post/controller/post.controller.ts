@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { QueryObj, validateIds } from "../../../services/util/util.service";
+import { validateIds } from "../../../services/util/util.service";
 import {
   NewPost,
   Post,
@@ -19,13 +19,15 @@ import { PromotionalPostModel } from "../models/post/promotional-post.model";
 import { getLoggedInUserIdFromReq } from "../../../services/als.service";
 import { BookmarkedPostModel, IBookmarkedPostDoc } from "../models/bookmark/bookmark-post.model";
 import { PostLikeModel } from "../models/like/post-like.model";
-import { IRepostDoc, RepostModel } from "../models/repost/repost.model";
+import { RepostModel } from "../models/repost/repost.model";
 import { PostStatsModel } from "../models/post-stats/post-stats.model";
 import { PollVoteModel } from "../models/poll-vote/poll-vote.model";
+import { IRepostDoc } from "../../../Types/ITypes";
+import { ParsedReqQuery } from "../../../Types/App";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
-  const queryString = req.query;
-  const posts = (await postService.query(queryString as QueryObj)) as unknown as Post[];
+  const queryString = req.query as ParsedReqQuery;
+  const posts = (await postService.query(queryString)) as unknown as Post[];
 
   res.send({
     status: "success",

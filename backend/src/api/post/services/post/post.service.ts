@@ -1,15 +1,14 @@
 import { Repost } from "../../../../../../shared/types/post.interface";
-import { APIFeatures, QueryObj, shuffleArray } from "../../../../services/util/util.service";
-import { IPostDoc, PostModel } from "../../models/post/post.model";
+import { APIFeatures, shuffleArray } from "../../../../services/util/util.service";
+import { PostModel } from "../../models/post/post.model";
 import { RepostModel } from "../../models/repost/repost.model";
-import {
-  IPromotionalPostDoc,
-  PromotionalPostModel,
-} from "../../models/post/promotional-post.model";
+import { PromotionalPostModel } from "../../models/post/promotional-post.model";
+import { IPostDoc, IPromotionalPostDoc } from "../../../../Types/ITypes";
+import { ParsedReqQuery } from "../../../../Types/App";
 
 type CombinedPostType = IPostDoc | Repost | IPromotionalPostDoc;
 
-async function query(queryString: QueryObj): Promise<CombinedPostType[]> {
+async function query(queryString: ParsedReqQuery): Promise<CombinedPostType[]> {
   const features = new APIFeatures(PostModel.find({}), queryString)
     .filter()
     .sort()

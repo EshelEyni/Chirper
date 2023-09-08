@@ -35,7 +35,7 @@ export type CreatePostStatParams = {
   userId: string;
 };
 
-export type CreatePollVoteParams = {
+type CreatePollVoteParams = {
   postId: string;
   userId: string;
   optionIdx: number;
@@ -83,7 +83,7 @@ async function createManyTestPosts({
   const ids = Array.from({ length }, () => getMongoId());
   await PostModel.deleteMany({ _id: { $in: ids } });
 
-  const postBodies = [];
+  const postBodies: any[] = [];
   const defaultUserId = !createdByIds ? (await createTestUser({})).id : undefined;
 
   for (const id of ids) {
@@ -119,13 +119,15 @@ async function createTestPost({
   skipHooks = false,
 }: CreateTestPostOptions = {}): Promise<Post> {
   await PostModel.findByIdAndDelete(id);
-  return (await PostModel.create({
-    _id: id || getMongoId(),
-    createdById: createdById || (await createTestUser({})).id,
-    text: "test post",
-    ...body,
-    skipHooks,
-  })) as unknown as Post;
+  return (
+    await PostModel.create({
+      _id: id || getMongoId(),
+      createdById: createdById || (await createTestUser({})).id,
+      text: "test post",
+      ...body,
+      skipHooks,
+    })
+  ).toObject() as unknown as Post;
 }
 
 async function deleteTestPost(id: string) {
@@ -145,7 +147,7 @@ async function createManyTestPromotionalPosts({
   const ids = Array.from({ length }, () => getMongoId());
   await PromotionalPostModel.deleteMany({ _id: { $in: ids } });
 
-  const postBodies = [];
+  const postBodies: any[] = [];
   const defaultUserId = !createdByIds ? (await createTestUser({})).id : undefined;
 
   for (const id of ids) {
@@ -189,7 +191,7 @@ async function createTestReposts(...repostDetails: RepostParams[]) {
   return reposts;
 }
 
-async function createTestLike(...likeDetails: CreatePostStatParams[]) {
+async function createTestLike(...likeDetails: CreatePostStatParams[]): Promise<any> {
   await PostLikeModel.deleteMany({});
   const likes = await PostLikeModel.create(likeDetails);
   return likes;

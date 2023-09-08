@@ -2,7 +2,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { AppError } from "../../../../services/error/error.service";
 import { v2 as cloudinary } from "cloudinary";
 import axios from "axios";
-import { Poll, PostImg } from "../../../../../../shared/types/post.interface";
+import { NewPostImg, Poll } from "../../../../../../shared/types/post.interface";
 import { botServiceLogger } from "../logger/logger";
 
 require("dotenv").config();
@@ -41,7 +41,7 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
   return text as string;
 }
 
-async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<PostImg[]> {
+async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<NewPostImg[]> {
   const response = await openai.createImage({
     prompt,
     n: numberOfImages,
@@ -50,7 +50,7 @@ async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promis
 
   const openAIImgUrls = response.data.data.map(data => data.url);
 
-  const imgs: PostImg[] = [];
+  const imgs: NewPostImg[] = [];
   for (let i = 0; i < openAIImgUrls.length; i++) {
     botServiceLogger.upload({ entity: "image", iterationNum: i });
     const url = openAIImgUrls[i];
@@ -58,11 +58,12 @@ async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promis
     const response = await axios.get(url, { responseType: "arraybuffer" });
     const cloudinaryUrl = (await _uploadToCloudinary(response.data)) as unknown as string;
     if (!cloudinaryUrl) continue;
-    imgs.push({ url: cloudinaryUrl, sortOrder: i });
+    imgs.push({ url: cloudinaryUrl });
     botServiceLogger.uploaded({ entity: "image", iterationNum: i });
   }
 
   if (!imgs.length) throw new AppError("imgs is empty", 500);
+
   return imgs;
 }
 
@@ -87,7 +88,7 @@ async function getAndSetPostPollFromOpenAI(prompt: string): Promise<{ text: stri
   return { text, poll };
 }
 
-async function _uploadToCloudinary(imageBuffer: any) {
+async function _uploadToCloudinary(imageBuffer: Buffer) {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream({ resource_type: "image" }, (error, result) => {

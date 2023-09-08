@@ -12,12 +12,12 @@ import {
   deleteOne,
 } from "../../../../services/factory/factory.service";
 import { UserModel } from "../../models/user/user.model";
-import { QueryObj } from "../../../../services/util/util.service";
+import { ParsedReqQuery } from "../../../../services/util/util.service";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;
-  const users = await userService.query(queryString as QueryObj);
+  const users = await userService.query(queryString as ParsedReqQuery);
   res.send({
     status: "success",
     requestedAt: new Date().toISOString(),

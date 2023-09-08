@@ -1,54 +1,14 @@
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { gifSchema } from "../../../gif/model/gif.model";
-import {
-  LoggedInUserActionState,
-  Post,
-  PostImg,
-} from "../../../../../../shared/types/post.interface";
-import { Gif } from "../../../../../../shared/types/gif.interface";
-import { Location } from "../../../../../../shared/types/location.interface";
+import { Post } from "../../../../../../shared/types/post.interface";
 import userRelationService from "../../../user/services/user-relation/user-relation.service";
 import { UserModel } from "../../../user/models/user/user.model";
-import { IPoll, imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
+import { imgsSchema, locationSchema, pollSchema } from "./post-sub-schemas";
 import { ObjectId } from "mongodb";
 import { AppError } from "../../../../services/error/error.service";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { populatePostData } from "./populate-post-data";
-import { User } from "../../../../../../shared/types/user.interface";
-
-export interface IPost extends Document {
-  audience: string;
-  repliersType: string;
-  isPublic: boolean;
-  isDraft?: boolean;
-  isPinned: boolean;
-  parentPostId?: string;
-  createdById: mongoose.Schema.Types.ObjectId;
-  text?: string;
-  imgs?: PostImg[];
-  videoUrl?: string;
-  gif?: Gif;
-  poll?: IPoll;
-  schedule?: Date;
-  location?: Location;
-  quotedPostId?: string;
-  _repostsCount: number;
-  _repliesCount: number;
-  _likesCount: number;
-  _viewsCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IPostDoc extends IPost {
-  createdBy: User;
-  quotedPost?: Post;
-  loggedInUserActionState: LoggedInUserActionState;
-  repostsCount: number;
-  repliesCount: number;
-  likesCount: number;
-  viewsCount: number;
-}
+import { IPost, IPostDoc } from "../../../../Types/ITypes";
 
 const postSchema: Schema<IPost> = new mongoose.Schema(
   {
@@ -58,7 +18,6 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
     },
     imgs: {
       type: [imgsSchema],
-      default: undefined,
       validate: {
         validator: (imgs: Post["imgs"]) => (!imgs ? true : imgs.length <= 4),
         message: "Post must have no more than 4 images.",
@@ -139,7 +98,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (_: Document, ret: Record<string, unknown>) => {
+      transform: (_: IPost, ret: Record<string, unknown>) => {
         delete ret.createdById;
         delete ret._id;
         return ret;
@@ -147,7 +106,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
     },
     toJSON: {
       virtuals: true,
-      transform: (_: Document, ret: Record<string, unknown>) => {
+      transform: (_: IPost, ret: Record<string, unknown>) => {
         delete ret.createdById;
         delete ret._id;
         return ret;
@@ -262,6 +221,15 @@ postSchema.pre("save", function (this: Document, next: (err?: Error) => void) {
     return;
   }
 
+  next();
+});
+
+postSchema.pre<IPost>("validate", function (next) {
+  if (this.imgs && this.imgs.length > 0) {
+    this.imgs.forEach((img, index) => {
+      img.sortOrder = index + 1;
+    });
+  }
   next();
 });
 

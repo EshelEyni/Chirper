@@ -1,10 +1,11 @@
-import authService, { UserDoc } from "./auth.service";
+import authService from "./auth.service";
 import { UserModel } from "../../user/models/user/user.model";
 import tokenService from "../../../services/token/token.service";
 import { UserCredenitials } from "../../../../../shared/types/user.interface";
 import { AppError } from "../../../services/error/error.service";
 import { isValidMongoId, sendEmail } from "../../../services/util/util.service";
 import * as crypto from "crypto";
+import { IUserDoc } from "../../../Types/ITypes";
 
 jest.mock("../../user/models/user/user.model");
 jest.mock("../../../services/token/token.service");
@@ -13,7 +14,7 @@ jest.mock("crypto");
 
 describe("Auth Service", () => {
   describe("login", () => {
-    let user: Partial<UserDoc>;
+    let user: Partial<IUserDoc>;
 
     beforeEach(() => {
       user = {

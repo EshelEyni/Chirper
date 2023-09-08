@@ -215,14 +215,13 @@ const Media: FC = () => {
     const newImgs = [...post.imgs];
     files.forEach(async file => {
       try {
-        if (file) {
-          const currIdx = newImgs.length;
-          newImgs.push({ url: "", isLoading: true, file });
-          dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
-          const dataUrl = await readAsDataURL(file);
-          newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-          dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
-        }
+        if (!file) return;
+        const currIdx = newImgs.length;
+        newImgs.push({ url: "", isLoading: true, file });
+        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
+        const dataUrl = await readAsDataURL(file);
+        newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
+        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
       } catch (error) {
         console.error("Error reading file:", error);
       }

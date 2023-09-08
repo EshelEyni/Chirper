@@ -17,7 +17,7 @@ export type PostImg = {
   sortOrder: number;
 };
 
-export type NewPostImg = { url: string; isLoading: boolean; file: File };
+export type NewPostImg = { url: string; isLoading?: boolean; file?: File };
 export type NewPostVideo = {
   url: string;
   isLoading: boolean;
@@ -25,7 +25,7 @@ export type NewPostVideo = {
 };
 
 export type repliedPostDetails = {
-  postId: string;
+  readonly postId: string;
   postOwner: {
     username: string;
     userId: string;
@@ -154,8 +154,8 @@ export interface Emoji {
 }
 
 export type PostStatsBody = {
-  postId: string;
-  userId: string;
+  readonly postId: string;
+  readonly userId: string;
   isViewed: boolean;
   isDetailedViewed: boolean;
   isProfileViewed: boolean;

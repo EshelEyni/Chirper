@@ -1,11 +1,11 @@
 import moment from "moment";
 import { ObjectId } from "mongodb";
 import { Model } from "mongoose";
-import { IUser, UserModel } from "../../../user/models/user/user.model";
+import { UserModel } from "../../../user/models/user/user.model";
 import { PostStatsModel } from "../post-stats/post-stats.model";
 import { RepostModel } from "../repost/repost.model";
 import { PostLikeModel } from "../like/post-like.model";
-import { IPost, PostModel } from "./post.model";
+import { PostModel } from "./post.model";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import {
@@ -13,8 +13,8 @@ import {
   PostStatsBody,
 } from "../../../../../../shared/types/post.interface";
 import { BookmarkedPostModel } from "../bookmark/bookmark-post.model";
-import { IPollVoteDoc, PollVoteModel } from "../poll-vote/poll-vote.model";
-import { IPollOption } from "./post-sub-schemas";
+import { PollVoteModel } from "../poll-vote/poll-vote.model";
+import { IPollOption, IPollVoteDoc, IPost, IUser } from "../../../../Types/ITypes";
 
 type SetQuotedConfig = {
   doc: IPost;

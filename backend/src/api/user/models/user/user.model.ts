@@ -2,41 +2,11 @@ import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { User } from "../../../../../../shared/types/user.interface";
-import { UserRelationKind, UserRelationModel } from "../user-relation/user-relation.model";
+import { UserRelationModel } from "../user-relation/user-relation.model";
 import userRelationService from "../../services/user-relation/user-relation.service";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
-
-export interface IUser extends Document {
-  username: string;
-  password: string;
-  passwordConfirm: string;
-  email: string;
-  passwordChangedAt?: Date;
-  passwordResetToken?: string;
-  passwordResetExpires?: Date;
-  fullname: string;
-  imgUrl: string;
-  isAdmin: boolean;
-  isVerified: boolean;
-  isBot: boolean;
-  isApprovedLocation: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  active: boolean;
-  // eslint-disable-next-line no-unused-vars
-  checkPassword: (candidatePassword: string, userPassword: string) => Promise<boolean>;
-  // eslint-disable-next-line no-unused-vars
-  changedPasswordAfter: (JWTTimestamp: number) => boolean;
-  createPasswordResetToken: () => string;
-  loginAttempts: number;
-  lockedUntil: number;
-  bio: string;
-  _followingCount: number;
-  _followersCount: number;
-  _isFollowing: boolean;
-  _isMuted: boolean;
-  _isBlocked: boolean;
-}
+import { IUser, IUserDoc } from "../../../../Types/ITypes";
+import { UserRelationKind } from "../../../../Types/Enums";
 
 const userSchema: Schema<IUser> = new Schema(
   {
@@ -292,6 +262,6 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-const UserModel = model<IUser>("User", userSchema);
+const UserModel = model<IUserDoc>("User", userSchema);
 
 export { userSchema, UserModel };

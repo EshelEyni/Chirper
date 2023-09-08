@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { APIFeatures, QueryObj, validateIds } from "../util/util.service";
+import { APIFeatures, validateIds } from "../util/util.service";
 import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "../error/error.service";
 import { Model } from "mongoose";
 import { logger } from "../logger/logger.service";
+import { ParsedReqQuery } from "../../Types/App";
 
-const getAll = (model: Model<any>) =>
+const getAll = <T>(model: Model<T>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
-    const features = new APIFeatures(model.find(), req.query as QueryObj)
+    const features = new APIFeatures(model.find(), req.query as ParsedReqQuery)
       .filter()
       .sort()
       .limitFields()
@@ -22,7 +23,7 @@ const getAll = (model: Model<any>) =>
     });
   });
 
-const getOne = (model: Model<any>, popOptions?: string) =>
+const getOne = <T>(model: Model<T>, popOptions?: string) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);
@@ -38,7 +39,7 @@ const getOne = (model: Model<any>, popOptions?: string) =>
     });
   });
 
-const createOne = (model: Model<any>) =>
+const createOne = <T>(model: Model<T>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
     const doc = await model.create(req.body);
     res.status(201).json({
@@ -47,7 +48,7 @@ const createOne = (model: Model<any>) =>
     });
   });
 
-const updateOne = (model: Model<any>, allowedFields?: string[]) =>
+const updateOne = <T>(model: Model<T>, allowedFields?: string[]) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);
@@ -70,7 +71,7 @@ const updateOne = (model: Model<any>, allowedFields?: string[]) =>
     });
   });
 
-const deleteOne = (model: Model<any>) =>
+const deleteOne = <T>(model: Model<T>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {
     const { collectionName } = model.collection;
     const dataName = collectionName.slice(0, collectionName.length - 1);

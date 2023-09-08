@@ -1,5 +1,5 @@
 export interface BotPrompt {
-  _id: string;
+  readonly _id: string;
   botId: string;
   prompt: string;
   type: string;

@@ -1,12 +1,10 @@
 import { User, UserCredenitials } from "../../../../../shared/types/user.interface";
-import { IUser, UserModel } from "../../user/models/user/user.model";
+import { UserModel } from "../../user/models/user/user.model";
 import { AppError } from "../../../services/error/error.service";
 import { isValidMongoId, sendEmail } from "../../../services/util/util.service";
 import crypto from "crypto";
 import tokenService from "../../../services/token/token.service";
-import { Document, Types } from "mongoose";
-
-export type UserDoc = Document<unknown, object, IUser> & IUser & { _id: Types.ObjectId };
+import { IUserDoc } from "../../../Types/ITypes";
 
 type UserAuthResult = { user: User; token: string };
 async function login(username: string, password: string): Promise<UserAuthResult> {
@@ -91,20 +89,20 @@ async function resetPassword(
   return { user: user as unknown as User, token: tokenService.signToken(user.id) };
 }
 
-function _checkIsUserLocked(user: UserDoc) {
+function _checkIsUserLocked(user: IUserDoc) {
   if (user?.lockedUntil < Date.now()) return;
   const minutes = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
   throw new AppError(`Account locked. Try again in ${minutes} minutes`, 400);
 }
 
-async function _validateUserPassword(user: UserDoc, password: string) {
+async function _validateUserPassword(user: IUserDoc, password: string) {
   const isValidPassword = await user.checkPassword(password, user.password);
   user.loginAttempts++;
   await user.save({ validateBeforeSave: false });
   if (!isValidPassword) throw new AppError("Incorrect password", 401);
 }
 
-async function _checkLoginAttempts(user: UserDoc) {
+async function _checkLoginAttempts(user: IUserDoc) {
   if (user.loginAttempts < 10) return;
   const HOUR = 60 * 60 * 1000;
   user.lockedUntil = Date.now() + HOUR;
@@ -112,7 +110,7 @@ async function _checkLoginAttempts(user: UserDoc) {
   throw new AppError("Too many failed login attempts. Try again in 1 hour", 400);
 }
 
-async function _resetLoginAttempts(user: UserDoc) {
+async function _resetLoginAttempts(user: IUserDoc) {
   user.loginAttempts = 0;
   user.lockedUntil = 0;
   await user.save({ validateBeforeSave: false });

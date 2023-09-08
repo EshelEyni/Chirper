@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Query } from "mongoose";
 import {
   APIFeatures,
   AnyObject,
-  QueryObj,
   filterObj,
   queryEntityExists,
   sendEmail,
@@ -16,6 +16,7 @@ import nodemailer from "nodemailer";
 import { AppError } from "../error/error.service";
 import { ObjectId } from "mongodb";
 import { getMongoId } from "../test/test-util.service";
+import { ParsedReqQuery } from "../../Types/App";
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn().mockReturnValue({
@@ -57,7 +58,7 @@ describe("Util Service", () => {
   describe("APIFeatures", () => {
     let apiFeatures: APIFeatures<any>;
     let mockQuery: Query<any[], any>;
-    let mockQueryObj: QueryObj;
+    let mockQueryObj: ParsedReqQuery;
 
     function setMocks() {
       mockQuery = {
@@ -98,7 +99,7 @@ describe("Util Service", () => {
       });
 
       it("should correctly parse the query string and call find with the parsed query", () => {
-        const expectedQueryObj: QueryObj = { ...mockQueryObj };
+        const expectedQueryObj: ParsedReqQuery = { ...mockQueryObj };
         const excludedFields = ["page", "sort", "limit", "fields"];
         excludedFields.forEach(el => delete expectedQueryObj[el]);
         const expectedQueryStr = JSON.stringify(expectedQueryObj).replace(

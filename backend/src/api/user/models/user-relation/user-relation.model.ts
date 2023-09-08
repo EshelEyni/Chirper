@@ -1,11 +1,7 @@
 import mongoose, { model } from "mongoose";
 import { UserModel } from "../user/user.model";
-
-export enum UserRelationKind {
-  Follow = "Follow",
-  Block = "Block",
-  Mute = "Mute",
-}
+import { IUserRelationDoc } from "../../../../Types/ITypes";
+import { UserRelationKind } from "../../../../Types/Enums";
 
 const userRelationSchema = new mongoose.Schema(
   {
@@ -14,7 +10,7 @@ const userRelationSchema = new mongoose.Schema(
       required: true,
       ref: "User",
       validate: {
-        validator: async function (this: IFollower): Promise<boolean> {
+        validator: async function (this: IUserRelationDoc): Promise<boolean> {
           const fromUserExists = await UserModel.exists({ _id: this.fromUserId })
             .setOptions({ skipHooks: true })
             .exec();
@@ -29,13 +25,13 @@ const userRelationSchema = new mongoose.Schema(
       ref: "User",
       validate: [
         {
-          validator: function (this: IFollower, v: string): boolean {
+          validator: function (this: IUserRelationDoc, v: string): boolean {
             return this.fromUserId.toString() !== v.toString();
           },
           message: "You can't target yourself",
         },
         {
-          validator: async function (this: IFollower): Promise<boolean> {
+          validator: async function (this: IUserRelationDoc): Promise<boolean> {
             const toUserExists = await UserModel.exists({ _id: this.toUserId })
               .setOptions({ skipHooks: true })
               .exec();
@@ -57,7 +53,7 @@ userRelationSchema.index({ fromUserId: 1, toUserId: 1, discriminatorKey: 1 }, { 
 userRelationSchema.index({ toUserId: 1 });
 userRelationSchema.index({ fromUserId: 1 });
 
-userRelationSchema.pre("save", async function (this: IFollower) {
+userRelationSchema.pre("save", async function (this: IUserRelationDoc) {
   if (this.kind === UserRelationKind.Follow) {
     await UserRelationModel.findOneAndDelete({
       fromUserId: this.fromUserId,
@@ -75,29 +71,23 @@ userRelationSchema.pre("save", async function (this: IFollower) {
   }
 });
 
-interface IUserRelationBase {
-  fromUserId: string;
-  toUserId: string;
-  kind: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+const UserRelationModel = model<IUserRelationDoc>(
+  "UserRelation",
+  userRelationSchema,
+  "user_relations"
+);
 
-export interface IFollower extends IUserRelationBase, mongoose.Document {}
-
-const UserRelationModel = model<IFollower>("UserRelation", userRelationSchema, "user_relations");
-
-const FollowerModel = UserRelationModel.discriminator<IFollower>(
+const FollowerModel = UserRelationModel.discriminator<IUserRelationDoc>(
   UserRelationKind.Follow,
   new mongoose.Schema({})
 );
 
-const MuteModel = UserRelationModel.discriminator<IFollower>(
+const MuteModel = UserRelationModel.discriminator<IUserRelationDoc>(
   UserRelationKind.Mute,
   new mongoose.Schema({})
 );
 
-const BlockModel = UserRelationModel.discriminator<IFollower>(
+const BlockModel = UserRelationModel.discriminator<IUserRelationDoc>(
   UserRelationKind.Block,
   new mongoose.Schema({})
 );

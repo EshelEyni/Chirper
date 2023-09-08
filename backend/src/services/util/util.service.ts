@@ -3,14 +3,7 @@ import nodemailer from "nodemailer";
 require("dotenv").config();
 import { AppError } from "../error/error.service";
 import { ObjectId } from "mongodb";
-
-export interface QueryObj {
-  [key: string]: string | undefined;
-  page?: string;
-  sort?: string;
-  limit?: string;
-  fields?: string;
-}
+import { ParsedReqQuery } from "../../Types/App";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyObject = { [key: string]: any };
@@ -27,15 +20,15 @@ const filterObj = (obj: AnyObject, ...allowedFields: string[]): AnyObject => {
 
 class APIFeatures<T> {
   private query: Query<T[], T>;
-  private queryObj: QueryObj;
+  private queryObj: ParsedReqQuery;
 
-  constructor(query: Query<T[], T>, queryString: QueryObj) {
+  constructor(query: Query<T[], T>, queryString: ParsedReqQuery) {
     this.query = query;
     this.queryObj = queryString;
   }
 
   filter(): APIFeatures<T> {
-    const queryObj: QueryObj = { ...this.queryObj };
+    const queryObj: ParsedReqQuery = { ...this.queryObj };
     const excludedFields = ["page", "sort", "limit", "fields"];
     excludedFields.forEach(el => delete queryObj[el]);
     const queryStr = JSON.stringify(queryObj).replace(

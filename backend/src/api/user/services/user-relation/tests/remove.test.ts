@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  UserRelationKind,
-  UserRelationModel,
-} from "../../../models/user-relation/user-relation.model";
+import { UserRelationModel } from "../../../models/user-relation/user-relation.model";
 import userRelationService from "../user-relation.service";
 import { UserModel } from "../../../models/user/user.model";
 import * as mongoose from "mongoose";
 import { AppError } from "../../../../../services/error/error.service";
 import { PostModel } from "../../../../post/models/post/post.model";
+import { UserRelationKind } from "../../../../../Types/Enums";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),

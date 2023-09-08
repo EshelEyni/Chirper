@@ -1,27 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { AppError } from "../../../../services/error/error.service";
-
-export type IPollOption = {
-  text: string;
-  voteCount: number;
-  _voteCount: number;
-  isLoggedInUserVoted: boolean;
-  _isLoggedInUserVoted: boolean;
-};
-
-export type IPollLength = {
-  days: number;
-  hours: number;
-  minutes: number;
-};
-
-export type IPoll = {
-  options: IPollOption[];
-  length: IPollLength;
-  _isVotingOff: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { IPoll, IPollLength, IPollOption } from "../../../../Types/ITypes";
 
 const imgsSchema = new mongoose.Schema(
   {

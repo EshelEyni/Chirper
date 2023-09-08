@@ -1,9 +1,6 @@
 import { FollowingResult, User } from "../../../../../../shared/types/user.interface";
 import { UserModel } from "../../models/user/user.model";
-import {
-  UserRelationKind,
-  UserRelationModel,
-} from "../../models/user-relation/user-relation.model";
+import { UserRelationModel } from "../../models/user-relation/user-relation.model";
 import { isValidMongoId } from "../../../../services/util/util.service";
 import mongoose, { ClientSession } from "mongoose";
 import { getLoggedInUserIdFromReq } from "../../../../services/als.service";
@@ -11,6 +8,8 @@ import { PostStatsModel } from "../../../post/models/post-stats/post-stats.model
 import { Post } from "../../../../../../shared/types/post.interface";
 import { AppError } from "../../../../services/error/error.service";
 import { PostModel } from "../../../post/models/post/post.model";
+import { UserRelationKind } from "../../../../Types/Enums";
+import { UserRelationParams, isFollowingMap } from "../../../../Types/App";
 
 type UpdateAndGetUsersParams = {
   fromUserId: string;
@@ -29,17 +28,6 @@ type UpdatePostStatsAndReturnPostParams = {
   fromUserId: string;
   relationState: UserRelationState;
   session: ClientSession;
-};
-
-export type UserRelationParams = {
-  fromUserId: string;
-  toUserId: string;
-  kind: UserRelationKind;
-  postId?: string;
-};
-
-export type isFollowingMap = {
-  [key: string]: boolean;
 };
 
 type UserRelationMap = {

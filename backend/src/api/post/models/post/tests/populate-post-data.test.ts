@@ -16,7 +16,7 @@ import {
 import { UserModel } from "../../../../user/models/user/user.model";
 import { PostLikeModel } from "../../like/post-like.model";
 import { RepostModel } from "../../repost/repost.model";
-import { IPost, PostModel } from "../post.model";
+import { PostModel } from "../post.model";
 import { populatePostData } from "../populate-post-data";
 import { getLoggedInUserIdFromReq } from "../../../../../services/als.service";
 import { PollVoteModel } from "../../poll-vote/poll-vote.model";
@@ -31,6 +31,7 @@ import {
   connectToTestDB,
   disconnectFromTestDB,
 } from "../../../../../services/test/test-db.service";
+import { IPost } from "../../../../../Types/ITypes";
 
 jest.mock("../../../../../services/als.service", () => ({
   getLoggedInUserIdFromReq: jest.fn(),

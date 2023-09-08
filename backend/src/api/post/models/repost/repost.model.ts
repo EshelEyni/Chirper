@@ -3,19 +3,8 @@ import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { UserModel } from "../../../user/models/user/user.model";
 import { PostModel } from "../post/post.model";
-import { Post, Repost } from "../../../../../../shared/types/post.interface";
-
-interface IRepostBase {
-  postId: ObjectId;
-  repostOwnerId: ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IRepostDoc extends IRepostBase, Document {
-  post: Post;
-  repost: Repost;
-}
+import { Post } from "../../../../../../shared/types/post.interface";
+import { IRepostDoc } from "../../../../Types/ITypes";
 
 const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
   {

@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../store/store";
-import { NewPost, NewPostImg } from "../../../../../shared/types/post.interface";
+import { NewPost } from "../../../../../shared/types/post.interface";
 import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/upload.service";
@@ -103,12 +103,19 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   async function uploadImagesAndSetToPost(newPosts: NewPost[]) {
     for (const post of newPosts) {
       if (!post.imgs.length) return;
-      const prms = post.imgs.map(async (img, idx) => ({
-        url: await uploadFileToCloudinary(img.file, "image"),
-        sortOrder: idx,
-      }));
-      const savedImgUrl = await Promise.all(prms);
-      post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
+
+      for (let img of post.imgs) {
+        if (!img.file) continue;
+        const url = await uploadFileToCloudinary(img.file, "image");
+        if (!url) continue;
+        img = { url };
+      }
+
+      // const prms = post.imgs.map(async img => ({
+      //   url: await uploadFileToCloudinary(img.file, "image"),
+      // }));
+      // const savedImgUrl = await Promise.all(prms);
+      // post.imgs = savedImgUrl.filter(img => img.url) as unknown as NewPostImg[];
     }
   }
 

@@ -1,6 +1,26 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-const gifSchema = new mongoose.Schema(
+interface IGif extends Document {
+  url: string;
+  staticUrl: string;
+  description: string;
+  sortOrder: number;
+  category: string;
+  size: {
+    width: number;
+    height: number;
+  };
+  placeholderUrl: string;
+  staticPlaceholderUrl: string;
+}
+
+interface IGifCategory extends Document {
+  name: string;
+  sortOrder: number;
+  imgUrl: string;
+}
+
+const gifSchema = new mongoose.Schema<IGif>(
   {
     url: {
       type: String,
@@ -24,7 +44,7 @@ const gifSchema = new mongoose.Schema(
         validator: (category: string) => {
           return mongoose.model("GifCategory").exists({ name: category });
         },
-        message: (props: any) => `${props.value} is not a valid category`,
+        message: props => `${props.value} is not a valid category`,
       },
     },
     size: {
@@ -46,14 +66,14 @@ const gifSchema = new mongoose.Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: IGif, ret: Record<string, unknown>) => {
         delete ret._id;
         return ret;
       },
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
+      transform: (_: IGif, ret: Record<string, unknown>) => {
         delete ret._id;
         return ret;
       },
@@ -65,13 +85,11 @@ const gifSchema = new mongoose.Schema(
 gifSchema.index({ category: 1 });
 
 gifSchema.pre("save", async function (next) {
-  const gif = this as any;
-  if (gif.isNew) gif.sortOrder = await GifModel.countDocuments({ category: gif.category });
-
+  if (this.isNew) this.sortOrder = await GifModel.countDocuments({ category: this.category });
   next();
 });
 
-const gifCategorySchema = new mongoose.Schema(
+const gifCategorySchema = new mongoose.Schema<IGifCategory>(
   {
     name: {
       type: String,
@@ -107,13 +125,15 @@ const gifCategorySchema = new mongoose.Schema(
 gifCategorySchema.index({ name: 1 }, { unique: true });
 
 gifCategorySchema.pre("save", async function (next) {
-  const gifCategory = this as any;
-  if (gifCategory.isNew) gifCategory.sortOrder = await GifCategoryModel.countDocuments();
-
+  if (this.isNew) this.sortOrder = await GifCategoryModel.countDocuments();
   next();
 });
 
-const GifModel = mongoose.model("Gif", gifSchema);
-const GifCategoryModel = mongoose.model("GifCategory", gifCategorySchema, "gif_categories");
+const GifModel = mongoose.model<IGif>("Gif", gifSchema);
+const GifCategoryModel = mongoose.model<IGifCategory>(
+  "GifCategory",
+  gifCategorySchema,
+  "gif_categories"
+);
 
 export { gifSchema, GifModel, gifCategorySchema, GifCategoryModel };

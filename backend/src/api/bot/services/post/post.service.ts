@@ -1,33 +1,18 @@
 import { AppError } from "../../../../services/error/error.service";
 import promptService from "../prompt/prompt.service";
 import openAIService from "../openai/openai.service";
-import { NewPost, Poll, Post, PostImg } from "../../../../../../shared/types/post.interface";
+import { NewPost, NewPostImg, Poll, Post } from "../../../../../../shared/types/post.interface";
 import youtubeService from "../youtube/youtube.service";
 import { botServiceLogger } from "../logger/logger";
 import { shuffleArray } from "../../../../services/util/util.service";
 import { PostModel } from "../../../post/models/post/post.model";
-
-export enum PostType {
-  TEXT = "text",
-  POLL = "poll",
-  IMAGE = "image",
-  VIDEO = "video",
-  SONG_REVIEW = "song-review",
-}
+import { CreateBotPostOptions } from "../../../../Types/App";
+import { PostType } from "../../../../Types/Enums";
 
 interface createPostParams {
   botId: string;
-  options: CreatePostOptions;
+  options: CreateBotPostOptions;
 }
-
-export type CreatePostOptions = {
-  prompt?: string;
-  schedule?: Date;
-  numOfPosts?: number;
-  postType?: PostType;
-  numberOfImages?: number;
-  addTextToContent?: boolean;
-};
 
 interface BasicPostOptions {
   prompt: string;
@@ -37,9 +22,9 @@ interface PostImageOptions extends BasicPostOptions {
   numberOfImages?: number;
 }
 
-type GeneratePostOption = { botId: string; options: CreatePostOptions };
+type GeneratePostOption = { botId: string; options: CreateBotPostOptions };
 
-async function createPost(botId: string, options: CreatePostOptions): Promise<Post[]> {
+async function createPost(botId: string, options: CreateBotPostOptions): Promise<Post[]> {
   if (!botId) throw new AppError("botId is falsey", 500);
   const {
     prompt: promptFromOptions,
@@ -75,7 +60,7 @@ async function createPost(botId: string, options: CreatePostOptions): Promise<Po
         const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.IMAGE));
         const imgs = await createPostImage({ prompt, numberOfImages });
 
-        postBody["imgs"] = imgs as any;
+        postBody["imgs"] = imgs;
 
         if (!addTextToContent) break;
         const text = await createPostText(prompt);
@@ -132,7 +117,7 @@ async function createPostPoll(prompt: string): Promise<{ text: string; poll: Pol
 async function createPostImage({
   prompt,
   numberOfImages = 1,
-}: PostImageOptions): Promise<PostImg[]> {
+}: PostImageOptions): Promise<NewPostImg[]> {
   botServiceLogger.get("imgs");
   const imgs = await openAIService.getImgsFromOpenOpenAI(prompt, numberOfImages);
   if (!imgs) throw new AppError("imgs is undefined", 500);

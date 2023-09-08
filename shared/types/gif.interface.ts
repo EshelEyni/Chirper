@@ -1,5 +1,5 @@
 export interface GifCategory {
-  id: string;
+  readonly id: string;
   name: string;
   imgUrl: string;
   sortOrder: number;

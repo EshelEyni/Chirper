@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
+import { IBotPrompt } from "../../../Types/ITypes";
 
-export interface BotPromptDocument extends mongoose.Document {
-  botId: string;
-  prompt: string;
-}
-
-const botPromptSchema = new mongoose.Schema(
+const botPromptSchema = new mongoose.Schema<IBotPrompt>(
   {
     botId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -37,4 +33,8 @@ const botPromptSchema = new mongoose.Schema(
 
 botPromptSchema.index({ botId: 1, prompt: 1 }, { unique: true });
 
-export const BotPromptModel = mongoose.model("BotPrompt", botPromptSchema, "bot_prompts");
+export const BotPromptModel = mongoose.model<IBotPrompt>(
+  "BotPrompt",
+  botPromptSchema,
+  "bot_prompts"
+);

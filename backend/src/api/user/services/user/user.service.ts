@@ -1,10 +1,12 @@
 import { User } from "../../../../../../shared/types/user.interface";
-import { IUser, UserModel } from "../../models/user/user.model";
-import { APIFeatures, QueryObj, filterObj } from "../../../../services/util/util.service";
+import { UserModel } from "../../models/user/user.model";
+import { APIFeatures, filterObj } from "../../../../services/util/util.service";
 import { AppError } from "../../../../services/error/error.service";
 import { logger } from "../../../../services/logger/logger.service";
+import { ParsedReqQuery } from "../../../../Types/App";
+import { IUser } from "../../../../Types/ITypes";
 
-async function query(queryString: QueryObj): Promise<IUser[]> {
+async function query(queryString: ParsedReqQuery): Promise<IUser[]> {
   const features = new APIFeatures(UserModel.find(), queryString)
     .filter()
     .sort()

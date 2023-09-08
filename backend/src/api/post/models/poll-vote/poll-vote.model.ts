@@ -4,22 +4,9 @@ import { AppError } from "../../../../services/error/error.service";
 import { queryEntityExists } from "../../../../services/util/util.service";
 import { PostModel } from "../post/post.model";
 import { UserModel } from "../../../user/models/user/user.model";
-import { IPollLength } from "../post/post-sub-schemas";
+import { IPollLength, IPollVoteDoc } from "../../../../Types/ITypes";
 
-interface IPollVoteBase {
-  postId: mongoose.Types.ObjectId;
-  optionIdx: number;
-  userId: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-  _isLoggedInUserVoted: boolean;
-}
-
-export interface IPollVoteDoc extends IPollVoteBase {
-  _id: mongoose.Types.ObjectId;
-}
-
-const pollVoteSchema: Schema<IPollVoteBase> = new mongoose.Schema(
+const pollVoteSchema: Schema<IPollVoteDoc> = new mongoose.Schema(
   {
     postId: {
       type: mongoose.Schema.Types.ObjectId,

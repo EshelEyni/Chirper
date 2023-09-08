@@ -31,6 +31,33 @@ describe("PostModel: Hooks", () => {
     await disconnectFromTestDB();
   });
 
+  describe("(1) Pre Validate hook - should set sortOrder in imgs property correctly", () => {
+    it("Should set sortOrder to 1 if imgs has only one element.", async () => {
+      const post = await createTestPost({
+        body: { imgs: [{ url: "https://example.com/img" }] },
+      });
+
+      expect(post.imgs).toEqual([{ url: "https://example.com/img", sortOrder: 1 }]);
+    });
+
+    it("Should set sortOrder correctly if imgs has multiple elements.", async () => {
+      const post = await createTestPost({
+        body: {
+          imgs: [
+            { url: "https://example.com/img1" },
+            { url: "https://example.com/img2" },
+            { url: "https://example.com/img3" },
+          ],
+        },
+      });
+      expect(post.imgs).toEqual([
+        { url: "https://example.com/img1", sortOrder: 1 },
+        { url: "https://example.com/img2", sortOrder: 2 },
+        { url: "https://example.com/img3", sortOrder: 3 },
+      ]);
+    });
+  });
+
   describe("(1) Pre save hook - content validation", () => {
     it("Should throw an error when no content (text, gif, imgs, poll, videoUrl) is provided.", async () => {
       // Text is a default in createTestPost, therefore we delete it

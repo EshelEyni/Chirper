@@ -18,7 +18,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
       },
     },
 
-    repostOwnerId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -32,7 +32,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
     toObject: {
       virtuals: true,
       transform: (_: Document, ret: Record<string, unknown>) => {
-        delete ret.repostOwnerId;
+        delete ret.userId;
         delete ret._id;
 
         const post = ret.post as Post;
@@ -47,7 +47,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (_: Document, ret: Record<string, unknown>) => {
-        delete ret.repostOwnerId;
+        delete ret.userId;
         delete ret._id;
 
         const post = ret.post as Post;
@@ -65,7 +65,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
 
 repostSchema.virtual("repostedBy", {
   ref: "User",
-  localField: "repostOwnerId",
+  localField: "userId",
   foreignField: "_id",
   justOne: true,
 });
@@ -77,8 +77,8 @@ repostSchema.virtual("post", {
   justOne: true,
 });
 
-repostSchema.index({ postId: 1, repostOwnerId: 1 }, { unique: true });
-repostSchema.index({ repostOwnerId: 1 });
+repostSchema.index({ postId: 1, userId: 1 }, { unique: true });
+repostSchema.index({ userId: 1 });
 repostSchema.index({ postId: 1 });
 
 repostSchema.post("save", async function (doc: Document) {

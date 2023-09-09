@@ -18,7 +18,7 @@ import {
   createTestPost,
   createTestReposts,
   createTestUser,
-  createTestView,
+  createTestPostStats,
   getLoginTokenStrForTest,
 } from "../../Services/Test/TestUtilService";
 import { RepostModel } from "../../Models/Repost/RepostModel";
@@ -72,11 +72,11 @@ describe("Post Router", () => {
       await createTestReposts(
         {
           postId: posts[0].id,
-          repostOwnerId: validUserId,
+          userId: validUserId,
         },
         {
           postId: posts[1].id,
-          repostOwnerId: validUserId,
+          userId: validUserId,
         }
       );
       const res = await request(app).get("/");
@@ -141,8 +141,8 @@ describe("Post Router", () => {
 
     it("should return a 200 status code and the post stats", async () => {
       const post = await createTestPost({});
-      await createTestReposts({ postId: post.id, repostOwnerId: validUserId });
-      await createTestView({ postId: post.id, userId: validUserId });
+      await createTestReposts({ postId: post.id, userId: validUserId });
+      await createTestPostStats({ postId: post.id, userId: validUserId });
       const res = await request(app).get(`/${post.id}/stats`).set("Cookie", [token]);
 
       expect(res.status).toBe(200);
@@ -194,7 +194,7 @@ describe("Post Router", () => {
 
     it("should return a 200 status code and the updated post stats", async () => {
       const post = await createTestPost({});
-      await createTestView({ postId: post.id, userId: validUserId });
+      await createTestPostStats({ postId: post.id, userId: validUserId });
       const res = await request(app).patch(`/${post.id}/stats`).set("Cookie", [token]).send({
         isDetailedViewed: true,
         isProfileViewed: true,
@@ -225,7 +225,7 @@ describe("Post Router", () => {
     it("should return a 200 status code and an array of posts", async () => {
       await PostBookmarkModel.create({
         postId: validPostId,
-        bookmarkOwnerId: validUserId,
+        userId: validUserId,
       });
 
       const res = await request(app).get("/bookmark").set("Cookie", [token]);
@@ -290,7 +290,7 @@ describe("Post Router", () => {
     it("should return a 200 status code and the deleted bookmarked post", async () => {
       await PostBookmarkModel.create({
         postId: validPostId,
-        bookmarkOwnerId: validUserId,
+        userId: validUserId,
       });
 
       const res = await request(app).delete(`/${validPostId}/bookmark`).set("Cookie", [token]);

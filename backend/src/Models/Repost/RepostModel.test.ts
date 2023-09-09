@@ -18,7 +18,7 @@ jest.mock("../../Services/ALSService", () => ({
 }));
 
 describe("Repost Model", () => {
-  let post: Post, user: User, postId: string, repostOwnerId: string;
+  let post: Post, user: User, postId: string, userId: string;
 
   async function deleteAndCreateMocks() {
     await RepostModel.deleteMany({});
@@ -27,7 +27,7 @@ describe("Repost Model", () => {
     user = await createTestUser({});
     post = await createTestPost({});
     postId = post.id;
-    repostOwnerId = user.id;
+    userId = user.id;
     mockGetLoggedInUserIdFromReq();
   }
 
@@ -59,12 +59,12 @@ describe("Repost Model", () => {
       await expect(postLike.save()).rejects.toThrow("postId: Path `postId` is required.");
     });
 
-    it("should require repostOwnerId", async () => {
+    it("should require userId", async () => {
       const postLike = new RepostModel({
         postId: getMongoId(),
       });
       await expect(postLike.save()).rejects.toThrow(
-        "repostOwnerId: Path `repostOwnerId` is required."
+        "userId: Path `userId` is required."
       );
     });
 
@@ -72,7 +72,7 @@ describe("Repost Model", () => {
       const invalidPostId = getMongoId();
       const postLike = new RepostModel({
         postId: invalidPostId,
-        repostOwnerId,
+        userId,
       });
       await expect(postLike.save()).rejects.toThrow("Referenced post does not exist");
     });
@@ -81,7 +81,7 @@ describe("Repost Model", () => {
       const invalidUserId = getMongoId();
       const postLike = new RepostModel({
         postId,
-        repostOwnerId: invalidUserId,
+        userId: invalidUserId,
       });
       await expect(postLike.save()).rejects.toThrow("Referenced user does not exist");
     });
@@ -92,12 +92,12 @@ describe("Repost Model", () => {
       await deleteAndCreateMocks();
       await RepostModel.create({
         postId,
-        repostOwnerId,
+        userId,
       });
 
       const duplicatePostLike = new RepostModel({
         postId,
-        repostOwnerId,
+        userId,
       });
 
       let error;
@@ -117,7 +117,7 @@ describe("Repost Model", () => {
 
       const repost = (await RepostModel.create({
         postId,
-        repostOwnerId,
+        userId,
       })) as any;
 
       expect(repost.post).toBeDefined();
@@ -134,7 +134,7 @@ describe("Repost Model", () => {
 
       const repost = (await RepostModel.create({
         postId,
-        repostOwnerId,
+        userId,
       })) as any;
 
       const doc = (await RepostModel.findOneAndRemove({
@@ -154,7 +154,7 @@ describe("Repost Model", () => {
       await deleteAndCreateMocks();
       (await RepostModel.create({
         postId,
-        repostOwnerId,
+        userId,
       })) as any;
 
       const reposts = (await RepostModel.find({})) as any;
@@ -170,7 +170,7 @@ describe("Repost Model", () => {
       await deleteAndCreateMocks();
       const repost = (await RepostModel.create({
         postId,
-        repostOwnerId,
+        userId,
       })) as any;
 
       const foundRepost = (await RepostModel.findOne({ _id: repost._id })) as any;

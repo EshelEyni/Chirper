@@ -123,7 +123,7 @@ const quotePost = asyncErrorCatcher(async (req: Request, res: Response): Promise
   if (isRepost) {
     data = await RepostModel.create({
       postId: quotedPostId,
-      repostOwnerId: loggedInUserId,
+      userId: loggedInUserId,
     });
   } else {
     data = (await PostModel.create(post)) as unknown as Post;
@@ -180,7 +180,7 @@ const addRepost = asyncErrorCatcher(async (req: Request, res: Response): Promise
 
   const data = (await RepostModel.create({
     postId,
-    repostOwnerId: loggedInUserId,
+    userId: loggedInUserId,
   })) as unknown as IRepostDoc;
 
   res.status(201).send({
@@ -200,7 +200,7 @@ const removeRepost = asyncErrorCatcher(async (req: Request, res: Response): Prom
 
   const result = (await RepostModel.findOneAndDelete({
     postId,
-    repostOwnerId: loggedInUserId,
+    userId: loggedInUserId,
   })) as unknown as IRepostDoc;
 
   res.send({
@@ -346,7 +346,7 @@ const getBookmarkedPosts = asyncErrorCatcher(async (req: Request, res: Response)
 
   const bookmarkedPosts = (
     await PostBookmarkModel.find({
-      bookmarkOwnerId: loggedInUserId,
+      userId: loggedInUserId,
     })
   ).map((doc: IBookmarkedPostDoc) => doc.post);
 
@@ -371,7 +371,7 @@ const addBookmarkedPost = asyncErrorCatcher(async (req: Request, res: Response):
     await PostBookmarkModel.create({
       postId,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      bookmarkOwnerId: loggedInUserId!,
+      userId: loggedInUserId!,
     })
   ).post;
 
@@ -394,7 +394,7 @@ const removeBookmarkedPost = asyncErrorCatcher(
     const updatedPost = (
       await PostBookmarkModel.findOneAndDelete({
         postId,
-        bookmarkOwnerId: loggedInUserId,
+        userId: loggedInUserId,
       })
     )?.post;
 

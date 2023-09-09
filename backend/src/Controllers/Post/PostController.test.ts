@@ -591,7 +591,7 @@ describe("Post Controller", () => {
       await sut(req as Request, res as Response, nextMock);
 
       expect(RepostModel.create).toHaveBeenCalledWith({
-        repostOwnerId: loggedInUserId,
+        userId: loggedInUserId,
         postId: req.params!.id,
       });
 
@@ -762,7 +762,7 @@ describe("Post Controller", () => {
       await sut(req as Request, res as Response, nextMock);
 
       expect(RepostModel.create).toHaveBeenCalledWith({
-        repostOwnerId: loggedInUserId,
+        userId: loggedInUserId,
         postId: req.params!.id,
       });
 
@@ -840,7 +840,7 @@ describe("Post Controller", () => {
       await sut(req as Request, res as Response, nextMock);
 
       expect(RepostModel.findOneAndDelete).toHaveBeenCalledWith({
-        repostOwnerId: loggedInUserId,
+        userId: loggedInUserId,
         postId: req.params!.id,
       });
 

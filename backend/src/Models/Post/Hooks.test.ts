@@ -5,8 +5,12 @@ import {
   createManyTestPosts,
   createManyTestUsers,
   createTestGif,
+  createTestLike,
   createTestPoll,
   createTestPost,
+  createTestPostStats,
+  createTestReposts,
+  deleteTestPost,
 } from "../../Services/Test/TestUtilService";
 import { UserModel } from "../../Models/User/UserModel";
 import * as PostModelModule from "./PostModel";
@@ -14,6 +18,10 @@ import * as populatePostData from "../../Services/Post/PopulatePostData";
 import userRelationService from "../../Services/UserRelation/UserRelationService";
 import { assertPost } from "../../Services/Test/TestAssertionService";
 import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { RepostModel } from "../Repost/RepostModel";
+import { PostBookmarkModel } from "../PostBookmark/PostBookmarkModel";
+import { PostLikeModel } from "../PostLike/PostLikeModel";
+import { PostStatsModel } from "../PostStats/PostStatsModel";
 
 describe("PostModel: Hooks", () => {
   beforeAll(async () => {
@@ -285,20 +293,53 @@ describe("PostModel: Hooks", () => {
     });
   });
 
-  fdescribe("Post findOneAndDelete hook - should remove all doc who reference Post", () => {
-    function createBookmarkDetails(postId: string, ...userIds: string[]): any[] {
+  fdescribe("Pre findOneAndDelete hook - should remove all doc who reference Post", () => {
+    function createPostRefDocDetails(postId: string, ...userIds: string[]): any[] {
       return userIds.map(userId => ({ postId, userId }));
     }
 
     it("Should remove all reposts that reference the deleted post.", async () => {
       const [user1, user2] = await createManyTestUsers(2);
       const post = await createTestPost({});
-      await createManyTestBookmarks(...createBookmarkDetails(post.id, user1.id, user2.id));
-      // await createManyTestPosts({ reposts: [{ postId: post1.id }, { postId: post2.id }] });
-      // await PostModelModule.PostModel.findByIdAndDelete(post1.id);
-      // const reposts = await PostModelModule.RepostModel.find({});
-      // expect(reposts.length).toBe(1);
-      // expect(reposts[0].repost.postId).toBe(post2.id);
+      await createTestReposts(...createPostRefDocDetails(post.id, user1.id, user2.id));
+      const repostsBeforeDelete = await RepostModel.countDocuments({ postId: post.id });
+      expect(repostsBeforeDelete).toBe(2);
+      await deleteTestPost(post.id);
+      const repostsAfterDelete = await RepostModel.countDocuments({ postId: post.id });
+      expect(repostsAfterDelete).toBe(0);
+    });
+
+    it("Should remove all like that reference the deleted post.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      const post = await createTestPost({});
+      await createTestLike(...createPostRefDocDetails(post.id, user1.id, user2.id));
+      const likesBeforeDelete = await PostLikeModel.countDocuments({ postId: post.id });
+      expect(likesBeforeDelete).toBe(2);
+      await deleteTestPost(post.id);
+      const likesAfterDelete = await PostLikeModel.countDocuments({ postId: post.id });
+      expect(likesAfterDelete).toBe(0);
+    });
+
+    it("Should remove all posts stats the deleted post.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      const post = await createTestPost({});
+      await createTestPostStats(...createPostRefDocDetails(post.id, user1.id, user2.id));
+      const bookmarksBeforeDelete = await PostStatsModel.countDocuments({ postId: post.id });
+      expect(bookmarksBeforeDelete).toBe(2);
+      await deleteTestPost(post.id);
+      const bookmarksAfterDelete = await PostStatsModel.countDocuments({ postId: post.id });
+      expect(bookmarksAfterDelete).toBe(0);
+    });
+
+    it("Should remove all bookmarks that reference the deleted post.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      const post = await createTestPost({});
+      await createManyTestBookmarks(...createPostRefDocDetails(post.id, user1.id, user2.id));
+      const bookmarksBeforeDelete = await PostBookmarkModel.countDocuments({ postId: post.id });
+      expect(bookmarksBeforeDelete).toBe(2);
+      await deleteTestPost(post.id);
+      const bookmarksAfterDelete = await PostBookmarkModel.countDocuments({ postId: post.id });
+      expect(bookmarksAfterDelete).toBe(0);
     });
   });
 });

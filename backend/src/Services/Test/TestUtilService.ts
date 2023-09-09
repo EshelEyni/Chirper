@@ -28,7 +28,7 @@ type CreateTestPostOptions = {
 
 type RepostParams = {
   postId: string;
-  repostOwnerId: string;
+  userId: string;
 };
 
 type CreatePostRefDocParams = {
@@ -132,7 +132,8 @@ async function createTestPost({
 }
 
 async function deleteTestPost(id: string) {
-  const deletedPost = await PostModel.findByIdAndDelete(id);
+  const deletedPost = await PostModel.findById(id);
+  await PostModel.findByIdAndDelete(id);
   if (!deletedPost) return;
   await UserModel.findByIdAndUpdate(deletedPost.createdById);
 }
@@ -198,7 +199,7 @@ async function createTestLike(...likeDetails: CreatePostRefDocParams[]): Promise
   return likes;
 }
 
-async function createTestView(...viewDetails: CreatePostRefDocParams[]) {
+async function createTestPostStats(...viewDetails: CreatePostRefDocParams[]) {
   await PostStatsModel.deleteMany({});
   const views = await PostStatsModel.create(viewDetails);
   return views;
@@ -372,7 +373,7 @@ export {
   createTestLike,
   createTestBookmark,
   createManyTestBookmarks,
-  createTestView,
+  createTestPostStats,
   getMongoId,
   getMockedUser,
   getMockPost,

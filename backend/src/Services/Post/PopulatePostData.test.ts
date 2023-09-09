@@ -10,7 +10,7 @@ import {
   createTestPost,
   createTestReposts,
   createTestUser,
-  createTestView,
+  createTestPostStats,
 } from "../Test/TestUtilService";
 import { UserModel } from "../../Models/User/UserModel";
 import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
@@ -30,7 +30,7 @@ import { connectToTestDB, disconnectFromTestDB } from "../Test/TestDBService";
 
 type RepostParams = {
   postId: string;
-  repostOwnerId: string;
+  userId: string;
 };
 
 type CreatePostStatParams = {
@@ -48,7 +48,7 @@ type GetPostDocParams = {
 
 type CreatePostStatDetailsConfig = {
   postId: string;
-  userIdKey?: "userId" | "repostOwnerId";
+  userIdKey?: "userId" | "userId";
   users: User[];
 };
 
@@ -98,7 +98,7 @@ describe("PostModel: PostDataPopulator", () => {
     const repostDetails = _createPostStatDetails({
       postId: post.id,
       users: [user1, user2, user3],
-      userIdKey: "repostOwnerId",
+      userIdKey: "userId",
     }) as RepostParams[];
     await createTestReposts(...repostDetails);
     const updatedPost = await _getTestPostAndPopulate(post.id);
@@ -136,7 +136,7 @@ describe("PostModel: PostDataPopulator", () => {
       users: [user1, user2, user3],
     }) as CreatePostStatParams[];
 
-    await createTestView(...viewDetails);
+    await createTestPostStats(...viewDetails);
 
     const updatedPost = await _getTestPostAndPopulate(post.id);
     expect(updatedPost.viewsCount).toBe(3);

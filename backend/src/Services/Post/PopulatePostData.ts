@@ -98,7 +98,7 @@ async function _getPostLoggedInUserActionState(
 
   const repostResults = await RepostModel.find({
     postId: { $in: uniquePostIds },
-    repostOwnerId: userId,
+    userId: userId,
   })
     .setOptions({ skipHooks: true })
     .select({ postId: 1 })
@@ -115,7 +115,7 @@ async function _getPostLoggedInUserActionState(
 
   const bookmarkedResults = await PostBookmarkModel.find({
     postId: { $in: uniquePostIds },
-    bookmarkOwnerId: userId,
+    userId: userId,
   }).setOptions({ skipHooks: true });
 
   const bookmarkedIdSet = new Set(bookmarkedResults.map(bookmark => bookmark.postId.toString()));

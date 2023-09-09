@@ -74,7 +74,7 @@ export interface IPollVoteDoc extends IPollVote {
 
 interface IRepost {
   postId: mongoose.Types.ObjectId;
-  repostOwnerId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -7,7 +7,7 @@ import { UserModel } from "../User/UserModel";
 
 interface IPostBookmark {
   postId: ObjectId;
-  bookmarkOwnerId: ObjectId;
+  userId: ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,7 +28,7 @@ const postBookmarkSchema = new mongoose.Schema(
       },
     },
 
-    bookmarkOwnerId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -56,8 +56,8 @@ postBookmarkSchema.virtual("post", {
   justOne: true,
 });
 
-postBookmarkSchema.index({ postId: 1, bookmarkOwnerId: 1 }, { unique: true });
-postBookmarkSchema.index({ bookmarkOwnerId: 1 });
+postBookmarkSchema.index({ postId: 1, userId: 1 }, { unique: true });
+postBookmarkSchema.index({ userId: 1 });
 
 postBookmarkSchema.post("save", async function (doc: Document) {
   if (!doc) return;

@@ -9,6 +9,10 @@ import { imgsSchema, locationSchema, pollSchema } from "./PostSubSchemas";
 import { AppError } from "../../Services/Error/ErrorService";
 import { queryEntityExists } from "../../Services/Util/UtilService";
 import { populatePostData } from "../../Services/Post/PopulatePostData";
+import { PostBookmarkModel } from "../PostBookmark/PostBookmarkModel";
+import { PostLikeModel } from "../PostLike/PostLikeModel";
+import { PostStatsModel } from "../PostStats/PostStatsModel";
+import { RepostModel } from "../Repost/RepostModel";
 
 const postSchema: Schema<IPost> = new mongoose.Schema(
   {
@@ -275,6 +279,16 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
   const isResArray = Array.isArray(res);
   if (isResArray) await populatePostData(...res);
   else await populatePostData(res);
+});
+
+postSchema.pre("findOneAndDelete", async function (this: Query<Post & Document, Post>, next) {
+  const query = await this.getQuery();
+  if (!query) return;
+  await PostBookmarkModel.deleteMany({ postId: query._id });
+  await PostLikeModel.deleteMany({ postId: query._id });
+  await PostStatsModel.deleteMany({ postId: query._id });
+  await RepostModel.deleteMany({ postId: query._id });
+  next();
 });
 
 const PostModel = mongoose.model<IPostDoc>("Post", postSchema);

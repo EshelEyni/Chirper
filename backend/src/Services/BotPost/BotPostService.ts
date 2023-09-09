@@ -1,4 +1,4 @@
-import { CreateBotPostOptions } from "../../types/App";
+import { CreateBotPostOptions, GetPromptResult, MovieDetails } from "../../types/App";
 import { PostType } from "../../types/Enums";
 import { NewPost, NewPostImg, Poll, Post } from "../../../../shared/types/post.interface";
 import { AppError } from "../../services/error/errorService";
@@ -8,6 +8,7 @@ import youtubeService from "../../services/youtube/youtubeService";
 import { botServiceLogger } from "../botLogger/botLogger";
 import { shuffleArray } from "../../services/util/utilService";
 import { PostModel } from "../../models/post/postModel";
+import OMDBService from "../OMDBService/OMDBService";
 
 interface createPostParams {
   botId: string;
@@ -45,44 +46,67 @@ async function createPost(botId: string, options: CreateBotPostOptions): Promise
     botServiceLogger.create({ entity: "post", iterationNum: i });
     switch (postType) {
       case PostType.TEXT: {
-        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.TEXT));
-        postBody["text"] = await createPostText(prompt);
+        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.TEXT)).prompt;
+        postBody["text"] = await _createPostText(prompt);
         break;
       }
       case PostType.POLL: {
-        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.POLL));
-        const { text, poll } = await createPostPoll(prompt);
+        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.POLL)).prompt;
+        const { text, poll } = await _createPostPoll(prompt);
         postBody["text"] = text;
         postBody["poll"] = poll;
         break;
       }
       case PostType.IMAGE: {
-        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.IMAGE));
-        const imgs = await createPostImage({ prompt, numberOfImages });
+        let prompt = promptFromOptions;
+        let rawPrompt: string | undefined = undefined;
+        if (!prompt) {
+          const res = await _getBotPrompt(botId, PostType.IMAGE);
+          ({ prompt } = res), ({ rawPrompt } = res);
+        }
+        const imgs = await _createPostImage({ prompt: rawPrompt ?? prompt, numberOfImages });
 
         postBody["imgs"] = imgs;
 
         if (!addTextToContent) break;
-        const text = await createPostText(prompt);
+        const text = await _createPostText(prompt);
         postBody["text"] = text ?? "";
         break;
       }
       case PostType.VIDEO: {
-        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.VIDEO));
-        const videoUrl = await createPostVideo(prompt);
+        let prompt = promptFromOptions;
+        let rawPrompt: string | undefined = undefined;
+
+        if (!prompt) {
+          const res = await _getBotPrompt(botId, PostType.VIDEO);
+          ({ prompt } = res), ({ rawPrompt } = res);
+        }
+
+        const videoUrl = await _createPostVideo(rawPrompt ?? prompt);
+
         postBody["videoUrl"] = videoUrl;
 
         if (!addTextToContent) break;
-        const text = await createPostText(prompt);
+        const text = await _createPostText(prompt);
         postBody["text"] = text ?? "";
 
         break;
       }
       case PostType.SONG_REVIEW: {
-        const prompt = promptFromOptions ?? (await _getBotPrompt(botId, PostType.SONG_REVIEW));
-        const { videoUrl, text } = await createPostSongReview(prompt);
+        const prompt =
+          promptFromOptions ?? (await _getBotPrompt(botId, PostType.SONG_REVIEW)).prompt;
+        const { videoUrl, text } = await _createPostSongReview(prompt);
         postBody["videoUrl"] = videoUrl;
         postBody["text"] = text;
+        break;
+      }
+      case PostType.MOVIE_REVIEW: {
+        const prompt =
+          promptFromOptions ?? (await _getBotPrompt(botId, PostType.MOVIE_REVIEW)).prompt;
+        const { text, imgs } = await _createPostMovieReview(prompt);
+        postBody["text"] = text;
+        postBody["imgs"] = imgs;
+
         break;
       }
       default:
@@ -99,7 +123,7 @@ async function createPost(botId: string, options: CreateBotPostOptions): Promise
   return posts;
 }
 
-async function createPostText(prompt: string): Promise<string> {
+async function _createPostText(prompt: string): Promise<string> {
   botServiceLogger.get("text");
   const text = await openAIService.getTextFromOpenAI(prompt);
   if (!text) throw new AppError("text is undefined", 500);
@@ -107,14 +131,14 @@ async function createPostText(prompt: string): Promise<string> {
   return text;
 }
 
-async function createPostPoll(prompt: string): Promise<{ text: string; poll: Poll }> {
+async function _createPostPoll(prompt: string): Promise<{ text: string; poll: Poll }> {
   botServiceLogger.get("poll");
   const { text, poll } = await openAIService.getAndSetPostPollFromOpenAI(prompt);
   botServiceLogger.retrieve("poll");
   return { text, poll };
 }
 
-async function createPostImage({
+async function _createPostImage({
   prompt,
   numberOfImages = 1,
 }: PostImageOptions): Promise<NewPostImg[]> {
@@ -127,7 +151,7 @@ async function createPostImage({
   return imgs;
 }
 
-async function createPostVideo(prompt: string): Promise<string> {
+async function _createPostVideo(prompt: string): Promise<string> {
   botServiceLogger.get("videoUrl");
   const videoUrl = await youtubeService.getYoutubeVideo(prompt);
   if (!videoUrl) throw new AppError("videoUrl is undefined", 500);
@@ -136,7 +160,7 @@ async function createPostVideo(prompt: string): Promise<string> {
   return videoUrl;
 }
 
-async function createPostSongReview(prompt: string) {
+async function _createPostSongReview(prompt: string) {
   botServiceLogger.get("songReview");
   const text = await openAIService.getTextFromOpenAI(prompt, "gpt-4");
   const parsedRes = JSON.parse(text);
@@ -154,6 +178,34 @@ async function createPostSongReview(prompt: string) {
   return {
     videoUrl,
     text: review,
+  };
+}
+
+async function _createPostMovieReview(prompt: string) {
+  botServiceLogger.get("movieReview");
+  const text = await openAIService.getTextFromOpenAI(prompt, "gpt-4");
+  const parsedRes: { movieName: string; review: string } = JSON.parse(text);
+
+  if (!parsedRes.movieName) throw new AppError("movieName is undefined", 500);
+  if (!parsedRes.review) throw new AppError("review is undefined", 500);
+
+  const { movieName, review } = parsedRes;
+
+  botServiceLogger.retrieve("movieReview");
+
+  botServiceLogger.get("movieInfo");
+  const movieDetails = await OMDBService.getOMDBContent({ prompt: movieName });
+  if (!movieDetails) throw new AppError("movieDetails is undefined", 500);
+  botServiceLogger.retrieve("movieInfo");
+
+  const generateMovieReviewText = (movieDetails: MovieDetails, review: string) => {
+    const { title, year, director, writer, released } = movieDetails;
+    return `${title} (${year})\nDirector: ${director}\nWriter: ${writer}\nReleased: ${released} \n\n${review}`;
+  };
+
+  return {
+    text: generateMovieReviewText(movieDetails, review),
+    imgs: [{ url: movieDetails.imgUrl }],
   };
 }
 
@@ -177,7 +229,7 @@ async function autoSaveBotPosts() {
   }, ONE_MINUTE);
 }
 
-async function _getBotPrompt(botId: string, type: PostType): Promise<string> {
+async function _getBotPrompt(botId: string, type: PostType): Promise<GetPromptResult> {
   if (!type) throw new AppError("postType is falsey", 500);
   if (!botId) throw new AppError("botId is falsey", 500);
   botServiceLogger.get("prompt");

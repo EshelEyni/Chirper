@@ -22,6 +22,20 @@ export type UserRelationParams = {
   postId?: string;
 };
 
-export type isFollowingMap = {
+export type IsFollowingMap = {
   [key: string]: boolean;
+};
+
+export type GetPromptResult = {
+  rawPrompt: string;
+  prompt: string;
+};
+
+export type MovieDetails = {
+  title: string;
+  year: string;
+  imgUrl: string;
+  released: string;
+  director: string;
+  writer: string;
 };

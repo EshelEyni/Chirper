@@ -17,6 +17,7 @@ import postRouter from "../../routers/post/postRouter";
 import gifRouter from "../../routers/GIF/GIFRouter";
 import locationRouter from "../../routers/location/locationRouter";
 import authRouter from "../../routers/auth/authRouter";
+import botRouter from "../../routers/bot/botRouter";
 import { requestLimiter } from "../../services/rateLimiterService";
 
 const isProdEnv = process.env.NODE_ENV === "production";
@@ -66,6 +67,7 @@ if (!isProdEnv)
 
 app.use("/api/user", userRelationRouter);
 app.use("/api/user", userRouter);
+app.use("/api/bot", botRouter);
 app.use("/api/post", postRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/location", locationRouter);

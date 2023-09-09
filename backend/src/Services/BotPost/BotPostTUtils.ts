@@ -4,6 +4,9 @@ import openAIService from "../openAI/openAIService";
 import youtubeService from "../youtube/youtubeService";
 import { PostModel } from "../../models/post/postModel";
 import { CreateBotPostOptions } from "../../types/App";
+import OMDBService from "../OMDBService/OMDBService";
+import { getMockOMDBMovieDetails } from "../test/testUtilService";
+import { MockOMDBMovieResponse } from "../../types/Test";
 
 type mockPromptObj = {
   botId: string;
@@ -16,6 +19,7 @@ jest.mock("../post/postService");
 jest.mock("../openAI/openAIService");
 jest.mock("../logger/loggerService");
 jest.mock("../youtube/youtubeService");
+jest.mock("../OMDBService/OMDBService");
 jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     create: jest.fn(),
@@ -44,6 +48,8 @@ const constants = {
   SAMPLE_SONG_NAME: "Sample song name",
   SAMPLE_SONG_REVIEW: "Sample song review",
   SAMPLE_VIDEO_URL: "Sample video URL",
+  SAMPLE_MOVIE_NAME: "Sample movie name",
+  SAMPLE_MOVIE_REVIEW: "Sample movie review",
 };
 
 const {
@@ -53,6 +59,8 @@ const {
   SAMPLE_SONG_NAME,
   SAMPLE_SONG_REVIEW,
   SAMPLE_VIDEO_URL,
+  SAMPLE_MOVIE_NAME,
+  SAMPLE_MOVIE_REVIEW,
 } = constants;
 
 const MockSetter = {
@@ -82,6 +90,17 @@ const MockSetter = {
       })
     );
   },
+  getMovieReviewFromOpenAI: (
+    movieName: string | null = SAMPLE_MOVIE_NAME,
+    review: string | null = SAMPLE_MOVIE_REVIEW
+  ) => {
+    openAIService.getTextFromOpenAI = jest.fn().mockResolvedValue(
+      JSON.stringify({
+        movieName,
+        review,
+      })
+    );
+  },
   getImgsFromOpenAI: () => {
     openAIService.getImgsFromOpenOpenAI = jest.fn().mockImplementation((_, numOfImages) => {
       return Promise.resolve(Array(numOfImages).fill({ imgURL: "http://example.com/.png" }));
@@ -89,6 +108,9 @@ const MockSetter = {
   },
   getYoutubeVideo: (value: string | null = SAMPLE_VIDEO_URL) => {
     youtubeService.getYoutubeVideo = jest.fn().mockResolvedValue(value);
+  },
+  getOMDBContent: (value: MockOMDBMovieResponse | null = getMockOMDBMovieDetails()) => {
+    OMDBService.getOMDBContent = jest.fn().mockResolvedValue(value);
   },
   getAndSetPostPollFromOpenAI: () => {
     openAIService.getAndSetPostPollFromOpenAI = jest.fn().mockResolvedValue({
@@ -102,6 +124,7 @@ const MockSetter = {
     this.getTextFromOpenAI();
     this.getImgsFromOpenAI();
     this.getYoutubeVideo();
+    this.getOMDBContent();
     this.getAndSetPostPollFromOpenAI();
     this.getAllPrompts();
   },

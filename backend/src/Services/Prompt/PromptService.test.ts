@@ -99,6 +99,15 @@ describe("Bot Prompt Service", () => {
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`;
       expect(result).toBe(expectResult);
     });
+
+    it("should return movie-review type prompt suffix", async () => {
+      mockBotPromptFindOne(getMockPrompt("movie-review"));
+
+      const result = await promptService.getBotPrompt(botId, PostType.MOVIE_REVIEW);
+
+      const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.MOVIE_REVIEW_PROMPT_SUFFIX}`;
+      expect(result).toBe(expectResult);
+    });
   });
 });
 

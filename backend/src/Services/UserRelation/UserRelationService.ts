@@ -2,7 +2,7 @@ import mongoose, { ClientSession } from "mongoose";
 import { FollowingResult, User } from "../../../../shared/types/user.interface";
 import { Post } from "../../../../shared/types/post.interface";
 import { UserRelationKind } from "../../types/Enums";
-import { UserRelationParams, isFollowingMap } from "../../types/App";
+import { UserRelationParams, IsFollowingMap } from "../../types/App";
 import { UserModel } from "../../models/user/userModel";
 import { UserRelationModel } from "../../models/userRelation/userRelationModel";
 import { PostStatsModel } from "../../models/postStats/postStatsModel";
@@ -100,7 +100,7 @@ async function getUserRelation(
   return res;
 }
 
-async function getIsFollowing(...ids: string[]): Promise<isFollowingMap> {
+async function getIsFollowing(...ids: string[]): Promise<IsFollowingMap> {
   return await getUserRelation([UserRelationKind.Follow], getLoggedInUserIdFromReq(), ...ids).then(
     res =>
       Object.fromEntries(

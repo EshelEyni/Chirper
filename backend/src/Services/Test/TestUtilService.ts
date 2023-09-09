@@ -12,6 +12,7 @@ import { PostStatsModel } from "../../models/postStats/postStatsModel";
 import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
 import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
 import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
+import { MockOMDBMovieResponse } from "../../types/Test";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -350,6 +351,20 @@ function getMockPostStats() {
   };
 }
 
+function getMockOMDBMovieDetails(): MockOMDBMovieResponse {
+  return {
+    data: {
+      Title: "The Matrix",
+      Year: "1999",
+      Poster:
+        "https://m.media-amazon.com/images/M/MV5BMTc5NTY1MzkyN15BMl5BanBnXkFtZTYwNzYxMzY2._V1_SX300.jpg",
+      Released: "31 Mar 1999",
+      Director: "Lana Wachowski, Lilly Wachowski",
+      Writer: "Lilly Wachowski, Lana Wachowski",
+    },
+  };
+}
+
 function getMockPromptText(): string {
   const randomNum = Math.floor(Math.random() * 100000);
   return `test prompt #${randomNum}`;
@@ -379,6 +394,7 @@ export {
   getMockPost,
   getMockPostStats,
   getMockPromptText,
+  getMockOMDBMovieDetails,
   deleteTestUser,
   deleteTestPost,
 };

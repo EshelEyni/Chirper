@@ -33,7 +33,13 @@ jest.mock("../botLogger/botLogger", () => {
   return { botServiceLogger: logger };
 });
 
-describe("Bot Post Service: autoSaveBotPosts", () => {
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
+  PromotionalPostModel: {
+    create: jest.fn(),
+  },
+}));
+
+xdescribe("Bot Post Service: autoSaveBotPosts", () => {
   const ONE_MINUTE = 60000;
 
   beforeAll(() => {

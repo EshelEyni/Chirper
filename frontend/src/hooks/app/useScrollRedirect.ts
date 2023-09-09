@@ -9,7 +9,7 @@ export function useScrollRedirect() {
   useEffect(() => {
     const redirectScroll = (e: WheelEvent) => {
       if (!scrollTargetRef.current) return;
-      scrollTargetRef.current.scrollTop += e.deltaY * 0.4;
+      scrollTargetRef.current.scrollTop += e.deltaY * 0.75;
     };
 
     if (isScrollRedirectActive) document.addEventListener("wheel", redirectScroll);

@@ -8,15 +8,23 @@ import { AppError } from "../error/errorService";
 import testUtilService from "./botPostTUtils";
 import { PostType } from "../../types/Enums";
 import { CreateBotPostOptions } from "../../types/App";
+import OMDBService from "../OMDBService/OMDBService";
 
 jest.mock("../prompt/promptService");
 jest.mock("../openAI/openAIService");
 jest.mock("../youtube/youtubeService");
 jest.mock("../post/postService");
 jest.mock("../logger/loggerService");
+jest.mock("../OMDBService/OMDBService");
 
 jest.mock("../../models/post/postModel", () => ({
   PostModel: {
+    create: jest.fn(),
+  },
+}));
+
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
+  PromotionalPostModel: {
     create: jest.fn(),
   },
 }));
@@ -28,6 +36,8 @@ const {
   SAMPLE_SONG_NAME,
   SAMPLE_SONG_REVIEW,
   SAMPLE_VIDEO_URL,
+  SAMPLE_MOVIE_NAME,
+  SAMPLE_MOVIE_REVIEW,
 } = testUtilService.constants;
 
 describe("Bot Post Service:  createPost", () => {
@@ -485,6 +495,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(post.videoUrl).toBeDefined();
       expect(typeof post.videoUrl).toBe("string");
+      expect(post.text.includes(SAMPLE_SONG_REVIEW)).toBe(true);
       expect(post.text).toBeDefined();
       expect(typeof post.text).toBe("string");
     });
@@ -569,6 +580,126 @@ describe("Bot Post Service:  createPost", () => {
       testUtilService.MockSetter.getYoutubeVideo(null);
       await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
         "videoUrl is undefined"
+      );
+    });
+  });
+
+  fdescribe("movie-review post type", () => {
+    beforeEach(() => {
+      testUtilService.MockSetter.getMovieReviewFromOpenAI();
+    });
+
+    afterAll(() => {
+      testUtilService.MockSetter.getTextFromOpenAI();
+    });
+
+    it("should handle movie-review post type", async () => {
+      const options = getPostCreateOptions({ postType: PostType.MOVIE_REVIEW });
+
+      const result = await botPostService.createPost(TEST_BOT_ID, options);
+
+      expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.MOVIE_REVIEW);
+      expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, "gpt-4");
+      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith(SAMPLE_MOVIE_NAME);
+
+      expect(PostModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdById: TEST_BOT_ID,
+          text: expect.any(String),
+          imgs: expect.any(Array),
+        })
+      );
+
+      const [post] = result;
+
+      expect(post.text).toBeDefined();
+      expect(typeof post.text).toBe("string");
+      expect(post.text.includes(SAMPLE_MOVIE_REVIEW)).toBe(true);
+      expect(post.imgs).toBeDefined();
+      expect(Array.isArray(post.imgs)).toBe(true);
+    });
+
+    it("should handle movie-review post type with prompt", async () => {
+      const options = getPostCreateOptions({
+        postType: PostType.MOVIE_REVIEW,
+        prompt: "prompt from request",
+      });
+
+      const result = await botPostService.createPost(TEST_BOT_ID, options);
+
+      expect(promptService.getBotPrompt).not.toHaveBeenCalled();
+      expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith("prompt from request", "gpt-4");
+      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith(SAMPLE_MOVIE_NAME);
+
+      expect(PostModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdById: TEST_BOT_ID,
+          text: expect.any(String),
+          imgs: expect.any(Array),
+        })
+      );
+
+      const [post] = result;
+
+      expect(post.text).toBeDefined();
+      expect(typeof post.text).toBe("string");
+      expect(post.text.includes(SAMPLE_MOVIE_REVIEW)).toBe(true);
+      expect(post.imgs).toBeDefined();
+      expect(Array.isArray(post.imgs)).toBe(true);
+    });
+
+    it("should throw an error if prompt is not defined or found", async () => {
+      const options = getPostCreateOptions({
+        postType: PostType.MOVIE_REVIEW,
+        prompt: undefined,
+      });
+      testUtilService.MockSetter.getBotPrompt(null);
+      await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
+        "prompt is falsey"
+      );
+      testUtilService.MockSetter.getBotPrompt(SAMPLE_PROMPT);
+    });
+
+    it("should throw an error if result from openAIService is not proper JSON", async () => {
+      const options = getPostCreateOptions({ postType: PostType.MOVIE_REVIEW });
+
+      /*
+       * We are using getTextFromOpenAI() here instead of getMovieReviewFromOpenAI()
+       * because we want to mock the response from getTextFromOpenAI() to be a string
+       * instead of a JSON object.
+       * and both functions use the same openAIService.getTextFromOpenAI() function.
+       */
+
+      testUtilService.MockSetter.getTextFromOpenAI();
+      await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
+        "Unexpected token"
+      );
+    });
+
+    it("should throw an error if movieName is falsey", async () => {
+      const options = getPostCreateOptions({ postType: PostType.MOVIE_REVIEW });
+
+      testUtilService.MockSetter.getMovieReviewFromOpenAI(null, SAMPLE_MOVIE_REVIEW);
+      await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
+        "movieName is undefined"
+      );
+    });
+
+    it("should throw an error if review is falsey", async () => {
+      const options = getPostCreateOptions({ postType: PostType.MOVIE_REVIEW });
+
+      testUtilService.MockSetter.getMovieReviewFromOpenAI(SAMPLE_MOVIE_NAME, null);
+      await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
+        "review is undefined"
+      );
+    });
+
+    it("should throw an error if movieDetails is falsey", async () => {
+      const options = getPostCreateOptions({ postType: PostType.MOVIE_REVIEW });
+
+      testUtilService.MockSetter.getOMDBContent(null);
+      await expect(botPostService.createPost(TEST_BOT_ID, options)).rejects.toThrow(
+        "movieDetails is undefined"
       );
     });
   });

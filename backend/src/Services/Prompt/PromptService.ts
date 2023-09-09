@@ -1,6 +1,7 @@
 import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
 import { BotPrompt } from "../../../../shared/types/bot.interface";
 import { PostType } from "../../types/Enums";
+import { GetPromptResult } from "../../types/App";
 
 type TypeToTemplate = {
   [key: string]: (prompt: string) => string;
@@ -12,14 +13,17 @@ async function getAllPrompts(): Promise<BotPrompt[]> {
   return prompts as unknown as BotPrompt[];
 }
 
-async function getBotPrompt(botId: string, type: PostType): Promise<string> {
+async function getBotPrompt(botId: string, type: PostType): Promise<GetPromptResult> {
   const count = await BotPromptModel.countDocuments({ botId });
   const random = Math.floor(Math.random() * count);
 
   const botPrompt = await BotPromptModel.findOne({ botId }).skip(random).exec();
   if (!botPrompt) throw new Error("prompt is undefined");
 
-  return promptHandler(botPrompt.prompt as string, type);
+  return {
+    rawPrompt: botPrompt.prompt as string,
+    prompt: promptHandler(botPrompt.prompt as string, type),
+  };
 }
 
 export function promptHandler(prompt: string, type: string) {
@@ -30,6 +34,7 @@ export function promptHandler(prompt: string, type: string) {
     image: prompt => `${promptFragments.IMAGE_PROMPT_PREFIX}${prompt}`,
     video: prompt => `${promptFragments.VIDEO_PROMPT_PREFIX}${prompt}`,
     "song-review": prompt => `${prompt}${promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`,
+    "movie-review": prompt => `${prompt}${promptFragments.MOVIE_REVIEW_PROMPT_SUFFIX}`,
   };
 
   const templateFunc = typeToTemplate[type];
@@ -47,6 +52,8 @@ export const promptFragments = {
     "I am Using AI to Generate Videos for my tweeter Clone, And I need the text for the tweet with the video.\n I will give the prompt i used to generate the video, and you will generate the text\n\nPrompt: ",
   SONG_REVIEW_PROMPT_SUFFIX:
     "Please choose one song from the artist or genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'songName' and 'review'. Limit Review to 247 characters.",
+  MOVIE_REVIEW_PROMPT_SUFFIX:
+    "Please choose one movie from the genre mentioned, and write a review about it, or share a fun fact. Return a JSON object with properties 'movieName' and 'review'. Limit Review to 247 characters.",
 };
 
 export default { getBotPrompt, getAllPrompts, promptHandler, promptFragments };

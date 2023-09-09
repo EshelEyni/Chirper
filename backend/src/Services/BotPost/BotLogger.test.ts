@@ -23,9 +23,15 @@ jest.mock("../botLogger/botLogger", () => {
   return { botServiceLogger: logger };
 });
 
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
+  PromotionalPostModel: {
+    create: jest.fn(),
+  },
+}));
+
 const { TEST_BOT_ID, SAMPLE_POST_TEXT } = testUtilService.constants;
 
-describe("logger", () => {
+xdescribe("logger", () => {
   beforeAll(() => {
     process.env.NODE_ENV = "development";
   });

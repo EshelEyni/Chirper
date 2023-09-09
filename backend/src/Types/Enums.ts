@@ -10,4 +10,5 @@ export enum PostType {
   IMAGE = "image",
   VIDEO = "video",
   SONG_REVIEW = "song-review",
+  MOVIE_REVIEW = "movie-review",
 }

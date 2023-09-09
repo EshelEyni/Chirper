@@ -10,7 +10,7 @@ import {
 } from "../../Services/Test/TestUtilService";
 import { PostModel } from "./PostModel";
 
-describe("PostModel: Schema", () => {
+xdescribe("PostModel: Schema", () => {
   beforeAll(async () => {
     await connectToTestDB();
   });

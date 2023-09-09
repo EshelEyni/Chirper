@@ -19,14 +19,18 @@ async function query(queryString: ParsedReqQuery): Promise<CombinedPostType[]> {
   const reposts = (await RepostModel.find({})).map(doc => doc.toObject().repost);
   const promotionalPosts = shuffleArray(await PromotionalPostModel.find({}));
 
-  const posts = [...postDocs, ...reposts].reduce((acc, curr, i) => {
-    acc.push(curr);
-    if (i !== 0 && i % 9 === 0 && promotionalPosts.length > 0) {
-      const promoPost = promotionalPosts.shift();
-      if (promoPost) acc.push(promoPost);
-    }
-    return acc;
-  }, [] as CombinedPostType[]);
+  const posts = [...postDocs, ...reposts]
+    .sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+    .reduce((acc, curr, i) => {
+      acc.push(curr);
+      if (i !== 0 && i % 9 === 0 && promotionalPosts.length > 0) {
+        const promoPost = promotionalPosts.shift();
+        if (promoPost) acc.push(promoPost);
+      }
+      return acc;
+    }, [] as CombinedPostType[]);
 
   return posts;
 }

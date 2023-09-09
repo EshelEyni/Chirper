@@ -11,6 +11,7 @@ import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
 import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
 import { PollVoteModel } from "../../Models/PollVote/PollVoteModel";
 import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
+import { PostBookmarkModel } from "../../Models/PostBookmark/PostBookmarkModel";
 
 type CreateTestUserOptions = {
   id?: string;
@@ -25,12 +26,12 @@ type CreateTestPostOptions = {
   skipHooks?: boolean;
 };
 
-export type RepostParams = {
+type RepostParams = {
   postId: string;
   repostOwnerId: string;
 };
 
-export type CreatePostStatParams = {
+type CreatePostRefDocParams = {
   postId: string;
   userId: string;
 };
@@ -191,16 +192,26 @@ async function createTestReposts(...repostDetails: RepostParams[]) {
   return reposts;
 }
 
-async function createTestLike(...likeDetails: CreatePostStatParams[]): Promise<any> {
+async function createTestLike(...likeDetails: CreatePostRefDocParams[]): Promise<any> {
   await PostLikeModel.deleteMany({});
   const likes = await PostLikeModel.create(likeDetails);
   return likes;
 }
 
-async function createTestView(...viewDetails: CreatePostStatParams[]) {
+async function createTestView(...viewDetails: CreatePostRefDocParams[]) {
   await PostStatsModel.deleteMany({});
   const views = await PostStatsModel.create(viewDetails);
   return views;
+}
+
+async function createTestBookmark(bookmarkDetails: CreatePostRefDocParams) {
+  await PostBookmarkModel.deleteMany({});
+  return await PostBookmarkModel.create(bookmarkDetails);
+}
+
+async function createManyTestBookmarks(...bookmarkDetails: CreatePostRefDocParams[]) {
+  await PostBookmarkModel.deleteMany({});
+  return await PostBookmarkModel.create(bookmarkDetails);
 }
 
 function getMongoId() {
@@ -359,6 +370,8 @@ export {
   createTestGif,
   createTestReposts,
   createTestLike,
+  createTestBookmark,
+  createManyTestBookmarks,
   createTestView,
   getMongoId,
   getMockedUser,

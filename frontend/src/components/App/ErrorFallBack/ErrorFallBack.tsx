@@ -26,8 +26,12 @@ export const ErrorFallBack: FC<ErrorFallBackProps> = ({ error, resetErrorBoundar
         )}
 
         <div className="error-actions">
-          <button onClick={() => window.location.reload()}>Reload</button>
-          <button onClick={resetErrorBoundary}>Home</button>
+          <button onClick={() => window.location.reload()}>
+            <span>Reload</span>
+          </button>
+          <button onClick={resetErrorBoundary}>
+            <span>Home</span>
+          </button>
         </div>
       </div>
     </main>

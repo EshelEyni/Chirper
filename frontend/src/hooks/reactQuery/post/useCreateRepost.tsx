@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import postService from "../../../services/post.service";
 import { Post, PostRepostResult } from "../../../../../shared/types/post.interface";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
+import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
 export function useCreateRepost() {
   const queryClient = useQueryClient();
@@ -16,18 +16,16 @@ export function useCreateRepost() {
       const updatedPosts = [
         data.repost,
         ...currentPosts.map(p => {
-          if (p.id === data.updatedPost.id) return data.updatedPost;
+          if (p.id === data.post.id) return data.post;
           return p;
         }),
       ];
       queryClient.setQueryData(["posts"], updatedPosts);
     },
     onError: () => {
-      const msg = {
-        type: "error",
-        text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      } as TypeOfUserMsg;
-      toast.error(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
+      toast.error(t => (
+        <UserMsg userMsg={getDefaultErrorMsg()} onDissmisToast={() => toast.dismiss(t.id)} />
+      ));
     },
   });
 

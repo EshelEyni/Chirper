@@ -10,6 +10,7 @@ import {
 } from "../../../../../shared/types/post.interface";
 import { NewPostType } from "../../../store/slices/postEditSlice";
 import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
+import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
 type OnCreatePostProps = {
   posts: NewPost[];
@@ -68,11 +69,9 @@ export function useCreatePost({ onSuccessFn }: useCreatePostProps = {}) {
       toast.success(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
     },
     onError: () => {
-      const msg = {
-        type: "error",
-        text: "Something went wrong, but don’t fret — let’s give it another shot.",
-      } as TypeOfUserMsg;
-      toast.error(t => <UserMsg userMsg={msg} onDissmisToast={() => toast.dismiss(t.id)} />);
+      toast.error(t => (
+        <UserMsg userMsg={getDefaultErrorMsg()} onDissmisToast={() => toast.dismiss(t.id)} />
+      ));
     },
   });
 

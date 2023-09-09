@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from "react";
-import { Poll, Post, PromotionalPost, Repost } from "../../../shared/types/post.interface";
+import { createContext, useContext } from "react";
+import { Post, PromotionalPost, Repost } from "../../../shared/types/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
 import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";
@@ -11,18 +11,20 @@ type PostPreviewContextType = {
   onNavigateToProfile: (username: string) => void;
   onToggleFollow: () => void;
   onNavigateToPostStats: () => void;
-  poll: Poll | null;
-  setPoll: React.Dispatch<React.SetStateAction<Poll | null>>;
+  isRepost: boolean;
+  isPromotionalPost: boolean;
 };
 
 const PostPreviewContext = createContext<PostPreviewContextType | undefined>(undefined);
 
 function PostPreviewProvider({ post, children }: { post: Post; children: React.ReactNode }) {
   const { isDetailedViewed, isProfileViewed } = post.loggedInUserActionState;
-  const [poll, setPoll] = useState(post.poll || null);
   const navigate = useNavigate();
   const { addFollow } = useAddFollow();
   const { removeFollow } = useRemoveFollow();
+
+  const isRepost = "repostedBy" in post;
+  const isPromotionalPost = "companyName" in post;
 
   async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
@@ -51,14 +53,14 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
       });
   }
 
-  const value = {
+  const value: PostPreviewContextType = {
     post,
     onNavigateToPostDetails,
     onNavigateToProfile,
     onToggleFollow,
     onNavigateToPostStats,
-    poll,
-    setPoll,
+    isRepost,
+    isPromotionalPost,
   };
   return <PostPreviewContext.Provider value={value}>{children}</PostPreviewContext.Provider>;
 }

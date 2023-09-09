@@ -40,29 +40,37 @@
     .error-actions {
       margin-top: rem(25px);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       gap: rem(15px);
+      width: rem(150px);
+
+      //TODO: this is duplicated code from Modal.scss - refactor
 
       button {
-        padding: rem(10px) rem(15px);
-        border-radius: 35px;
+        width: 100%;
+        height: rem(45px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 25px;
         font-size: rem(15px);
-        font-weight: 600;
-        cursor: pointer;
+        font-weight: 700;
         color: white;
-        transition: transform 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        background-color: white;
+        border: 1px solid var(--color-border);
+        padding: rem(10px) rem(15px);
+
+        span {
+          font-size: rem(15px);
+          font-weight: 700;
+          color: black;
+        }
 
         &:hover {
-          transform: scale(1.05);
-        }
-
-        &:nth-child(1) {
-          background-color: var(--color-success);
-        }
-
-        &:nth-child(2) {
-          background-color: var(--color-info);
+          background-color: var(--color-hover-light);
         }
       }
     }

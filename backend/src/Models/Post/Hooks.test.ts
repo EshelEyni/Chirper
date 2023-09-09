@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../shared/types/post.interface";
 import {
+  createManyTestBookmarks,
   createManyTestPosts,
   createManyTestUsers,
   createTestGif,
@@ -281,6 +282,23 @@ describe("PostModel: Hooks", () => {
       expect(postFromDB).toBeDefined();
       expect(spy).toHaveBeenCalled();
       postFromDB.forEach(assertPost);
+    });
+  });
+
+  fdescribe("Post findOneAndDelete hook - should remove all doc who reference Post", () => {
+    function createBookmarkDetails(postId: string, ...userIds: string[]): any[] {
+      return userIds.map(userId => ({ postId, userId }));
+    }
+
+    it("Should remove all reposts that reference the deleted post.", async () => {
+      const [user1, user2] = await createManyTestUsers(2);
+      const post = await createTestPost({});
+      await createManyTestBookmarks(...createBookmarkDetails(post.id, user1.id, user2.id));
+      // await createManyTestPosts({ reposts: [{ postId: post1.id }, { postId: post2.id }] });
+      // await PostModelModule.PostModel.findByIdAndDelete(post1.id);
+      // const reposts = await PostModelModule.RepostModel.find({});
+      // expect(reposts.length).toBe(1);
+      // expect(reposts[0].repost.postId).toBe(post2.id);
     });
   });
 });

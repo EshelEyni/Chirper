@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
 import postService from "../../../services/post.service";
 import reactQueryService from "../../../services/reactQuery/reactQuery.service";
 import { UserMsg } from "../../../components/Msg/UserMsg/UserMsg";
+import toast from "react-hot-toast";
 import { getDefaultErrorMsg } from "../../../services/util/utils.service";
 
-export function useAddLike() {
+export function useAddPollVote() {
   const queryClient = useQueryClient();
 
-  const { mutate: addLike, isLoading: isAdding } = useMutation({
-    mutationFn: postService.addLike,
+  const { mutate: addPollVote, isLoading: isVoting } = useMutation({
+    mutationFn: postService.addPollVote,
     onSuccess: post => {
       reactQueryService.setUpdatePostIntoQueryData(post, queryClient);
     },
@@ -19,6 +19,5 @@ export function useAddLike() {
       ));
     },
   });
-
-  return { isAdding, addLike };
+  return { isVoting, addPollVote };
 }

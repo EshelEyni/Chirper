@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import postService from "../../../../services/post.service";
 import { RootState } from "../../../../store/store";
 import { useInView } from "react-intersection-observer";
-import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
+import { PostPreviewHeader } from "../PostPreviewHeader/PostPreviewHeader";
 import { VideoPlayer } from "../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../PostImgList/PostImgList";
 import { PostRepliedToUsersList } from "../../PostRepliedToUsersList/PostRepliedToUsersList";
@@ -27,7 +27,7 @@ import { FaGithub } from "react-icons/fa";
 import { PostActions } from "../../Actions/PostActions";
 
 export const PostPreview: React.FC = () => {
-  const { post, poll } = usePostPreview();
+  const { post, isRepost } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
@@ -49,10 +49,8 @@ export const PostPreview: React.FC = () => {
 
   return (
     <article className="post-preview" ref={isViewed ? undefined : ref}>
-      {post.repostedBy && <RepostDisplay />}
-      <PostPreviewWrapper
-        className={"post-preview-wrapper" + (post.repostedBy ? " with-repost" : "")}
-      >
+      {isRepost && <RepostDisplay />}
+      <PostPreviewWrapper className={"post-preview-wrapper" + (isRepost ? " with-repost" : "")}>
         <PostPreviewAside />
         <PostPreviewMainContainer>
           <PostPreviewHeader />
@@ -67,8 +65,8 @@ export const PostPreview: React.FC = () => {
               />
             )}
             {post.imgs?.length > 0 && <PostImg post={post} />}
-            {post.linkToRepo && (
-              <ExternalLink link={post.linkToRepo}>
+            {"linkToRepo" in post && (
+              <ExternalLink link={post.linkToRepo as string}>
                 <FaGithub size={18} color="var(--color-text-gray)" /> <span>Promoted</span>
               </ExternalLink>
             )}
@@ -78,7 +76,7 @@ export const PostPreview: React.FC = () => {
               </VideoPlayerProvider>
             )}
             {post.gif && <GifDisplay gif={post.gif} />}
-            {poll && <PollDisplay postStartDate={postStartDate} />}
+            {post.poll && <PollDisplay postStartDate={postStartDate} />}
             {post.quotedPost && (
               <MiniPostPreview type={"quoted-post"}>
                 <QuotedPostContent />
@@ -86,7 +84,6 @@ export const PostPreview: React.FC = () => {
             )}
           </PostPreviewBody>
           <Footer>
-            {/* <PostPreviewActions /> */}
             <PostActions post={post}>
               <PostActions.Reply />
               <PostActions.Repost />

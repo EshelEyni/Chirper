@@ -4,7 +4,7 @@ import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext"
 import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
 import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../../PostImgList/PostImgList";
-import { PostPreviewHeader } from "../../../PostPreviewHeader/PostPreviewHeader";
+import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
 import { PostPreviewBody } from "../../Body/PostPreviewBody";
 import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
 import { PostPreviewText } from "../../Text/PostPreviewText";

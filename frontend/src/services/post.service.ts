@@ -11,6 +11,11 @@ import { JsendResponse, UserMsg } from "../../../shared/types/system.interface";
 import { handleServerResponse } from "./util/utils.service";
 import qs from "qs";
 
+type AddPollVoteConfig = {
+  postId: string;
+  optionIdx: number;
+};
+
 const BASE_URL = "post";
 
 async function query(queryObj?: any): Promise<Post[]> {
@@ -18,6 +23,7 @@ async function query(queryObj?: any): Promise<Post[]> {
   const response = await httpService.get(
     `${BASE_URL}?sort=-createdAt&parentPostId[exists]=false&limit=35${queryString}`
   );
+
   return handleServerResponse<Post[]>(response);
 }
 
@@ -66,8 +72,8 @@ async function update(post: Post) {
   const updatedPost = await httpService.patch(`${BASE_URL}/${post.id}`, post);
   return handleServerResponse<Post>(updatedPost);
 }
-async function savePollVote(postId: string, optionIdx: number): Promise<Post> {
-  const res = await httpService.post(`${BASE_URL}/poll/vote`, { postId, optionIdx });
+async function addPollVote({ postId, optionIdx }: AddPollVoteConfig): Promise<Post> {
+  const res = await httpService.post(`${BASE_URL}/poll/${postId}/vote`, { optionIdx });
   return handleServerResponse<Post>(res);
 }
 
@@ -166,7 +172,7 @@ export default {
   update,
   remove,
   removeRepost,
-  savePollVote,
+  addPollVote,
   addLike,
   removeLike,
   getPostStats,

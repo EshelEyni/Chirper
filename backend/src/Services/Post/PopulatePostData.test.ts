@@ -3,8 +3,6 @@ import { Post, QuotedPost } from "../../../../shared/types/post.interface";
 import { IPost } from "../../Types/ITypes";
 import { User } from "../../../../shared/types/user.interface";
 import {
-  CreatePostStatParams,
-  RepostParams,
   createManyTestUsers,
   createTestPollVote,
   createTestLike,
@@ -29,6 +27,16 @@ import {
   assertUser,
 } from "../Test/TestAssertionService";
 import { connectToTestDB, disconnectFromTestDB } from "../Test/TestDBService";
+
+type RepostParams = {
+  postId: string;
+  repostOwnerId: string;
+};
+
+type CreatePostStatParams = {
+  postId: string;
+  userId: string;
+};
 
 jest.mock("../ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),

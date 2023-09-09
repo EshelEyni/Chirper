@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Model, Schema } from "mongoose";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { PostModel } from "../Post/PostModel";
-import { UserModel } from "../../Models/User/UserModel";
+import { queryEntityExists } from "../../services/util/utilService";
+import { PostModel } from "../post/postModel";
+import { UserModel } from "../../models/user/userModel";
 
 type IPostStats = {
   postId: mongoose.Types.ObjectId;

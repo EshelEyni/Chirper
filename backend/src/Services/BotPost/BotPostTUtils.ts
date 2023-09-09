@@ -1,9 +1,9 @@
-import { PostType } from "../../Types/Enums";
-import promptService from "../../Services/Prompt/PromptService";
-import openAIService from "../OpenAI/OpenAIService";
-import youtubeService from "../Youtube/YoutubeService";
-import { PostModel } from "../../Models/Post/PostModel";
-import { CreateBotPostOptions } from "../../Types/App";
+import { PostType } from "../../types/Enums";
+import promptService from "../../services/prompt/promptService";
+import openAIService from "../openAI/openAIService";
+import youtubeService from "../youtube/youtubeService";
+import { PostModel } from "../../models/post/postModel";
+import { CreateBotPostOptions } from "../../types/App";
 
 type mockPromptObj = {
   botId: string;
@@ -11,18 +11,18 @@ type mockPromptObj = {
   type: PostType;
 };
 
-jest.mock("../../Services/Prompt/PromptService");
-jest.mock("../Post/PostService");
-jest.mock("../OpenAI/OpenAIService");
-jest.mock("../Logger/LoggerService");
-jest.mock("../Youtube/YoutubeService");
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../services/prompt/promptService");
+jest.mock("../post/postService");
+jest.mock("../openAI/openAIService");
+jest.mock("../logger/loggerService");
+jest.mock("../youtube/youtubeService");
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     create: jest.fn(),
   },
 }));
 
-jest.mock("../BotLogger/BotLogger", () => {
+jest.mock("../botLogger/botLogger", () => {
   const logger = {
     create: jest.fn(),
     created: jest.fn(),

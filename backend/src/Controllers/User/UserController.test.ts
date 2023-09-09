@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import userService from "../../Services/User/UserService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import userService from "../../services/user/userService";
 import {
   getUserByUsername,
   getUsers,
   removeLoggedInUser,
   updateLoggedInUser,
-} from "./UserController";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+} from "./userController";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
-jest.mock("../../Services/User/UserService");
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/user/userService");
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn().mockReturnValue("12345"),
 }));
 

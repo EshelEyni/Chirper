@@ -1,31 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getMockPost } from "../Test/TestUtilService";
-import { APIFeatures, shuffleArray } from "../Util/UtilService";
-import { PostModel } from "../../Models/Post/PostModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import postService from "./PostService";
+import { getMockPost } from "../test/testUtilService";
+import { APIFeatures, shuffleArray } from "../util/utilService";
+import { PostModel } from "../../models/post/postModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import postService from "./postService";
 
-jest.mock("../../Models/Post/PostModel");
+jest.mock("../../models/post/postModel");
 
-jest.mock("../Util/UtilService", () => ({
+jest.mock("../util/utilService", () => ({
   APIFeatures: jest.fn(),
   shuffleArray: jest.fn(),
 }));
 
-jest.mock("../../Models/Repost/RepostModel", () => ({
+jest.mock("../../models/repost/repostModel", () => ({
   RepostModel: {
     find: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/PromotionalPost/PromotionalPostModel", () => ({
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
   PromotionalPostModel: {
     find: jest.fn(),
   },
 }));
 
-describe("PostService", () => {
+describe("postService", () => {
   describe("query", () => {
     const mockToObject = jest.fn().mockReturnThis();
 

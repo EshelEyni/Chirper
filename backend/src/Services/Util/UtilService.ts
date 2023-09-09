@@ -1,9 +1,9 @@
 import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 require("dotenv").config();
-import { AppError } from "../Error/ErrorService";
+import { AppError } from "../error/errorService";
 import { ObjectId } from "mongodb";
-import { ParsedReqQuery } from "../../Types/App";
+import { ParsedReqQuery } from "../../types/App";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyObject = { [key: string]: any };

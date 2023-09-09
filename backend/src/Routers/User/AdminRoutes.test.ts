@@ -2,20 +2,20 @@
 import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
-import router from "./UserRouter";
+import router from "./userRouter";
 import { User } from "../../../../shared/types/user.interface";
-import { UserModel } from "../../Models/User/UserModel";
+import { UserModel } from "../../models/user/userModel";
 import {
   createTestUser,
   createValidUserCreds,
   deleteTestUser,
   getLoginTokenStrForTest,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { errorHandler } from "../../Services/Error/ErrorService";
-import { assertUser } from "../../Services/Test/TestAssertionService";
-import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
+} from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { errorHandler } from "../../services/error/errorService";
+import { assertUser } from "../../services/test/testAssertionService";
+import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
 
 const app = express();
 app.use(cookieParser());

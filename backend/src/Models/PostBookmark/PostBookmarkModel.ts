@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query } from "mongoose";
 import { Post } from "../../../../shared/types/post.interface";
-import { PostModel } from "../Post/PostModel";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { UserModel } from "../User/UserModel";
+import { PostModel } from "../post/postModel";
+import { queryEntityExists } from "../../services/util/utilService";
+import { UserModel } from "../user/userModel";
 
 interface IPostBookmark {
   postId: ObjectId;

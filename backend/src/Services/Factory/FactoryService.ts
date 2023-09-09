@@ -1,9 +1,9 @@
 import { Model } from "mongoose";
 import { NextFunction, Request, Response } from "express";
-import { ParsedReqQuery } from "../../Types/App";
-import { APIFeatures, validateIds } from "../Util/UtilService";
-import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "../Error/ErrorService";
-import { logger } from "../Logger/LoggerService";
+import { ParsedReqQuery } from "../../types/App";
+import { APIFeatures, validateIds } from "../util/utilService";
+import { AppError, asyncErrorCatcher, validatePatchRequestBody } from "../error/errorService";
+import { logger } from "../logger/loggerService";
 
 const getAll = <T>(model: Model<T>) =>
   asyncErrorCatcher(async (req: Request, res: Response, next: NextFunction) => {

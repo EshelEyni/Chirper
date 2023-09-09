@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import botService from "../../Services/Bot/BotService";
-import { getMockedUser } from "../../Services/Test/TestUtilService";
-import { getBots } from "./BotBontroller";
-import { asyncErrorCatcher } from "../../Services/Error/ErrorService";
+import botService from "../../services/bot/botService";
+import { getMockedUser } from "../../services/test/testUtilService";
+import { getBots } from "./botController";
+import { asyncErrorCatcher } from "../../services/error/errorService";
 
-jest.mock("../../Services/Bot/BotService");
+jest.mock("../../services/bot/botService");
 
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 

@@ -1,8 +1,8 @@
-import { logger } from "../../Services/Logger/LoggerService";
-import { requestLogger } from "./LoggerMiddleware";
+import { logger } from "../../services/logger/loggerService";
+import { requestLogger } from "./loggerMiddleware";
 import { NextFunction, Request, Response } from "express";
 
-jest.mock("../../Services/Logger/LoggerService");
+jest.mock("../../services/logger/loggerService");
 
 const mockedLogger = logger as jest.Mocked<typeof logger>;
 

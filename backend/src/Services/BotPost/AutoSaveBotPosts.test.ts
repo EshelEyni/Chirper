@@ -1,24 +1,24 @@
-import testUtilService from "./BotPostTUtils";
-import { botServiceLogger } from "../BotLogger/BotLogger";
-import botPostService from "./BotPostService";
+import testUtilService from "./botPostTUtils";
+import { botServiceLogger } from "../botLogger/botLogger";
+import botPostService from "./botPostService";
 
-import promptService from "../Prompt/PromptService";
-import openAIService from "../OpenAI/OpenAIService";
-import { PostModel } from "../../Models/Post/PostModel";
+import promptService from "../prompt/promptService";
+import openAIService from "../openAI/openAIService";
+import { PostModel } from "../../models/post/postModel";
 
-jest.mock("../Prompt/PromptService");
-jest.mock("../Post/PostService");
-jest.mock("../OpenAI/OpenAIService");
-jest.mock("../Logger/LoggerService");
-jest.mock("../Youtube/YoutubeService");
+jest.mock("../prompt/promptService");
+jest.mock("../post/postService");
+jest.mock("../openAI/openAIService");
+jest.mock("../logger/loggerService");
+jest.mock("../youtube/youtubeService");
 
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     create: jest.fn(),
   },
 }));
 
-jest.mock("../BotLogger/BotLogger", () => {
+jest.mock("../botLogger/botLogger", () => {
   const logger = {
     create: jest.fn(),
     created: jest.fn(),

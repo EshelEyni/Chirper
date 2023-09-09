@@ -5,15 +5,15 @@ import {
   createTestUser,
   createValidUserCreds,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { UserModel } from "./UserModel";
+} from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { UserModel } from "./userModel";
 import { User } from "../../../../shared/types/user.interface";
-import { UserRelationModel } from "../UserRelation/UserRelationModel";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { UserRelationModel } from "../userRelation/userRelationModel";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 

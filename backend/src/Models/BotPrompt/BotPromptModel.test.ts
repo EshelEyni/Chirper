@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { createTestUser, deleteTestUser, getMongoId } from "../../Services/Test/TestUtilService";
-import { BotPromptModel } from "./BotPromptModel";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { createTestUser, deleteTestUser, getMongoId } from "../../services/test/testUtilService";
+import { BotPromptModel } from "./botPromptModel";
 
 describe("BotPromptModel", () => {
   const botId = getMongoId();

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import fs from "fs";
-import { logger } from "./LoggerService";
+import { logger } from "./loggerService";
 
 jest.mock("fs", () => ({
   appendFile: jest.fn(),

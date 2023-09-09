@@ -2,11 +2,11 @@
 import { Model } from "mongoose";
 import { NextFunction, Request, Response } from "express";
 import { DeepMockProxy, mockDeep } from "jest-mock-extended";
-import { APIFeatures } from "../Util/UtilService";
-import { createOne, deleteOne, getAll, getOne, updateOne } from "./FactoryService";
-import { asyncErrorCatcher } from "../Error/ErrorService";
-import { logger } from "../Logger/LoggerService";
-import { getMongoId } from "../Test/TestUtilService";
+import { APIFeatures } from "../util/utilService";
+import { createOne, deleteOne, getAll, getOne, updateOne } from "./factoryService";
+import { asyncErrorCatcher } from "../error/errorService";
+import { logger } from "../logger/loggerService";
+import { getMongoId } from "../test/testUtilService";
 
 const ModelMock = mockDeep<Model<any>>();
 const APIFeaturesMock = mockDeep<APIFeatures<any>>();
@@ -14,7 +14,7 @@ const resMock: DeepMockProxy<Response> = mockDeep<Response>();
 const reqMock = mockDeep<Request>();
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
-jest.mock("../Util/UtilService", () => ({
+jest.mock("../util/utilService", () => ({
   APIFeatures: jest.fn().mockImplementation(() => APIFeaturesMock),
   validateIds: jest.fn(),
 }));

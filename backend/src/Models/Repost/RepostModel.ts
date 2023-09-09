@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { Post } from "../../../../shared/types/post.interface";
-import { IRepostDoc } from "../../Types/ITypes";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { UserModel } from "../../Models/User/UserModel";
-import { PostModel } from "../Post/PostModel";
+import { IRepostDoc } from "../../types/ITypes";
+import { queryEntityExists } from "../../services/util/utilService";
+import { UserModel } from "../../models/user/userModel";
+import { PostModel } from "../post/postModel";
 
 const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
   {
@@ -36,10 +36,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
         delete ret._id;
 
         const post = ret.post as Post;
-        const repost = {
-          ...post,
-          repostedBy: ret.repostedBy,
-        };
+        const repost = { ...post, repostedBy: ret.repostedBy };
 
         return { repost, post };
       },
@@ -51,10 +48,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
         delete ret._id;
 
         const post = ret.post as Post;
-        const repost = {
-          ...post,
-          repostedBy: ret.repostedBy,
-        };
+        const repost = { ...post, repostedBy: ret.repostedBy };
 
         return { repost, post };
       },

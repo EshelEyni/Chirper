@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import openAIService from "./OpenAIService";
+import openAIService from "./openAIService";
 import { Configuration, OpenAIApi } from "openai";
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
-import { assertPoll } from "../Test/TestAssertionService";
+import { assertPoll } from "../test/testAssertionService";
 
 jest.mock("openai", () => {
   const mockOpenAIConfiguration = {

@@ -11,17 +11,17 @@ import {
   createTestPostStats,
   createTestReposts,
   deleteTestPost,
-} from "../../Services/Test/TestUtilService";
-import { UserModel } from "../../Models/User/UserModel";
-import * as PostModelModule from "./PostModel";
-import * as populatePostData from "../../Services/Post/PopulatePostData";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { assertPost } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { RepostModel } from "../Repost/RepostModel";
-import { PostBookmarkModel } from "../PostBookmark/PostBookmarkModel";
-import { PostLikeModel } from "../PostLike/PostLikeModel";
-import { PostStatsModel } from "../PostStats/PostStatsModel";
+} from "../../services/test/testUtilService";
+import { UserModel } from "../../models/user/userModel";
+import * as PostModelModule from "./postModel";
+import * as populatePostData from "../../services/post/populatePostData";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { assertPost } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { RepostModel } from "../repost/repostModel";
+import { PostBookmarkModel } from "../postBookmark/postBookmarkModel";
+import { PostLikeModel } from "../postLike/postLikeModel";
+import { PostStatsModel } from "../postStats/postStatsModel";
 
 describe("PostModel: Hooks", () => {
   beforeAll(async () => {

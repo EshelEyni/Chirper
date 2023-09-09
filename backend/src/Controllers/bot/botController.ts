@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import botService from "../../Services/Bot/BotService";
+import { asyncErrorCatcher } from "../../services/error/errorService";
+import botService from "../../services/bot/botService";
 
 const getBots = asyncErrorCatcher(async (req: Request, res: Response) => {
   const bots = await botService.getBots();

@@ -2,15 +2,15 @@
 import request from "supertest";
 import express from "express";
 import router from "./GIFRouter";
-import gifService from "../../Services/GIF/GIFService";
-import { errorHandler } from "../../Services/Error/ErrorService";
+import gifService from "../../services/GIF/GIFService";
+import { errorHandler } from "../../services/error/errorService";
 import {
   createTestUser,
   deleteTestUser,
   getLoginTokenStrForTest,
-} from "../../Services/Test/TestUtilService";
-import { assertGif, assertGifCategory } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+} from "../../services/test/testUtilService";
+import { assertGif, assertGifCategory } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 
 const app = express();
 app.use(router);

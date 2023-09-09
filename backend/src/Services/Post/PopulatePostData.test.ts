@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post, QuotedPost } from "../../../../shared/types/post.interface";
-import { IPost } from "../../Types/ITypes";
+import { IPost } from "../../types/ITypes";
 import { User } from "../../../../shared/types/user.interface";
 import {
   createManyTestUsers,
@@ -11,22 +11,22 @@ import {
   createTestReposts,
   createTestUser,
   createTestPostStats,
-} from "../Test/TestUtilService";
-import { UserModel } from "../../Models/User/UserModel";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { populatePostData } from "./PopulatePostData";
+} from "../test/testUtilService";
+import { UserModel } from "../../models/user/userModel";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { PostModel } from "../../models/post/postModel";
+import { populatePostData } from "./populatePostData";
 import { getLoggedInUserIdFromReq } from "../ALSService";
-import { PollVoteModel } from "../../Models/PollVote/PollVoteModel";
+import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
 import {
   assertLoggedInUserState,
   assertPoll,
   assertPost,
   assertQuotedPost,
   assertUser,
-} from "../Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../Test/TestDBService";
+} from "../test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../test/testDBService";
 
 type RepostParams = {
   postId: string;

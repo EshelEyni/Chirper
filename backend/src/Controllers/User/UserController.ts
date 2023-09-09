@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import userService from "../../Services/User/UserService";
+import userService from "../../services/user/userService";
 import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../Services/Error/ErrorService";
-import { getOne, createOne, updateOne, deleteOne } from "../../Services/Factory/FactoryService";
-import { UserModel } from "../../Models/User/UserModel";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { ParsedReqQuery } from "../../Types/App";
+} from "../../services/error/errorService";
+import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/factoryService";
+import { UserModel } from "../../models/user/userModel";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { ParsedReqQuery } from "../../types/App";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;

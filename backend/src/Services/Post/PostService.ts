@@ -1,10 +1,10 @@
-import { IPostDoc, IPromotionalPostDoc } from "../../Types/ITypes";
-import { ParsedReqQuery } from "../../Types/App";
+import { IPostDoc, IPromotionalPostDoc } from "../../types/ITypes";
+import { ParsedReqQuery } from "../../types/App";
 import { Repost } from "../../../../shared/types/post.interface";
-import { APIFeatures, shuffleArray } from "../Util/UtilService";
-import { PostModel } from "../../Models/Post/PostModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
+import { APIFeatures, shuffleArray } from "../util/utilService";
+import { PostModel } from "../../models/post/postModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
 
 type CombinedPostType = IPostDoc | Repost | IPromotionalPostDoc;
 

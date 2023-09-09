@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import mongoose from "mongoose";
-import { AppError } from "../Error/ErrorService";
+import { AppError } from "../error/errorService";
 import ansiColors from "ansi-colors";
 require("dotenv").config();
 

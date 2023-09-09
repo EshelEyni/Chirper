@@ -1,7 +1,7 @@
-import locationService from "../../Services/Location/LocationService";
+import locationService from "../../services/location/locationService";
 import { Request, Response } from "express";
 
-import { asyncErrorCatcher, AppError } from "../../Services/Error/ErrorService";
+import { asyncErrorCatcher, AppError } from "../../services/error/errorService";
 
 const getUserDefaultLocations = asyncErrorCatcher(
   async (req: Request, res: Response): Promise<void> => {

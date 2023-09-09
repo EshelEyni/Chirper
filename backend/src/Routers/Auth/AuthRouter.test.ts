@@ -1,14 +1,14 @@
 import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
-import router from "./AuthRouter";
-import { errorHandler } from "../../Services/Error/ErrorService";
+import router from "./authRouter";
+import { errorHandler } from "../../services/error/errorService";
 import { UserCredenitials } from "../../../../shared/types/user.interface";
-import { getLoginTokenStrForTest } from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { UserModel } from "../../Models/User/UserModel";
-import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
-import { assertUser } from "../../Services/Test/TestAssertionService";
+import { getLoginTokenStrForTest } from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { UserModel } from "../../models/user/userModel";
+import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
+import { assertUser } from "../../services/test/testAssertionService";
 
 const app = express();
 app.use(cookieParser());
@@ -17,16 +17,16 @@ app.all("*", setupAsyncLocalStorage);
 app.use(router);
 app.use(errorHandler);
 
-jest.mock("../../Services/RateLimiterService", () => ({
+jest.mock("../../services/rateLimiterService", () => ({
   authRequestLimiter: jest.fn().mockImplementation((req, res, next) => next()),
 }));
 
-jest.mock("../../Services/Util/UtilService", () => ({
-  ...jest.requireActual("../../Services/Util/UtilService"),
+jest.mock("../../services/util/utilService", () => ({
+  ...jest.requireActual("../../services/util/utilService"),
   sendEmail: jest.fn(),
 }));
 
-describe("Auth Router", () => {
+describe("auth Router", () => {
   const username = "test-user";
   const password = "password";
   const email = "email@testemail.com";

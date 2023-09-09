@@ -1,14 +1,14 @@
-import testUtilService from "./BotPostTUtils";
-import { botServiceLogger } from "../BotLogger/BotLogger";
-import botPostService from "./BotPostService";
-import { PostType } from "../../Types/Enums";
+import testUtilService from "./botPostTUtils";
+import { botServiceLogger } from "../botLogger/botLogger";
+import botPostService from "./botPostService";
+import { PostType } from "../../types/Enums";
 
-jest.mock("../Post/PostService");
-jest.mock("../Prompt/PromptService");
-jest.mock("../OpenAI/OpenAIService");
-jest.mock("../Logger/LoggerService");
-jest.mock("../Youtube/YoutubeService");
-jest.mock("../BotLogger/BotLogger", () => {
+jest.mock("../post/postService");
+jest.mock("../prompt/promptService");
+jest.mock("../openAI/openAIService");
+jest.mock("../logger/loggerService");
+jest.mock("../youtube/youtubeService");
+jest.mock("../botLogger/botLogger", () => {
   const logger = {
     create: jest.fn(),
     created: jest.fn(),

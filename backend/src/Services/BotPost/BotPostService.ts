@@ -1,13 +1,13 @@
-import { CreateBotPostOptions } from "../../Types/App";
-import { PostType } from "../../Types/Enums";
+import { CreateBotPostOptions } from "../../types/App";
+import { PostType } from "../../types/Enums";
 import { NewPost, NewPostImg, Poll, Post } from "../../../../shared/types/post.interface";
-import { AppError } from "../../Services/Error/ErrorService";
-import promptService from "../../Services/Prompt/PromptService";
-import openAIService from "../OpenAI/OpenAIService";
-import youtubeService from "../../Services/Youtube/YoutubeService";
-import { botServiceLogger } from "../BotLogger/BotLogger";
-import { shuffleArray } from "../../Services/Util/UtilService";
-import { PostModel } from "../../Models/Post/PostModel";
+import { AppError } from "../../services/error/errorService";
+import promptService from "../../services/prompt/promptService";
+import openAIService from "../openAI/openAIService";
+import youtubeService from "../../services/youtube/youtubeService";
+import { botServiceLogger } from "../botLogger/botLogger";
+import { shuffleArray } from "../../services/util/utilService";
+import { PostModel } from "../../models/post/postModel";
 
 interface createPostParams {
   botId: string;

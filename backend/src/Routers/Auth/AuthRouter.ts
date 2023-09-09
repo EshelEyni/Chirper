@@ -7,9 +7,9 @@ import {
   sendPasswordResetEmail,
   resetPassword,
   updatePassword,
-} from "../../Controllers/Auth/AuthController";
-import { checkUserAuthentication } from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
-import { authRequestLimiter } from "../../Services/RateLimiterService";
+} from "../../controllers/auth/authController";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuardsMiddleware";
+import { authRequestLimiter } from "../../services/rateLimiterService";
 
 const router = express.Router();
 

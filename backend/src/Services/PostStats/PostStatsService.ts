@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import { PostStats } from "../../../../shared/types/post.interface";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { PostModel } from "../../models/post/postModel";
+import { RepostModel } from "../../models/repost/repostModel";
 
 export const defaultPostStats: PostStats = {
   likesCount: 0,

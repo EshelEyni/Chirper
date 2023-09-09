@@ -1,4 +1,4 @@
-import { AppError } from "../Error/ErrorService";
+import { AppError } from "../error/errorService";
 import { google } from "googleapis";
 require("dotenv").config();
 

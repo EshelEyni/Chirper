@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockModel, FollowerModel, MuteModel, UserRelationModel } from "./UserRelationModel";
-import { UserModel } from "../User/UserModel";
-import { createTestUser, deleteTestUser, getMongoId } from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { BlockModel, FollowerModel, MuteModel, UserRelationModel } from "./userRelationModel";
+import { UserModel } from "../user/userModel";
+import { createTestUser, deleteTestUser, getMongoId } from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import { User } from "../../../../shared/types/user.interface";
 
 describe("User Relation Model", () => {

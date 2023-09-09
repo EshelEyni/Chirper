@@ -1,12 +1,12 @@
 import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { IUser, IUserDoc } from "../../Types/ITypes";
-import { UserRelationKind } from "../../Types/Enums";
+import { IUser, IUserDoc } from "../../types/ITypes";
+import { UserRelationKind } from "../../types/Enums";
 import { User } from "../../../../shared/types/user.interface";
-import { UserRelationModel } from "../UserRelation/UserRelationModel";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { UserRelationModel } from "../userRelation/userRelationModel";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
 const userSchema: Schema<IUser> = new Schema(
   {

@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from "express";
-import { logger } from "../Logger/LoggerService";
+import { logger } from "../logger/loggerService";
 
 type AsyncExpressMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 

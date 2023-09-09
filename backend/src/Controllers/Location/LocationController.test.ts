@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { getUserDefaultLocations, getLocationsBySearchTerm } from "./LocationController";
-import locationService from "../../Services/Location/LocationService";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
+import { getUserDefaultLocations, getLocationsBySearchTerm } from "./locationController";
+import locationService from "../../services/location/locationService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
 
-jest.mock("../../Services/Location/LocationService");
+jest.mock("../../services/location/locationService");
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

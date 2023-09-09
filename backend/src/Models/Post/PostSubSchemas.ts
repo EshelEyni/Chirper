@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { AppError } from "../../Services/Error/ErrorService";
-import { IPoll, IPollLength, IPollOption } from "../../Types/ITypes";
+import { AppError } from "../../services/error/errorService";
+import { IPoll, IPollLength, IPollOption } from "../../types/ITypes";
 
 const imgsSchema = new mongoose.Schema(
   {

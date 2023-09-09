@@ -3,22 +3,21 @@ import express from "express";
 import helmet from "helmet";
 import compression from "compression";
 import ExpressMongoSanitize from "express-mongo-sanitize";
-import requestSanitizer from "../../Middlewares/HTMLSanitizer/HTMLSanitizerMiddleware";
+import requestSanitizer from "../../middlewares/HTMLSanitizer/HTMLSanitizerMiddleware";
 import hpp from "hpp";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { requestLogger } from "../../Middlewares/Logger/LoggerMiddleware";
-import { AppError, errorHandler } from "../../Services/Error/ErrorService";
-import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
-import userRouter from "../../Routers/User/UserRouter";
-import userRelationRouter from "../../Routers/UserRelation/UserRelationRouter";
-import postRouter from "../../Routers/Post/PostRouter";
-import gifRouter from "../../Routers/GIF/GIFRouter";
-import locationRouter from "../../Routers/Location/LocationRouter";
-import botRouter from "../../Routers/Bot/BotRouter";
-import authRouter from "../../Routers/Auth/AuthRouter";
-import { requestLimiter } from "../../Services/RateLimiterService";
+import { requestLogger } from "../../middlewares/logger/loggerMiddleware";
+import { AppError, errorHandler } from "../../services/error/errorService";
+import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
+import userRouter from "../../routers/user/userRouter";
+import userRelationRouter from "../../routers/userRelation/userRelationRouter";
+import postRouter from "../../routers/post/postRouter";
+import gifRouter from "../../routers/GIF/GIFRouter";
+import locationRouter from "../../routers/location/locationRouter";
+import authRouter from "../../routers/auth/authRouter";
+import { requestLimiter } from "../../services/rateLimiterService";
 
 const isProdEnv = process.env.NODE_ENV === "production";
 
@@ -70,7 +69,6 @@ app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/location", locationRouter);
-app.use("/api/bot", botRouter);
 app.use("/api/auth", authRouter);
 
 app.get("/**", (req: Request, res: Response) => {

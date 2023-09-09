@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 import { ObjectId } from "mongodb";
-import { AppError } from "../../Services/Error/ErrorService";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { PostModel } from "../Post/PostModel";
-import { UserModel } from "../../Models/User/UserModel";
-import { IPollLength, IPollVoteDoc } from "../../Types/ITypes";
+import { AppError } from "../../services/error/errorService";
+import { queryEntityExists } from "../../services/util/utilService";
+import { PostModel } from "../post/postModel";
+import { UserModel } from "../../models/user/userModel";
+import { IPollLength, IPollVoteDoc } from "../../types/ITypes";
 
 const pollVoteSchema: Schema<IPollVoteDoc> = new mongoose.Schema(
   {

@@ -1,29 +1,29 @@
 import { Request, Response } from "express";
-import { validateIds } from "../../Services/Util/UtilService";
+import { validateIds } from "../../services/util/utilService";
 import {
   NewPost,
   Post,
   PostRepostResult,
   PostStats,
 } from "../../../../shared/types/post.interface";
-import postService from "../../Services/Post/PostService";
+import postService from "../../services/post/postService";
 import {
   asyncErrorCatcher,
   AppError,
   validatePatchRequestBody,
-} from "../../Services/Error/ErrorService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import postStatsService from "../../Services/PostStats/PostStatsService";
-import { deleteOne, getAll } from "../../Services/Factory/FactoryService";
-import { PostModel } from "../../Models/Post/PostModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
-import { PostBookmarkModel, IBookmarkedPostDoc } from "../../Models/PostBookmark/PostBookmarkModel";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { PollVoteModel } from "../../Models/PollVote/PollVoteModel";
-import { IRepostDoc } from "../../Types/ITypes";
-import { ParsedReqQuery } from "../../Types/App";
+} from "../../services/error/errorService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import postStatsService from "../../services/postStats/postStatsService";
+import { deleteOne, getAll } from "../../services/factory/factoryService";
+import { PostModel } from "../../models/post/postModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
+import { PostBookmarkModel, IBookmarkedPostDoc } from "../../models/postBookmark/postBookmarkModel";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
+import { IRepostDoc } from "../../types/ITypes";
+import { ParsedReqQuery } from "../../types/App";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query as ParsedReqQuery;
@@ -71,7 +71,7 @@ const addPostThread = asyncErrorCatcher(async (req: Request, res: Response): Pro
     post.createdById = loggedInUserId;
   });
 
-  const result = await PostModel.insertMany(posts, { ordered: true, rawResult: true });
+  const result = await PostModel.insertMany(posts, { rawResult: true });
   const postId = result.insertedIds[0];
   const post = await PostModel.findById(postId);
 

@@ -2,16 +2,16 @@ import moment from "moment";
 import { ObjectId } from "mongodb";
 import { Model } from "mongoose";
 import { LoggedInUserActionState, PostStatsBody } from "../../../../shared/types/post.interface";
-import { IPollOption, IPollVoteDoc, IPost, IUser } from "../../Types/ITypes";
-import { UserModel } from "../../Models/User/UserModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { PostBookmarkModel } from "../../Models/PostBookmark/PostBookmarkModel";
-import { PollVoteModel } from "../../Models/PollVote/PollVoteModel";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { isValidMongoId } from "../../Services/Util/UtilService";
+import { IPollOption, IPollVoteDoc, IPost, IUser } from "../../types/ITypes";
+import { UserModel } from "../../models/user/userModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { PostModel } from "../../models/post/postModel";
+import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
+import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { isValidMongoId } from "../../services/util/utilService";
 
 type SetQuotedConfig = {
   doc: IPost;

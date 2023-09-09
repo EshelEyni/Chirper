@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PostModel } from "../../Models/Post/PostModel";
-import botPostService from "../BotPost/BotPostService";
-import promptService from "../Prompt/PromptService";
-import openAIService from "../OpenAI/OpenAIService";
-import youtubeService from "../Youtube/YoutubeService";
-import { AppError } from "../Error/ErrorService";
-import testUtilService from "./BotPostTUtils";
-import { PostType } from "../../Types/Enums";
-import { CreateBotPostOptions } from "../../Types/App";
+import { PostModel } from "../../models/post/postModel";
+import botPostService from "../botPost/botPostService";
+import promptService from "../prompt/promptService";
+import openAIService from "../openAI/openAIService";
+import youtubeService from "../youtube/youtubeService";
+import { AppError } from "../error/errorService";
+import testUtilService from "./botPostTUtils";
+import { PostType } from "../../types/Enums";
+import { CreateBotPostOptions } from "../../types/App";
 
-jest.mock("../Prompt/PromptService");
-jest.mock("../OpenAI/OpenAIService");
-jest.mock("../Youtube/YoutubeService");
-jest.mock("../Post/PostService");
-jest.mock("../Logger/LoggerService");
+jest.mock("../prompt/promptService");
+jest.mock("../openAI/openAIService");
+jest.mock("../youtube/youtubeService");
+jest.mock("../post/postService");
+jest.mock("../logger/loggerService");
 
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     create: jest.fn(),
   },

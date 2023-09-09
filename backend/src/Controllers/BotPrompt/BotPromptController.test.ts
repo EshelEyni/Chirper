@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import { BotPromptModel } from "../../Models/BotPrompt/BotPromptModel";
-import { addBotManyPrompts } from "./BotPromptController";
-import { AppError } from "../../Services/Error/ErrorService";
+import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
+import { addBotManyPrompts } from "./botPromptController";
+import { AppError } from "../../services/error/errorService";
 
-jest.mock("../../Models/BotPrompt/BotPromptModel", () => ({
+jest.mock("../../models/botPrompt/botPromptModel", () => ({
   BotPromptModel: {
     create: jest.fn(),
   },

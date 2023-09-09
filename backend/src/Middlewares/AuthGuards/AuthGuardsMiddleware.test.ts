@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import { checkAdminAuthorization, checkUserAuthentication } from "./AuthGuardsMiddleware";
-import tokenService from "../../Services/Token/TokenService";
-import { AppError } from "../../Services/Error/ErrorService";
-import { UserModel } from "../../Models/User/UserModel";
-import { getMongoId } from "../../Services/Test/TestUtilService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { checkAdminAuthorization, checkUserAuthentication } from "./authGuardsMiddleware";
+import tokenService from "../../services/token/tokenService";
+import { AppError } from "../../services/error/errorService";
+import { UserModel } from "../../models/user/userModel";
+import { getMongoId } from "../../services/test/testUtilService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
-jest.mock("../../Services/Token/TokenService");
-jest.mock("../../Models/User/UserModel", () => ({
+jest.mock("../../services/token/tokenService");
+jest.mock("../../models/user/userModel", () => ({
   UserModel: {
     findById: jest.fn().mockReturnValue({
       setOptions: jest.fn().mockReturnValue({
@@ -21,7 +21,7 @@ jest.mock("../../Models/User/UserModel", () => ({
   },
 }));
 
-describe("Auth Guards Middleware", () => {
+describe("auth Guards Middleware", () => {
   (getLoggedInUserIdFromReq as jest.Mock).mockReturnValue(getMongoId());
 
   describe("checkUserAuthentication", () => {

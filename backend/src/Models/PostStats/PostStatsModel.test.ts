@@ -7,9 +7,9 @@ import {
   deleteTestPost,
   deleteTestUser,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { PostStatsModel } from "./PostStatsModel";
+} from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { PostStatsModel } from "./postStatsModel";
 
 describe("Post Like Model", () => {
   let post: Post, user: User, postId: string, userId: string;

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BotPromptModel } from "../../Models/BotPrompt/BotPromptModel";
-import { PostType } from "../../Types/Enums";
-import { assertBotPrompt } from "../Test/TestAssertionService";
-import { getMongoId } from "../Test/TestUtilService";
-import promptService from "./PromptService";
+import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
+import { PostType } from "../../types/Enums";
+import { assertBotPrompt } from "../test/testAssertionService";
+import { getMongoId } from "../test/testUtilService";
+import promptService from "./promptService";
 
 const SAMPLE_PROMPT = "Some prompt";
 
-jest.mock("../../Models/BotPrompt/BotPromptModel", () => ({
+jest.mock("../../models/botPrompt/botPromptModel", () => ({
   BotPromptModel: {
     countDocuments: jest.fn(),
     findOne: jest.fn(),

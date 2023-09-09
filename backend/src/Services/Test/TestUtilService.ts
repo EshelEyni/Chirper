@@ -3,15 +3,15 @@ require("dotenv").config();
 import mongoose from "mongoose";
 import { Post, PromotionalPost } from "../../../../shared/types/post.interface";
 import { User, UserCredenitials } from "../../../../shared/types/user.interface";
-import tokenService from "../Token/TokenService";
-import { UserModel } from "../../Models/User/UserModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { PollVoteModel } from "../../Models/PollVote/PollVoteModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
-import { PostBookmarkModel } from "../../Models/PostBookmark/PostBookmarkModel";
+import tokenService from "../token/tokenService";
+import { UserModel } from "../../models/user/userModel";
+import { PostModel } from "../../models/post/postModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
+import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
 
 type CreateTestUserOptions = {
   id?: string;

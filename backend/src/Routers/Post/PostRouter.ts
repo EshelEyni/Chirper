@@ -2,7 +2,7 @@ import express from "express";
 import {
   checkUserAuthentication,
   checkAdminAuthorization,
-} from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
+} from "../../middlewares/authGuards/authGuardsMiddleware";
 import {
   getPosts,
   getPostById,
@@ -25,7 +25,7 @@ import {
   removeBookmarkedPost,
   addPromotionalPost,
   getPromotionalPosts,
-} from "../../Controllers/Post/PostController";
+} from "../../controllers/post/postController";
 
 const router = express.Router();
 

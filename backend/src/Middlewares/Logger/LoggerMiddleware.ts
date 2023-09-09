@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { logger } from "../../Services/Logger/LoggerService";
+import { asyncErrorCatcher } from "../../services/error/errorService";
+import { logger } from "../../services/logger/loggerService";
 
 export const requestLogger = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {

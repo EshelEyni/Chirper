@@ -4,12 +4,12 @@ import {
   asyncErrorCatcher,
   errorHandler,
   validatePatchRequestBody,
-} from "./ErrorService";
+} from "./errorService";
 import { Request, Response, NextFunction } from "express";
-import { logger } from "../Logger/LoggerService";
-import { CustomError } from "./ErrorService";
+import { logger } from "../logger/loggerService";
+import { CustomError } from "./errorService";
 
-jest.mock("../Logger/LoggerService");
+jest.mock("../logger/loggerService");
 
 describe("Error Service", () => {
   describe("AppError", () => {

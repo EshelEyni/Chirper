@@ -3,14 +3,14 @@ import request from "supertest";
 import express from "express";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import router from "./PostRouter";
+import router from "./postRouter";
 import { Post, PostStats } from "../../../../shared/types/post.interface";
-import { PostBookmarkModel } from "../../Models/PostBookmark/PostBookmarkModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { UserModel } from "../../Models/User/UserModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
+import { PostModel } from "../../models/post/postModel";
+import { UserModel } from "../../models/user/userModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {
   createManyTestPosts,
   createManyTestPromotionalPosts,
@@ -20,8 +20,8 @@ import {
   createTestUser,
   createTestPostStats,
   getLoginTokenStrForTest,
-} from "../../Services/Test/TestUtilService";
-import { RepostModel } from "../../Models/Repost/RepostModel";
+} from "../../services/test/testUtilService";
+import { RepostModel } from "../../models/repost/repostModel";
 import {
   assertPoll,
   assertPost,
@@ -29,9 +29,9 @@ import {
   assertPromotionalPost,
   assertQuotedPost,
   assertRepost,
-} from "../../Services/Test/TestAssertionService";
-import { errorHandler } from "../../Services/Error/ErrorService";
-import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
+} from "../../services/test/testAssertionService";
+import { errorHandler } from "../../services/error/errorService";
+import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
 
 const app = express();
 app.use(compression());

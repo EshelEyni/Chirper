@@ -1,11 +1,11 @@
 import { GiphyFetch } from "@giphy/js-fetch-api";
 require("dotenv").config();
 
-import { APIFeatures } from "../Util/UtilService";
+import { APIFeatures } from "../util/utilService";
 import gifService from "./GIFService";
-import { AppError } from "../Error/ErrorService";
+import { AppError } from "../error/errorService";
 import { Gif } from "../../../../shared/types/gif.interface";
-import { GifModel } from "../../Models/GIF/GIFModel";
+import { GifModel } from "../../models/GIF/GIFModel";
 
 type MockedFetchedGif = {
   id: string;
@@ -29,8 +29,8 @@ type MockedFetchedGif = {
 };
 
 jest.mock("@giphy/js-fetch-api");
-jest.mock("../../Models/GIF/GIFModel");
-jest.mock("../Util/UtilService");
+jest.mock("../../models/GIF/GIFModel");
+jest.mock("../util/utilService");
 
 describe("Gif Service", () => {
   describe("getGifsBySearchTerm", () => {

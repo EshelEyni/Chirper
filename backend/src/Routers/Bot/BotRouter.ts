@@ -1,15 +1,15 @@
 import express from "express";
-import { getBots } from "../../Controllers/Bot/BotBontroller";
-import { addPost } from "../../Controllers/BotPost/BotPostController";
+import { getBots } from "../../controllers/bot/botController";
+import { addPost } from "../../controllers/botPost/botPostController";
 import {
   addBotManyPrompts,
   addBotPrompt,
   getBotPrompts,
-} from "../../Controllers/BotPrompt/BotPromptController";
+} from "../../controllers/botPrompt/botPromptController";
 import {
   checkAdminAuthorization,
   checkUserAuthentication,
-} from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
+} from "../../middlewares/authGuards/authGuardsMiddleware";
 
 const router = express.Router();
 

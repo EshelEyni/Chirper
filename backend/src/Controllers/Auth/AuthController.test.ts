@@ -9,15 +9,15 @@ import {
   sendPasswordResetEmail,
   signup,
   updatePassword,
-} from "./AuthController";
-import { getMongoId } from "../../Services/Test/TestUtilService";
-import authService from "../../Services/Auth/AuthService";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+} from "./authController";
+import { getMongoId } from "../../services/test/testUtilService";
+import authService from "../../services/auth/authService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 import { UserCredenitials } from "../../../../shared/types/user.interface";
 
-jest.mock("../../Services/Auth/AuthService");
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/auth/authService");
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn().mockReturnValue("userId"),
 }));
 
@@ -34,7 +34,7 @@ const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
   };
 });
 
-describe("Auth Controller", () => {
+describe("auth Controller", () => {
   const mockUser = { id: "1", username: "username" };
   const mockToken = "token";
 

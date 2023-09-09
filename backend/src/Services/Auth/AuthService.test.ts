@@ -1,18 +1,18 @@
 import * as crypto from "crypto";
-import { IUserDoc } from "../../Types/ITypes";
+import { IUserDoc } from "../../types/ITypes";
 import { UserCredenitials } from "../../../../shared/types/user.interface";
-import authService from "./AuthService";
-import { UserModel } from "../../Models/User/UserModel";
-import tokenService from "../../Services/Token/TokenService";
-import { AppError } from "../../Services/Error/ErrorService";
-import { isValidMongoId, sendEmail } from "../../Services/Util/UtilService";
+import authService from "./authService";
+import { UserModel } from "../../models/user/userModel";
+import tokenService from "../../services/token/tokenService";
+import { AppError } from "../../services/error/errorService";
+import { isValidMongoId, sendEmail } from "../../services/util/utilService";
 
 jest.mock("crypto");
-jest.mock("../../Models/User/UserModel");
-jest.mock("../../Services/Token/TokenService");
-jest.mock("../../Services/Util/UtilService");
+jest.mock("../../models/user/userModel");
+jest.mock("../../services/token/tokenService");
+jest.mock("../../services/util/utilService");
 
-describe("Auth Service", () => {
+describe("auth Service", () => {
   describe("login", () => {
     let user: Partial<IUserDoc>;
 

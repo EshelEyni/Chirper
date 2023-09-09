@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../shared/types/post.interface";
 import { User } from "../../../../shared/types/user.interface";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { assertPost, assertUser } from "../../Services/Test/TestAssertionService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { assertPost, assertUser } from "../../services/test/testAssertionService";
 import {
   createTestPost,
   createTestUser,
   deleteTestPost,
   deleteTestUser,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { RepostModel } from "./RepostModel";
+} from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { RepostModel } from "./repostModel";
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 
@@ -63,9 +63,7 @@ describe("Repost Model", () => {
       const postLike = new RepostModel({
         postId: getMongoId(),
       });
-      await expect(postLike.save()).rejects.toThrow(
-        "userId: Path `userId` is required."
-      );
+      await expect(postLike.save()).rejects.toThrow("userId: Path `userId` is required.");
     });
 
     it("should not save if referenced post doesn't exist", async () => {

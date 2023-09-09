@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { assertGif } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { assertGif } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import { GifCategoryModel, GifModel } from "./GIFModel";
 
 describe("GifModel", () => {

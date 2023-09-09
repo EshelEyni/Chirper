@@ -2,9 +2,9 @@ require("dotenv").config();
 import fetch from "cross-fetch";
 import { Gif } from "../../../../shared/types/gif.interface";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import { AppError } from "../Error/ErrorService";
-import { APIFeatures } from "../Util/UtilService";
-import { GifModel } from "../../Models/GIF/GIFModel";
+import { AppError } from "../error/errorService";
+import { APIFeatures } from "../util/utilService";
+import { GifModel } from "../../models/GIF/GIFModel";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).fetch = fetch;

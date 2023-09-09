@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import gifService from "../../Services/GIF/GIFService";
-import { asyncErrorCatcher, AppError } from "../../Services/Error/ErrorService";
-import { getAll } from "../../Services/Factory/FactoryService";
-import { GifCategoryModel, GifModel } from "../../Models/GIF/GIFModel";
+import gifService from "../../services/GIF/GIFService";
+import { asyncErrorCatcher, AppError } from "../../services/error/errorService";
+import { getAll } from "../../services/factory/factoryService";
+import { GifCategoryModel, GifModel } from "../../models/GIF/GIFModel";
 
 const getGifCategories = getAll(GifCategoryModel);
 const getGifFromDB = getAll(GifModel);

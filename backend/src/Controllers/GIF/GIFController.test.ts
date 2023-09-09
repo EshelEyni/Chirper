@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { getGifsBySearchTerm } from "./GIFController";
-import gifService from "../../Services/GIF/GIFService";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
+import gifService from "../../services/GIF/GIFService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
 
-jest.mock("../../Services/GIF/GIFService");
+jest.mock("../../services/GIF/GIFService");
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

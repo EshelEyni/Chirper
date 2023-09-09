@@ -3,7 +3,7 @@ import {
   getGifsBySearchTerm,
   getGifCategories,
   getGifFromDB,
-} from "../../Controllers/GIF/GIFController";
+} from "../../controllers/GIF/GIFController";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IBotPrompt } from "../../Types/ITypes";
+import { IBotPrompt } from "../../types/ITypes";
 
 const botPromptSchema = new mongoose.Schema<IBotPrompt>(
   {

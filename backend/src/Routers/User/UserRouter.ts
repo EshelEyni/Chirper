@@ -8,11 +8,11 @@ import {
   addUser,
   updateLoggedInUser,
   removeLoggedInUser,
-} from "../../Controllers/User/UserController";
+} from "../../controllers/user/userController";
 import {
   checkUserAuthentication,
   checkAdminAuthorization,
-} from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
+} from "../../middlewares/authGuards/authGuardsMiddleware";
 
 const router = express.Router();
 

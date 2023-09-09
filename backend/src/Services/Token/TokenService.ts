@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request } from "express";
-import { AppError } from "../Error/ErrorService";
+import { AppError } from "../error/errorService";
 require("dotenv").config();
 
 function getTokenFromRequest(req: Request) {

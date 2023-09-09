@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "./BotRouter";
+import router from "./botRouter";
 import { User } from "../../../../shared/types/user.interface";
-import { errorHandler } from "../../Services/Error/ErrorService";
+import { errorHandler } from "../../services/error/errorService";
 import {
   createTestUser,
   deleteTestUser,
@@ -11,19 +11,19 @@ import {
   getMockPost,
   getMockPromptText,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
+} from "../../services/test/testUtilService";
 import cookieParser from "cookie-parser";
-import { BotPromptModel } from "../../Models/BotPrompt/BotPromptModel";
+import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
 import {
   checkAdminAuthorization,
   checkUserAuthentication,
-} from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
-import setupAsyncLocalStorage from "../../Middlewares/SetupALS/SetupALSMiddleware";
-import botPostService from "../../Services/BotPost/BotPostService";
-import { assertBotPrompt, assertUser } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+} from "../../middlewares/authGuards/authGuardsMiddleware";
+import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
+import botPostService from "../../services/botPost/botPostService";
+import { assertBotPrompt, assertUser } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 
-jest.mock("../../Services/BotPost/BotPostService");
+jest.mock("../../services/botPost/botPostService");
 
 const app = express();
 app.use(cookieParser());

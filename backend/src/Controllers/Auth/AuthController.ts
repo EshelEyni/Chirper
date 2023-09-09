@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { User, UserCredenitials } from "../../../../shared/types/user.interface";
-import authService from "../../Services/Auth/AuthService";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import authService from "../../services/auth/authService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
 const login = asyncErrorCatcher(async (req: Request, res: Response) => {
   const { username, password } = req.body;

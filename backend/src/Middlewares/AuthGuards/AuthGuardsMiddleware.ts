@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { UserModel } from "../../Models/User/UserModel";
-import tokenService from "../../Services/Token/TokenService";
-import { isValidMongoId } from "../../Services/Util/UtilService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import { UserModel } from "../../models/user/userModel";
+import tokenService from "../../services/token/tokenService";
+import { isValidMongoId } from "../../services/util/utilService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
 const checkUserAuthentication = asyncErrorCatcher(
   async (req: Request, res: Response, next: NextFunction) => {

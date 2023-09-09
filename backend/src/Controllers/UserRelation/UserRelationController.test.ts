@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { addFollow, removeFollow } from "./UserRelationController";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { getMongoId } from "../../Services/Test/TestUtilService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import { addFollow, removeFollow } from "./userRelationController";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { getMongoId } from "../../services/test/testUtilService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
-jest.mock("../../Services/UserRelation/UserRelationService");
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/userRelation/userRelationService");
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 

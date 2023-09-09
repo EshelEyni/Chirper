@@ -1,32 +1,32 @@
-import PostStatsService, { defaultPostStats } from "./PostStatsService";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import { getMongoId } from "../Test/TestUtilService";
-import { assertPostStats } from "../Test/TestAssertionService";
+import PostStatsService, { defaultPostStats } from "./postStatsService";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { PostModel } from "../../models/post/postModel";
+import { RepostModel } from "../../models/repost/repostModel";
+import { getMongoId } from "../test/testUtilService";
+import { assertPostStats } from "../test/testAssertionService";
 
-jest.mock("../../Models/PostLike/PostLikeModel", () => ({
+jest.mock("../../models/postLike/postLikeModel", () => ({
   PostLikeModel: {
     countDocuments: jest.fn(),
   },
 }));
-jest.mock("../../Models/PostStats/PostStatsModel", () => ({
+jest.mock("../../models/postStats/postStatsModel", () => ({
   PostStatsModel: {
     aggregate: jest.fn(),
   },
 }));
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     countDocuments: jest.fn(),
   },
 }));
-jest.mock("../../Models/Repost/RepostModel", () => ({
+jest.mock("../../models/repost/repostModel", () => ({
   RepostModel: {
     countDocuments: jest.fn(),
   },
 }));
-jest.mock("../../Models/PromotionalPost/PromotionalPostModel", () => ({
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
   PromotionalPostModel: jest.fn(),
 }));
 

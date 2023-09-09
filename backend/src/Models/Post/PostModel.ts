@@ -1,18 +1,18 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Query, Schema } from "mongoose";
 import { Post } from "../../../../shared/types/post.interface";
-import { IPost, IPostDoc } from "../../Types/ITypes";
+import { IPost, IPostDoc } from "../../types/ITypes";
 import { gifSchema } from "../GIF/GIFModel";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { UserModel } from "../User/UserModel";
-import { imgsSchema, locationSchema, pollSchema } from "./PostSubSchemas";
-import { AppError } from "../../Services/Error/ErrorService";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { populatePostData } from "../../Services/Post/PopulatePostData";
-import { PostBookmarkModel } from "../PostBookmark/PostBookmarkModel";
-import { PostLikeModel } from "../PostLike/PostLikeModel";
-import { PostStatsModel } from "../PostStats/PostStatsModel";
-import { RepostModel } from "../Repost/RepostModel";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { UserModel } from "../user/userModel";
+import { imgsSchema, locationSchema, pollSchema } from "./postSubSchemas";
+import { AppError } from "../../services/error/errorService";
+import { queryEntityExists } from "../../services/util/utilService";
+import { populatePostData } from "../../services/post/populatePostData";
+import { PostBookmarkModel } from "../postBookmark/postBookmarkModel";
+import { PostLikeModel } from "../postLike/postLikeModel";
+import { PostStatsModel } from "../postStats/postStatsModel";
+import { RepostModel } from "../repost/repostModel";
 
 const postSchema: Schema<IPost> = new mongoose.Schema(
   {
@@ -282,7 +282,7 @@ postSchema.post(/^find/, async function (this: Query<Post[], Post & Document>, r
 });
 
 postSchema.pre("findOneAndDelete", async function (this: Query<Post & Document, Post>, next) {
-  const query = await this.getQuery();
+  const query = this.getQuery();
   if (!query) return;
   await PostBookmarkModel.deleteMany({ postId: query._id });
   await PostLikeModel.deleteMany({ postId: query._id });

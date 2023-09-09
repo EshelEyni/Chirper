@@ -1,6 +1,6 @@
 import express from "express";
 
-import { checkUserAuthentication } from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuardsMiddleware";
 import {
   addFollow,
   removeFollow,
@@ -8,7 +8,7 @@ import {
   removeBlock,
   addMute,
   removeMute,
-} from "../../Controllers/UserRelation/UserRelationController";
+} from "../../controllers/userRelation/userRelationController";
 
 const router = express.Router();
 

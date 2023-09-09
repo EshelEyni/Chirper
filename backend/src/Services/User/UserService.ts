@@ -1,10 +1,10 @@
-import { ParsedReqQuery } from "../../Types/App";
-import { IUser } from "../../Types/ITypes";
+import { ParsedReqQuery } from "../../types/App";
+import { IUser } from "../../types/ITypes";
 import { User } from "../../../../shared/types/user.interface";
-import { UserModel } from "../../Models/User/UserModel";
-import { APIFeatures, filterObj } from "../../Services/Util/UtilService";
-import { AppError } from "../../Services/Error/ErrorService";
-import { logger } from "../../Services/Logger/LoggerService";
+import { UserModel } from "../../models/user/userModel";
+import { APIFeatures, filterObj } from "../../services/util/utilService";
+import { AppError } from "../../services/error/errorService";
+import { logger } from "../../services/logger/loggerService";
 
 async function query(queryString: ParsedReqQuery): Promise<IUser[]> {
   const features = new APIFeatures(UserModel.find(), queryString)

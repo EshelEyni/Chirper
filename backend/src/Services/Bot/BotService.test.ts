@@ -1,9 +1,9 @@
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import { getMockedUser } from "../../Services/Test/TestUtilService";
-import botService from "./BotService";
-import { UserModel } from "../../Models/User/UserModel";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import { getMockedUser } from "../../services/test/testUtilService";
+import botService from "./botService";
+import { UserModel } from "../../models/user/userModel";
 
-jest.mock("../../Models/User/UserModel", () => ({
+jest.mock("../../models/user/userModel", () => ({
   UserModel: {
     find: jest.fn(),
   },

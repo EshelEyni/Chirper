@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Reply } from "../../../../shared/types/post.interface";
-import { assertPost, assertQuotedPost } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { assertPost, assertQuotedPost } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {
   createTestPoll,
   createTestPost,
   deleteTestUser,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { PostModel } from "./PostModel";
+} from "../../services/test/testUtilService";
+import { PostModel } from "./postModel";
 
 xdescribe("PostModel: Schema", () => {
   beforeAll(async () => {

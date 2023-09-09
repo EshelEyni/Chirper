@@ -1,8 +1,8 @@
 import mongoose, { Query, Schema } from "mongoose";
 import { PromotionalPost } from "../../../../shared/types/post.interface";
-import { IPromotionalPost, IPromotionalPostDoc } from "../../Types/ITypes";
-import { postSchema } from "../Post/PostModel";
-import { populatePostData } from "../../Services/Post/PopulatePostData";
+import { IPromotionalPost, IPromotionalPostDoc } from "../../types/ITypes";
+import { postSchema } from "../post/postModel";
+import { populatePostData } from "../../services/post/populatePostData";
 
 const promotionalPostSchema: Schema<IPromotionalPost> = new mongoose.Schema(
   {

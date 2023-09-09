@@ -12,10 +12,10 @@ import {
   isValidMongoId,
   validateIds,
   getUniqueStringIds,
-} from "./UtilService";
-import { AppError } from "../Error/ErrorService";
-import { getMongoId } from "../Test/TestUtilService";
-import { ParsedReqQuery } from "../../Types/App";
+} from "./utilService";
+import { AppError } from "../error/errorService";
+import { getMongoId } from "../test/testUtilService";
+import { ParsedReqQuery } from "../../types/App";
 require("dotenv").config();
 
 jest.mock("nodemailer", () => ({

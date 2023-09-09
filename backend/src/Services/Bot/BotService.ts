@@ -1,4 +1,4 @@
-import { UserModel } from "../../Models/User/UserModel";
+import { UserModel } from "../../models/user/userModel";
 
 async function getBots() {
   const bots = await UserModel.find({ isBot: true });

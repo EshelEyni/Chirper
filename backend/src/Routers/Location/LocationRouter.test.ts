@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from "supertest";
 import express from "express";
-import router from "./LocationRouter";
-import locationService from "../../Services/Location/LocationService";
-import { errorHandler } from "../../Services/Error/ErrorService";
-import { checkUserAuthentication } from "../../Middlewares/AuthGuards/AuthGuardsMiddleware";
+import router from "./locationRouter";
+import locationService from "../../services/location/locationService";
+import { errorHandler } from "../../services/error/errorService";
+import { checkUserAuthentication } from "../../middlewares/authGuards/authGuardsMiddleware";
 
-jest.mock("../../Middlewares/AuthGuards/AuthGuardsMiddleware", () => ({
+jest.mock("../../middlewares/authGuards/authGuardsMiddleware", () => ({
   checkUserAuthentication: jest.fn().mockImplementation((req, res, next) => next()),
 }));
 

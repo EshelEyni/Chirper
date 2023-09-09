@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
-import botPostService from "../../Services/BotPost/BotPostService";
-import { addPost } from "./BotPostController";
-import { AppError } from "../../Services/Error/ErrorService";
+import botPostService from "../../services/botPost/botPostService";
+import { addPost } from "./botPostController";
+import { AppError } from "../../services/error/errorService";
 
-jest.mock("../../Services/BotPost/BotPostService");
+jest.mock("../../services/botPost/botPostService");
 
 describe("Bot Post Contoller", () => {
   const mockRequest = {

@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as mongoose from "mongoose";
-import { UserRelationKind } from "../../Types/Enums";
-import { UserRelationModel } from "../../Models/UserRelation/UserRelationModel";
-import { UserModel } from "../../Models/User/UserModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import userRelationService from "../UserRelation/UserRelationService";
-import { AppError } from "../Error/ErrorService";
+import { UserRelationKind } from "../../types/Enums";
+import { UserRelationModel } from "../../models/userRelation/userRelationModel";
+import { UserModel } from "../../models/user/userModel";
+import { PostModel } from "../../models/post/postModel";
+import userRelationService from "../userRelation/userRelationService";
+import { AppError } from "../error/errorService";
 
 jest.mock("mongoose");
 jest.mock("../ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 
-jest.mock("../../Models/User/UserModel", () => ({
+jest.mock("../../models/user/userModel", () => ({
   UserModel: {
     findById: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/UserRelation/UserRelationModel", () => ({
+jest.mock("../../models/userRelation/userRelationModel", () => ({
   UserRelationModel: {
     create: jest.fn(),
     findOneAndDelete: jest.fn().mockReturnValue({
@@ -37,19 +37,19 @@ jest.mock("../../Models/UserRelation/UserRelationModel", () => ({
   },
 }));
 
-jest.mock("../../Models/PostStats/PostStatsModel", () => ({
+jest.mock("../../models/postStats/postStatsModel", () => ({
   PostStatsModel: {
     findOneAndUpdate: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     findById: jest.fn(),
   },
 }));
 
-jest.mock("../Util/UtilService", () => ({
+jest.mock("../util/utilService", () => ({
   isValidMongoId: jest.fn().mockReturnValue(true),
 }));
 

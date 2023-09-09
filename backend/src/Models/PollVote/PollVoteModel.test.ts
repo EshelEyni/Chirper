@@ -1,6 +1,6 @@
 import { Post } from "../../../../shared/types/post.interface";
 import { User } from "../../../../shared/types/user.interface";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {
   createTestPoll,
   createTestPost,
@@ -8,11 +8,11 @@ import {
   deleteTestPost,
   deleteTestUser,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { PostModel } from "../Post/PostModel";
-import { PollVoteModel } from "./PollVoteModel";
+} from "../../services/test/testUtilService";
+import { PostModel } from "../post/postModel";
+import { PollVoteModel } from "./pollVoteModel";
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 

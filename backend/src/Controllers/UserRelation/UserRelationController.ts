@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { validateIds } from "../../Services/Util/UtilService";
-import userRelationService from "../../Services/UserRelation/UserRelationService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { UserRelationKind } from "../../Types/Enums";
-import { UserRelationParams } from "../../Types/App";
+import { asyncErrorCatcher } from "../../services/error/errorService";
+import { validateIds } from "../../services/util/utilService";
+import userRelationService from "../../services/userRelation/userRelationService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { UserRelationKind } from "../../types/Enums";
+import { UserRelationParams } from "../../types/App";
 
 type CreateRelationMiddleWareParams = {
   action: "add" | "remove";

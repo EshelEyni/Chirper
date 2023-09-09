@@ -22,26 +22,26 @@ import {
   removeRepost,
   updatePost,
   updatePostStats,
-} from "./PostController";
-import { asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { getMockPostStats, getMongoId } from "../../Services/Test/TestUtilService";
-import { PostBookmarkModel } from "../../Models/PostBookmark/PostBookmarkModel";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { PostModel } from "../../Models/Post/PostModel";
-import postService from "../../Services/Post/PostService";
-import { RepostModel } from "../../Models/Repost/RepostModel";
-import postStatsService from "../../Services/PostStats/PostStatsService";
-import { PostLikeModel } from "../../Models/PostLike/PostLikeModel";
-import { PromotionalPostModel } from "../../Models/PromotionalPost/PromotionalPostModel";
+} from "./postController";
+import { asyncErrorCatcher } from "../../services/error/errorService";
+import { getMockPostStats, getMongoId } from "../../services/test/testUtilService";
+import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { PostModel } from "../../models/post/postModel";
+import postService from "../../services/post/postService";
+import { RepostModel } from "../../models/repost/repostModel";
+import postStatsService from "../../services/postStats/postStatsService";
+import { PostLikeModel } from "../../models/postLike/postLikeModel";
+import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
 
-jest.mock("../../Services/Post/PostService");
-jest.mock("../../Services/PostStats/PostStatsService");
+jest.mock("../../services/post/postService");
+jest.mock("../../services/postStats/postStatsService");
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 
-jest.mock("../../Models/Post/PostModel", () => ({
+jest.mock("../../models/post/postModel", () => ({
   PostModel: {
     find: jest.fn(),
     findById: jest.fn(),
@@ -52,13 +52,13 @@ jest.mock("../../Models/Post/PostModel", () => ({
   },
 }));
 
-jest.mock("../../Models/PromotionalPost/PromotionalPostModel", () => ({
+jest.mock("../../models/promotionalPost/promotionalPostModel", () => ({
   PromotionalPostModel: {
     create: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/PostBookmark/PostBookmarkModel", () => ({
+jest.mock("../../models/postBookmark/postBookmarkModel", () => ({
   PostBookmarkModel: {
     find: jest.fn(),
     create: jest.fn(),
@@ -66,7 +66,7 @@ jest.mock("../../Models/PostBookmark/PostBookmarkModel", () => ({
   },
 }));
 
-jest.mock("../../Models/Repost/RepostModel", () => ({
+jest.mock("../../models/repost/repostModel", () => ({
   RepostModel: {
     find: jest.fn(),
     create: jest.fn(),
@@ -74,26 +74,26 @@ jest.mock("../../Models/Repost/RepostModel", () => ({
   },
 }));
 
-jest.mock("../../Services/Logger/LoggerService", () => ({
+jest.mock("../../services/logger/loggerService", () => ({
   logger: {
     warn: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/PollVote/PollVoteModel", () => ({
+jest.mock("../../models/pollVote/pollVoteModel", () => ({
   PollVoteModel: {
     create: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/PostLike/PostLikeModel", () => ({
+jest.mock("../../models/postLike/postLikeModel", () => ({
   PostLikeModel: {
     create: jest.fn(),
     findOneAndDelete: jest.fn(),
   },
 }));
 
-jest.mock("../../Models/PostStats/PostStatsModel", () => ({
+jest.mock("../../models/postStats/postStatsModel", () => ({
   PostStatsModel: {
     create: jest.fn(),
     findOneAndUpdate: jest.fn(),
@@ -360,7 +360,6 @@ describe("Post Controller", () => {
       await sut(req as Request, res as Response, nextMock);
 
       expect(PostModel.insertMany).toHaveBeenCalledWith(postsWithCreatedById, {
-        ordered: true,
         rawResult: true,
       });
 

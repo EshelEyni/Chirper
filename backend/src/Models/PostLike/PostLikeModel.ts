@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { Post } from "../../../../shared/types/post.interface";
-import { queryEntityExists } from "../../Services/Util/UtilService";
-import { PostModel } from "../Post/PostModel";
-import { UserModel } from "../../Models/User/UserModel";
+import { queryEntityExists } from "../../services/util/utilService";
+import { PostModel } from "../post/postModel";
+import { UserModel } from "../../models/user/userModel";
 
 interface IPostLikeBase {
   postId: ObjectId;

@@ -1,7 +1,7 @@
 import mongoose, { model } from "mongoose";
-import { IUserRelationDoc } from "../../Types/ITypes";
-import { UserRelationKind } from "../../Types/Enums";
-import { UserModel } from "../User/UserModel";
+import { IUserRelationDoc } from "../../types/ITypes";
+import { UserRelationKind } from "../../types/Enums";
+import { UserModel } from "../user/userModel";
 
 const userRelationSchema = new mongoose.Schema(
   {

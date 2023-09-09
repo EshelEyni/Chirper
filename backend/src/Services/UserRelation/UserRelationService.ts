@@ -1,15 +1,15 @@
 import mongoose, { ClientSession } from "mongoose";
 import { FollowingResult, User } from "../../../../shared/types/user.interface";
 import { Post } from "../../../../shared/types/post.interface";
-import { UserRelationKind } from "../../Types/Enums";
-import { UserRelationParams, isFollowingMap } from "../../Types/App";
-import { UserModel } from "../../Models/User/UserModel";
-import { UserRelationModel } from "../../Models/UserRelation/UserRelationModel";
-import { PostStatsModel } from "../../Models/PostStats/PostStatsModel";
-import { PostModel } from "../../Models/Post/PostModel";
-import { AppError } from "../../Services/Error/ErrorService";
-import { isValidMongoId } from "../../Services/Util/UtilService";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
+import { UserRelationKind } from "../../types/Enums";
+import { UserRelationParams, isFollowingMap } from "../../types/App";
+import { UserModel } from "../../models/user/userModel";
+import { UserRelationModel } from "../../models/userRelation/userRelationModel";
+import { PostStatsModel } from "../../models/postStats/postStatsModel";
+import { PostModel } from "../../models/post/postModel";
+import { AppError } from "../../services/error/errorService";
+import { isValidMongoId } from "../../services/util/utilService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
 
 type UpdateAndGetUsersParams = {
   fromUserId: string;

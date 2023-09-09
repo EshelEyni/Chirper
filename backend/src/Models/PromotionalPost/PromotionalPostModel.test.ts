@@ -2,11 +2,11 @@ import { PromotionalPost } from "../../../../shared/types/post.interface";
 import {
   createManyTestPromotionalPosts,
   createTestPromotionalPost,
-} from "../../Services/Test/TestUtilService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
-import * as PromotionalPostModelModule from "./PromotionalPostModel";
-import * as populatePostData from "../../Services/Post/PopulatePostData";
-import { assertPost } from "../../Services/Test/TestAssertionService";
+} from "../../services/test/testUtilService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
+import * as PromotionalPostModelModule from "./promotionalPostModel";
+import * as populatePostData from "../../services/post/populatePostData";
+import { assertPost } from "../../services/test/testAssertionService";
 
 const { PromotionalPostModel } = PromotionalPostModelModule;
 

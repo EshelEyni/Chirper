@@ -1,11 +1,11 @@
-import { APIFeatures } from "../../Services/Util/UtilService";
-import { UserModel } from "../../Models/User/UserModel";
-import userService from "./UserService";
-import userRelationService from "../UserRelation/UserRelationService";
+import { APIFeatures } from "../../services/util/utilService";
+import { UserModel } from "../../models/user/userModel";
+import userService from "./userService";
+import userRelationService from "../userRelation/userRelationService";
 
-jest.mock("../../Services/Util/UtilService");
-jest.mock("../../Models/User/UserModel");
-jest.mock("../UserRelation/UserRelationService");
+jest.mock("../../services/util/utilService");
+jest.mock("../../models/user/userModel");
+jest.mock("../userRelation/userRelationService");
 
 describe("User Service", () => {
   const mockToObject = jest.fn().mockReturnThis();

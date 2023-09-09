@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { AppError, asyncErrorCatcher } from "../../Services/Error/ErrorService";
-import { createOne, getAll } from "../../Services/Factory/FactoryService";
-import { BotPromptModel } from "../../Models/BotPrompt/BotPromptModel";
+import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
+import { createOne, getAll } from "../../services/factory/factoryService";
+import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
 
 const getBotPrompts = getAll(BotPromptModel);
 

@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from "../../../../shared/types/post.interface";
 import { User } from "../../../../shared/types/user.interface";
-import { getLoggedInUserIdFromReq } from "../../Services/ALSService";
-import { assertPost } from "../../Services/Test/TestAssertionService";
-import { connectToTestDB, disconnectFromTestDB } from "../../Services/Test/TestDBService";
+import { getLoggedInUserIdFromReq } from "../../services/ALSService";
+import { assertPost } from "../../services/test/testAssertionService";
+import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {
   createTestPost,
   createTestUser,
   deleteTestPost,
   deleteTestUser,
   getMongoId,
-} from "../../Services/Test/TestUtilService";
-import { PostBookmarkModel } from "./PostBookmarkModel";
+} from "../../services/test/testUtilService";
+import { PostBookmarkModel } from "./postBookmarkModel";
 
-jest.mock("../../Services/ALSService", () => ({
+jest.mock("../../services/ALSService", () => ({
   getLoggedInUserIdFromReq: jest.fn(),
 }));
 

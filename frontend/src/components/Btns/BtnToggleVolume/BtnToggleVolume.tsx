@@ -1,6 +1,6 @@
 import { FC, useRef } from "react";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
-import storageService from "../../../services/storage.service";
+import storageService from "../../../services/storageService";
 import { VideoVolumeSlider } from "../../Video/VideoVolumeSlider/VideoVolumeSlider";
 import "./BtnToggleVolume.scss";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";

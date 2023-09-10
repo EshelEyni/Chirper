@@ -1,6 +1,6 @@
 import { User } from "../../../shared/types/user.interface";
-import httpService from "./http.service";
-import { handleServerResponse } from "./util/utils.service";
+import httpService from "./http/httpService";
+import { handleServerResponse } from "./util/utilService";
 
 function getDefaultUserImgUrl(): string {
   return "https://res.cloudinary.com/dng9sfzqt/image/upload/v1681677382/user-chirper_ozii7u.png";

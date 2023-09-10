@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { getBasePathName } from "../services/util/utils.service";
+import { getBasePathName } from "../services/util/utilService";
 
 export function useGoBack(currNestedPath: string) {
   const navigate = useNavigate();

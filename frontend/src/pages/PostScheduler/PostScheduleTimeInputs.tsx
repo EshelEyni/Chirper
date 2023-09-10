@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
 import { CustomSelect } from "../../components/App/CustomSelect/CustomSelect";
-import { getDaysInMonth } from "../../services/util/utils.service";
+import { getDaysInMonth } from "../../services/util/utilService";
 import { invalidDateStatus } from "./PostSchedule";
 import "./PostScheduleTimeInputs.scss";
 

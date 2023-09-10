@@ -1,6 +1,6 @@
 import { FC, useRef, useEffect, MouseEvent } from "react";
 import ReactPlayer from "react-player";
-import storageService from "../../../services/storage.service";
+import storageService from "../../../services/storageService";
 import { useInView } from "react-intersection-observer";
 import "./VideoPlayer.scss";
 import { VideoCustomControls } from "../VideoCustomControls/VideoCustomControls";

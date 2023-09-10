@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store";
 import { User } from "../../../../shared/types/user.interface";
 import { UserCredentials } from "../../types/auth.types";
-import authService from "../../services/auth.service";
+import authService from "../../services/auth/auth.service";
 import { setIsPageLoading } from "./systemSlice";
 
 interface AuthState {

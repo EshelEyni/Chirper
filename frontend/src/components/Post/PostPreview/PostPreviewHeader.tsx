@@ -12,7 +12,7 @@ import {
   formatDateToCleanString,
   formatDateToRelativeTime,
   getToolTipStyles,
-} from "../../../services/util/utils.service";
+} from "../../../services/util/utilService";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { Logo } from "../../App/Logo/Logo";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
@@ -30,7 +30,7 @@ import useAddBlock from "../../../hooks/useAddBlock";
 import useRemoveMute from "../../../hooks/useRemoveMute";
 import useAddMute from "../../../hooks/useAddMute";
 import "./PostPreviewHeader.scss";
-import postService from "../../../services/post.service";
+import postService from "../../../services/postService";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;

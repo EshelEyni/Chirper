@@ -1,7 +1,7 @@
 import { FaGithub } from "react-icons/fa";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import postService from "../../../services/post.service";
+import postService from "../../../services/postService";
 import { RootState } from "../../../store/store";
 import { useInView } from "react-intersection-observer";
 import { PostPreviewHeader } from "./PostPreviewHeader";

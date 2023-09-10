@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi, describe, it, expect, beforeEach, Mock } from "vitest";
 import {
   debounce,
   formatDateToCleanString,
@@ -7,9 +8,9 @@ import {
   getBasePathName,
   getTimeZone,
   handleServerResponse,
-} from "./utils.service";
+} from "./utilService";
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe("Util Service", () => {
   describe("formatDateToRelativeTime", () => {
@@ -109,12 +110,12 @@ describe("Util Service", () => {
   });
 
   describe("debounce", () => {
-    let func: jest.Mock;
+    let func: Mock;
     let debouncedFunc: any;
     let cancel: () => void;
 
     beforeEach(() => {
-      func = jest.fn();
+      func = vi.fn();
       const result = debounce(func, 500);
       debouncedFunc = result.debouncedFunc;
       cancel = result.cancel;
@@ -127,14 +128,14 @@ describe("Util Service", () => {
 
     it("should call the function after the delay", () => {
       debouncedFunc();
-      jest.runAllTimers();
+      vi.runAllTimers();
       expect(func).toHaveBeenCalled();
     });
 
     it("should not call the function if cancelled", () => {
       debouncedFunc();
       cancel();
-      jest.runAllTimers();
+      vi.runAllTimers();
       expect(func).not.toHaveBeenCalled();
     });
 
@@ -142,14 +143,14 @@ describe("Util Service", () => {
       debouncedFunc();
       debouncedFunc();
       debouncedFunc();
-      jest.runAllTimers();
+      vi.runAllTimers();
       expect(func).toHaveBeenCalledTimes(1);
     });
 
     it("should pass the latest arguments to the function", () => {
       debouncedFunc("firstCall");
       debouncedFunc("secondCall");
-      jest.runAllTimers();
+      vi.runAllTimers();
       expect(func).toHaveBeenCalledWith("secondCall");
     });
   });
@@ -167,10 +168,10 @@ describe("Util Service", () => {
 
     it('should return "Time Zone Not Found" if timeZoneName is undefined', () => {
       const originalDateTimeFormat = Intl.DateTimeFormat;
-      Intl.DateTimeFormat = jest.fn().mockImplementation(() => ({
-        resolvedOptions: jest.fn().mockReturnValue({ timeZone: "mockTimeZone" }),
-        formatToParts: jest.fn().mockReturnValue([{ type: "unknown", value: "mockValue" }]),
-        supportedLocalesOf: jest.fn(),
+      Intl.DateTimeFormat = vi.fn().mockImplementation(() => ({
+        resolvedOptions: vi.fn().mockReturnValue({ timeZone: "mockTimeZone" }),
+        formatToParts: vi.fn().mockReturnValue([{ type: "unknown", value: "mockValue" }]),
+        supportedLocalesOf: vi.fn(),
       })) as any;
       const result = getTimeZone();
       expect(result).toBe("Time Zone Not Found");

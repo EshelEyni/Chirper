@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { RootState } from "../../store/store";
-import postService from "../../services/post.service";
+import postService from "../../services/postService";
 import "./Compose.scss";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostEditProvider } from "../../contexts/PostEditContext";

@@ -1,8 +1,8 @@
-import { Gif, GifCategory } from "../../../shared/types/gif.interface";
-import { JsendResponse } from "../../../shared/types/system.interface";
-import httpService from "./http.service";
 import queryString from "query-string";
-import { handleServerResponse } from "./util/utils.service";
+import { Gif, GifCategory } from "../../../../shared/types/gif.interface";
+import { JsendResponse } from "../../../../shared/types/system.interface";
+import httpService from "../http/httpService";
+import { handleServerResponse } from "../util/utilService";
 
 async function getGifsBySearchTerm(searchTerm: string): Promise<Gif[]> {
   const query = queryString.stringify({ searchTerm });

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import gifService from "../services/gif.service";
+import gifService from "../services/GIF/GIFService";
 
 export function useQueryGifCategories() {
   const {

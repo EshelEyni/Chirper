@@ -20,7 +20,6 @@ const config: Config.InitialOptions = {
   collectCoverage,
   collectCoverageFrom: [
     coveragePath,
-    "!**/*.model.ts",
     "!<rootDir>/src/services/rate-limiter.service.ts",
     "!**/*.config.ts",
     "!**/node_modules/**",

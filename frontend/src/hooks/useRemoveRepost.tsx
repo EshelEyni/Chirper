@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/post.service";
+import postService from "../services/postService";
 import { Post } from "../../../shared/types/post.interface";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
-import { getDefaultErrorMsg } from "../services/util/utils.service";
+import { getDefaultErrorMsg } from "../services/util/utilService";
 
 export function useRemoveRepost() {
   const queryClient = useQueryClient();

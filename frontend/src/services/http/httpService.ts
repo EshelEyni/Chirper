@@ -2,9 +2,7 @@ import Axios, { Method } from "axios";
 const isProd = process.env.NODE_ENV === "production";
 const BASE_URL = isProd ? "/api/" : "http://localhost:3030/api/";
 
-const axios = Axios.create({
-  withCredentials: true,
-});
+const axios = Axios.create({ withCredentials: true });
 
 async function ajax(endpoint: string, method: Method = "GET", data: object | null = null) {
   try {

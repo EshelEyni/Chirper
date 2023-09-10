@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/post.service";
+import postService from "../services/postService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import {
   NewPost,
@@ -10,7 +10,7 @@ import {
 } from "../../../shared/types/post.interface";
 import { NewPostType } from "../store/slices/postEditSlice";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system.interface";
-import { getDefaultErrorMsg } from "../services/util/utils.service";
+import { getDefaultErrorMsg } from "../services/util/utilService";
 
 type OnCreatePostProps = {
   posts: NewPost[];

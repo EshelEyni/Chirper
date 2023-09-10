@@ -1,4 +1,4 @@
-import httpService from "./http.service";
+import httpService from "./http/httpService";
 import {
   AnyPost,
   NewPost,
@@ -11,7 +11,7 @@ import {
   Repost,
 } from "../../../shared/types/post.interface";
 import { JsendResponse, UserMsg } from "../../../shared/types/system.interface";
-import { handleServerResponse } from "./util/utils.service";
+import { handleServerResponse } from "./util/utilService";
 import qs from "qs";
 
 type AddPollVoteConfig = {

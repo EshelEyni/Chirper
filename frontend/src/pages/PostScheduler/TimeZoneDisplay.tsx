@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { getTimeZone } from "../../services/util/utils.service";
+import { getTimeZone } from "../../services/util/utilService";
 import "./TimeZoneDisplay.scss";
 
 export const TimeZoneDisplay: FC = () => {

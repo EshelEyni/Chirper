@@ -1,9 +1,9 @@
 import { Location } from "../../../shared/types/location.interface";
 import { JsendResponse } from "../../../shared/types/system.interface";
-import cacheService from "./cache.service";
-import httpService from "./http.service";
+import cacheService from "./cache/cacheService";
+import httpService from "./http/httpService";
 import queryString from "query-string";
-import { handleServerResponse } from "./util/utils.service";
+import { handleServerResponse } from "./util/utilService";
 
 const ERROR_MESSAGES = {
   locationError: "locationService: Cannot get location",
@@ -25,7 +25,7 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 
 async function getUserDefaultLocations(): Promise<Location[] | null> {
   try {
-    const cacheLocation = cacheService.get("location", 5);
+    const cacheLocation = cacheService.get<Location[]>("location", 5);
     if (cacheLocation) return cacheLocation;
 
     const currLocation = await _getCurrentLocation();

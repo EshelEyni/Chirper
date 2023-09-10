@@ -6,7 +6,7 @@ import { RootState } from "../../../store/store";
 import { NewPost } from "../../../../../shared/types/post.interface";
 import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
-import { uploadFileToCloudinary } from "../../../services/upload.service";
+import { uploadFileToCloudinary } from "../../../services/uploadService";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { MiniPostPreview } from "../PostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/RepliedPostContent";
@@ -38,7 +38,7 @@ import {
 } from "../../../store/slices/postEditSlice";
 import { useCreatePost } from "../../../hooks/useCreatePost";
 import { NewPostContent } from "../PostPreview/NewPostContent";
-import postService from "../../../services/post.service";
+import postService from "../../../services/postService";
 import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";

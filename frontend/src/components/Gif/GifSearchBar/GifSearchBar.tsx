@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SlMagnifier } from "react-icons/sl";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { debounce } from "../../../services/util/utils.service";
+import { debounce } from "../../../services/util/utilService";
 import "./GifSearchBar.scss";
 
 interface GifSearchBarProps {

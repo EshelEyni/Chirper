@@ -12,7 +12,7 @@ import {
   formatNumToK,
   getToolTipStyles,
   readAsDataURL,
-} from "../../../services/util/utils.service";
+} from "../../../services/util/utilService";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../Msg/UserMsg/UserMsg";
 import { AppDispatch } from "../../../store/types";
@@ -45,7 +45,7 @@ import { useRemoveLike } from "../../../hooks/useRemoveLike";
 import { useAddLike } from "../../../hooks/useAddLike";
 import { useRemoveBookmark } from "../../../hooks/useRemoveBookmark";
 import { useAddBookmark } from "../../../hooks/useAddBookmark";
-import postService from "../../../services/post.service";
+import postService from "../../../services/postService";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { useQueryGifCategories } from "../../../hooks/useQueryGifCategories";
 import { AsyncList } from "../../App/AsyncList/AsyncList";

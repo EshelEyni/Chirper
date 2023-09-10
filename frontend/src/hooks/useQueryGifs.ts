@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import gifService from "../services/gif.service";
+import gifService from "../services/GIF/GIFService";
 import { Gif } from "../../../shared/types/gif.interface";
 
 const getGifsBySearchTerm = async (searchTerm: string): Promise<Gif[]> => {

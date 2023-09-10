@@ -10,7 +10,7 @@ import { Post } from "../../../../shared/types/post.interface";
 import { PostPreviewProvider } from "../../contexts/PostPreviewContext";
 import { PostPreview } from "../../components/Post/PostPreview/PostPreview";
 import { useQueryPosts } from "../../hooks/useQueryPost";
-import { makeId } from "../../services/util/utils.service";
+import { makeId } from "../../services/util/utilService";
 // import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 const PostEdit = lazy(() => import("../../components/Post/PostEdit/PostEdit"));
 

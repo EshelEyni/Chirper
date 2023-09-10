@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Slider } from "@mui/material";
-import storageService from "../../../services/storage.service";
+import storageService from "../../../services/storageService";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 
 type VideoVolumeSliderProps = {

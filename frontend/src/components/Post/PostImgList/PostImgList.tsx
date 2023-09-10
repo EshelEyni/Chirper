@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnyPost } from "../../../../../shared/types/post.interface";
 import "./PostImgList.scss";
-import { getBasePathName } from "../../../services/util/utils.service";
+import { getBasePathName } from "../../../services/util/utilService";
 
 interface PostImgContainerProps {
   post: AnyPost;

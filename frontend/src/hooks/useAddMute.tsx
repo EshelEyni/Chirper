@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import userRelationService from "../services/userRelation.service";
+import userRelationService from "../services/userRelationService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system.interface";
-import { getDefaultErrorMsg } from "../services/util/utils.service";
+import { getDefaultErrorMsg } from "../services/util/utilService";
 import { Post } from "../../../shared/types/post.interface";
 
 export default function useAddMute() {

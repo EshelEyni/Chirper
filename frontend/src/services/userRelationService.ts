@@ -1,7 +1,7 @@
 import { Post } from "../../../shared/types/post.interface";
 import { FollowingResult } from "../../../shared/types/user.interface";
-import httpService from "./http.service";
-import { handleServerResponse } from "./util/utils.service";
+import httpService from "./http/httpService";
+import { handleServerResponse } from "./util/utilService";
 
 enum PathType {
   FOLLOW = "follow",

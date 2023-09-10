@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo } from "react";
 import { CustomSelect } from "../../components/App/CustomSelect/CustomSelect";
 import { useCustomSelect } from "../../hooks/useCustomSelect";
-import { getDaysInMonth, monthNames } from "../../services/util/utils.service";
+import { getDaysInMonth, months } from "../../services/util/utils.service";
 import { invalidDateStatus } from "./PostSchedule";
 import "./PostScheduleDateInputs.scss";
 
@@ -71,7 +71,7 @@ export const PostScheduleDateInputs: FC<PostScheduleDateInputsProps> = ({
 
   const setterFunctions = {
     month: (value: string | number, date: Date) => {
-      const monthIdx = monthNames.indexOf(value as string);
+      const monthIdx = months.map(m => m.full).indexOf(value as string);
       const daysInMonth = getDaysInMonth(date.getFullYear(), monthIdx);
       if (date.getDate() > daysInMonth) date.setDate(daysInMonth);
       return new Date(date.setMonth(monthIdx));

@@ -1,62 +1,68 @@
 import { JsendResponse, UserMsg } from "../../../../shared/types/system.interface";
 type AnyFunction = (...args: any[]) => any;
 
-function formatDateToRelativeTime(currDate: Date): string {
-  const timestamp = new Date(currDate).getTime();
-  const now = Date.now();
-  const difference = now - timestamp;
-  const seconds = Math.floor(difference / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
+const SECONDS_IN_MINUTE = 60;
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
+const DAYS_IN_YEAR = 365;
+const TWELVE_HOURS = 12;
+const TEN_MINUTES = 10;
 
-  const date = new Date(timestamp);
+const months = [
+  { full: "January", short: "Jan" },
+  { full: "February", short: "Feb" },
+  { full: "March", short: "Mar" },
+  { full: "April", short: "Apr" },
+  { full: "May", short: "May" },
+  { full: "June", short: "Jun" },
+  { full: "July", short: "Jul" },
+  { full: "August", short: "Aug" },
+  { full: "September", short: "Sep" },
+  { full: "October", short: "Oct" },
+  { full: "November", short: "Nov" },
+  { full: "December", short: "Dec" },
+];
+
+function formatDateToRelativeTime(currDate: Date): string {
+  const [seconds, minutes, hours, days] = _calculateTimeDifference(currDate);
+
+  const date = new Date(currDate);
   const year = date.getFullYear();
   const month = date.toLocaleString("en", { month: "short" });
   const day = date.getDate();
 
-  if (days > 365) {
-    return `${month} ${day}, ${year}`;
-  } else if (days > 0) {
-    return `${month} ${day}`;
-  } else if (hours > 0) {
-    return `${hours}h`;
-  } else if (minutes > 0) {
-    return `${minutes}m`;
-  } else {
-    if (seconds == 0) return `now`;
-    return `${seconds}s`;
-  }
+  if (days > DAYS_IN_YEAR) return `${month} ${day}, ${year}`;
+  if (days > 0) return `${month} ${day}`;
+  if (hours > 0) return `${hours}h`;
+  if (minutes > 0) return `${minutes}m`;
+  return seconds === 0 ? "now" : `${seconds}s`;
 }
 
-function formatDateToCleanString(currDate: Date) {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const date = new Date(currDate);
+function _calculateTimeDifference(currDate: Date): [number, number, number, number] {
+  const timestamp = currDate.getTime();
+  const now = Date.now();
+  const difference = now - timestamp;
+  const seconds = Math.floor(difference / 1000);
+  const minutes = Math.floor(seconds / SECONDS_IN_MINUTE);
+  const hours = Math.floor(minutes / MINUTES_IN_HOUR);
+  const days = Math.floor(hours / HOURS_IN_DAY);
+  return [seconds, minutes, hours, days];
+}
 
+function formatDateToCleanString(currDate: Date): string {
+  const date = new Date(currDate);
   let hours = date.getHours();
   const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const minutesStr = minutes < 10 ? "0" + minutes : minutes;
 
-  const strTime = hours + ":" + minutesStr + " " + ampm;
-  const month = months[date.getMonth()];
+  const ampm = hours >= TWELVE_HOURS ? "PM" : "AM";
+  hours = hours % TWELVE_HOURS || TWELVE_HOURS;
+  const minutesStr = minutes < TEN_MINUTES ? `0${minutes}` : minutes;
+
+  const strTime = `${hours}:${minutesStr} ${ampm}`;
+  const month = months[date.getMonth()].short;
   const day = date.getDate();
   const year = date.getFullYear();
+
   return `${strTime} · ${month} ${day}, ${year}`;
 }
 
@@ -110,21 +116,6 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
 function handleServerResponse<T>(response: JsendResponse): T {
   if (response.status === "success") {
     return response.data;
@@ -146,11 +137,8 @@ function readAsDataURL(file: File): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      if (reader.result && typeof reader.result === "string") {
-        resolve(reader.result);
-      } else {
-        reject(new Error("Failed to read file."));
-      }
+      if (reader.result && typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("Failed to read file."));
     };
     reader.readAsDataURL(file);
   });
@@ -188,7 +176,7 @@ export {
   debounce,
   getTimeZone,
   getDaysInMonth,
-  monthNames,
+  months,
   handleServerResponse,
   copyToClipboard,
   formatDateToCleanString,

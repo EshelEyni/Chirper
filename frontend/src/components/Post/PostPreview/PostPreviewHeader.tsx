@@ -1,35 +1,36 @@
+import { useRef, useState } from "react";
 import {
   IoEllipsisHorizontalSharp,
   IoVolumeHighOutline,
   IoVolumeMuteOutline,
 } from "react-icons/io5";
-import { ReactComponent as BlueCheckMark } from "../../../../assets/svg/blue-check-mark.svg";
+import { BsTrash } from "react-icons/bs";
+import { FaRobot } from "react-icons/fa";
+import { Tooltip } from "react-tooltip";
+import { ReactComponent as BlueCheckMark } from "../../../assets/svg/blue-check-mark.svg";
 import {
   formatDateToCleanString,
   formatDateToRelativeTime,
   getToolTipStyles,
-} from "../../../../services/util/utils.service";
-import { UserImg } from "../../../User/UserImg/UserImg";
-import { Logo } from "../../../App/Logo/Logo";
-import "./PostPreviewHeader.scss";
-import { usePostPreview } from "../../../../contexts/PostPreviewContext";
-import { Modal } from "../../../Modal/Modal";
-import { Tooltip } from "react-tooltip";
-import { useUniqueID } from "../../../../hooks/app/useIDRef";
-import { useRef, useState } from "react";
-import { RootState } from "../../../../store/store";
+} from "../../../services/util/utils.service";
+import { UserImg } from "../../User/UserImg/UserImg";
+import { Logo } from "../../App/Logo/Logo";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
+import { Modal } from "../../Modal/Modal";
+import { useUniqueID } from "../../../hooks/app/useIDRef";
+import { RootState } from "../../../store/store";
 import { useSelector } from "react-redux";
 import { BiUserPlus, BiUserX } from "react-icons/bi";
 import { CgUnblock, CgBlock } from "react-icons/cg";
-import { BsTrash } from "react-icons/bs";
 import { RiBarChartGroupedFill, RiPushpin2Line } from "react-icons/ri";
-import { useRemovePost } from "../../../../hooks/reactQuery/post/useRemovePost";
-import { useUpdatePost } from "../../../../hooks/reactQuery/post/useUpdatePost";
-import { FaRobot } from "react-icons/fa";
-import useRemoveBlock from "../../../../hooks/reactQuery/post/useRemoveBlock";
-import useAddBlock from "../../../../hooks/reactQuery/post/useAddBlock";
-import useRemoveMute from "../../../../hooks/reactQuery/post/useRemoveMute";
-import useAddMute from "../../../../hooks/reactQuery/post/useAddMute";
+import { useRemovePost } from "../../../hooks/reactQuery/post/useRemovePost";
+import { useUpdatePost } from "../../../hooks/reactQuery/post/useUpdatePost";
+import useRemoveBlock from "../../../hooks/reactQuery/post/useRemoveBlock";
+import useAddBlock from "../../../hooks/reactQuery/post/useAddBlock";
+import useRemoveMute from "../../../hooks/reactQuery/post/useRemoveMute";
+import useAddMute from "../../../hooks/reactQuery/post/useAddMute";
+import "./PostPreviewHeader.scss";
+import postService from "../../../services/post.service";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
@@ -55,22 +56,24 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   const { addMute } = useAddMute();
 
   const { id: btnId } = useUniqueID();
+  const tooltipStyle = useRef(getToolTipStyles()).current;
 
+  if (!postService.isPost(post)) return null;
   const user = post.createdBy;
   const logoOptions = { staticLogo: true, autoAnimate: false, width: 18, height: 18 };
-
-  const tooltipStyle = useRef(getToolTipStyles()).current;
 
   function handleBtnToggleFollow() {
     onToggleFollow();
   }
 
   function handleBtnToggleMute() {
+    if (!postService.isPost(post)) return;
     if (post.createdBy.isMuted) removeMute({ userId: post.createdBy.id, postId: post.id });
     else addMute({ userId: post.createdBy.id, postId: post.id });
   }
 
   function handleBtnToggleBlock() {
+    if (!postService.isPost(post)) return;
     if (post.createdBy.isBlocked) removeBlock({ userId: post.createdBy.id, postId: post.id });
     else addBlock({ userId: post.createdBy.id, postId: post.id });
   }
@@ -80,6 +83,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   }
 
   function handleBtnPinPost() {
+    if (!postService.isPost(post)) return;
     updatePost({ ...post, isPinned: !post.isPinned });
   }
 
@@ -163,6 +167,15 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
           >
             {!loggedInUser || loggedInUser.id !== post.createdBy.id ? (
               <>
+                {loggedInUser && loggedInUser.isAdmin && (
+                  <button
+                    className="post-preview-delete-option"
+                    onClick={() => setOpenedModalName("postPreview/deletePost")}
+                  >
+                    <BsTrash size={18} color="var(--color-danger)" />
+                    <span>Delete</span>
+                  </button>
+                )}
                 <Modal.CloseBtn onClickFn={handleBtnToggleFollow}>
                   <button>
                     {post.createdBy.isFollowing ? (

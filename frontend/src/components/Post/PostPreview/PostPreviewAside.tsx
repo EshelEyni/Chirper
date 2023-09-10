@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { UserImg } from "../../../../User/UserImg/UserImg";
-import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
-import { Modal } from "../../../../Modal/Modal";
+import { UserImg } from "../../User/UserImg/UserImg";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
+import { Modal } from "../../Modal/Modal";
 import "./PostPreviewAside.scss";
 
 export const PostPreviewAside: FC = () => {

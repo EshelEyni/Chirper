@@ -1,8 +1,8 @@
 import { FC } from "react";
-import postService from "../../../../services/post.service";
+import postService from "../../../services/post.service";
 import { useNavigate } from "react-router-dom";
+import { LoggedInUserActionState } from "../../../../../shared/types/post.interface";
 import "./PostPreviewText.scss";
-import { LoggedInUserActionState } from "../../../../../../shared/types/post.interface";
 
 type PostPreviewTextProps = {
   text: string;

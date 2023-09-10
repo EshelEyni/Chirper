@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { UserImg } from "../../../../User/UserImg/UserImg";
+import { UserImg } from "../../User/UserImg/UserImg";
 import "./MiniPostPreviewAside.scss";
 
 type MiniPostPreviewAsideProps = {

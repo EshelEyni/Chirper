@@ -8,7 +8,7 @@ import { AppDispatch } from "../../../store/types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
-import { PostEditOption } from "../../Modal/PostEditOption/PostEditOption";
+import { PostEditOption } from "../../Modal/PostEditOption";
 
 export const BtnToggleAudience: FC = () => {
   const { newPostType } = useSelector((state: RootState) => state.postEdit);

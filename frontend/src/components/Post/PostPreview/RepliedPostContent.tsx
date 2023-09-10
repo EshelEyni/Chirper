@@ -3,8 +3,8 @@ import { RootState } from "../../../store/store";
 import { PostRepliedToUsersList } from "../PostRepliedToUsersList/PostRepliedToUsersList";
 import { PostPreviewBody } from "./PostPreviewBody";
 import { PostPreviewMainContainer } from "./PostPreviewMainContainer";
-import { PostPreviewText } from "./Text/PostPreviewText";
-import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
+import { PostPreviewText } from "./PostPreviewText";
+import { MiniPostPreviewAside } from "./MiniPostPreviewAside";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
 
 export const RepliedPostContent: React.FC = () => {

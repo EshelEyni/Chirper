@@ -43,7 +43,7 @@ async function getTextFromOpenAI(prompt: string, model = "default"): Promise<str
 
 async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promise<NewPostImg[]> {
   const response = await openai.createImage({
-    prompt,
+    prompt: prompt + "NOTICE: don't add any title or text on image",
     n: numberOfImages,
     size: "512x512",
   });
@@ -56,9 +56,14 @@ async function getImgsFromOpenOpenAI(prompt: string, numberOfImages = 1): Promis
     const url = openAIImgUrls[i];
     if (!url || typeof url !== "string") continue;
     const response = await axios.get(url, { responseType: "arraybuffer" });
-    const cloudinaryUrl = (await _uploadToCloudinary(response.data)) as unknown as string;
-    if (!cloudinaryUrl) continue;
-    imgs.push({ url: cloudinaryUrl });
+    try {
+      const cloudinaryUrl = (await _uploadToCloudinary(response.data)) as unknown as string;
+      if (!cloudinaryUrl) continue;
+      imgs.push({ url: cloudinaryUrl });
+    } catch (error) {
+      botServiceLogger.uploadError(error.message);
+      continue;
+    }
     botServiceLogger.uploaded({ entity: "image", iterationNum: i });
   }
 

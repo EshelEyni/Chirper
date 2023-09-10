@@ -18,11 +18,10 @@
   &.cols-1 {
     .post-img-container {
       position: relative;
-      height: rem(500px);
       width: rem(500px);
       .post-img {
-        height: 100%;
         width: 100%;
+        object-fit: fill;
         border-radius: 15px;
       }
     }

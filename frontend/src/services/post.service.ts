@@ -1,11 +1,14 @@
 import httpService from "./http.service";
 import {
+  AnyPost,
   NewPost,
   Post,
   PostReplyResult,
   PostRepostResult,
   PostStats,
   PostStatsBody,
+  PromotionalPost,
+  Repost,
 } from "../../../shared/types/post.interface";
 import { JsendResponse, UserMsg } from "../../../shared/types/system.interface";
 import { handleServerResponse } from "./util/utils.service";
@@ -162,6 +165,17 @@ function checkPostArrayValidity(newPosts: NewPost[], newPostText: string): boole
   return newPosts.every(post => checkPostValidity(post, newPostText));
 }
 
+function isPost(post: AnyPost): post is Post {
+  return "createdBy" in post;
+}
+
+function isRepost(post: AnyPost): post is Repost {
+  return "repostedBy" in post;
+}
+function isPromotionalPost(post: AnyPost): post is PromotionalPost {
+  return "companyName" in post;
+}
+
 export default {
   query,
   getById,
@@ -184,4 +198,7 @@ export default {
   getPostAddedMsg,
   checkPostValidity,
   checkPostArrayValidity,
+  isRepost,
+  isPromotionalPost,
+  isPost,
 };

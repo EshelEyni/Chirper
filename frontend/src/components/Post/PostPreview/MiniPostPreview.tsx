@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { NewPost, Post, QuotedPost } from "../../../../../../shared/types/post.interface";
-import { RootState } from "../../../../store/store";
-import { AppDispatch } from "../../../../store/types";
+import { setNewPost } from "../../../store/slices/postEditSlice";
+import { NewPost, Post, QuotedPost } from "../../../../../shared/types/post.interface";
+import { RootState } from "../../../store/store";
+import { AppDispatch } from "../../../store/types";
+import { PostPreviewWrapper } from "./PostPreviewWrapper";
 import "./MiniPostPreview.scss";
-import { PostPreviewWrapper } from "../Wrapper/PostPreviewWrapper";
-import { setNewPost } from "../../../../store/slices/postEditSlice";
 
 export interface MiniPostPreviewProps {
   post?: Post;

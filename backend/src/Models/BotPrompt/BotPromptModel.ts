@@ -22,7 +22,7 @@ const botPromptSchema = new mongoose.Schema<IBotPrompt>(
     },
     type: {
       type: String,
-      enum: ["text", "image", "poll", "video"],
+      enum: ["text", "image", "poll", "video", "song-review", "movie-review"],
       default: "text",
     },
   },

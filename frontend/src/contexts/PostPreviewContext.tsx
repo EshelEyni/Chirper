@@ -1,18 +1,16 @@
 import { createContext, useContext } from "react";
-import { Post, PromotionalPost, Repost } from "../../../shared/types/post.interface";
+import { AnyPost, Post } from "../../../shared/types/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
 import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";
 import useAddFollow from "../hooks/reactQuery/post/useAddFollow";
 
 type PostPreviewContextType = {
-  post: Post | Repost | PromotionalPost;
+  post: AnyPost;
   onNavigateToPostDetails: () => void;
   onNavigateToProfile: (username: string) => void;
   onToggleFollow: () => void;
   onNavigateToPostStats: () => void;
-  isRepost: boolean;
-  isPromotionalPost: boolean;
 };
 
 const PostPreviewContext = createContext<PostPreviewContextType | undefined>(undefined);
@@ -22,9 +20,6 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
   const navigate = useNavigate();
   const { addFollow } = useAddFollow();
   const { removeFollow } = useRemoveFollow();
-
-  const isRepost = "repostedBy" in post;
-  const isPromotionalPost = "companyName" in post;
 
   async function onNavigateToPostDetails() {
     if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
@@ -59,8 +54,6 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
     onNavigateToProfile,
     onToggleFollow,
     onNavigateToPostStats,
-    isRepost,
-    isPromotionalPost,
   };
   return <PostPreviewContext.Provider value={value}>{children}</PostPreviewContext.Provider>;
 }

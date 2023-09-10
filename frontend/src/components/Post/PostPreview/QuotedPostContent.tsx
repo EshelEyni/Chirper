@@ -1,15 +1,15 @@
 import { useSelector } from "react-redux";
-import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
-import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
-import { PostImg } from "../../../PostImgList/PostImgList";
-import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
-import { PostPreviewBody } from "../../PostPreviewBody";
-import { PostPreviewMainContainer } from "../../PostPreviewMainContainer";
-import { PostPreviewText } from "../../Text/PostPreviewText";
+import { GifDisplay } from "../../Gif/GifDisplay/GifDisplay";
+import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
+import { PostImg } from "../PostImgList/PostImgList";
+import { PostPreviewHeader } from "./PostPreviewHeader";
+import { PostPreviewBody } from "./PostPreviewBody";
+import { PostPreviewMainContainer } from "./PostPreviewMainContainer";
+import { PostPreviewText } from "./PostPreviewText";
+import { RootState } from "../../../store/store";
+import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
+import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import "./QuotedPostContent.scss";
-import { RootState } from "../../../../../store/store";
-import { PostPreviewProvider } from "../../../../../contexts/PostPreviewContext";
-import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
 
 export const QuotedPostContent: React.FC = () => {
   const { quotedPost } = useSelector((state: RootState) => state.postEdit.quote);

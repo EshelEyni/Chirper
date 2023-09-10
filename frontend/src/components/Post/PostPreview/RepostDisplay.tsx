@@ -1,16 +1,18 @@
 import { FC } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../../store/store";
+import { RootState } from "../../../store/store";
 import "./RepostDisplay.scss";
-import { usePostPreview } from "../../../../../contexts/PostPreviewContext";
-import { Modal } from "../../../../Modal/Modal";
+import { usePostPreview } from "../../../contexts/PostPreviewContext";
+import { Modal } from "../../Modal/Modal";
+import postService from "../../../services/post.service";
 
 export const RepostDisplay: FC = () => {
   const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();
-  const { repostedBy } = post;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
 
+  if (!postService.isRepost(post)) return null;
+  const { repostedBy } = post;
   if (!repostedBy) return null;
   return (
     <Modal>

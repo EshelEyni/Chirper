@@ -8,7 +8,7 @@ import "./Home.scss";
 import { AsyncList } from "../../../components/App/AsyncList/AsyncList";
 import { Post } from "../../../../../shared/types/post.interface";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
-import { PostPreview } from "../../../components/Post/PostPreview/PostPreview/PostPreview";
+import { PostPreview } from "../../../components/Post/PostPreview/PostPreview";
 import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";
 import { makeId } from "../../../services/util/utils.service";
 // import { useQueryPosts } from "../../../hooks/reactQuery/post/useQueryPost";

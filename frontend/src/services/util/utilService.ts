@@ -1,4 +1,4 @@
-import { JsendResponse, UserMsg } from "../../../../shared/types/system.interface";
+import { JsendResponse, UserMsg } from "../../../../shared/types/system";
 type AnyFunction = (...args: any[]) => any;
 
 const SECONDS_IN_MINUTE = 60;

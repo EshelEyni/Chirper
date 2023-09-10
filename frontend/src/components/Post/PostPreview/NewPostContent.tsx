@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { NewPost } from "../../../../../shared/types/post.interface";
+import { NewPost } from "../../../../../shared/types/post";
 import { RootState } from "../../../store/store";
 import { PostImg } from "../PostImgList/PostImgList";
 import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";

@@ -1,5 +1,5 @@
-import { Location } from "../../../shared/types/location.interface";
-import { JsendResponse } from "../../../shared/types/system.interface";
+import { Location } from "../../../shared/types/location";
+import { JsendResponse } from "../../../shared/types/system";
 import cacheService from "./cache/cacheService";
 import httpService from "./http/httpService";
 import queryString from "query-string";

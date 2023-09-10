@@ -1,10 +1,10 @@
 import crypto from "crypto";
-import { User, UserCredenitials } from "../../../../shared/types/user.interface";
+import { User, UserCredenitials } from "../../../../shared/types/user";
 import { UserModel } from "../../models/user/userModel";
 import { AppError } from "../error/errorService";
 import { isValidMongoId, sendEmail } from "../util/utilService";
 import tokenService from "../token/tokenService";
-import { IUserDoc } from "../../types/ITypes";
+import { IUserDoc } from "../../types/iTypes";
 
 type UserAuthResult = { user: User; token: string };
 async function login(username: string, password: string): Promise<UserAuthResult> {

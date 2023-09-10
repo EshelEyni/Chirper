@@ -1,9 +1,9 @@
 import { Document, Query, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { IUser, IUserDoc } from "../../types/ITypes";
-import { UserRelationKind } from "../../types/Enums";
-import { User } from "../../../../shared/types/user.interface";
+import { IUser, IUserDoc } from "../../types/iTypes";
+import { UserRelationKind } from "../../types/enums";
+import { User } from "../../../../shared/types/user";
 import { UserRelationModel } from "../userRelation/userRelationModel";
 import userRelationService from "../../services/userRelation/userRelationService";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";

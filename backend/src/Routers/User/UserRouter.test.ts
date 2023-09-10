@@ -2,7 +2,7 @@
 import request from "supertest";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import router from "./userRouter";
 import { errorHandler } from "../../services/error/errorService";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";

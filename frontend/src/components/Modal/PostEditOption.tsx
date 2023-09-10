@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "./PostEditOption.scss";
 import { AiOutlineCheck } from "react-icons/ai";
 import "./PostEditOption.scss";
 

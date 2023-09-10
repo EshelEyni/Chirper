@@ -2,7 +2,7 @@
 import request from "supertest";
 import express from "express";
 import router from "./botRouter";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import { errorHandler } from "../../services/error/errorService";
 import {
   createTestUser,

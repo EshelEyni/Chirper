@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
-import { PostStats } from "../../../../shared/types/post.interface";
+import { PostStats } from "../../../../shared/types/post";
 import "./PostStatsActionStatsList.scss";
 
 type PostStatsActionStatsListProps = {

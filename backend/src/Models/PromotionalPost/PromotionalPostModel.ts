@@ -1,6 +1,6 @@
 import mongoose, { Query, Schema } from "mongoose";
-import { PromotionalPost } from "../../../../shared/types/post.interface";
-import { IPromotionalPost, IPromotionalPostDoc } from "../../types/ITypes";
+import { PromotionalPost } from "../../../../shared/types/post";
+import { IPromotionalPost, IPromotionalPostDoc } from "../../types/iTypes";
 import { postSchema } from "../post/postModel";
 import { populatePostData } from "../../services/post/populatePostData";
 

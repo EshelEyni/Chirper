@@ -1,6 +1,6 @@
-import { Gif } from "./gif.interface";
-import { Location } from "./location.interface";
-import { User } from "./user.interface";
+import { Gif } from "./GIF";
+import { Location } from "./location";
+import { User } from "./user";
 
 export type PostReplyResult = {
   updatedPost: Post;

@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 require("dotenv").config();
 import { AppError } from "../error/errorService";
 import { ObjectId } from "mongodb";
-import { ParsedReqQuery } from "../../types/App";
+import { ParsedReqQuery } from "../../types/app";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyObject = { [key: string]: any };

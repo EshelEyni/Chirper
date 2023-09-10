@@ -14,7 +14,7 @@ import { getMongoId } from "../../services/test/testUtilService";
 import authService from "../../services/auth/authService";
 import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";
-import { UserCredenitials } from "../../../../shared/types/user.interface";
+import { UserCredenitials } from "../../../../shared/types/user";
 
 jest.mock("../../services/auth/authService");
 jest.mock("../../services/ALSService", () => ({

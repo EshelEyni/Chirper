@@ -4,7 +4,7 @@ import { Logo } from "../App/Logo/Logo";
 import { NavList } from "./NavList/NavList";
 import { BtnCreatePost } from "../Btns/BtnCreatePost/BtnCreatePost";
 import { UserPreview } from "../User/UserPreview/UserPreview";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../store/types";
 import { userLogout } from "../../store/slices/authSlice";

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User, UserCredenitials } from "../../../../shared/types/user.interface";
+import { User, UserCredenitials } from "../../../../shared/types/user";
 import authService from "../../services/auth/authService";
 import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";

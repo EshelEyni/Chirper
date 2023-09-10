@@ -3,7 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import router from "./authRouter";
 import { errorHandler } from "../../services/error/errorService";
-import { UserCredenitials } from "../../../../shared/types/user.interface";
+import { UserCredenitials } from "../../../../shared/types/user";
 import { getLoginTokenStrForTest } from "../../services/test/testUtilService";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import { UserModel } from "../../models/user/userModel";

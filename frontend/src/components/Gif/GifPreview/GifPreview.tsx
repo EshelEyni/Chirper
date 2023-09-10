@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Gif } from "../../../../../shared/types/gif.interface";
+import { Gif } from "../../../../../shared/types/GIF";
 import { gifPlaceholderBcg } from "../../../services/GIF/GIFService";
 import "./GifPreview.scss";
 

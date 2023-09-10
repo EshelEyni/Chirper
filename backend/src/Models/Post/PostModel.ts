@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Query, Schema } from "mongoose";
-import { Post } from "../../../../shared/types/post.interface";
-import { IPost, IPostDoc } from "../../types/ITypes";
+import { Post } from "../../../../shared/types/post";
+import { IPost, IPostDoc } from "../../types/iTypes";
 import { gifSchema } from "../GIF/GIFModel";
 import userRelationService from "../../services/userRelation/userRelationService";
 import { UserModel } from "../user/userModel";

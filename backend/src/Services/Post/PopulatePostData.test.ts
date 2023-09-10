@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Post, QuotedPost } from "../../../../shared/types/post.interface";
+import { Post, QuotedPost } from "../../../../shared/types/post";
 import { IPost } from "../../types/ITypes";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import {
   createManyTestUsers,
   createTestPollVote,

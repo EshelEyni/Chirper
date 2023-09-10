@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query, Schema } from "mongoose";
-import { Post } from "../../../../shared/types/post.interface";
-import { IRepostDoc } from "../../types/ITypes";
+import { Post } from "../../../../shared/types/post";
+import { IRepostDoc } from "../../types/iTypes";
 import { queryEntityExists } from "../../services/util/utilService";
 import { UserModel } from "../../models/user/userModel";
 import { PostModel } from "../post/postModel";

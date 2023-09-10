@@ -1,6 +1,6 @@
-import { IPostDoc, IPromotionalPostDoc } from "../../types/ITypes";
-import { ParsedReqQuery } from "../../types/App";
-import { Repost } from "../../../../shared/types/post.interface";
+import { IPostDoc, IPromotionalPostDoc } from "../../types/iTypes";
+import { ParsedReqQuery } from "../../types/app";
+import { Repost } from "../../../../shared/types/post";
 import { APIFeatures, shuffleArray } from "../util/utilService";
 import { PostModel } from "../../models/post/postModel";
 import { RepostModel } from "../../models/repost/repostModel";

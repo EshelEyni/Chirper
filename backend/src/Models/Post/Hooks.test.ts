@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Post } from "../../../../shared/types/post.interface";
+import { Post } from "../../../../shared/types/post";
 import {
   createManyTestBookmarks,
   createManyTestPosts,

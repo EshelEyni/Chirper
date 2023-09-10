@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { User } from "../../../../../shared/types/user.interface";
+import { User } from "../../../../../shared/types/user";
 import "./BtnToggleFollow.scss";
 
 type BtnToggleFollowProps = {

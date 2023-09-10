@@ -4,7 +4,7 @@ require("dotenv").config();
 import { APIFeatures } from "../util/utilService";
 import gifService from "./GIFService";
 import { AppError } from "../error/errorService";
-import { Gif } from "../../../../shared/types/gif.interface";
+import { Gif } from "../../../../shared/types/GIF";
 import { GifModel } from "../../models/GIF/GIFModel";
 
 type MockedFetchedGif = {

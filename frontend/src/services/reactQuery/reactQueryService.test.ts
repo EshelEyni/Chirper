@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryClient } from "@tanstack/react-query";
 import reactQueryService from "./reactQueryService";
-import { Post } from "../../../../shared/types/post.interface";
+import { Post } from "../../../../shared/types/post";
 import { describe, it, expect, beforeEach } from "vitest";
 
 describe("Query Data Manipulation Functions", () => {

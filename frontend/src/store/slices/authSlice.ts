@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store";
-import { User } from "../../../../shared/types/user.interface";
-import { UserCredentials } from "../../types/auth.types";
+import { User, UserCredenitials } from "../../../../shared/types/user";
 import authService from "../../services/auth/auth.service";
 import { setIsPageLoading } from "./systemSlice";
 
@@ -30,7 +29,7 @@ export const { setLoggedInUser, logout } = authSlice.actions;
 
 export default authSlice.reducer;
 
-export function signup(userCredentials: UserCredentials): AppThunk {
+export function signup(userCredentials: UserCredenitials): AppThunk {
   return async dispatch => {
     const user = await authService.signup(userCredentials);
     dispatch(setLoggedInUser(user));

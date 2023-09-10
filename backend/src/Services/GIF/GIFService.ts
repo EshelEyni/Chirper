@@ -1,6 +1,6 @@
 require("dotenv").config();
 import fetch from "cross-fetch";
-import { Gif } from "../../../../shared/types/gif.interface";
+import { Gif } from "../../../../shared/types/GIF";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { AppError } from "../error/errorService";
 import { APIFeatures } from "../util/utilService";

@@ -1,4 +1,4 @@
-import { PostType, UserRelationKind } from "./Enums";
+import { PostType, UserRelationKind } from "./enums";
 
 export type alStoreType = Record<string, string>;
 

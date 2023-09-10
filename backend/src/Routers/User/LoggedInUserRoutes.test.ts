@@ -3,7 +3,7 @@ import express from "express";
 import request from "supertest";
 import cookieParser from "cookie-parser";
 import router from "./userRouter";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import { UserModel } from "../../models/user/userModel";
 import setupAsyncLocalStorage from "../../middlewares/setupALS/setupALSMiddleware";
 import { errorHandler } from "../../services/error/errorService";

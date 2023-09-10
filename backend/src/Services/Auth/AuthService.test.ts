@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import { IUserDoc } from "../../types/ITypes";
-import { UserCredenitials } from "../../../../shared/types/user.interface";
+import { UserCredenitials } from "../../../../shared/types/user";
 import authService from "./authService";
 import { UserModel } from "../../models/user/userModel";
 import tokenService from "../../services/token/tokenService";

@@ -1,5 +1,5 @@
-import { Post } from "../../../shared/types/post.interface";
-import { FollowingResult } from "../../../shared/types/user.interface";
+import { Post } from "../../../shared/types/post";
+import { FollowingResult } from "../../../shared/types/user";
 import httpService from "./http/httpService";
 import { handleServerResponse } from "./util/utilService";
 

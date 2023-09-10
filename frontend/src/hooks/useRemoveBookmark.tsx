@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import postService from "../services/postService";
 import reactQueryService from "../services/reactQuery/reactQueryService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
-import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
 import { getDefaultErrorMsg } from "../services/util/utilService";
 
 export function useRemoveBookmark() {

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { GoInfo } from "react-icons/go";
-import { PostStats } from "../../../../shared/types/post.interface";
+import { PostStats } from "../../../../shared/types/post";
 import { Modal } from "../../components/Modal/Modal";
 import { Tippy } from "../../components/App/Tippy/Tippy";
 import "./PostStatsDataStatsList.scss";

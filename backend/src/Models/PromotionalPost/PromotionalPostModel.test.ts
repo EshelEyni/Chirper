@@ -1,4 +1,4 @@
-import { PromotionalPost } from "../../../../shared/types/post.interface";
+import { PromotionalPost } from "../../../../shared/types/post";
 import {
   createManyTestPromotionalPosts,
   createTestPromotionalPost,

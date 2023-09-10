@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 require("dotenv").config();
 import mongoose from "mongoose";
-import { Post, PromotionalPost } from "../../../../shared/types/post.interface";
-import { User, UserCredenitials } from "../../../../shared/types/user.interface";
+import { Post, PromotionalPost } from "../../../../shared/types/post";
+import { User, UserCredenitials } from "../../../../shared/types/user";
 import tokenService from "../token/tokenService";
 import { UserModel } from "../../models/user/userModel";
 import { PostModel } from "../../models/post/postModel";
@@ -12,7 +12,7 @@ import { PostStatsModel } from "../../models/postStats/postStatsModel";
 import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
 import { PromotionalPostModel } from "../../models/promotionalPost/promotionalPostModel";
 import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
-import { MockOMDBMovieResponse } from "../../types/Test";
+import { MockOMDBMovieResponse } from "../../types/test";
 
 type CreateTestUserOptions = {
   id?: string;

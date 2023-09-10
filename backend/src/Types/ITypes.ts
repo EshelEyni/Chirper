@@ -5,9 +5,9 @@ import {
   Post,
   PostImg,
   Repost,
-} from "../../../shared/types/post.interface";
-import { Gif } from "../../../shared/types/gif.interface";
-import { User } from "../../../shared/types/user.interface";
+} from "../../../shared/types/post";
+import { Gif } from "../../../shared/types/GIF";
+import { User } from "../../../shared/types/user";
 
 export interface IPost extends Document {
   audience: string;

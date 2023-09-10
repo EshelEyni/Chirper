@@ -3,8 +3,8 @@ import { asyncErrorCatcher } from "../../services/error/errorService";
 import { validateIds } from "../../services/util/utilService";
 import userRelationService from "../../services/userRelation/userRelationService";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";
-import { UserRelationKind } from "../../types/Enums";
-import { UserRelationParams } from "../../types/App";
+import { UserRelationKind } from "../../types/enums";
+import { UserRelationParams } from "../../types/app";
 
 type CreateRelationMiddleWareParams = {
   action: "add" | "remove";

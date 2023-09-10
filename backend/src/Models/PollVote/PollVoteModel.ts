@@ -4,7 +4,7 @@ import { AppError } from "../../services/error/errorService";
 import { queryEntityExists } from "../../services/util/utilService";
 import { PostModel } from "../post/postModel";
 import { UserModel } from "../../models/user/userModel";
-import { IPollLength, IPollVoteDoc } from "../../types/ITypes";
+import { IPollLength, IPollVoteDoc } from "../../types/iTypes";
 
 const pollVoteSchema: Schema<IPollVoteDoc> = new mongoose.Schema(
   {

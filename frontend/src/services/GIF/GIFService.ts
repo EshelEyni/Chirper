@@ -1,6 +1,6 @@
 import queryString from "query-string";
-import { Gif, GifCategory } from "../../../../shared/types/gif.interface";
-import { JsendResponse } from "../../../../shared/types/system.interface";
+import { Gif, GifCategory } from "../../../../shared/types/GIF";
+import { JsendResponse } from "../../../../shared/types/system";
 import httpService from "../http/httpService";
 import { handleServerResponse } from "../util/utilService";
 

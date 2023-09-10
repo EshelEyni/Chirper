@@ -1,8 +1,8 @@
 export interface UserCredenitials {
   username: string;
   fullname: string;
-  password?: string;
-  passwordConfirm?: string;
+  password: string;
+  passwordConfirm: string;
   email: string;
 }
 

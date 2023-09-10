@@ -1,7 +1,7 @@
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { CiHashtag } from "react-icons/ci";
 import { FaHashtag, FaRegBookmark, FaBookmark, FaRegUser, FaUser } from "react-icons/fa";
-import { NavLink as NavLinkType } from "../../../types/elements.interface";
+import { NavLink as NavLinkType } from "../../../types/Elements";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";

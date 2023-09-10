@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { AppDispatch } from "../../store/types";
-import { Location } from "../../../../shared/types/location.interface";
+import { Location } from "../../../../shared/types/location";
 import locationService from "../../services/locationService";
 import { LocationList } from "../../components/Location/LocationList/LocationList";
 import { SpinnerLoader } from "../../components/Loaders/SpinnerLoader/SpinnerLoader";

@@ -1,12 +1,12 @@
-import { PostType } from "../../types/Enums";
+import { PostType } from "../../types/enums";
 import promptService from "../../services/prompt/promptService";
 import openAIService from "../openAI/openAIService";
 import youtubeService from "../youtube/youtubeService";
 import { PostModel } from "../../models/post/postModel";
-import { CreateBotPostOptions } from "../../types/App";
+import { CreateBotPostOptions } from "../../types/app";
 import OMDBService from "../OMDBService/OMDBService";
 import { getMockOMDBMovieDetails } from "../test/testUtilService";
-import { MockOMDBMovieResponse } from "../../types/Test";
+import { MockOMDBMovieResponse } from "../../types/test";
 
 type mockPromptObj = {
   botId: string;

@@ -1,6 +1,5 @@
-import { JsendResponse } from "../../../../shared/types/system.interface";
-import { User } from "../../../../shared/types/user.interface";
-import { UserCredentials } from "../../types/auth.types";
+import { JsendResponse } from "../../../../shared/types/system";
+import { User, UserCredenitials } from "../../../../shared/types/user";
 import httpService from "../http/httpService";
 import { handleServerResponse } from "../util/utilService";
 
@@ -18,7 +17,7 @@ async function login(username: string, password: string): Promise<User> {
   return handleServerResponse<User>(response);
 }
 
-async function signup(userCredentials: UserCredentials): Promise<User> {
+async function signup(userCredentials: UserCredenitials): Promise<User> {
   const response = (await httpService.post(
     "auth/signup",
     userCredentials

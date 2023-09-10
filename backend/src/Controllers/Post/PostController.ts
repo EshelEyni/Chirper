@@ -5,7 +5,7 @@ import {
   Post,
   PostRepostResult,
   PostStats,
-} from "../../../../shared/types/post.interface";
+} from "../../../../shared/types/post";
 import postService from "../../services/post/postService";
 import {
   asyncErrorCatcher,
@@ -22,8 +22,8 @@ import { PostLikeModel } from "../../models/postLike/postLikeModel";
 import { RepostModel } from "../../models/repost/repostModel";
 import { PostStatsModel } from "../../models/postStats/postStatsModel";
 import { PollVoteModel } from "../../models/pollVote/pollVoteModel";
-import { IRepostDoc } from "../../types/ITypes";
-import { ParsedReqQuery } from "../../types/App";
+import { IRepostDoc } from "../../types/iTypes";
+import { ParsedReqQuery } from "../../types/app";
 
 const getPosts = asyncErrorCatcher(async (req: Request, res: Response): Promise<void> => {
   const queryString = req.query as ParsedReqQuery;

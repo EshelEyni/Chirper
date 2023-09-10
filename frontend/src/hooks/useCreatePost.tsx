@@ -7,9 +7,9 @@ import {
   Post,
   PostReplyResult,
   PostRepostResult,
-} from "../../../shared/types/post.interface";
+} from "../../../shared/types/post";
 import { NewPostType } from "../store/slices/postEditSlice";
-import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
 import { getDefaultErrorMsg } from "../services/util/utilService";
 
 type OnCreatePostProps = {

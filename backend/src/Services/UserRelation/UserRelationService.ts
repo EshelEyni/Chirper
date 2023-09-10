@@ -1,8 +1,8 @@
 import mongoose, { ClientSession } from "mongoose";
-import { FollowingResult, User } from "../../../../shared/types/user.interface";
-import { Post } from "../../../../shared/types/post.interface";
-import { UserRelationKind } from "../../types/Enums";
-import { UserRelationParams, IsFollowingMap } from "../../types/App";
+import { FollowingResult, User } from "../../../../shared/types/user";
+import { Post } from "../../../../shared/types/post";
+import { UserRelationKind } from "../../types/enums";
+import { UserRelationParams, IsFollowingMap } from "../../types/app";
 import { UserModel } from "../../models/user/userModel";
 import { UserRelationModel } from "../../models/userRelation/userRelationModel";
 import { PostStatsModel } from "../../models/postStats/postStatsModel";

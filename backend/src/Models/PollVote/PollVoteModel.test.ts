@@ -1,5 +1,5 @@
-import { Post } from "../../../../shared/types/post.interface";
-import { User } from "../../../../shared/types/user.interface";
+import { Post } from "../../../../shared/types/post";
+import { User } from "../../../../shared/types/user";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {
   createTestPoll,

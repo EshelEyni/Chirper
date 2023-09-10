@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { PostStats } from "../../../../shared/types/post.interface";
+import { PostStats } from "../../../../shared/types/post";
 import { PostLikeModel } from "../../models/postLike/postLikeModel";
 import { PostStatsModel } from "../../models/postStats/postStatsModel";
 import { PostModel } from "../../models/post/postModel";

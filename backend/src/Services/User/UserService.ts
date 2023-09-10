@@ -1,6 +1,6 @@
-import { ParsedReqQuery } from "../../types/App";
-import { IUser } from "../../types/ITypes";
-import { User } from "../../../../shared/types/user.interface";
+import { ParsedReqQuery } from "../../types/app";
+import { IUser } from "../../types/iTypes";
+import { User } from "../../../../shared/types/user";
 import { UserModel } from "../../models/user/userModel";
 import { APIFeatures, filterObj } from "../../services/util/utilService";
 import { AppError } from "../../services/error/errorService";

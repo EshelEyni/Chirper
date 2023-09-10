@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import { NewPost } from "../../../../shared/types/post.interface";
+import { NewPost } from "../../../../shared/types/post";
 import {
   addBookmarkedPost,
   addLike,

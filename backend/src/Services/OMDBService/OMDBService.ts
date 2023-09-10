@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AppError } from "../error/errorService";
-import { MovieDetails } from "../../types/App";
+import { MovieDetails } from "../../types/app";
 
 require("dotenv").config();
 type GetOMDBContentParams = {

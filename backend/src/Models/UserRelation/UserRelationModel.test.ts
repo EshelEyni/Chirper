@@ -3,7 +3,7 @@ import { BlockModel, FollowerModel, MuteModel, UserRelationModel } from "./userR
 import { UserModel } from "../user/userModel";
 import { createTestUser, deleteTestUser, getMongoId } from "../../services/test/testUtilService";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 
 describe("User Relation Model", () => {
   let fromUser: User, toUser: User;

@@ -9,8 +9,8 @@ import {
   PostStatsBody,
   PromotionalPost,
   Repost,
-} from "../../../shared/types/post.interface";
-import { JsendResponse, UserMsg } from "../../../shared/types/system.interface";
+} from "../../../shared/types/post";
+import { JsendResponse, UserMsg } from "../../../shared/types/system";
 import { handleServerResponse } from "./util/utilService";
 import qs from "qs";
 

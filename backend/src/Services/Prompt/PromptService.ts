@@ -1,7 +1,7 @@
 import { BotPromptModel } from "../../models/botPrompt/botPromptModel";
-import { BotPrompt } from "../../../../shared/types/bot.interface";
-import { PostType } from "../../types/Enums";
-import { GetPromptResult } from "../../types/App";
+import { BotPrompt } from "../../../../shared/types/bot";
+import { PostType } from "../../types/enums";
+import { GetPromptResult } from "../../types/app";
 
 type TypeToTemplate = {
   [key: string]: (prompt: string) => string;

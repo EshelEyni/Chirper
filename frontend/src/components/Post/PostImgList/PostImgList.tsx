@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { AnyPost } from "../../../../../shared/types/post.interface";
+import { AnyPost } from "../../../../../shared/types/post";
 import "./PostImgList.scss";
 import { getBasePathName } from "../../../services/util/utilService";
 

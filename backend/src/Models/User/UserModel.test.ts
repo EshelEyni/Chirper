@@ -8,7 +8,7 @@ import {
 } from "../../services/test/testUtilService";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import { UserModel } from "./userModel";
-import { User } from "../../../../shared/types/user.interface";
+import { User } from "../../../../shared/types/user";
 import { UserRelationModel } from "../userRelation/userRelationModel";
 import userRelationService from "../../services/userRelation/userRelationService";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";

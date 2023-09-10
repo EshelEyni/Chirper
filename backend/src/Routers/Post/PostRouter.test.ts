@@ -4,7 +4,7 @@ import express from "express";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import router from "./postRouter";
-import { Post, PostStats } from "../../../../shared/types/post.interface";
+import { Post, PostStats } from "../../../../shared/types/post";
 import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
 import { PostModel } from "../../models/post/postModel";
 import { UserModel } from "../../models/user/userModel";

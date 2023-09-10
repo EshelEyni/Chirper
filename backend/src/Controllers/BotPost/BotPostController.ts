@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AppError, asyncErrorCatcher } from "../../services/error/errorService";
 import botPostService from "../../services/botPost/botPostService";
-import { CreateBotPostOptions } from "../../types/App";
+import { CreateBotPostOptions } from "../../types/app";
 
 const addPost = asyncErrorCatcher(async (req: Request, res: Response) => {
   const botId = req.params.id;

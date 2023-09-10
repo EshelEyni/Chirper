@@ -1,8 +1,8 @@
 import moment from "moment";
 import { ObjectId } from "mongodb";
 import { Model } from "mongoose";
-import { LoggedInUserActionState, PostStatsBody } from "../../../../shared/types/post.interface";
-import { IPollOption, IPollVoteDoc, IPost, IUser } from "../../types/ITypes";
+import { LoggedInUserActionState, PostStatsBody } from "../../../../shared/types/post";
+import { IPollOption, IPollVoteDoc, IPost, IUser } from "../../types/iTypes";
 import { UserModel } from "../../models/user/userModel";
 import { PostStatsModel } from "../../models/postStats/postStatsModel";
 import { RepostModel } from "../../models/repost/repostModel";

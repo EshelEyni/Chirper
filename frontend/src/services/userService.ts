@@ -1,4 +1,4 @@
-import { User } from "../../../shared/types/user.interface";
+import { User } from "../../../shared/types/user";
 import httpService from "./http/httpService";
 import { handleServerResponse } from "./util/utilService";
 

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system";
 import "./UserMsg.scss";
 
 type UserMsgProps = {

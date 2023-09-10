@@ -8,7 +8,7 @@ import {
 import { getOne, createOne, updateOne, deleteOne } from "../../services/factory/factoryService";
 import { UserModel } from "../../models/user/userModel";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";
-import { ParsedReqQuery } from "../../types/App";
+import { ParsedReqQuery } from "../../types/app";
 
 const getUsers = asyncErrorCatcher(async (req: Request, res: Response) => {
   const queryString = req.query;

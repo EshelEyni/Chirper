@@ -1,75 +1,73 @@
-import axios from "axios";
+// need to mock axios in a different file in order to run the setup before the tests run
+// and get acces to the mockAxios function
+import { mockAxios } from "./setupAxiosMock";
 import httpService from "./httpService";
-import { vi, describe, it, expect, beforeAll, afterEach, Mocked, Mock } from "vitest";
+import { describe, it, expect } from "vitest";
 
-const isProd = process.env.NODE_ENV === "production";
-const BASE_URL = isProd ? "/api/" : "http://localhost:3030/api/";
-
-describe("httpService", () => {
-  let axiosMock: Mocked<typeof axios>;
-
-  beforeAll(() => {
-    axiosMock = vi.fn(axios);
-  });
-
-  afterEach(() => {
-    // axiosMock.reset();
-  });
-
-  describe("get", () => {
-    it.only("should call axios.get with the correct params", async () => {
-      const endpoint = "endpoint";
-      const data = { a: "a" };
-      const res = { data: "data" };
-      (axiosMock as any as Mock).mockResolvedValue(res);
-      const actual = await httpService.get(endpoint, data);
-      expect(axiosMock.get).toHaveBeenCalledWith(`${BASE_URL}${endpoint}`, { params: data });
-      expect(actual).toEqual(res.data);
+describe("HTTP Service Tests", () => {
+  it("should perform GET request", async () => {
+    const res = await httpService.get("test");
+    expect(mockAxios).toHaveBeenCalled();
+    expect(mockAxios).toHaveBeenCalledWith({
+      url: "http://localhost:3030/api/test",
+      method: "GET",
+      data: null,
+      params: null,
+      withCredentials: true,
     });
+    expect(res).toEqual("data");
   });
 
-  describe("post", () => {
-    it("should call axios.post with the correct params", async () => {
-      const endpoint = "endpoint";
-      const data = { a: "a" };
-      const res = { data: "data" };
-      axiosMock.post.mockResolvedValue(res);
-      const actual = await httpService.post(endpoint, data);
-      expect(axiosMock.post).toHaveBeenCalledWith(`${BASE_URL}${endpoint}`, data);
-      expect(actual).toEqual(res.data);
+  it("should perform POST request", async () => {
+    const res = await httpService.post("test", { data: "data" });
+    expect(mockAxios).toHaveBeenCalled();
+    expect(mockAxios).toHaveBeenCalledWith({
+      url: "http://localhost:3030/api/test",
+      method: "POST",
+      data: { data: "data" },
+      params: null,
+      withCredentials: true,
     });
+    expect(res).toEqual("data");
   });
-  describe("put", () => {
-    it("should call axios.put with the correct params", async () => {
-      const endpoint = "endpoint";
-      const data = { a: "a" };
-      const res = { data: "data" };
-      axiosMock.put.mockResolvedValue(res);
-      const actual = await httpService.put(endpoint, data);
-      expect(axiosMock.put).toHaveBeenCalledWith(`${BASE_URL}${endpoint}`, data);
-      expect(actual).toEqual(res.data);
+
+  it("should perform PUT request", async () => {
+    const res = await httpService.put("test", { data: "data" });
+    expect(mockAxios).toHaveBeenCalled();
+    expect(mockAxios).toHaveBeenCalledWith({
+      url: "http://localhost:3030/api/test",
+      method: "PUT",
+      data: { data: "data" },
+      params: null,
+      withCredentials: true,
     });
+    expect(res).toEqual("data");
   });
-  describe("patch", () => {
-    it("should call axios.patch with the correct params", async () => {
-      const endpoint = "endpoint";
-      const data = { a: "a" };
-      const res = { data: "data" };
-      axiosMock.patch.mockResolvedValue(res);
-      const actual = await httpService.patch(endpoint, data);
-      expect(axiosMock.patch).toHaveBeenCalledWith(`${BASE_URL}${endpoint}`, data);
-      expect(actual).toEqual(res.data);
+
+  it("should perform PATCH request", async () => {
+    const res = await httpService.patch("test", { data: "data" });
+    expect(mockAxios).toHaveBeenCalled();
+    expect(mockAxios).toHaveBeenCalledWith({
+      url: "http://localhost:3030/api/test",
+      method: "PATCH",
+      data: { data: "data" },
+      params: null,
+      withCredentials: true,
     });
+    expect(res).toEqual("data");
   });
-  describe("delete", () => {
-    it("should call axios.delete with the correct params", async () => {
-      const endpoint = "endpoint";
-      const data = { a: "a" };
-      const res = { data: "data" };
-      axiosMock.delete.mockResolvedValue(res);
-      const actual = await httpService.delete(endpoint, data);
-      expect(axiosMock.delete).toHaveBeenCalledWith(`${BASE_URL}${endpoint}`, { data });
-      expect(actual).toEqual(res.data);
+
+  it("should perform DELETE request", async () => {
+    const res = await httpService.delete("test");
+    expect(mockAxios).toHaveBeenCalled();
+    expect(mockAxios).toHaveBeenCalledWith({
+      url: "http://localhost:3030/api/test",
+      method: "DELETE",
+      data: null,
+      params: null,
+      withCredentials: true,
     });
+
+    expect(res).toEqual("data");
   });
 });

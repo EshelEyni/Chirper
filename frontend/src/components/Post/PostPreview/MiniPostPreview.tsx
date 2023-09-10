@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPost } from "../../../store/slices/postEditSlice";
-import { NewPost, Post, QuotedPost } from "../../../../../shared/types/post.interface";
+import { NewPost, Post, QuotedPost } from "../../../../../shared/types/post";
 import { RootState } from "../../../store/store";
 import { AppDispatch } from "../../../store/types";
 import { PostPreviewWrapper } from "./PostPreviewWrapper";

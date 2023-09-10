@@ -1,6 +1,6 @@
-import { CreateBotPostOptions, GetPromptResult, MovieDetails } from "../../types/App";
-import { PostType } from "../../types/Enums";
-import { NewPost, NewPostImg, Poll, Post } from "../../../../shared/types/post.interface";
+import { CreateBotPostOptions, GetPromptResult, MovieDetails } from "../../types/app";
+import { PostType } from "../../types/enums";
+import { NewPost, NewPostImg, Poll, Post } from "../../../../shared/types/post";
 import { AppError } from "../../services/error/errorService";
 import promptService from "../../services/prompt/promptService";
 import openAIService from "../openAI/openAIService";

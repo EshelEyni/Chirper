@@ -14,7 +14,7 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, "packages/template/*"],
     outputFile: "test-results.html",
     cache: {
-      dir: path.join(projectRoot, "testCache"),
+      dir: path.join(projectRoot, "test/testCache"),
     },
   },
 });

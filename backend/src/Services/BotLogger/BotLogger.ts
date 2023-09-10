@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import ansiColors from "ansi-colors";
-import { Post } from "../../../../shared/types/post.interface";
+import { Post } from "../../../../shared/types/post";
 
 type Logger = {
   create: ({ entity, iterationNum }: { entity: string; iterationNum?: number }) => void;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useState, createContext, useContext, useRef, useEffect } from "react";
-import { NewPost, Post, Poll as TypeOfPoll } from "../../../../../shared/types/post.interface";
+import { NewPost, Post, Poll as TypeOfPoll } from "../../../../../shared/types/post";
 import {
   NewPostType,
   setNewPostType,
@@ -18,7 +18,7 @@ import { UserMsg } from "../../Msg/UserMsg/UserMsg";
 import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
+import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system";
 import { FiImage, FiList, FiUpload } from "react-icons/fi";
 import { setIsScrollRedirectActive } from "../../../store/slices/systemSlice";
 import { useQueryGifs } from "../../../hooks/useQueryGifs";
@@ -27,11 +27,11 @@ import { AiOutlineClose, AiOutlineLink, AiOutlineRetweet } from "react-icons/ai"
 import { GifSearchBar } from "../../Gif/GifSearchBar/GifSearchBar";
 import { Modal } from "../../Modal/Modal";
 import { RiBarChartGroupedFill, RiFileGifLine } from "react-icons/ri";
-import { GifCategory, Gif as TypeOfGif } from "../../../../../shared/types/gif.interface";
+import { GifCategory, Gif as TypeOfGif } from "../../../../../shared/types/GIF";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { BsEmojiSmile } from "react-icons/bs";
-import { Emoji as TypeOfEmoji } from "../../../../../shared/types/post.interface";
+import { Emoji as TypeOfEmoji } from "../../../../../shared/types/post";
 import { CiCalendarDate } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import "./PostActions.scss";

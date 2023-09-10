@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Post } from "../../../../shared/types/post.interface";
+import { Post } from "../../../../shared/types/post";
 import postService from "../../services/postService";
 import { Outlet } from "react-router-dom";
 import { useDocumentTitle } from "../../hooks/app/useDocumentTitle";

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Reply } from "../../../../shared/types/post.interface";
+import { Reply } from "../../../../shared/types/post";
 import { assertPost, assertQuotedPost } from "../../services/test/testAssertionService";
 import { connectToTestDB, disconnectFromTestDB } from "../../services/test/testDBService";
 import {

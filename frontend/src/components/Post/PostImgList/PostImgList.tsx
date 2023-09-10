@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Post } from "../../../../../shared/types/post.interface";
+import { AnyPost } from "../../../../../shared/types/post.interface";
 import "./PostImgList.scss";
 import { getBasePathName } from "../../../services/util/utils.service";
 
 interface PostImgContainerProps {
-  post: Post;
+  post: AnyPost;
 }
 
 export const PostImg: React.FC<PostImgContainerProps> = ({ post }) => {
@@ -18,11 +18,13 @@ export const PostImg: React.FC<PostImgContainerProps> = ({ post }) => {
   }
 
   function onImgClick(idx: number) {
-    if (post.isPromotional) {
+    const isPromotional = "isPromotional" in post && post.isPromotional;
+    if (isPromotional) {
       const link = post.linkToSite;
       if (link) window.open(link, "_blank");
       return;
     }
+    if (!("id" in post) || !post.id) return;
     const { pathname } = location;
     const basePath = getBasePathName(pathname, "imgs");
     navigate(`${basePath}/post/${post.id}/imgs/${idx + 1}`);

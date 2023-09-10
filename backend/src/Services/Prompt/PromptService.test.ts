@@ -61,7 +61,8 @@ describe("Bot Prompt Service", () => {
       expect(BotPromptModel.countDocuments).toBeCalledTimes(1);
       expect(BotPromptModel.findOne).toBeCalledTimes(1);
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.TEXT_PROMPT_SUFFIX}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
 
     it("should return poll type prompt with prefix and suffix", async () => {
@@ -70,7 +71,8 @@ describe("Bot Prompt Service", () => {
       const result = await promptService.getBotPrompt(botId, PostType.POLL);
 
       const expectResult = `${promptService.promptFragments.POLL_PROMPT_PREFIX}${SAMPLE_PROMPT}${promptService.promptFragments.POLL_PROMPT_SUFFIX}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
 
     it("should return image type prompt with prefix", async () => {
@@ -79,7 +81,8 @@ describe("Bot Prompt Service", () => {
       const result = await promptService.getBotPrompt(botId, PostType.IMAGE);
 
       const expectResult = `${promptService.promptFragments.IMAGE_PROMPT_PREFIX}${SAMPLE_PROMPT}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
 
     it("should return video type prompt with prefix", async () => {
@@ -88,7 +91,8 @@ describe("Bot Prompt Service", () => {
       const result = await promptService.getBotPrompt(botId, PostType.VIDEO);
 
       const expectResult = `${promptService.promptFragments.VIDEO_PROMPT_PREFIX}${SAMPLE_PROMPT}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
 
     it("should return song-review type prompt suffix", async () => {
@@ -97,7 +101,8 @@ describe("Bot Prompt Service", () => {
       const result = await promptService.getBotPrompt(botId, PostType.SONG_REVIEW);
 
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.SONG_REVIEW_PROMPT_SUFFIX}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
 
     it("should return movie-review type prompt suffix", async () => {
@@ -106,7 +111,8 @@ describe("Bot Prompt Service", () => {
       const result = await promptService.getBotPrompt(botId, PostType.MOVIE_REVIEW);
 
       const expectResult = `${SAMPLE_PROMPT}${promptService.promptFragments.MOVIE_REVIEW_PROMPT_SUFFIX}`;
-      expect(result).toBe(expectResult);
+      expect(result.rawPrompt).toBe(SAMPLE_PROMPT);
+      expect(result.prompt).toBe(expectResult);
     });
   });
 });

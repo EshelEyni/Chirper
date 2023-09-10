@@ -1,11 +1,11 @@
 import { FC, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
-import { NewPost } from "../../../../../../shared/types/post.interface";
-import { AppDispatch } from "../../../../store/types";
-import { debounce } from "../../../../services/util/utils.service";
-import { usePostEdit } from "../../../../contexts/PostEditContext";
-import { NewPostType, updateNewPost } from "../../../../store/slices/postEditSlice";
+import { RootState } from "../../../store/store";
+import { NewPost } from "../../../../../shared/types/post.interface";
+import { AppDispatch } from "../../../store/types";
+import { debounce } from "../../../services/util/utils.service";
+import { usePostEdit } from "../../../contexts/PostEditContext";
+import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
 
 type PostTextInputProps = {
   textAreaRef: React.RefObject<HTMLTextAreaElement>;

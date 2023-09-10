@@ -98,6 +98,8 @@ export interface PromotionalPost extends Post {
   linkToRepo?: string;
 }
 
+export type AnyPost = NewPost | Post | Repost | Reply | PromotionalPost;
+
 export type LoggedInUserActionState = {
   isLiked: boolean;
   isReposted: boolean;

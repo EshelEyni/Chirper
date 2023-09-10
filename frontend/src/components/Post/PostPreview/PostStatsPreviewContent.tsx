@@ -5,8 +5,8 @@ import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
 import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
 import { PostImg } from "../../../PostImgList/PostImgList";
 import { PostPreviewHeader } from "../../PostPreviewHeader/PostPreviewHeader";
-import { PostPreviewBody } from "../../Body/PostPreviewBody";
-import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
+import { PostPreviewBody } from "../../PostPreviewBody";
+import { PostPreviewMainContainer } from "../../PostPreviewMainContainer";
 import { PostPreviewText } from "../../Text/PostPreviewText";
 import "./PostStatsPreviewContent.scss";
 

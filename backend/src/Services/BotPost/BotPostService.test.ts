@@ -38,6 +38,7 @@ const {
   SAMPLE_VIDEO_URL,
   SAMPLE_MOVIE_NAME,
   SAMPLE_MOVIE_REVIEW,
+  RAW_SUFFIX,
 } = testUtilService.constants;
 
 describe("Bot Post Service:  createPost", () => {
@@ -233,7 +234,10 @@ describe("Bot Post Service:  createPost", () => {
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.IMAGE);
-      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
+      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(
+        SAMPLE_PROMPT + RAW_SUFFIX,
+        1
+      );
 
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -280,7 +284,10 @@ describe("Bot Post Service:  createPost", () => {
 
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 3);
+      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(
+        SAMPLE_PROMPT + RAW_SUFFIX,
+        3
+      );
 
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -305,7 +312,10 @@ describe("Bot Post Service:  createPost", () => {
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.IMAGE);
-      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, 1);
+      expect(openAIService.getImgsFromOpenOpenAI).toHaveBeenCalledWith(
+        SAMPLE_PROMPT + RAW_SUFFIX,
+        1
+      );
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
 
       expect(PostModel.create).toHaveBeenCalledWith(
@@ -378,7 +388,7 @@ describe("Bot Post Service:  createPost", () => {
 
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-      expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT);
+      expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT + RAW_SUFFIX);
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           createdById: TEST_BOT_ID,
@@ -420,7 +430,7 @@ describe("Bot Post Service:  createPost", () => {
 
       const result = await botPostService.createPost(TEST_BOT_ID, options);
 
-      expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT);
+      expect(youtubeService.getYoutubeVideo).toHaveBeenCalledWith(SAMPLE_PROMPT + RAW_SUFFIX);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT);
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -584,7 +594,7 @@ describe("Bot Post Service:  createPost", () => {
     });
   });
 
-  fdescribe("movie-review post type", () => {
+  describe("movie-review post type", () => {
     beforeEach(() => {
       testUtilService.MockSetter.getMovieReviewFromOpenAI();
     });
@@ -600,7 +610,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).toHaveBeenCalledWith(TEST_BOT_ID, PostType.MOVIE_REVIEW);
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith(SAMPLE_PROMPT, "gpt-4");
-      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith(SAMPLE_MOVIE_NAME);
+      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith({ prompt: SAMPLE_MOVIE_NAME });
 
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -629,7 +639,7 @@ describe("Bot Post Service:  createPost", () => {
 
       expect(promptService.getBotPrompt).not.toHaveBeenCalled();
       expect(openAIService.getTextFromOpenAI).toHaveBeenCalledWith("prompt from request", "gpt-4");
-      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith(SAMPLE_MOVIE_NAME);
+      expect(OMDBService.getOMDBContent).toHaveBeenCalledWith({ prompt: SAMPLE_MOVIE_NAME });
 
       expect(PostModel.create).toHaveBeenCalledWith(
         expect.objectContaining({

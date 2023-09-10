@@ -1,17 +1,17 @@
 import { useSelector } from "react-redux";
-import { NewPost } from "../../../../../../../shared/types/post.interface";
-import { RootState } from "../../../../../store/store";
-import { PostImg } from "../../../PostImgList/PostImgList";
-import { VideoPlayer } from "../../../../Video/VideoPlayer/VideoPlayer";
-import { GifDisplay } from "../../../../Gif/GifDisplay/GifDisplay";
-import { PollEdit } from "../../../../Poll/PollEdit/PollEdit";
-import { PostPreviewMainContainer } from "../../MainContainer/PostPreviewMainContainer";
-import { PostPreviewBody } from "../../Body/PostPreviewBody";
-import { PostPreviewText } from "../../Text/PostPreviewText";
-import { MiniPostPreviewAside } from "../Aside/MiniPostPreviewAside";
+import { NewPost } from "../../../../../shared/types/post.interface";
+import { RootState } from "../../../store/store";
+import { PostImg } from "../PostImgList/PostImgList";
+import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
+import { GifDisplay } from "../../Gif/GifDisplay/GifDisplay";
+import { PollEdit } from "../../Poll/PollEdit/PollEdit";
+import { PostPreviewMainContainer } from "./PostPreviewMainContainer";
+import { PostPreviewBody } from "./PostPreviewBody";
+import { PostPreviewText } from "./PostPreviewText";
+import { MiniPostPreviewAside } from "./MiniPostPreviewAside";
 import { useMemo } from "react";
-import { VideoPlayerProvider } from "../../../../../contexts/VideoPlayerContext";
-import { NewPostType } from "../../../../../store/slices/postEditSlice";
+import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
+import { NewPostType } from "../../../store/slices/postEditSlice";
 
 type NewPostContentProps = {
   newPost: NewPost;
@@ -49,9 +49,7 @@ export const NewPostContent: React.FC<NewPostContentProps> = ({ newPost }) => {
       <PostPreviewMainContainer>
         <PostPreviewBody>
           <PostPreviewText text={getText()} isPlainText={isPlainText} />
-          {isImgShown && (
-            <PostImg imgs={newPost.imgs.map((img, idx) => ({ url: img.url, sortOrder: idx }))} />
-          )}
+          {isImgShown && <PostImg post={newPost} />}
           {newPost.videoUrl && (
             <VideoPlayerProvider>
               <VideoPlayer videoUrl={newPost.videoUrl} isCustomControls={true} />

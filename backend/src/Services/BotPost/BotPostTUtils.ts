@@ -44,6 +44,7 @@ jest.mock("../botLogger/botLogger", () => {
 const constants = {
   TEST_BOT_ID: "testBotId",
   SAMPLE_PROMPT: "testPrompt",
+  RAW_SUFFIX: " (raw)",
   SAMPLE_POST_TEXT: "Sample text post",
   SAMPLE_SONG_NAME: "Sample song name",
   SAMPLE_SONG_REVIEW: "Sample song review",
@@ -61,6 +62,7 @@ const {
   SAMPLE_VIDEO_URL,
   SAMPLE_MOVIE_NAME,
   SAMPLE_MOVIE_REVIEW,
+  RAW_SUFFIX,
 } = constants;
 
 const MockSetter = {
@@ -71,7 +73,9 @@ const MockSetter = {
     });
   },
   getBotPrompt: (value: string | null = SAMPLE_PROMPT) => {
-    promptService.getBotPrompt = jest.fn().mockResolvedValue(value);
+    promptService.getBotPrompt = jest
+      .fn()
+      .mockResolvedValue(value ? { rawPrompt: value + RAW_SUFFIX, prompt: value } : null);
   },
   getAllPrompts: (value: mockPromptObj[] | null = Array(3).fill(_getMockPrompt())) => {
     promptService.getAllPrompts = jest.fn().mockResolvedValue(value);
@@ -83,23 +87,17 @@ const MockSetter = {
     songName: string | null = SAMPLE_SONG_NAME,
     review: string | null = SAMPLE_SONG_REVIEW
   ) => {
-    openAIService.getTextFromOpenAI = jest.fn().mockResolvedValue(
-      JSON.stringify({
-        songName,
-        review,
-      })
-    );
+    openAIService.getTextFromOpenAI = jest
+      .fn()
+      .mockResolvedValue(JSON.stringify({ songName, review }));
   },
   getMovieReviewFromOpenAI: (
     movieName: string | null = SAMPLE_MOVIE_NAME,
     review: string | null = SAMPLE_MOVIE_REVIEW
   ) => {
-    openAIService.getTextFromOpenAI = jest.fn().mockResolvedValue(
-      JSON.stringify({
-        movieName,
-        review,
-      })
-    );
+    openAIService.getTextFromOpenAI = jest
+      .fn()
+      .mockResolvedValue(JSON.stringify({ movieName, review }));
   },
   getImgsFromOpenAI: () => {
     openAIService.getImgsFromOpenOpenAI = jest.fn().mockImplementation((_, numOfImages) => {

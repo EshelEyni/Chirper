@@ -1,0 +1,29 @@
+@import "../../../styles/setup/functions";
+
+.post-action-stats {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: rem(75px);
+  border-radius: 15px;
+  border: 1px solid var(--color-border);
+
+  .post-action-stats-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: rem(5px);
+    width: rem(100px);
+    height: rem(75px);
+    color: var(--color-text-gray);
+    transition: all 0.3s ease-in-out;
+
+    .post-action-stats-item-count {
+      font-size: rem(15px);
+      font-weight: 600;
+      color: black;
+    }
+  }
+}

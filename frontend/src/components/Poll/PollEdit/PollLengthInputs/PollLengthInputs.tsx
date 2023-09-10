@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useCustomSelect } from "../../../../hooks/app/useCustomSelect";
+import { useCustomSelect } from "../../../../hooks/useCustomSelect";
 import { AppDispatch } from "../../../../store/types";
 import { RootState } from "../../../../store/store";
 import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";

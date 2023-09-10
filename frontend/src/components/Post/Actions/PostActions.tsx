@@ -21,7 +21,7 @@ import { RootState } from "../../../store/store";
 import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system.interface";
 import { FiImage, FiList, FiUpload } from "react-icons/fi";
 import { setIsScrollRedirectActive } from "../../../store/slices/systemSlice";
-import { useQueryGifs } from "../../../hooks/reactQuery/gif/useQueryGifs";
+import { useQueryGifs } from "../../../hooks/useQueryGifs";
 import { IoArrowBackSharp, IoLocationSharp } from "react-icons/io5";
 import { AiOutlineClose, AiOutlineLink, AiOutlineRetweet } from "react-icons/ai";
 import { GifSearchBar } from "../../Gif/GifSearchBar/GifSearchBar";
@@ -36,18 +36,18 @@ import { CiCalendarDate } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import "./PostActions.scss";
 import { Tooltip } from "react-tooltip";
-import { useUniqueID } from "../../../hooks/app/useIDRef";
+import { useUniqueID } from "../../../hooks/useIDRef";
 import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
-import { useCreateRepost } from "../../../hooks/reactQuery/post/useCreateRepost";
-import { useRemoveRepost } from "../../../hooks/reactQuery/post/useRemoveRepost";
+import { useCreateRepost } from "../../../hooks/useCreateRepost";
+import { useRemoveRepost } from "../../../hooks/useRemoveRepost";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { useRemoveLike } from "../../../hooks/reactQuery/post/useRemoveLike";
-import { useAddLike } from "../../../hooks/reactQuery/post/useAddLike";
-import { useRemoveBookmark } from "../../../hooks/reactQuery/post/useRemoveBookmark";
-import { useAddBookmark } from "../../../hooks/reactQuery/post/useAddBookmark";
+import { useRemoveLike } from "../../../hooks/useRemoveLike";
+import { useAddLike } from "../../../hooks/useAddLike";
+import { useRemoveBookmark } from "../../../hooks/useRemoveBookmark";
+import { useAddBookmark } from "../../../hooks/useAddBookmark";
 import postService from "../../../services/post.service";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
-import { useQueryGifCategories } from "../../../hooks/reactQuery/gif/useQueryGifCategories";
+import { useQueryGifCategories } from "../../../hooks/useQueryGifCategories";
 import { AsyncList } from "../../App/AsyncList/AsyncList";
 import { GifCategoryPreview } from "../../Gif/GifCategoryPreview/GifCategoryPreview";
 import { GifPreview } from "../../Gif/GifPreview/GifPreview";
@@ -790,7 +790,7 @@ const Like: FC = () => {
   const isLiked = post?.loggedInUserActionState.isLiked;
 
   function handleBtnClick() {
-    if (!loggedInUser || !post) return;
+    if (!loggedInUser || !post || !post.id) return;
     if (isLiked) removeLike(post.id);
     else addLike(post.id);
   }

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { PollDisplayOptionsList } from "./PollDisplayOptionsList/PollDisplayOptionsList";
 import { PollDisplayDetails } from "./PollDisplayDetails/PollDisplayDetails";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
-import { useAddPollVote } from "../../../hooks/reactQuery/post/useAddPollVote";
+import { useAddPollVote } from "../../../hooks/useAddPollVote";
 
 type PollDisplayProps = {
   postStartDate: Date;

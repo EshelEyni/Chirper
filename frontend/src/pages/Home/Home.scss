@@ -1,0 +1,44 @@
+@import "../../styles/setup/mixins.scss";
+@import "../../styles/setup/functions";
+
+.home {
+  width: rem(600px);
+  height: 100vh;
+  overflow: hidden;
+  border-right: 1px solid var(--color-secondary-border);
+  border-left: 1px solid var(--color-secondary-border);
+
+  .title-container {
+    display: flex;
+    align-items: center;
+    padding: 0 rem(20px);
+    height: rem(60px);
+    width: 100%;
+    border-bottom: 1px solid var(--color-secondary-border);
+
+    h1 {
+      font-size: rem(20px);
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+  .home-main-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - rem(60px));
+    overflow-x: auto;
+
+    @include scrollbar-hidden;
+
+    .post-edit-container {
+      position: relative;
+      border-bottom: 1px solid var(--color-secondary-border);
+      width: 100%;
+
+      .post-edit {
+        width: 100%;
+      }
+    }
+  }
+}

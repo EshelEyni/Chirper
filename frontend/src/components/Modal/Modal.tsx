@@ -12,7 +12,7 @@ import {
 import { createPortal } from "react-dom";
 import { MainScreen } from "../App/MainScreen/MainScreen";
 import "./Modal.scss";
-import { useOutsideClick } from "../../hooks/app/useOutsideClick";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
 import { User } from "../../../../shared/types/user.interface";
 import { useSelector } from "react-redux";

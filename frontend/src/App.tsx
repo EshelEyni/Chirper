@@ -10,7 +10,7 @@ import { Route as TypeOfRoute } from "./routes";
 import { PageLoader } from "./components/Loaders/PageLoader/PageLoader";
 import { AuthGuard } from "./guards/AuthGuard";
 import { loginWithToken } from "./store/slices/authSlice";
-const PageNotFound = lazy(() => import("./pages/MainPages/PageNotFound/PageNotFound"));
+const PageNotFound = lazy(() => import("./pages/PageNotFound/PageNotFound"));
 import "./styles/main.scss";
 
 function App() {

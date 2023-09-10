@@ -2,8 +2,8 @@ import { createContext, useContext } from "react";
 import { AnyPost, Post } from "../../../shared/types/post.interface";
 import { useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
-import useRemoveFollow from "../hooks/reactQuery/post/useRemoveFollow";
-import useAddFollow from "../hooks/reactQuery/post/useAddFollow";
+import useRemoveFollow from "../hooks/useRemoveFollow";
+import useAddFollow from "../hooks/useAddFollow";
 
 type PostPreviewContextType = {
   post: AnyPost;

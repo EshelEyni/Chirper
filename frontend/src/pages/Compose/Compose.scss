@@ -1,0 +1,144 @@
+@import "../../styles/setup/mixins.scss";
+@import "../../styles/setup/functions";
+
+.compose {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 2000;
+
+  .post-edit {
+    z-index: 200;
+    max-height: 75vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin: rem(100px) 0;
+    z-index: 2500;
+
+    &.save-mode {
+      opacity: 1;
+    }
+
+    @include scrollbar-hidden;
+
+    .content-container .main-content {
+      .post-edit-text-area {
+        &.not-first-post {
+          min-height: 0;
+        }
+      }
+      .post-edit-imgs {
+        &.cols-1 {
+          .post-edit-img-container {
+            height: rem(300px);
+          }
+        }
+      }
+
+      .btn-replries-location-container {
+        .btn-toggle-repliers-container {
+          .post-edit-option.repliers {
+            position: fixed;
+            top: 40%;
+            left: 30%;
+          }
+        }
+      }
+
+      .btns-container {
+        .post-actions {
+          .emoji-button-container {
+            .emoji-picker-container {
+              .emoji-post-edit-option-container {
+                position: fixed;
+                top: 47.5%;
+                left: 50%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+//TODO: check if this is still needed - we have the same in Modal.scss
+
+.modal.save-post-draft,
+.modal.confirm-delete-msg {
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+
+    .modal-title {
+      font-size: rem(20px);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: rem(10px);
+    }
+
+    .modal-description {
+      font-size: rem(15px);
+      font-weight: 400;
+      color: var(--color-text-gray);
+    }
+  }
+
+  .modal-btns-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: rem(100px);
+
+    .btn {
+      width: 100%;
+      height: rem(45px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 25px;
+      font-size: rem(15px);
+      font-weight: 700;
+      color: white;
+      transition: all 0.2s ease-in-out;
+
+      span {
+        font-size: rem(15px);
+        font-weight: 700;
+        color: white;
+      }
+    }
+
+    .btn-delete {
+      background-color: var(--color-danger);
+    }
+
+    .btn-close-modal {
+      background-color: white;
+      border: 1px solid var(--color-border);
+
+      span {
+        color: black;
+      }
+
+      &:hover {
+        background-color: var(--color-hover-light);
+      }
+    }
+
+    .btn-save-post-draft {
+      background-color: black;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}

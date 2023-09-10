@@ -1,19 +1,19 @@
 import { LazyExoticComponent, lazy, FC } from "react";
 
-const Homepage = lazy(() => import("./pages/MainPages/Home/Home"));
-const BookmarksPage = lazy(() => import("./pages/MainPages/Bookmarks/Bookmarks"));
-const ExplorePage = lazy(() => import("./pages/MainPages/Explore/Explore"));
-const LoginPage = lazy(() => import("./pages/MainPages/Login/Login"));
-const PostDetails = lazy(() => import("./pages/MainPages/PostDetails/PostDetails"));
-const ProfileDetails = lazy(() => import("./pages/MainPages/ProfileDetails/ProfileDetails"));
-const SignupPage = lazy(() => import("./pages/MainPages/Signup/Signup"));
-const ChirperCirclePage = lazy(() => import("./pages/NestedPages/ChirperCircle/ChirperCircle"));
-const ComposePage = lazy(() => import("./pages/NestedPages/Compose/Compose"));
-const DisplayPage = lazy(() => import("./pages/NestedPages/Display/Display"));
-const PostLocation = lazy(() => import("./pages/NestedPages/PostLocation/PostLocation"));
-const PostSchedule = lazy(() => import("./pages/NestedPages/PostScheduler/PostSchedule"));
-const PostStatsPage = lazy(() => import("./pages/NestedPages/PostStats/PostStats"));
-const PostImgPage = lazy(() => import("./pages/NestedPages/PostImg/PostImgPage"));
+const Homepage = lazy(() => import("./pages/Home/Home"));
+const BookmarksPage = lazy(() => import("./pages/Bookmarks/Bookmarks"));
+const ExplorePage = lazy(() => import("./pages/Explore/Explore"));
+const LoginPage = lazy(() => import("./pages/Login/Login"));
+const PostDetails = lazy(() => import("./pages/PostDetails/PostDetails"));
+const ProfileDetails = lazy(() => import("./pages/ProfileDetails/ProfileDetails"));
+const SignupPage = lazy(() => import("./pages/Signup/Signup"));
+const ChirperCirclePage = lazy(() => import("./pages/ChirperCircle/ChirperCircle"));
+const ComposePage = lazy(() => import("./pages/Compose/Compose"));
+const DisplayPage = lazy(() => import("./pages/Display/Display"));
+const PostLocation = lazy(() => import("./pages/PostLocation/PostLocation"));
+const PostSchedule = lazy(() => import("./pages/PostScheduler/PostSchedule"));
+const PostStatsPage = lazy(() => import("./pages/PostStats/PostStats"));
+const PostImgPage = lazy(() => import("./pages/PostImg/PostImgPage"));
 
 export interface Route {
   path: string;

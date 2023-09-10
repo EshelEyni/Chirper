@@ -36,10 +36,10 @@ import {
   clearNewPosts,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
-import { useCreatePost } from "../../../hooks/reactQuery/post/useCreatePost";
+import { useCreatePost } from "../../../hooks/useCreatePost";
 import { NewPostContent } from "../PostPreview/NewPostContent";
 import postService from "../../../services/post.service";
-import { useGoBack } from "../../../hooks/app/useGoBack";
+import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";
 

@@ -1,0 +1,41 @@
+@import "../../styles/setup/functions";
+
+.post-stats {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+
+  .post-stats-body {
+    display: flex;
+    flex-direction: column;
+    padding: rem(12px) rem(16px);
+    width: rem(600px);
+    min-height: rem(320px);
+    background-color: var(--color-background);
+    border-radius: 25px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+
+    .post-stats-main-container {
+      display: flex;
+
+      .post-stats-content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .content-loader-container {
+          position: relative;
+          width: 100%;
+          height: rem(100px);
+        }
+      }
+    }
+  }
+}

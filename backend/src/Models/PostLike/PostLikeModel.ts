@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { Post } from "../../../../shared/types/post";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { PostModel } from "../post/postModel";
 import { UserModel } from "../../models/user/userModel";
 
@@ -23,7 +23,7 @@ const postLikeSchema: Schema<IPostLikeDoc> = new mongoose.Schema(
       required: true,
       ref: "Post",
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(PostModel, { _id: id }),
         message: "Referenced post does not exist",
       },
     },
@@ -32,7 +32,7 @@ const postLikeSchema: Schema<IPostLikeDoc> = new mongoose.Schema(
       required: true,
       ref: "User",
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -48,15 +48,14 @@ const postLikeSchema: Schema<IPostLikeDoc> = new mongoose.Schema(
   }
 );
 
+postLikeSchema.index({ userId: 1, postId: 1 }, { unique: true });
+
 postLikeSchema.virtual("post", {
   ref: "Post",
   localField: "postId",
   foreignField: "_id",
   justOne: true,
 });
-
-postLikeSchema.index({ postId: 1, userId: 1 }, { unique: true });
-postLikeSchema.index({ userId: 1 });
 
 postLikeSchema.post("save", async function (doc: Document) {
   if (!doc) return;

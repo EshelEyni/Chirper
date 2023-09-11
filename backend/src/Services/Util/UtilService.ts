@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery, Model, Query, Document } from "mongoose";
+import mongoose, { Model, Query, Document } from "mongoose";
 import nodemailer from "nodemailer";
 require("dotenv").config();
 import { AppError } from "../error/errorService";
@@ -105,9 +105,9 @@ const sendEmail = async (options: { email: string; subject: string; message: str
   await transporter.sendMail(mailOptions);
 };
 
-async function queryEntityExists<T extends Document>(
+async function queryEntityExistsById<T extends Document>(
   model: Model<T>,
-  query: FilterQuery<T>
+  query: { _id: ObjectId }
 ): Promise<boolean> {
   return !!(await model.exists(query).setOptions({ skipHooks: true }).exec());
 }
@@ -145,7 +145,7 @@ export {
   APIFeatures,
   sendEmail,
   filterObj,
-  queryEntityExists,
+  queryEntityExistsById,
   isValidMongoId,
   validateIds,
   getUniqueStringIds,

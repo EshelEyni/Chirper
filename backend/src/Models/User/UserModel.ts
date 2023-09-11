@@ -74,31 +74,24 @@ const userSchema: Schema<IUser> = new Schema(
   {
     toObject: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret.password;
-        delete ret.passwordConfirm;
-        delete ret._id;
-        delete ret.active;
-        delete ret.loginAttempts;
-        delete ret.lockedUntil;
+      transform: (_: Document, ret: Record<string, unknown>) => {
+        _removePrivateFields(ret);
         return ret;
       },
     },
     toJSON: {
       virtuals: true,
-      transform: (doc: Document, ret: Record<string, unknown>) => {
-        delete ret.password;
-        delete ret.passwordConfirm;
-        delete ret._id;
-        delete ret.active;
-        delete ret.loginAttempts;
-        delete ret.lockedUntil;
+      transform: (_: Document, ret: Record<string, unknown>) => {
+        _removePrivateFields(ret);
         return ret;
       },
     },
     timestamps: true,
   }
 );
+
+userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
 
 userSchema
   .virtual("followingCount")
@@ -261,6 +254,15 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + TEN_MINUTES;
   return resetToken;
 };
+
+function _removePrivateFields(doc: Record<string, unknown>) {
+  delete doc._id;
+  delete doc.password;
+  delete doc.passwordConfirm;
+  delete doc.active;
+  delete doc.loginAttempts;
+  delete doc.lockedUntil;
+}
 
 const UserModel = model<IUserDoc>("User", userSchema);
 

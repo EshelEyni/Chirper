@@ -7,7 +7,7 @@ import userRelationService from "../../services/userRelation/userRelationService
 import { UserModel } from "../user/userModel";
 import { imgsSchema, locationSchema, pollSchema } from "./postSubSchemas";
 import { AppError } from "../../services/error/errorService";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { populatePostData } from "../../services/post/populatePostData";
 import { PostBookmarkModel } from "../postBookmark/postBookmarkModel";
 import { PostLikeModel } from "../postLike/postLikeModel";
@@ -51,7 +51,7 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
       required: [true, "Post must have a createdById"],
       ref: "User",
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -59,7 +59,8 @@ const postSchema: Schema<IPost> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       validate: {
-        validator: async (id: ObjectId) => !!(await mongoose.models.Post.findById({ _id: id })),
+        validator: async (id: ObjectId) =>
+          !!(await mongoose.models.Post.findById({ _id: id }).select("_id").exec()),
         message: "Referenced post does not exist",
       },
     },

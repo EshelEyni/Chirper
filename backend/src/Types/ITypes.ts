@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 import { Document } from "mongoose";
-import {
-  LoggedInUserActionState,
-  Post,
-  PostImg,
-  Repost,
-} from "../../../shared/types/post";
+import { LoggedInUserActionState, Post, PostImg, Repost } from "../../../shared/types/post";
 import { Gif } from "../../../shared/types/GIF";
 import { User } from "../../../shared/types/user";
 

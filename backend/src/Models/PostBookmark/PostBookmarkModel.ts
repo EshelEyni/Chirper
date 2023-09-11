@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query } from "mongoose";
 import { Post } from "../../../../shared/types/post";
 import { PostModel } from "../post/postModel";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { UserModel } from "../user/userModel";
 
 interface IPostBookmark {
@@ -23,7 +23,7 @@ const postBookmarkSchema = new mongoose.Schema(
       ref: "Post",
       required: true,
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(PostModel, { _id: id }),
         message: "Referenced post does not exist",
       },
     },
@@ -33,7 +33,7 @@ const postBookmarkSchema = new mongoose.Schema(
       ref: "User",
       required: true,
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -56,8 +56,7 @@ postBookmarkSchema.virtual("post", {
   justOne: true,
 });
 
-postBookmarkSchema.index({ postId: 1, userId: 1 }, { unique: true });
-postBookmarkSchema.index({ userId: 1 });
+postBookmarkSchema.index({ userId: 1, postId: 1 }, { unique: true });
 
 postBookmarkSchema.post("save", async function (doc: Document) {
   if (!doc) return;

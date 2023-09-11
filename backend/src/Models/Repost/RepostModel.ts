@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import mongoose, { Document, Model, Query, Schema } from "mongoose";
 import { Post } from "../../../../shared/types/post";
 import { IRepostDoc } from "../../types/iTypes";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { UserModel } from "../../models/user/userModel";
 import { PostModel } from "../post/postModel";
 
@@ -13,7 +13,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
       ref: "Post",
       required: true,
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(PostModel, { _id: id }),
         message: "Referenced post does not exist",
       },
     },
@@ -23,7 +23,7 @@ const repostSchema: Schema<IRepostDoc> = new mongoose.Schema(
       ref: "User",
       required: true,
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -71,8 +71,7 @@ repostSchema.virtual("post", {
   justOne: true,
 });
 
-repostSchema.index({ postId: 1, userId: 1 }, { unique: true });
-repostSchema.index({ userId: 1 });
+repostSchema.index({ userId: 1, postId: 1 }, { unique: true });
 repostSchema.index({ postId: 1 });
 
 repostSchema.post("save", async function (doc: Document) {

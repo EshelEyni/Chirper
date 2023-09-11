@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Model, Schema } from "mongoose";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { PostModel } from "../post/postModel";
 import { UserModel } from "../../models/user/userModel";
 
@@ -30,7 +30,7 @@ const postStatsSchema: Schema<IPostStats> = new mongoose.Schema(
       required: true,
       ref: "Post",
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(PostModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(PostModel, { _id: id }),
         message: "Referenced post does not exist",
       },
     },
@@ -39,7 +39,7 @@ const postStatsSchema: Schema<IPostStats> = new mongoose.Schema(
       required: true,
       ref: "User",
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -98,7 +98,6 @@ const postStatsSchema: Schema<IPostStats> = new mongoose.Schema(
 );
 
 postStatsSchema.index({ postId: 1, userId: 1 }, { unique: true });
-postStatsSchema.index({ postId: 1 });
 
 const PostStatsModel: Model<IPostStats> = mongoose.model(
   "PostStats",

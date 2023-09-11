@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { ObjectId } from "mongodb";
 import { AppError } from "../../services/error/errorService";
-import { queryEntityExists } from "../../services/util/utilService";
+import { queryEntityExistsById } from "../../services/util/utilService";
 import { PostModel } from "../post/postModel";
 import { UserModel } from "../../models/user/userModel";
 import { IPollLength, IPollVoteDoc } from "../../types/iTypes";
@@ -20,7 +20,7 @@ const pollVoteSchema: Schema<IPollVoteDoc> = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       validate: {
-        validator: async (id: ObjectId) => queryEntityExists(UserModel, { _id: id }),
+        validator: async (id: ObjectId) => queryEntityExistsById(UserModel, { _id: id }),
         message: "Referenced user does not exist",
       },
     },
@@ -44,7 +44,6 @@ const pollVoteSchema: Schema<IPollVoteDoc> = new mongoose.Schema(
   }
 );
 
-pollVoteSchema.index({ postId: 1 });
 pollVoteSchema.index({ postId: 1, userId: 1 }, { unique: true });
 
 pollVoteSchema

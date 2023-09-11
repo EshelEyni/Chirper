@@ -51,7 +51,6 @@ const userRelationSchema = new mongoose.Schema(
 
 userRelationSchema.index({ fromUserId: 1, toUserId: 1, discriminatorKey: 1 }, { unique: true });
 userRelationSchema.index({ toUserId: 1 });
-userRelationSchema.index({ fromUserId: 1 });
 
 userRelationSchema.pre("save", async function (this: IUserRelationDoc) {
   if (this.kind === UserRelationKind.Follow) {

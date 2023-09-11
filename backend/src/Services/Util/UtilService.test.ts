@@ -7,7 +7,7 @@ import {
   APIFeatures,
   AnyObject,
   filterObj,
-  queryEntityExists,
+  queryEntityExistsById,
   sendEmail,
   isValidMongoId,
   validateIds,
@@ -253,7 +253,7 @@ describe("Util Service", () => {
     });
   });
 
-  describe("queryEntityExists", () => {
+  describe("queryEntityExistsById", () => {
     const mockModel: any = { exists: jest.fn() };
 
     function setMockModel(value: any) {
@@ -271,7 +271,7 @@ describe("Util Service", () => {
 
     it("should return true if entity exists", async () => {
       setMockModel(true);
-      const result = await queryEntityExists(mockModel, { _id: "someId" });
+      const result = await queryEntityExistsById(mockModel, { _id: "someId" });
 
       expect(result).toBe(true);
       expect(mockModel.exists).toHaveBeenCalledWith({ _id: "someId" });
@@ -279,7 +279,7 @@ describe("Util Service", () => {
 
     it("should return false if entity does not exist", async () => {
       setMockModel(false);
-      const result = await queryEntityExists(mockModel, { _id: "someId" });
+      const result = await queryEntityExistsById(mockModel, { _id: "someId" });
 
       expect(result).toBe(false);
       expect(result).toBe(false);

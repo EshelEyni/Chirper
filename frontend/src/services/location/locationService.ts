@@ -1,9 +1,9 @@
-import { Location } from "../../../shared/types/location";
-import { JsendResponse } from "../../../shared/types/system";
-import cacheService from "./cache/cacheService";
-import httpService from "./http/httpService";
+import { Location } from "../../../../shared/types/location";
+import { JsendResponse } from "../../../../shared/types/system";
+import cacheService from "../cache/cacheService";
+import httpService from "../http/httpService";
 import queryString from "query-string";
-import { handleServerResponse } from "./util/utilService";
+import { handleServerResponse } from "../util/utilService";
 
 const ERROR_MESSAGES = {
   locationError: "locationService: Cannot get location",
@@ -18,7 +18,7 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 
     return handleServerResponse<Location[]>(response);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throw err;
   }
 }

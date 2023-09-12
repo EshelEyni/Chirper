@@ -3,7 +3,7 @@ const projectRoot = path.resolve(process.cwd());
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/services/http";
+const root = "src/services/location";
 
 export default defineConfig({
   test: {

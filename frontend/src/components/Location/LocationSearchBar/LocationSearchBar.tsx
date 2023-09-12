@@ -1,6 +1,6 @@
 import { FC, useState, useEffect, useRef } from "react";
 import { debounce } from "../../../services/util/utilService";
-import locationService from "../../../services/locationService";
+import locationService from "../../../services/location/locationService";
 import { Location } from "../../../../../shared/types/location";
 import { SlMagnifier } from "react-icons/sl";
 import { AiFillCloseCircle } from "react-icons/ai";

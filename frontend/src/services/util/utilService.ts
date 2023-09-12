@@ -23,10 +23,11 @@ const months = [
   { full: "December", short: "Dec" },
 ];
 
-function formatDateToRelativeTime(currDate: Date): string {
-  const [seconds, minutes, hours, days] = _calculateTimeDifference(currDate);
+function formatDateToRelativeTime(dateStr: string): string {
+  if (!dateStr) return "";
+  const [seconds, minutes, hours, days] = _calculateTimeDifference(dateStr);
 
-  const date = new Date(currDate);
+  const date = new Date(dateStr);
   const year = date.getFullYear();
   const month = date.toLocaleString("en", { month: "short" });
   const day = date.getDate();
@@ -38,8 +39,8 @@ function formatDateToRelativeTime(currDate: Date): string {
   return seconds === 0 ? "now" : `${seconds}s`;
 }
 
-function _calculateTimeDifference(currDate: Date): [number, number, number, number] {
-  const timestamp = currDate.getTime();
+function _calculateTimeDifference(dateStr: string): [number, number, number, number] {
+  const timestamp = new Date(dateStr).getTime();
   const now = Date.now();
   const difference = now - timestamp;
   const seconds = Math.floor(difference / 1000);
@@ -49,8 +50,9 @@ function _calculateTimeDifference(currDate: Date): [number, number, number, numb
   return [seconds, minutes, hours, days];
 }
 
-function formatDateToCleanString(currDate: Date): string {
-  const date = new Date(currDate);
+function formatDateToCleanString(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
   let hours = date.getHours();
   const minutes = date.getMinutes();
 
@@ -89,6 +91,7 @@ function debounce(
   delay: number
 ): { debouncedFunc: AnyFunction; cancel: () => void } {
   let timeoutId: ReturnType<typeof setTimeout>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const debouncedFunc = function (this: any, ...args: any[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(this, args), delay);

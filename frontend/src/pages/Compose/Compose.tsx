@@ -78,7 +78,7 @@ const ComposePage = () => {
     if (isThread) return setOpenedModalName("confirm-delete-msg");
 
     const currPost = postEdit[newPostType].posts[0];
-    if (postUtilService.checkPostValidity(currPost, currPost.text)) {
+    if (postUtilService.isPostValid(currPost, currPost.text)) {
       return setOpenedModalName("save-post-draft");
     }
 

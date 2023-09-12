@@ -85,9 +85,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     !isFirstPostInThread &&
     !isHomePage &&
     (newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar) &&
-    !postUtilService.checkPostValidity(currNewPost, newPostText);
+    !postUtilService.isPostValid(currNewPost, newPostText);
   const isIndicatorAndAddThreadBtnShown =
-    postUtilService.checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
+    postUtilService.isPostValid(currNewPost, newPostText) || newPostText.length > 0;
 
   async function onAddPost() {
     if (!currNewPost || !loggedInUser) return;
@@ -180,7 +180,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
 
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
-    const isValid = postUtilService.checkPostArrayValidity(postArray, newPostText);
+    const isValid = postUtilService.isPostThreadValid(postArray, newPostText);
     if (isValid !== arePostsValid) setArePostsValid(isValid);
   }, [
     preCurrNewPostList,

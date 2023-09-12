@@ -36,26 +36,30 @@ const getPostAddedMsg = ({ postId, date }: { postId: string; date?: Date }): Use
   due to the fact that we don't want to dispatch to redux store on every keystroke
   */
 
-function checkPostValidity(post: NewPost | null, newPostText: string): boolean {
-  const checkPostTextValidity = (text: string): boolean =>
+function isPostValid(post: NewPost | null, newPostText: string): boolean {
+  const isPostTextValid = (text: string): boolean =>
     !!text && text.length > 0 && text.length <= 247;
 
-  const checkPostPollValidity = (post: NewPost): boolean =>
-    post.poll!.options.every(option => option.text.length > 0);
+  const isPostPollValid = (post: NewPost): boolean => {
+    if (!post.poll) return false;
+    return (
+      post.poll.options.length >= 2 && post.poll.options.every(option => option.text.length > 0)
+    );
+  };
 
   if (!post) return false;
-  if (post.poll) return checkPostPollValidity(post) && checkPostTextValidity(newPostText);
+  if (post.poll) return isPostPollValid(post) && isPostTextValid(newPostText);
   return (
-    checkPostTextValidity(newPostText) ||
-    post.imgs.length > 0 ||
+    isPostTextValid(newPostText) ||
+    post.imgs?.length > 0 ||
     !!post.gif ||
     !!post.video ||
     !!post.quotedPostId
   );
 }
 
-function checkPostArrayValidity(newPosts: NewPost[], newPostText: string): boolean {
-  return newPosts.every(post => checkPostValidity(post, newPostText));
+function isPostThreadValid(newPosts: NewPost[], newPostText: string): boolean {
+  return newPosts.every(post => isPostValid(post, newPostText));
 }
 
 function isPost(post: AnyPost): post is Post {
@@ -79,8 +83,8 @@ function isPostReplyRes(data: Data): data is PostReplyResult {
 
 export default {
   getPostAddedMsg,
-  checkPostValidity,
-  checkPostArrayValidity,
+  isPostValid,
+  isPostThreadValid,
   isRepost,
   isPromotionalPost,
   isPost,

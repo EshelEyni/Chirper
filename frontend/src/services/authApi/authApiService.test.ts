@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, Mock } from "vitest";
-import authService from "./auth.service";
+import authService from "./authApiService";
 import httpService from "../http/httpService";
 import { handleServerResponse } from "../util/utilService";
 

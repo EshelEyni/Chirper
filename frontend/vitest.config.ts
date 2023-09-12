@@ -3,7 +3,7 @@ const projectRoot = path.resolve(process.cwd());
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/services/postApi";
+const root = "src/services/postUtil";
 
 export default defineConfig({
   test: {

@@ -64,14 +64,14 @@ export interface QuotedPost extends BasicPost {
   imgs: PostImg[];
   poll: Poll | null;
   createdBy: User;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Post extends BasicPost {
   readonly id: string;
-  readonly createdAt: Date;
-  updatedAt: Date;
+  readonly createdAt: string;
+  updatedAt: string;
   repliesCount: number;
   repostsCount: number;
   likesCount: number;

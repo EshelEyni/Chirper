@@ -30,7 +30,7 @@ import useAddBlock from "../../../hooks/useAddBlock";
 import useRemoveMute from "../../../hooks/useRemoveMute";
 import useAddMute from "../../../hooks/useAddMute";
 import "./PostPreviewHeader.scss";
-import postService from "../../../services/postService";
+import postUtilService from "../../../services/postUtilService/postUtilService";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;
@@ -58,7 +58,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   const { id: btnId } = useUniqueID();
   const tooltipStyle = useRef(getToolTipStyles()).current;
 
-  if (!postService.isPost(post)) return null;
+  if (!postUtilService.isPost(post)) return null;
   const user = post.createdBy;
   const logoOptions = { staticLogo: true, autoAnimate: false, width: 18, height: 18 };
 
@@ -67,13 +67,13 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   }
 
   function handleBtnToggleMute() {
-    if (!postService.isPost(post)) return;
+    if (!postUtilService.isPost(post)) return;
     if (post.createdBy.isMuted) removeMute({ userId: post.createdBy.id, postId: post.id });
     else addMute({ userId: post.createdBy.id, postId: post.id });
   }
 
   function handleBtnToggleBlock() {
-    if (!postService.isPost(post)) return;
+    if (!postUtilService.isPost(post)) return;
     if (post.createdBy.isBlocked) removeBlock({ userId: post.createdBy.id, postId: post.id });
     else addBlock({ userId: post.createdBy.id, postId: post.id });
   }
@@ -83,7 +83,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
   }
 
   function handleBtnPinPost() {
-    if (!postService.isPost(post)) return;
+    if (!postUtilService.isPost(post)) return;
     updatePost({ ...post, isPinned: !post.isPinned });
   }
 

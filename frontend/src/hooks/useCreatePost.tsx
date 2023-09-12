@@ -1,13 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
+import postUtilService from "../services/postUtilService/postUtilService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
-import {
-  NewPost,
-  Post,
-  PostReplyResult,
-  PostRepostResult,
-} from "../../../shared/types/post";
+import { NewPost, Post, PostReplyResult, PostRepostResult } from "../../../shared/types/post";
 import { NewPostType } from "../store/slices/postEditSlice";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
 import { getDefaultErrorMsg } from "../services/util/utilService";
@@ -29,18 +25,18 @@ export function useCreatePost({ onSuccessFn }: useCreatePostProps = {}) {
   async function onCreatePost({ posts, type }: OnCreatePostProps) {
     switch (type) {
       case NewPostType.Quote:
-        return await postService.addQuote(posts[0]);
+        return await postApiService.addQuote(posts[0]);
       case NewPostType.Reply:
-        return await postService.addReply(posts[0]);
+        return await postApiService.addReply(posts[0]);
       default:
-        return await postService.add(posts);
+        return await postApiService.add(posts);
     }
   }
 
   function getMessage(data: Post | PostReplyResult): TypeOfUserMsg {
     const postId = isReply(data) ? data.reply.id : data.id;
     const isAddedToSchedule = "schedule" in data;
-    return postService.getPostAddedMsg({
+    return postUtilService.getPostAddedMsg({
       postId: postId,
       date: isAddedToSchedule ? data.schedule : undefined,
     });

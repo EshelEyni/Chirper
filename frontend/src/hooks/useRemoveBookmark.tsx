@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
 import reactQueryService from "../services/reactQuery/reactQueryService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
@@ -10,8 +10,8 @@ export function useRemoveBookmark() {
   const queryClient = useQueryClient();
 
   async function onRemoveBookmark(postId: string) {
-    postService.updatePostStats(postId, { isPostBookmarked: false });
-    return await postService.removeBookmark(postId);
+    postApiService.updatePostStats(postId, { isPostBookmarked: false });
+    return await postApiService.removeBookmark(postId);
   }
 
   const { mutate: removeBookmark, isLoading: isRemoving } = useMutation({

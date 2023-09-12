@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import postService from "../../../services/post.service";
-import { Post } from "../../../../../shared/types/post";
+import { Post } from "../../../shared/types/post";
+import postApiService from "../services/postApiService/postApiService";
 
 type useQueryPostByIdResult = {
   post: Post | undefined;
@@ -21,7 +21,7 @@ export function useQueryPostById(id: string): useQueryPostByIdResult {
     queryKey: [`post/${id}`],
     queryFn: () => {
       if (!id) throw new Error("useQueryPostById: id is required");
-      return postService.getById(id);
+      return postApiService.getById(id);
     },
   });
 

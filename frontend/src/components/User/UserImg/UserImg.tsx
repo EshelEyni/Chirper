@@ -1,4 +1,4 @@
-import userService from "../../../services/userService";
+import userService from "../../../services/userApiService";
 import "./UserImg.scss";
 
 interface UserImgProps {

@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { RootState } from "../../store/store";
-import postService from "../../services/postService";
+import postApiService from "../../services/postApiService/postApiService";
 import "./Compose.scss";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostEditProvider } from "../../contexts/PostEditContext";
@@ -14,8 +14,9 @@ import {
   setNewPosts,
 } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { useGoBack } from "../../hooks/app/useGoBack";
+import { useGoBack } from "../../hooks/useGoBack";
 import { Modal } from "../../components/Modal/Modal";
+import postUtilService from "../../services/postUtilService/postUtilService";
 const PostEdit = lazy(() => import("../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
@@ -64,7 +65,7 @@ const ComposePage = () => {
     const postToSave = postEdit[newPostType].posts[0];
     if (!postToSave) return;
     postToSave.isDraft = true;
-    await postService.add([postToSave]);
+    await postApiService.add([postToSave]);
     discardPostThreadAndGoBack();
   }
 
@@ -77,7 +78,7 @@ const ComposePage = () => {
     if (isThread) return setOpenedModalName("confirm-delete-msg");
 
     const currPost = postEdit[newPostType].posts[0];
-    if (postService.checkPostValidity(currPost, currPost.text)) {
+    if (postUtilService.checkPostValidity(currPost, currPost.text)) {
       return setOpenedModalName("save-post-draft");
     }
 

@@ -1,7 +1,7 @@
 import { FaGithub } from "react-icons/fa";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import postService from "../../../services/postService";
+import postApiService from "../../../services/postApiService/postApiService";
 import { RootState } from "../../../store/store";
 import { useInView } from "react-intersection-observer";
 import { PostPreviewHeader } from "./PostPreviewHeader";
@@ -25,9 +25,10 @@ import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import { ExternalLink } from "../../App/ExternalLink/ExternalLink";
 import { PostActions } from "../Actions/PostActions";
 import "./PostPreview.scss";
+import postUtilService from "../../../services/postUtilService/postUtilService";
 
 export const PostPreview: React.FC = () => {
-  const { post, isRepost } = usePostPreview();
+  const { post } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
@@ -44,13 +45,15 @@ export const PostPreview: React.FC = () => {
 
   useEffect(() => {
     const shouldSaveImpression = inView && !post.loggedInUserActionState.isViewed && loggedInUser;
-    if (shouldSaveImpression) postService.addImpression(post.id);
+    if (shouldSaveImpression) postApiService.addImpression(post.id);
   }, [inView, post.id, loggedInUser, post.loggedInUserActionState.isViewed]);
 
   return (
     <article className="post-preview" ref={isViewed ? undefined : ref}>
-      {isRepost && <RepostDisplay />}
-      <PostPreviewWrapper className={"post-preview-wrapper" + (isRepost ? " with-repost" : "")}>
+      {postUtilService.isRepost(post) && <RepostDisplay />}
+      <PostPreviewWrapper
+        className={"post-preview-wrapper" + (postUtilService.isRepost(post) ? " with-repost" : "")}
+      >
         <PostPreviewAside />
         <PostPreviewMainContainer>
           <PostPreviewHeader />

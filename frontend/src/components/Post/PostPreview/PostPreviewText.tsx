@@ -1,5 +1,5 @@
 import { FC } from "react";
-import postService from "../../../services/postService";
+import postApiService from "../../../services/postApiService/postApiService";
 import { useNavigate } from "react-router-dom";
 import { LoggedInUserActionState } from "../../../../../shared/types/post";
 import "./PostPreviewText.scss";
@@ -69,7 +69,7 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({
       const type = e.target.dataset.type;
       if (type === "hashtag") {
         if (postId && !loggedInUserActionState.isHashTagClicked)
-          await postService.updatePostStats(postId, { isHashTagClicked: true });
+          await postApiService.updatePostStats(postId, { isHashTagClicked: true });
         const url = e.target.dataset.url;
         navigate(`/explore/${url}`);
       } else if (type === "profile-link") {
@@ -78,7 +78,7 @@ export const PostPreviewText: FC<PostPreviewTextProps> = ({
         navigate(`/profile/${username}`);
       } else if (type === "external-link") {
         if (postId && !loggedInUserActionState.isLinkClicked)
-          await postService.updatePostStats(postId, { isLinkClicked: true });
+          await postApiService.updatePostStats(postId, { isLinkClicked: true });
         window.open(e.target.href, "_blank");
       }
     }

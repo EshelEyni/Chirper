@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { AnyPost, Post } from "../../../shared/types/post";
 import { useNavigate } from "react-router-dom";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
 import useRemoveFollow from "../hooks/useRemoveFollow";
 import useAddFollow from "../hooks/useAddFollow";
 
@@ -22,12 +22,13 @@ function PostPreviewProvider({ post, children }: { post: Post; children: React.R
   const { removeFollow } = useRemoveFollow();
 
   async function onNavigateToPostDetails() {
-    if (!isDetailedViewed) await postService.updatePostStats(post.id, { isDetailedViewed: true });
+    if (!isDetailedViewed)
+      await postApiService.updatePostStats(post.id, { isDetailedViewed: true });
     navigate(`/post/${post.id}`);
   }
 
   async function onNavigateToProfile(username: string) {
-    if (!isProfileViewed) await postService.updatePostStats(post.id, { isProfileViewed: true });
+    if (!isProfileViewed) await postApiService.updatePostStats(post.id, { isProfileViewed: true });
     navigate(`/profile/${username}`);
   }
 

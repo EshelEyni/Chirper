@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../shared/types/post";
-import postService from "../../services/postService";
+import postApiService from "../../services/postApiService/postApiService";
 import { Outlet } from "react-router-dom";
-import { useDocumentTitle } from "../../hooks/app/useDocumentTitle";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 const BookmarksPage = () => {
   useDocumentTitle("Bookmarks / Chirper");
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
 
   const getBookmarkedPosts = async () => {
-    const posts = await postService.getBookmarkedPosts();
+    const posts = await postApiService.getBookmarkedPosts();
     setBookmarkedPosts(posts);
   };
 

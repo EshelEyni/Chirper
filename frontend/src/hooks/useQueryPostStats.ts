@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { PostStats } from "../../../../../shared/types/post";
-import postService from "../../../services/post.service";
+import { PostStats } from "../../../shared/types/post";
+import postApiService from "../services/postApiService/postApiService";
 
 type useQueryPostStatsResult = {
   postStats: PostStats | undefined;
@@ -21,7 +21,7 @@ export function useQueryPostStats(id: string): useQueryPostStatsResult {
     queryKey: [`postStats/${id}`],
     queryFn: () => {
       if (!id) throw new Error("useQueryPostStats: id is required");
-      return postService.getPostStats(id);
+      return postApiService.getPostStats(id);
     },
   });
 

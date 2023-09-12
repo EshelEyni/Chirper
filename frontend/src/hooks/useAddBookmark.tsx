@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
 import reactQueryService from "../services/reactQuery/reactQueryService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
@@ -10,8 +10,8 @@ export function useAddBookmark() {
   const queryClient = useQueryClient();
 
   async function onAddBookmark(postId: string) {
-    postService.updatePostStats(postId, { isPostBookmarked: true });
-    return await postService.addBookmark(postId);
+    postApiService.updatePostStats(postId, { isPostBookmarked: true });
+    return await postApiService.addBookmark(postId);
   }
 
   const { mutate: addBookmark, isLoading: isAdding } = useMutation({

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
 
 export function useQueryPosts() {
   const {
@@ -10,7 +10,7 @@ export function useQueryPosts() {
     isError,
   } = useQuery({
     queryKey: ["posts"],
-    queryFn: async () => postService.query(),
+    queryFn: async () => postApiService.query(),
   });
   const isEmpty = posts && posts.length === 0 ? true : false;
 

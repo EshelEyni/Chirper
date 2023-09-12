@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postService from "../services/postService";
+import postApiService from "../services/postApiService/postApiService";
 import { Post } from "../../../shared/types/post";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
@@ -11,7 +11,7 @@ export function useRemovePost() {
 
   const { mutate: removePost, isLoading: isRemoving } = useMutation<void, unknown, string, unknown>(
     {
-      mutationFn: postService.remove,
+      mutationFn: postApiService.remove,
       onSuccess: (_, postId) => {
         const currentPosts = queryClient.getQueryData(["posts"]) as unknown as Post[];
         if (!currentPosts) return;

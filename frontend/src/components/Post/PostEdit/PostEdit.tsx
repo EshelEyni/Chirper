@@ -38,7 +38,7 @@ import {
 } from "../../../store/slices/postEditSlice";
 import { useCreatePost } from "../../../hooks/useCreatePost";
 import { NewPostContent } from "../PostPreview/NewPostContent";
-import postService from "../../../services/postService";
+import postUtilService from "../../../services/postUtilService/postUtilService";
 import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";
@@ -85,9 +85,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     !isFirstPostInThread &&
     !isHomePage &&
     (newPostType === NewPostType.HomePage || newPostType === NewPostType.SideBar) &&
-    !postService.checkPostValidity(currNewPost, newPostText);
+    !postUtilService.checkPostValidity(currNewPost, newPostText);
   const isIndicatorAndAddThreadBtnShown =
-    postService.checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
+    postUtilService.checkPostValidity(currNewPost, newPostText) || newPostText.length > 0;
 
   async function onAddPost() {
     if (!currNewPost || !loggedInUser) return;
@@ -180,7 +180,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
 
   useEffect(() => {
     const postArray = preCurrNewPostList.concat(currNewPost || [], postCurrNewPostList);
-    const isValid = postService.checkPostArrayValidity(postArray, newPostText);
+    const isValid = postUtilService.checkPostArrayValidity(postArray, newPostText);
     if (isValid !== arePostsValid) setArePostsValid(isValid);
   }, [
     preCurrNewPostList,

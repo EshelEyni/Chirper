@@ -5,13 +5,13 @@ import { RootState } from "../../../store/store";
 import "./RepostDisplay.scss";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { Modal } from "../../Modal/Modal";
-import postService from "../../../services/postService";
+import postUtilService from "../../../services/postUtilService/postUtilService";
 
 export const RepostDisplay: FC = () => {
   const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
 
-  if (!postService.isRepost(post)) return null;
+  if (!postUtilService.isRepost(post)) return null;
   const { repostedBy } = post;
   if (!repostedBy) return null;
   return (

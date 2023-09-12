@@ -45,7 +45,7 @@ import { useRemoveLike } from "../../../hooks/useRemoveLike";
 import { useAddLike } from "../../../hooks/useAddLike";
 import { useRemoveBookmark } from "../../../hooks/useRemoveBookmark";
 import { useAddBookmark } from "../../../hooks/useAddBookmark";
-import postService from "../../../services/postService";
+import postApiService from "../../../services/postApiService/postApiService";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { useQueryGifCategories } from "../../../hooks/useQueryGifCategories";
 import { AsyncList } from "../../App/AsyncList/AsyncList";
@@ -873,7 +873,7 @@ const Share: FC = () => {
 
   function handleBtnCopyLinkClick() {
     if (!post) return;
-    postService.updatePostStats(post.id, { isPostLinkCopied: true });
+    postApiService.updatePostStats(post.id, { isPostLinkCopied: true });
     copyToClipboard(url);
     const msg = {
       type: "info",
@@ -884,7 +884,7 @@ const Share: FC = () => {
 
   function handleBtnShareClick() {
     if (!post) return;
-    postService.updatePostStats(post.id, { isPostShared: true });
+    postApiService.updatePostStats(post.id, { isPostShared: true });
     navigator
       .share({ title: "Chirp", text: post.text, url })
       // eslint-disable-next-line no-console

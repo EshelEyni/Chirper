@@ -1,5 +1,15 @@
-import { AnyPost, NewPost, Post, PromotionalPost, Repost } from "../../../../shared/types/post";
+import {
+  AnyPost,
+  NewPost,
+  Post,
+  PostReplyResult,
+  PostRepostResult,
+  PromotionalPost,
+  Repost,
+} from "../../../../shared/types/post";
 import { UserMsg } from "../../../../shared/types/system";
+
+type Data = Post | PostReplyResult | PostRepostResult;
 
 const getPostAddedMsg = ({ postId, date }: { postId: string; date?: Date }): UserMsg => {
   let text = "Your Chirp has been sent!";
@@ -59,6 +69,14 @@ function isPromotionalPost(post: AnyPost): post is PromotionalPost {
   return "companyName" in post;
 }
 
+function isPostRepostRes(data: Data): data is PostRepostResult {
+  return "updatedPost" in data && "repost" in data;
+}
+
+function isPostReplyRes(data: Data): data is PostReplyResult {
+  return "updatedPost" in data && "reply" in data;
+}
+
 export default {
   getPostAddedMsg,
   checkPostValidity,
@@ -66,4 +84,6 @@ export default {
   isRepost,
   isPromotionalPost,
   isPost,
+  isPostRepostRes,
+  isPostReplyRes,
 };

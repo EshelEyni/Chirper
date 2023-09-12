@@ -1,4 +1,4 @@
-import userService from "../../../services/userApiService";
+import userUtilService from "../../../services/userUtil/userUtilService";
 import "./UserImg.scss";
 
 interface UserImgProps {
@@ -12,7 +12,7 @@ export const UserImg: React.FC<UserImgProps> = ({ imgUrl, onNavigateToProfile })
     <div className="user-img-container" onClick={onNavigateToProfile}>
       <img
         className="user-img"
-        src={imgUrl || userService.getDefaultUserImgUrl()}
+        src={imgUrl || userUtilService.getDefaultUserImgUrl()}
         alt="profile-img"
       />
     </div>

@@ -30,7 +30,7 @@ import useAddBlock from "../../../hooks/useAddBlock";
 import useRemoveMute from "../../../hooks/useRemoveMute";
 import useAddMute from "../../../hooks/useAddMute";
 import "./PostPreviewHeader.scss";
-import postUtilService from "../../../services/postUtilService/postUtilService";
+import postUtilService from "../../../services/postUtil/postUtilService";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;

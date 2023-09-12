@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import postApiService from "../services/postApiService/postApiService";
+import postApiService from "../services/postApi/postApiService";
 
 export function useQueryPosts() {
   const {

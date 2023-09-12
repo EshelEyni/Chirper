@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { AnyPost, Post } from "../../../shared/types/post";
 import { useNavigate } from "react-router-dom";
-import postApiService from "../services/postApiService/postApiService";
+import postApiService from "../services/postApi/postApiService";
 import useRemoveFollow from "../hooks/useRemoveFollow";
 import useAddFollow from "../hooks/useAddFollow";
 

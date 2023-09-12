@@ -45,7 +45,7 @@ import { useRemoveLike } from "../../../hooks/useRemoveLike";
 import { useAddLike } from "../../../hooks/useAddLike";
 import { useRemoveBookmark } from "../../../hooks/useRemoveBookmark";
 import { useAddBookmark } from "../../../hooks/useAddBookmark";
-import postApiService from "../../../services/postApiService/postApiService";
+import postApiService from "../../../services/postApi/postApiService";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { useQueryGifCategories } from "../../../hooks/useQueryGifCategories";
 import { AsyncList } from "../../App/AsyncList/AsyncList";
@@ -726,7 +726,7 @@ const Repost: FC = () => {
   async function onRepost() {
     if (!loggedInUser || !post) return;
     const repostedPost = { ...post };
-    addRepost(repostedPost);
+    addRepost(repostedPost.id);
   }
 
   async function onRemoveRepost() {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { PostStats } from "../../../shared/types/post";
-import postApiService from "../services/postApiService/postApiService";
+import postApiService from "../services/postApi/postApiService";
 
 type useQueryPostStatsResult = {
   postStats: PostStats | undefined;

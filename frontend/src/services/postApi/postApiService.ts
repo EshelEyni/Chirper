@@ -37,6 +37,7 @@ async function remove(postId: string) {
 }
 
 async function add(posts: NewPost[]): Promise<Post> {
+  if (!posts.length) throw new Error("postService: Cannot add empty post");
   let res: JsendResponse | null = null;
   if (posts.length > 1) {
     res = await httpService.post(`${BASE_URL}/thread`, posts);
@@ -53,8 +54,8 @@ async function addReply(reply: NewPost): Promise<PostReplyResult> {
   return handleServerResponse<PostReplyResult>(res);
 }
 
-async function addRepost(repostedPost: Post): Promise<PostRepostResult> {
-  const res = await httpService.post(`${BASE_URL}/${repostedPost.id}/repost`);
+async function addRepost(repostedPostId: string): Promise<PostRepostResult> {
+  const res = await httpService.post(`${BASE_URL}/${repostedPostId}/repost`);
   return handleServerResponse<PostRepostResult>(res);
 }
 
@@ -93,11 +94,11 @@ async function getPostStats(postId: string): Promise<PostStats> {
 }
 
 async function addImpression(postId: string): Promise<void> {
-  httpService.post(`${BASE_URL}/${postId}/stats`);
+  await httpService.post(`${BASE_URL}/${postId}/stats`);
 }
 
 async function updatePostStats(postId: string, stats: Partial<PostStatsBody>): Promise<void> {
-  httpService.patch(`${BASE_URL}/${postId}/stats`, stats);
+  await httpService.patch(`${BASE_URL}/${postId}/stats`, stats);
 }
 
 async function getBookmarkedPosts(): Promise<Post[]> {

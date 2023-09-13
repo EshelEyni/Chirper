@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { vi, describe, it, expect, Mock } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import postUtilService from "./postUtilService";
 
 describe("postUtilService", () => {
@@ -34,68 +34,80 @@ describe("postUtilService", () => {
   describe("isPostValid", () => {
     const post: any = {};
 
+    beforeEach(() => {
+      post.text = "";
+      post.imgs = [];
+      post.gif = null;
+      post.video = null;
+      post.quotedPostId = null;
+      post.poll = null;
+    });
+
     it("returns false for invalid post", () => {
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(false);
     });
 
     it("returns true for valid post with only text", () => {
-      const result = postUtilService.isPostValid(post, "Hello World");
+      post.text = "text";
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
     });
 
     it("returns true for valid post with only images", () => {
       post.imgs = [{}];
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
       delete post.imgs;
     });
 
     it("returns true for valid post with only gif", () => {
       post.gif = {};
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
       delete post.gif;
     });
 
     it("returns true for valid post with only video", () => {
       post.video = "videoUrl";
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
       delete post.video;
     });
 
     it("returns true for valid post with only quotedPostId", () => {
       post.quotedPostId = "123";
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
       delete post.quotedPostId;
     });
 
     it("returns true for valid post with only poll", () => {
+      post.text = "poll quesiton?";
       post.poll = { options: [{ text: "option1" }, { text: "option2" }] };
-      const result = postUtilService.isPostValid(post, "poll quesiton?");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(true);
       delete post.poll;
+      delete post.text;
     });
 
     it("should return false for post with a poll without poll question at text field", () => {
       post.poll = { options: [{ text: "option1" }, { text: "option2" }] };
-      const result = postUtilService.isPostValid(post, "");
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(false);
       delete post.poll;
     });
 
     it("should return false for post with a poll with less than 2 options", () => {
-      post.poll = { options: [{ text: "option1" }] };
-      const result = postUtilService.isPostValid(post, "poll quesiton?");
+      post.poll = { text: "poll quesiton?", options: [{ text: "option1" }] };
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(false);
       delete post.poll;
     });
 
     it("should return false for post with a poll with an option with empty text", () => {
-      post.poll = { options: [{ text: "option1" }, { text: "" }] };
-      const result = postUtilService.isPostValid(post, "poll quesiton?");
+      post.poll = { text: "poll quesiton?", options: [{ text: "option1" }, { text: "" }] };
+      const result = postUtilService.isPostValid(post);
       expect(result).toBe(false);
       delete post.poll;
     });

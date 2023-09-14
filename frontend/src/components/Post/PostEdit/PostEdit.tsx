@@ -6,7 +6,7 @@ import { RootState } from "../../../store/store";
 import { NewPost } from "../../../../../shared/types/post";
 import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
-import { uploadFileToCloudinary } from "../../../services/uploadService";
+import { uploadFileToCloudinary } from "../../../services/cloudinary/cloudinaryService";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { MiniPostPreview } from "../PostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/RepliedPostContent";

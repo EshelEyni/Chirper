@@ -1,7 +1,10 @@
 import axios from "axios";
-import { cloudName, uploadPreset } from "../config";
+import { cloudName, uploadPreset } from "../../config";
 
-export const uploadFileToCloudinary = async (file: File, type: string): Promise<string> => {
+export const uploadFileToCloudinary = async (
+  file: File,
+  type: "image" | "video"
+): Promise<string> => {
   const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${type}/upload`;
   const formData = new FormData();
 

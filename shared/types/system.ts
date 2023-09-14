@@ -1,10 +1,10 @@
 import { User } from "./user";
 
-export interface JsendResponse {
+export interface JsendResponse<T = any> {
   status: string;
   requested_at?: string;
   result?: number;
-  data?: any;
+  data?: T;
   message?: string;
 }
 

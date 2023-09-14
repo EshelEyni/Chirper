@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
 import { validateIds } from "../../services/util/utilService";
-import {
-  NewPost,
-  Post,
-  PostRepostResult,
-  PostStats,
-} from "../../../../shared/types/post";
+import { NewPost, Post, PostRepostResult, PostStats } from "../../../../shared/types/post";
 import postService from "../../services/post/postService";
 import {
   asyncErrorCatcher,

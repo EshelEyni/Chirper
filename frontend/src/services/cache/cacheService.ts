@@ -1,18 +1,21 @@
-import storageService from "../storageService";
+import { CachedData } from "../../types/app";
+import localForageService from "../localForage/localForageService";
 
 function set<T>(cacheKey: string, data: T): void {
-  storageService.set(cacheKey, data);
+  localForageService.set(cacheKey, { data, cachedAt: Date.now() });
 }
 
-function get<T>(cacheKey: string, expiryTimeInMinutes: number): T | null {
+async function get<T>(cacheKey: string, expiryTimeInMinutes: number): Promise<T | null> {
   const expiryTimeInMillis = 1000 * 60 * expiryTimeInMinutes;
-  const cachedDataWithTimestamp = storageService.get(cacheKey);
+  const cachedDataWithTimestamp = (await localForageService.get(
+    cacheKey
+  )) as unknown as CachedData<T>;
   if (!cachedDataWithTimestamp) return null;
   const { cachedAt, data } = cachedDataWithTimestamp;
   const currentTime = Date.now();
   const elapsedTimeSinceCaching = currentTime - cachedAt;
-  if (elapsedTimeSinceCaching < expiryTimeInMillis) return data as T;
-  storageService.clear(cacheKey);
+  if (elapsedTimeSinceCaching < expiryTimeInMillis) return data;
+  localForageService.clear(cacheKey);
   return null;
 }
 

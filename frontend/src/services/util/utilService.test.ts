@@ -7,7 +7,7 @@ import {
   formatNumToK,
   getBasePathName,
   getTimeZone,
-  handleServerResponse,
+  handleServerResponseData,
 } from "./utilService";
 
 vi.useFakeTimers();
@@ -16,26 +16,36 @@ describe("Util Service", () => {
   describe("formatDateToRelativeTime", () => {
     const date = new Date();
 
+    it("should return an empty string if the Date is null", () => {
+      const formattedDate = formatDateToRelativeTime(null as any);
+      expect(formattedDate).toBe("");
+    });
+
+    it("should return an empty string if the Date is invalid", () => {
+      const formattedDate = formatDateToRelativeTime("invalid date");
+      expect(formattedDate).toBe("");
+    });
+
     it("should return the now string if the Date is less than one second", () => {
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe("now");
     });
 
     it("should return the seconds if the Date is less than one minute", () => {
       date.setSeconds(date.getSeconds() - 10);
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe("10s");
     });
 
     it("should return the minutes if the Date is less than one hour", () => {
       date.setMinutes(date.getMinutes() - 10);
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe("10m");
     });
 
     it("should return the hours if the Date is less than one day", () => {
       date.setHours(date.getHours() - 10);
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe("10h");
     });
 
@@ -43,7 +53,7 @@ describe("Util Service", () => {
       date.setDate(date.getDate() - 120);
       const month = date.toLocaleString("en", { month: "short" });
       const day = date.getDate();
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe(`${month} ${day}`);
     });
 
@@ -52,40 +62,61 @@ describe("Util Service", () => {
       const year = date.getFullYear();
       const month = date.toLocaleString("en", { month: "short" });
       const day = date.getDate();
-      const formattedDate = formatDateToRelativeTime(date);
+      const formattedDate = formatDateToRelativeTime(date.toString());
       expect(formattedDate).toBe(`${month} ${day}, ${year}`);
     });
   });
 
   describe("formatDateToCleanString", () => {
+    it("should return an empty string if the Date is null", () => {
+      const formattedDate = formatDateToCleanString(null as any);
+      expect(formattedDate).toBe("");
+    });
+
+    it("should return an empty string if the Date is invalid", () => {
+      const formattedDate = formatDateToCleanString("invalid date");
+      expect(formattedDate).toBe("");
+    });
+
     it("should correctly format a morning time", () => {
-      const date = new Date("2023-09-10 09:05");
-      expect(formatDateToCleanString(date)).toBe("9:05 AM · Sep 10, 2023");
+      const date = "2023-09-10 09:05";
+      const formattedDate = formatDateToCleanString(date);
+      expect(formattedDate).toBe("9:05 AM · Sep 10, 2023");
     });
 
     it("should correctly format an afternoon time", () => {
-      const date = new Date("2023-09-10 15:05");
-      expect(formatDateToCleanString(date)).toBe("3:05 PM · Sep 10, 2023");
+      const date = "2023-09-10 15:05";
+      const formattedDate = formatDateToCleanString(date);
+
+      expect(formattedDate).toBe("3:05 PM · Sep 10, 2023");
     });
 
     it("should correctly format a midnight time", () => {
-      const date = new Date("2023-09-10 00:05");
-      expect(formatDateToCleanString(date)).toBe("12:05 AM · Sep 10, 2023");
+      const date = "2023-09-10 00:05";
+      const formattedDate = formatDateToCleanString(date);
+
+      expect(formattedDate).toBe("12:05 AM · Sep 10, 2023");
     });
 
     it("should correctly format a noon time", () => {
-      const date = new Date("2023-09-10 12:05");
-      expect(formatDateToCleanString(date)).toBe("12:05 PM · Sep 10, 2023");
+      const date = "2023-09-10 12:05";
+      const formattedDate = formatDateToCleanString(date);
+
+      expect(formattedDate).toBe("12:05 PM · Sep 10, 2023");
     });
 
     it("should correctly format single-digit minutes", () => {
-      const date = new Date("2023-09-10 12:05");
-      expect(formatDateToCleanString(date)).toBe("12:05 PM · Sep 10, 2023");
+      const date = "2023-09-10 12:05";
+      const formattedDate = formatDateToCleanString(date);
+
+      expect(formattedDate).toBe("12:05 PM · Sep 10, 2023");
     });
 
     it("should correctly format double-digit minutes", () => {
-      const date = new Date("2023-09-10 12:15");
-      expect(formatDateToCleanString(date)).toBe("12:15 PM · Sep 10, 2023");
+      const date = "2023-09-10 12:15";
+      const formattedDate = formatDateToCleanString(date);
+
+      expect(formattedDate).toBe("12:15 PM · Sep 10, 2023");
     });
   });
 
@@ -179,26 +210,28 @@ describe("Util Service", () => {
     });
   });
 
-  describe("handleServerResponse", () => {
+  describe("handleServerResponseData", () => {
     it('should return data when status is "success"', () => {
       const response = { status: "success", data: "some data" };
-      const result = handleServerResponse(response);
+      const result = handleServerResponseData(response);
       expect(result).toBe("some data");
     });
 
     it('should throw an error with field messages when status is "fail"', () => {
       const response = { status: "fail", data: { field1: "error1", field2: "error2" } };
-      expect(() => handleServerResponse(response)).toThrowError("field1: error1, field2: error2");
+      expect(() => handleServerResponseData(response)).toThrowError(
+        "field1: error1, field2: error2"
+      );
     });
 
     it("should throw an error for unexpected status", () => {
       const response = { status: "unknown", data: "some data" };
-      expect(() => handleServerResponse(response)).toThrowError("Unexpected response status");
+      expect(() => handleServerResponseData(response)).toThrowError("Unexpected response status");
     });
 
     it("should handle generic types", () => {
       const response = { status: "success", data: { key: "value" } };
-      const result = handleServerResponse<{ key: string }>(response);
+      const result = handleServerResponseData<{ key: string }>(response);
       expect(result).toEqual({ key: "value" });
     });
   });

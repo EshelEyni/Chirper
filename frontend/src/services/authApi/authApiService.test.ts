@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, Mock } from "vitest";
 import authService from "./authApiService";
 import httpService from "../http/httpService";
-import { handleServerResponse } from "../util/utilService";
+import { handleServerResponseData } from "../util/utilService";
 
 vi.mock("../http/httpService");
 vi.mock("../util/utilService");
@@ -12,12 +12,12 @@ describe("authService", () => {
     const mockResponse = { status: "success", data: mockUser };
 
     (httpService.post as Mock).mockResolvedValue(mockResponse);
-    (handleServerResponse as Mock).mockReturnValue(mockUser);
+    (handleServerResponseData as Mock).mockReturnValue(mockUser);
 
     const result = await authService.loginWithToken();
 
     expect(httpService.post).toHaveBeenCalledWith("auth/login/with-token");
-    expect(handleServerResponse).toHaveBeenCalledWith(mockResponse);
+    expect(handleServerResponseData).toHaveBeenCalledWith(mockResponse);
     expect(result).toEqual(mockUser);
   });
 
@@ -26,12 +26,12 @@ describe("authService", () => {
     const mockResponse = { status: "success", data: mockUser };
 
     (httpService.post as Mock).mockResolvedValue(mockResponse);
-    (handleServerResponse as Mock).mockReturnValue(mockUser);
+    (handleServerResponseData as Mock).mockReturnValue(mockUser);
 
     const result = await authService.login(mockUser.username, mockUser.password);
 
     expect(httpService.post).toHaveBeenCalledWith("auth/login", mockUser);
-    expect(handleServerResponse).toHaveBeenCalledWith(mockResponse);
+    expect(handleServerResponseData).toHaveBeenCalledWith(mockResponse);
     expect(result).toEqual(mockUser);
   });
 
@@ -46,12 +46,12 @@ describe("authService", () => {
     const mockResponse = { status: "success", data: mockUser };
 
     (httpService.post as Mock).mockResolvedValue(mockResponse);
-    (handleServerResponse as Mock).mockReturnValue(mockUser);
+    (handleServerResponseData as Mock).mockReturnValue(mockUser);
 
     const result = await authService.signup(mockUser);
 
     expect(httpService.post).toHaveBeenCalledWith("auth/signup", mockUser);
-    expect(handleServerResponse).toHaveBeenCalledWith(mockResponse);
+    expect(handleServerResponseData).toHaveBeenCalledWith(mockResponse);
     expect(result).toEqual(mockUser);
   });
 

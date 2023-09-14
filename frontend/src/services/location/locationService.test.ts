@@ -93,7 +93,7 @@ describe("Location Service", () => {
       expect(result).toEqual(mockResponse.data);
       expect(cacheService.set).toHaveBeenCalledWith(
         "location",
-        expect.objectContaining({ data: mockResponse.data })
+        expect.objectContaining(mockResponse.data)
       );
     });
 

@@ -1,4 +1,5 @@
 import { JsendResponse, UserMsg } from "../../../../shared/types/system";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
 
 const SECONDS_IN_MINUTE = 60;
@@ -23,8 +24,13 @@ const months = [
   { full: "December", short: "Dec" },
 ];
 
+function isValidDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return !isNaN(date.getTime());
+}
+
 function formatDateToRelativeTime(dateStr: string): string {
-  if (!dateStr) return "";
+  if (!dateStr || !isValidDate(dateStr)) return "";
   const [seconds, minutes, hours, days] = _calculateTimeDifference(dateStr);
 
   const date = new Date(dateStr);
@@ -51,7 +57,7 @@ function _calculateTimeDifference(dateStr: string): [number, number, number, num
 }
 
 function formatDateToCleanString(dateStr: string): string {
-  if (!dateStr) return "";
+  if (!dateStr || !isValidDate(dateStr)) return "";
   const date = new Date(dateStr);
   let hours = date.getHours();
   const minutes = date.getMinutes();
@@ -119,17 +125,19 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function handleServerResponse<T>(response: JsendResponse): T {
-  if (response.status === "success") {
-    return response.data;
-  } else if (response.status === "fail") {
+function handleServerResponseData<T>(response: JsendResponse<T>): T {
+  if (!response.data) throw new Error("Unexpected response status");
+
+  if (response.status === "success") return response.data;
+
+  if (response.status === "fail") {
     const errorMessages = Object.entries(response.data)
       .map(([field, message]) => `${field}: ${message}`)
       .join(", ");
     throw new Error(errorMessages);
-  } else {
-    throw new Error("Unexpected response status");
   }
+
+  throw new Error("Unexpected response status");
 }
 
 function copyToClipboard(text: string) {
@@ -180,7 +188,7 @@ export {
   getTimeZone,
   getDaysInMonth,
   months,
-  handleServerResponse,
+  handleServerResponseData,
   copyToClipboard,
   formatDateToCleanString,
   readAsDataURL,

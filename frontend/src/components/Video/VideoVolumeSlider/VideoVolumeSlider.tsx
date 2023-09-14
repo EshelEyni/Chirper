@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Slider } from "@mui/material";
-import storageService from "../../../services/storageService";
+import localForageService from "../../../services/localForage/localForageService";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 
 type VideoVolumeSliderProps = {
@@ -15,7 +15,7 @@ export const VideoVolumeSlider: FC<VideoVolumeSliderProps> = ({ isVolumeHover })
     if (newValue === 0) {
       setIsMuted(true);
     } else {
-      storageService.set("volume", ((newValue as number) / 100).toString());
+      localForageService.set("volume", ((newValue as number) / 100).toString());
       if (isMuted) setIsMuted(false);
     }
   }

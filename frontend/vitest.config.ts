@@ -3,10 +3,11 @@ const projectRoot = path.resolve(process.cwd());
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/services/postUtil";
+const root = "src/services";
 
 export default defineConfig({
   test: {
+    environment: "jsdom",
     coverage: {
       exclude: ["packages/template/*"],
     },

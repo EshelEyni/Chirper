@@ -1,6 +1,6 @@
 import { FC, useRef } from "react";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
-import storageService from "../../../services/storageService";
+import localForageService from "../../../services/localForage/localForageService";
 import { VideoVolumeSlider } from "../../Video/VideoVolumeSlider/VideoVolumeSlider";
 import "./BtnToggleVolume.scss";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
@@ -18,7 +18,7 @@ export const BtnToggleVolume: FC<BtnToggleVolumeProps> = ({ size }) => {
   function onToggleMute(e: React.MouseEvent) {
     e.stopPropagation();
     setIsMuted(prev => !prev);
-    if (isMuted) setVolume(Number(storageService.get("volume") || 0.5));
+    if (isMuted) setVolume(Number(localForageService.get("volume") || 0.5));
   }
 
   function onToggleVolumeHover(e: React.MouseEvent, isHover: boolean) {

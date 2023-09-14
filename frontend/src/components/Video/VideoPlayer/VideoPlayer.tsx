@@ -1,6 +1,6 @@
 import { FC, useRef, useEffect, MouseEvent } from "react";
 import ReactPlayer from "react-player";
-import storageService from "../../../services/storageService";
+import localForageService from "../../../services/localForage/localForageService";
 import { useInView } from "react-intersection-observer";
 import "./VideoPlayer.scss";
 import { VideoCustomControls } from "../VideoCustomControls/VideoCustomControls";
@@ -43,7 +43,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ videoUrl, isCustomControls =
     if (!isCustomControls) return;
     if (isMuted) {
       setIsMuted(prev => !prev);
-      setVolume(Number(storageService.get("volume")) || 0.5);
+      setVolume(Number(localForageService.get("volume")) || 0.5);
       return;
     }
     setIsPlaying(prev => !prev);

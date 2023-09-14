@@ -1,5 +1,5 @@
 // need to mock axios in a different file in order to run the setup before the tests run
-// and get acces to the mockAxios function
+// and get acces to the mockAxios function, this import must be at the top
 import { mockAxios } from "./setupAxiosMock";
 import httpService from "./httpService";
 import { describe, it, expect } from "vitest";

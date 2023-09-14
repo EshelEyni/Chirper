@@ -1,7 +1,7 @@
-import { Post } from "../../../shared/types/post";
-import { FollowingResult } from "../../../shared/types/user";
-import httpService from "./http/httpService";
-import { handleServerResponse } from "./util/utilService";
+import { Post } from "../../../../shared/types/post";
+import { FollowingResult } from "../../../../shared/types/user";
+import httpService from "../http/httpService";
+import { handleServerResponseData } from "../util/utilService";
 
 enum PathType {
   FOLLOW = "follow",
@@ -12,37 +12,37 @@ enum PathType {
 async function followUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ userId, postId });
   const respose = await httpService.post(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function unFollowUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ userId, postId });
   const respose = await httpService.delete(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function muteUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ pathType: PathType.MUTE, userId, postId });
   const respose = await httpService.post(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function unMuteUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ pathType: PathType.MUTE, userId, postId });
   const respose = await httpService.delete(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function blockUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ pathType: PathType.BLOCK, userId, postId });
   const respose = await httpService.post(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function unBlockUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
   const endpoint = _getEndpoint({ pathType: PathType.BLOCK, userId, postId });
   const respose = await httpService.delete(endpoint);
-  return handleServerResponse<FollowingResult | Post>(respose);
+  return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 function _getEndpoint(

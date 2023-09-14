@@ -1,11 +1,11 @@
 import { JsendResponse } from "../../../../shared/types/system";
 import { User, UserCredenitials } from "../../../../shared/types/user";
 import httpService from "../http/httpService";
-import { handleServerResponse } from "../util/utilService";
+import { handleServerResponseData } from "../util/utilService";
 
 async function loginWithToken(): Promise<User | null> {
   const response = (await httpService.post("auth/login/with-token")) as unknown as JsendResponse;
-  return handleServerResponse<User>(response);
+  return handleServerResponseData<User>(response);
 }
 
 async function login(username: string, password: string): Promise<User> {
@@ -14,7 +14,7 @@ async function login(username: string, password: string): Promise<User> {
     password,
   })) as unknown as JsendResponse;
 
-  return handleServerResponse<User>(response);
+  return handleServerResponseData<User>(response);
 }
 
 async function signup(userCredentials: UserCredenitials): Promise<User> {
@@ -23,7 +23,7 @@ async function signup(userCredentials: UserCredenitials): Promise<User> {
     userCredentials
   )) as unknown as JsendResponse;
 
-  return handleServerResponse<User>(response);
+  return handleServerResponseData<User>(response);
 }
 
 async function logout(): Promise<void> {

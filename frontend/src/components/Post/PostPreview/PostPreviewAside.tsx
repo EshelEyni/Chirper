@@ -12,7 +12,7 @@ export const PostPreviewAside: FC = () => {
       <Modal>
         <Modal.ModalHoverOpen modalName="userPreview">
           <UserImg
-            imgUrl={post.createdBy.imgUrl}
+            imgUrl={post.createdBy?.imgUrl}
             onNavigateToProfile={() => onNavigateToProfile(post.createdBy.username)}
           />
         </Modal.ModalHoverOpen>

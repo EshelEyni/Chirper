@@ -3,7 +3,7 @@ import { JsendResponse } from "../../../../shared/types/system";
 import cacheService from "../cache/cacheService";
 import httpService from "../http/httpService";
 import queryString from "query-string";
-import { handleServerResponse } from "../util/utilService";
+import { handleServerResponseData } from "../util/utilService";
 
 const ERROR_MESSAGES = {
   locationError: "locationService: Cannot get location",
@@ -14,9 +14,9 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
   try {
     const response = (await httpService.get(
       `location/search?searchTerm=${searchTerm}`
-    )) as unknown as JsendResponse;
+    )) as unknown as JsendResponse<Location[]>;
 
-    return handleServerResponse<Location[]>(response);
+    return handleServerResponseData<Location[]>(response);
   } catch (err) {
     console.error(err);
     throw err;
@@ -25,18 +25,16 @@ async function getLocationsBySearchTerm(searchTerm: string): Promise<Location[]>
 
 async function getUserDefaultLocations(): Promise<Location[] | null> {
   try {
-    const cacheLocation = cacheService.get<Location[]>("location", 5);
+    const cacheLocation = await cacheService.get<Location[]>("location", 5);
     if (cacheLocation) return cacheLocation;
-
     const currLocation = await _getCurrentLocation();
     if (!currLocation) return null;
     const query = queryString.stringify(currLocation);
-    const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse;
-    cacheService.set("location", {
-      cachedAt: Date.now(),
-      data: response.data,
-    });
-    return handleServerResponse<Location[]>(response);
+    const response = (await httpService.get(`location?${query}`)) as unknown as JsendResponse<
+      Location[]
+    >;
+    cacheService.set("location", response.data);
+    return handleServerResponseData<Location[]>(response);
   } catch (err) {
     console.error(ERROR_MESSAGES.locationError);
     throw err;

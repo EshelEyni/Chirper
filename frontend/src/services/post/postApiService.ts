@@ -18,6 +18,7 @@ type AddPollVoteConfig = {
 
 const BASE_URL = "post";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function query(queryObj?: any): Promise<Post[]> {
   const queryString = queryObj ? "&" + qs.stringify(queryObj) : "";
   const response = await httpService.get(

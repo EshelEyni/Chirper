@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../shared/types/post";
-import postApiService from "../../services/postApi/postApiService";
+import postApiService from "../../services/post/postApiService";
 import { Outlet } from "react-router-dom";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 

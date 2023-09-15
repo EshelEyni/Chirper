@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import postApiService from "../services/postApi/postApiService";
-import userService from "../services/userApi/userApiService";
+import postApiService from "../services/post/postApiService";
+import userService from "../services/user/userApiService";
 import { useNavigate } from "react-router-dom";
 
 export function useQueryUserWithPosts(username: string) {

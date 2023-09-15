@@ -10,13 +10,13 @@ enum PathType {
 }
 
 async function followUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
-  const endpoint = _getEndpoint({ userId, postId });
+  const endpoint = _getEndpoint({ pathType: PathType.FOLLOW, userId, postId });
   const respose = await httpService.post(endpoint);
   return handleServerResponseData<FollowingResult | Post>(respose);
 }
 
 async function unFollowUser(userId: string, postId?: string): Promise<FollowingResult | Post> {
-  const endpoint = _getEndpoint({ userId, postId });
+  const endpoint = _getEndpoint({ pathType: PathType.FOLLOW, userId, postId });
   const respose = await httpService.delete(endpoint);
   return handleServerResponseData<FollowingResult | Post>(respose);
 }

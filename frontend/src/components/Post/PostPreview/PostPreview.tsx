@@ -1,7 +1,7 @@
 import { FaGithub } from "react-icons/fa";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import postApiService from "../../../services/postApi/postApiService";
+import postApiService from "../../../services/post/postApiService";
 import { RootState } from "../../../store/store";
 import { useInView } from "react-intersection-observer";
 import { PostPreviewHeader } from "./PostPreviewHeader";
@@ -25,7 +25,7 @@ import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import { ExternalLink } from "../../App/ExternalLink/ExternalLink";
 import { PostActions } from "../Actions/PostActions";
 import "./PostPreview.scss";
-import postUtilService from "../../../services/postUtil/postUtilService";
+import postUtilService from "../../../services/post/postUtilService";
 
 export const PostPreview: React.FC = () => {
   const { post } = usePostPreview();

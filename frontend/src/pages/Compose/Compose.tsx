@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store/types";
 import { RootState } from "../../store/store";
-import postApiService from "../../services/postApi/postApiService";
+import postApiService from "../../services/post/postApiService";
 import "./Compose.scss";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostEditProvider } from "../../contexts/PostEditContext";
@@ -16,7 +16,7 @@ import {
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { useGoBack } from "../../hooks/useGoBack";
 import { Modal } from "../../components/Modal/Modal";
-import postUtilService from "../../services/postUtil/postUtilService";
+import postUtilService from "../../services/post/postUtilService";
 const PostEdit = lazy(() => import("../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {

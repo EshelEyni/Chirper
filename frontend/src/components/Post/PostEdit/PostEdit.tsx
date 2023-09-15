@@ -38,7 +38,7 @@ import {
 } from "../../../store/slices/postEditSlice";
 import { useCreatePost } from "../../../hooks/useCreatePost";
 import { NewPostContent } from "../PostPreview/NewPostContent";
-import postUtilService from "../../../services/postUtil/postUtilService";
+import postUtilService from "../../../services/post/postUtilService";
 import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";

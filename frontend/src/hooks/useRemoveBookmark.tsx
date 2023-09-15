@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postApiService from "../services/postApi/postApiService";
+import postApiService from "../services/post/postApiService";
 import reactQueryService from "../services/reactQuery/reactQueryService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";

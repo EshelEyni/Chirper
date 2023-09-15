@@ -45,7 +45,7 @@ import { useRemoveLike } from "../../../hooks/useRemoveLike";
 import { useAddLike } from "../../../hooks/useAddLike";
 import { useRemoveBookmark } from "../../../hooks/useRemoveBookmark";
 import { useAddBookmark } from "../../../hooks/useAddBookmark";
-import postApiService from "../../../services/postApi/postApiService";
+import postApiService from "../../../services/post/postApiService";
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from "react-icons/md";
 import { useQueryGifCategories } from "../../../hooks/useQueryGifCategories";
 import { AsyncList } from "../../App/AsyncList/AsyncList";

@@ -5,7 +5,7 @@ import { RootState } from "../../../store/store";
 import "./RepostDisplay.scss";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { Modal } from "../../Modal/Modal";
-import postUtilService from "../../../services/postUtil/postUtilService";
+import postUtilService from "../../../services/post/postUtilService";
 
 export const RepostDisplay: FC = () => {
   const { post, onNavigateToPostDetails, onNavigateToProfile } = usePostPreview();

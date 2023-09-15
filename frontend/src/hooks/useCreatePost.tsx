@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import postApiService from "../services/postApi/postApiService";
-import postUtilService from "../services/postUtil/postUtilService";
+import postApiService from "../services/post/postApiService";
+import postUtilService from "../services/post/postUtilService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { NewPost, Post, PostReplyResult } from "../../../shared/types/post";
 import { NewPostType } from "../store/slices/postEditSlice";

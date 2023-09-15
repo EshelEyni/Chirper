@@ -8,8 +8,10 @@ type CheckboxProps = {
 
 export const Checkbox: FC<CheckboxProps> = ({ isChecked }) => {
   return (
-    <div className={"checkbox" + (isChecked ? " checked" : " unchecked")}>
-      {isChecked && <AiFillCheckCircle size={24} color="var(--color-primary)" />}
+    <div className={"checkbox" + (isChecked ? " checked" : " unchecked")} data-testid="checkbox">
+      {isChecked && (
+        <AiFillCheckCircle size={24} color="var(--color-primary)" data-testid="checkbox-icon" />
+      )}
     </div>
   );
 };

@@ -19,9 +19,9 @@ export const SpinnerLoader: FC<SpinnerLoaderProps> = ({ withContainer, container
           height: containerSize.height || "100%",
         }}
       >
-        <div className="spinner-loader" />
+        <div className="spinner-loader" data-testid="spinner-loader" />
       </div>
     );
 
-  return <div className="spinner-loader" />;
+  return <div className="spinner-loader" data-testid="spinner-loader" />;
 };

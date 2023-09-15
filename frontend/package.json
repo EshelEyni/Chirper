@@ -18,7 +18,6 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-query-devtools": "^4.32.6",
-    "@testing-library/react": "^14.0.0",
     "@types/redux-thunk": "^2.1.0",
     "axios": "^1.3.6",
     "emoji-mart": "^5.5.2",
@@ -41,6 +40,8 @@
     "sass": "^1.58.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.3",
+    "@testing-library/react": "^14.0.0",
     "@types/axios": "^0.14.0",
     "@types/json-schema": "^7.0.11",
     "@types/qs": "^6.9.7",

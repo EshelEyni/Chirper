@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import { RootState } from "../../store/store";
 import { useSelector } from "react-redux";
+import { RootState } from "../types/app";
 
 export function useScrollRedirect() {
   const { isScrollRedirectActive } = useSelector((state: RootState) => state.system);

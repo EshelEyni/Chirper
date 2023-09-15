@@ -1,11 +1,10 @@
 import { FC } from "react";
 import { BtnClose } from "../../components/Btns/BtnClose/BtnClose";
 import { NewPost } from "../../../../shared/types/post";
-import { AppDispatch } from "../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { updateNewPost } from "../../store/slices/postEditSlice";
 import "./PostScheduleHeader.scss";
+import { AppDispatch, RootState } from "../../types/app";
 
 type PostScheduleHeaderProps = {
   currNewPost: NewPost;

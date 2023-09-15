@@ -4,8 +4,8 @@ import { FaHashtag, FaRegBookmark, FaBookmark, FaRegUser, FaUser } from "react-i
 import { NavLink as NavLinkType } from "../../../types/Elements";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import "./NavList.scss";
+import { RootState } from "../../../types/app";
 
 export const NavList = () => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);

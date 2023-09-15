@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { AppDispatch } from "../../../store/types";
 import "./BtnCreatePost.scss";
 import { NewPostType, setNewPostType } from "../../../store/slices/postEditSlice";
+import { AppDispatch } from "../../../types/app";
 
 export type BtnCreatePostTitle = "Chirp" | "Chirp All" | "Schedule" | "Reply";
 

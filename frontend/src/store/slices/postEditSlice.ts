@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NewPost, Post, repliedPostDetails } from "../../../../shared/types/post";
 import { makeId } from "../../services/util/utilService";
 
-export type NewPostState = {
+type NewPostState = {
   homePage: {
     posts: NewPost[];
     currPostIdx: number;

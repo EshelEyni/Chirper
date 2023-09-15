@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { SpinnerLoader } from "../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import { PostStatsPreviewContent } from "../../components/Post/PostPreview/PostStatsPreviewContent";
 import { MiniPostPreview } from "../../components/Post/PostPreview/MiniPostPreview";
 import { BtnClose } from "../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostsStatsNonOwnerMsg } from "./PostsStatsNonOwnerMsg";
-import { useQueryPostById } from "../../hooks/reactQuery/post/useQueryPostById";
 import { PostStatsDetails } from "./PostStatsDetails";
 import { ErrorMsg } from "../../components/Msg/ErrorMsg/ErrorMsg";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { useGoBack } from "../../hooks/app/useGoBack";
 import "./PostStats.scss";
+import { useQueryPostById } from "../../hooks/useQueryPostById";
+import { useGoBack } from "../../hooks/useGoBack";
+import { RootState } from "../../types/app";
 
 const PostStatsPage = () => {
   const [isLoggedInUserPost, setIsLoggedInUserPost] = useState(false);

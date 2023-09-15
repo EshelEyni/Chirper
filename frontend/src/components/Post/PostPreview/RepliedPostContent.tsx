@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import { PostRepliedToUsersList } from "../PostRepliedToUsersList/PostRepliedToUsersList";
 import { PostPreviewBody } from "./PostPreviewBody";
 import { PostPreviewMainContainer } from "./PostPreviewMainContainer";
 import { PostPreviewText } from "./PostPreviewText";
 import { MiniPostPreviewAside } from "./MiniPostPreviewAside";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
+import { RootState } from "../../../types/app";
 
 export const RepliedPostContent: React.FC = () => {
   const post = useSelector((state: RootState) => state.postEdit.reply.repliedToPost);

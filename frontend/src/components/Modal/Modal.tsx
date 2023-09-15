@@ -16,7 +16,6 @@ import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { Tippy } from "../App/Tippy/Tippy";
 import { User } from "../../../../shared/types/user";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { usePostPreview } from "../../contexts/PostPreviewContext";
 import { UserImg } from "../User/UserImg/UserImg";
 import { BtnToggleFollow } from "../Btns/BtnToggleFollow/BtnToggleFollow";
@@ -24,6 +23,7 @@ import { debounce, formatNumToK } from "../../services/util/utilService";
 import { Link } from "react-router-dom";
 import { Logo } from "../App/Logo/Logo";
 import { ReactComponent as BlueCheckMark } from "../../assets/svg/blue-check-mark.svg";
+import { RootState } from "../../types/app";
 
 type UserPreviewModalPosition = {
   top?: number;

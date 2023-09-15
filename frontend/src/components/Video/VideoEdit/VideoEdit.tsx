@@ -1,7 +1,5 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import { AppDispatch } from "../../../store/types";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { VideoPlayer } from "../VideoPlayer/VideoPlayer";
@@ -9,6 +7,7 @@ import "./VideoEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const VideoEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();

@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { NewPost } from "../../../../../shared/types/post";
-import { RootState } from "../../../store/store";
 import { PostImg } from "../PostImgList/PostImgList";
 import { VideoPlayer } from "../../Video/VideoPlayer/VideoPlayer";
 import { GifDisplay } from "../../Gif/GifDisplay/GifDisplay";
@@ -12,6 +11,7 @@ import { MiniPostPreviewAside } from "./MiniPostPreviewAside";
 import { useMemo } from "react";
 import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import { NewPostType } from "../../../store/slices/postEditSlice";
+import { RootState } from "../../../types/app";
 
 type NewPostContentProps = {
   newPost: NewPost;

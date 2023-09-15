@@ -15,9 +15,7 @@ import {
 } from "../../../services/util/utilService";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../Msg/UserMsg/UserMsg";
-import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system";
 import { FiImage, FiList, FiUpload } from "react-icons/fi";
 import { setIsScrollRedirectActive } from "../../../store/slices/systemSlice";
@@ -52,6 +50,7 @@ import { AsyncList } from "../../App/AsyncList/AsyncList";
 import { GifCategoryPreview } from "../../Gif/GifCategoryPreview/GifCategoryPreview";
 import { GifPreview } from "../../Gif/GifPreview/GifPreview";
 import { BtnSwitchPlay } from "../../Btns/BtnSwitchPlay/BtnSwitchPlay";
+import { AppDispatch, RootState } from "../../../types/app";
 
 type PostEditActionsProps = {
   children: React.ReactNode;

@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { PostDateTitle } from "../../components/Post/PostDateTitle/PostDateTitle";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostScheduleHeader } from "./PostScheduleHeader";
@@ -12,6 +11,7 @@ import { Footer } from "../../components/App/Footer/Footer";
 import { NewPostType } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import "./PostSchedule.scss";
+import { RootState } from "../../types/app";
 
 export type invalidDateStatus = {
   status: boolean;

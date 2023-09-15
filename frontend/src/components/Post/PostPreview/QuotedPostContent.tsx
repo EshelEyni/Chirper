@@ -6,10 +6,10 @@ import { PostPreviewHeader } from "./PostPreviewHeader";
 import { PostPreviewBody } from "./PostPreviewBody";
 import { PostPreviewMainContainer } from "./PostPreviewMainContainer";
 import { PostPreviewText } from "./PostPreviewText";
-import { RootState } from "../../../store/store";
 import { PostPreviewProvider } from "../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import "./QuotedPostContent.scss";
+import { RootState } from "../../../types/app";
 
 export const QuotedPostContent: React.FC = () => {
   const { quotedPost } = useSelector((state: RootState) => state.postEdit.quote);

@@ -1,9 +1,8 @@
 import { FC } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import { removeNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const BtnRemovePostFromThread: FC = () => {
   const dispatch: AppDispatch = useDispatch();

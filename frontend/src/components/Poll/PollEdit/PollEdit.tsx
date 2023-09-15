@@ -1,12 +1,11 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
 import { PollOptionsList } from "../PollOptionsList/PollOptionsList";
 import { PollLengthInputs } from "./PollLengthInputs/PollLengthInputs";
 import "./PollEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const PollEdit: FC = () => {
   const { currNewPost } = usePostEdit();

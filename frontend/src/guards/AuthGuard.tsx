@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 import { FC, useEffect } from "react";
+import { RootState } from "../types/app";
 
 type AuthGuardProps = {
   component: React.ReactNode;

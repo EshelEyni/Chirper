@@ -2,8 +2,6 @@ import { useMemo } from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
-import { AppDispatch } from "../../store/types";
 import { Location } from "../../../../shared/types/location";
 import locationService from "../../services/location/locationService";
 import { LocationList } from "../../components/Location/LocationList/LocationList";
@@ -14,6 +12,7 @@ import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { NewPostType, updateNewPost } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import "./PostLocation.scss";
+import { AppDispatch, RootState } from "../../types/app";
 
 const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);

@@ -1,13 +1,12 @@
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { BtnPlay } from "../../Btns/BtnPlay/BtnPlay";
 import "./GifEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const GifEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();

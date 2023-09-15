@@ -2,8 +2,6 @@ import { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { routes, nestedRoutes } from "./routes";
-import { AppDispatch } from "./store/types";
-import { RootState } from "./store/store";
 import { SideBar } from "./components/SideBar/SideBar";
 import { LoginSignupMsg } from "./components/Msg/LoginSignupMsg/LoginSignupMsg";
 import { Route as TypeOfRoute } from "./routes";
@@ -12,6 +10,7 @@ import { AuthGuard } from "./guards/AuthGuard";
 import { loginWithToken } from "./store/slices/authSlice";
 const PageNotFound = lazy(() => import("./pages/PageNotFound/PageNotFound"));
 import "./styles/main.scss";
+import { AppDispatch, RootState } from "./types/app";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();

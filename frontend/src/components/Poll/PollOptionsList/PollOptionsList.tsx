@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createRef, useState, useEffect, FC } from "react";
-import { AppDispatch } from "../../../store/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import "./PollOptionsList.scss";
 import { PollEditOption } from "./PollEditOption/PollEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
+import "./PollOptionsList.scss";
 
 export const PollOptionsList: FC = () => {
   const dispatch: AppDispatch = useDispatch();

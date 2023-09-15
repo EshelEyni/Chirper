@@ -2,9 +2,7 @@
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "../../../store/store";
 import { NewPost } from "../../../../../shared/types/post";
-import { AppDispatch } from "../../../store/types";
 import "./PostEdit.scss";
 import { uploadFileToCloudinary } from "../../../services/cloudinary/cloudinaryService";
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
@@ -42,6 +40,7 @@ import postUtilService from "../../../services/post/postUtilService";
 import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";
+import { AppDispatch, RootState } from "../../../types/app";
 
 interface PostEditProps {
   isHomePage?: boolean;

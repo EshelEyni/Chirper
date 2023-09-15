@@ -3,12 +3,11 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper-circle-solid.svg";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import { AppDispatch } from "../../../store/types";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const BtnToggleAudience: FC = () => {
   const { newPostType } = useSelector((state: RootState) => state.postEdit);

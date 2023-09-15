@@ -18,7 +18,6 @@ import { Logo } from "../../App/Logo/Logo";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { Modal } from "../../Modal/Modal";
 import { useUniqueID } from "../../../hooks/useIDRef";
-import { RootState } from "../../../store/store";
 import { useSelector } from "react-redux";
 import { BiUserPlus, BiUserX } from "react-icons/bi";
 import { CgUnblock, CgBlock } from "react-icons/cg";
@@ -31,6 +30,7 @@ import useRemoveMute from "../../../hooks/useRemoveMute";
 import useAddMute from "../../../hooks/useAddMute";
 import "./PostPreviewHeader.scss";
 import postUtilService from "../../../services/post/postUtilService";
+import { RootState } from "../../../types/app";
 
 type PostPreviewHeaderProps = {
   isMiniPreview?: boolean;

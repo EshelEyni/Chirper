@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { Logo } from "../App/Logo/Logo";
 import { NavList } from "./NavList/NavList";
 import { BtnCreatePost } from "../Btns/BtnCreatePost/BtnCreatePost";
 import { UserPreview } from "../User/UserPreview/UserPreview";
 import { User } from "../../../../shared/types/user";
 import { useNavigate } from "react-router-dom";
-import { AppDispatch } from "../../store/types";
 import { userLogout } from "../../store/slices/authSlice";
 import { FaAt } from "react-icons/fa";
 import { GiFeather } from "react-icons/gi";
@@ -14,6 +12,7 @@ import { ReactComponent as ChirperCircleIcon } from "../../assets/svg/chirper-ci
 import "./SideBar.scss";
 import { IoIosBrush } from "react-icons/io";
 import { Modal } from "../Modal/Modal";
+import { AppDispatch, RootState } from "../../types/app";
 
 export const SideBar = () => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);

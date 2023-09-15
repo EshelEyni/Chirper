@@ -1,12 +1,11 @@
 import { FC } from "react";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const BtnToggleRepliers: FC = () => {
   const { currNewPost } = usePostEdit();

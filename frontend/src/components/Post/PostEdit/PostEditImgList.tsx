@@ -1,12 +1,11 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../store/types";
-import { RootState } from "../../../store/store";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import "./PostEditImgList.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../types/app";
 
 export const PostEditImgList: FC = () => {
   const dispatch: AppDispatch = useDispatch();

@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk } from "../store";
 import { User, UserCredenitials } from "../../../../shared/types/user";
 import authService from "../../services/authApi/authApiService";
 import { setIsPageLoading } from "./systemSlice";
+import { AppThunk } from "../../types/app";
 
 interface AuthState {
   loggedInUser: User | null;

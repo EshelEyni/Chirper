@@ -2,12 +2,11 @@
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCustomSelect } from "../../../../hooks/useCustomSelect";
-import { AppDispatch } from "../../../../store/types";
-import { RootState } from "../../../../store/store";
 import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../../store/slices/postEditSlice";
+import { AppDispatch, RootState } from "../../../../types/app";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();

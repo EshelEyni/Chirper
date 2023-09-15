@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Logo } from "../App/Logo/Logo";
 import { NavList } from "./NavList/NavList";
-import { BtnCreatePost } from "../Btns/BtnCreatePost/BtnCreatePost";
 import { UserPreview } from "../User/UserPreview/UserPreview";
 import { User } from "../../../../shared/types/user";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +12,8 @@ import "./SideBar.scss";
 import { IoIosBrush } from "react-icons/io";
 import { Modal } from "../Modal/Modal";
 import { AppDispatch, RootState } from "../../types/app";
+import { Button } from "../App/Button/Button";
+import { NewPostType, setNewPostType } from "../../store/slices/postEditSlice";
 
 export const SideBar = () => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
@@ -20,14 +21,19 @@ export const SideBar = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
-  const handleLinkClick = (path: string) => {
+  function handleLinkClick(path: string) {
     navigate(path, { relative: "path" });
-  };
+  }
 
-  const onLogout = async () => {
+  async function onLogout() {
     await dispatch(userLogout());
     navigate("/explore");
-  };
+  }
+
+  function handleBtnClick() {
+    dispatch(setNewPostType(NewPostType.SideBar));
+    navigate("compose", { relative: "path" });
+  }
 
   const btns = [
     {
@@ -61,7 +67,9 @@ export const SideBar = () => {
       <div className="main-container">
         <Logo />
         <NavList />
-        <BtnCreatePost isSideBarBtn={true} isDisabled={false} />
+        <Button className="btn-create-post" onClickFn={handleBtnClick}>
+          Chirp
+        </Button>
       </div>
       {loggedInUser && (
         <Modal>

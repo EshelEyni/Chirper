@@ -18,7 +18,6 @@ import { Footer } from "../../App/Footer/Footer";
 import { RepostDisplay } from "./RepostDisplay";
 import { PostPreviewWrapper } from "./PostPreviewWrapper";
 import { PostPreviewAside } from "./PostPreviewAside";
-import { BtnShowThread } from "../../Btns/BtnShowThread/BtnShowThread";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
 import { ExternalLink } from "../../App/ExternalLink/ExternalLink";
@@ -26,9 +25,10 @@ import { PostActions } from "../Actions/PostActions";
 import "./PostPreview.scss";
 import postUtilService from "../../../services/post/postUtilService";
 import { RootState } from "../../../types/app";
+import { Button } from "../../App/Button/Button";
 
 export const PostPreview: React.FC = () => {
-  const { post } = usePostPreview();
+  const { post, onNavigateToPostDetails } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
   const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
@@ -97,7 +97,11 @@ export const PostPreview: React.FC = () => {
           </Footer>
         </PostPreviewMainContainer>
       </PostPreviewWrapper>
-      {isPostReplyFromPostOwner && <BtnShowThread />}
+      {isPostReplyFromPostOwner && (
+        <Button className="btn-show-thread" onClickFn={onNavigateToPostDetails}>
+          <span>Show this thread</span>
+        </Button>
+      )}
     </article>
   );
 };

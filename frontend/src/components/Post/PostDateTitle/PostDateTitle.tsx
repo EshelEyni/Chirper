@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./PostDateTitle.scss";
 
 interface PostDateTitleProps {
-  date: Date;
+  date: Date | string;
   isLink?: boolean;
 }
 
@@ -12,6 +12,7 @@ export const PostDateTitle: FC<PostDateTitleProps> = ({ date, isLink = false }) 
   const navigate = useNavigate();
 
   const formattedDate = useMemo(() => {
+    if (typeof date === "string") return date;
     const dayOfWeek = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
     const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
     const day = date.getDate();

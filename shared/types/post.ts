@@ -37,7 +37,7 @@ export type BasicPost = {
   video?: NewPostVideo | null;
   videoUrl?: string;
   gif: Gif | null;
-  schedule?: Date;
+  schedule?: string;
   location?: Location;
   isPublic: boolean;
   isPinned?: boolean;

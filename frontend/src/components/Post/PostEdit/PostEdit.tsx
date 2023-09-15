@@ -10,7 +10,6 @@ import { MiniPostPreview } from "../PostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/RepliedPostContent";
 import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
-import { BtnRemovePostFromThread } from "../../Btns/BtnRemovePostFromThread/BtnRemovePostFromThread";
 import { PostEditTextArea } from "./PostEditTextArea";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { PostEditImgList } from "./PostEditImgList";
@@ -20,8 +19,6 @@ import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleReplier
 import { PostEditTitleLocation } from "./PostEditTitleLocation";
 import { QuotedPostContent } from "../PostPreview/QuotedPostContent";
 import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
-import { BtnAddThread } from "../../Btns/BtnAddThread/BtnAddThread";
-import { BtnCreatePost, BtnCreatePostTitle } from "../../Btns/BtnCreatePost/BtnCreatePost";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 import { toast } from "react-hot-toast";
@@ -32,6 +29,7 @@ import {
   NewPostType,
   addNewPostToThread,
   clearNewPosts,
+  removeNewPost,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
 import { useCreatePost } from "../../../hooks/useCreatePost";
@@ -40,7 +38,9 @@ import postUtilService from "../../../services/post/postUtilService";
 import { useGoBack } from "../../../hooks/useGoBack";
 import { PostActions } from "../Actions/PostActions";
 import { List } from "../../App/List/List";
-import { AppDispatch, RootState } from "../../../types/app";
+import { AppDispatch, BtnCreatePostTitle, RootState } from "../../../types/app";
+import { Button } from "../../App/Button/Button";
+import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -237,7 +237,14 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {isPostDateTitleShown && (
             <PostDateTitle date={currNewPost.schedule!} isLink={isPickerShown} />
           )}
-          {isBtnRemovePostFromThreadShown && <BtnRemovePostFromThread />}
+          {isBtnRemovePostFromThreadShown && (
+            <Button
+              className="btn-remove-post-from-thread"
+              onClickFn={() => dispatch(removeNewPost(newPostType))}
+            >
+              <AiOutlineClose color="var(--color-primary)" size={15} />
+            </Button>
+          )}
 
           <PostEditTextArea isHomePage={isHomePage} textAreaRef={textAreaRef} />
           {currNewPost.imgs.length > 0 && <PostEditImgList />}
@@ -274,18 +281,18 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
                 <div className="indicator-thread-btn-container">
                   <TextIndicator />
                   <hr className="vertical" />
-                  <BtnAddThread
+                  <Button
+                    className="btn-add-thread"
+                    onClickFn={onAddPostToThread}
                     isDisabled={isAddingPostToThreadDisabled}
-                    onAddPostToThread={onAddPostToThread}
-                  />
+                  >
+                    <AiOutlinePlus className="btn-add-thread-icon" />
+                  </Button>
                 </div>
               )}
-              <BtnCreatePost
-                isDisabled={!arePostsValid}
-                isSideBarBtn={false}
-                onAddPost={onAddPost}
-                title={getBtnTitleText()}
-              />
+              <Button className="btn-create-post" onClickFn={onAddPost} isDisabled={!arePostsValid}>
+                {getBtnTitleText()}
+              </Button>
             </div>
           </div>
         </main>

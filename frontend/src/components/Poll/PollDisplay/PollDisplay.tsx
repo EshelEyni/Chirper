@@ -5,7 +5,7 @@ import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { useAddPollVote } from "../../../hooks/useAddPollVote";
 
 type PollDisplayProps = {
-  postStartDate: Date;
+  postStartDate: string;
 };
 
 export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate }) => {

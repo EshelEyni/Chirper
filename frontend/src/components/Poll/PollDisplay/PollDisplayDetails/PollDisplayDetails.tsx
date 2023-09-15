@@ -3,7 +3,7 @@ import "./PollDisplayDetails.scss";
 
 type PollDisplayDetailsProps = {
   pollVoteCount: number;
-  postStartDate: Date;
+  postStartDate: string;
   pollLength: {
     days: number;
     hours: number;

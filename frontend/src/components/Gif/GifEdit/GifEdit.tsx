@@ -2,11 +2,12 @@ import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SpinnerLoader } from "../../Loaders/SpinnerLoader/SpinnerLoader";
 import { BtnRemoveContent } from "../../Btns/BtnRemoveContent/BtnRemoveContent";
-import { BtnPlay } from "../../Btns/BtnPlay/BtnPlay";
 import "./GifEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { AppDispatch, RootState } from "../../../types/app";
+import { Button } from "../../App/Button/Button";
+import { FaPlay } from "react-icons/fa";
 
 export const GifEdit: FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -38,7 +39,13 @@ export const GifEdit: FC = () => {
           onClick={onTogglePlay}
           onLoad={() => setIsLoading(false)}
         />
-        {!isPlaying && <BtnPlay onTogglePlay={onTogglePlay} />}
+        {!isPlaying && (
+          <Button className="btn-play" onClickFn={onTogglePlay}>
+            <div className="btn-play-icon-container">
+              <FaPlay className="play-icon" />
+            </div>
+          </Button>
+        )}
         <span className="gif-title">GIF</span>
       </div>
     </>

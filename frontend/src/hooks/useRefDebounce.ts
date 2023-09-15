@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { debounce } from "../../services/util/utils.service";
+import { debounce } from "../services/util/utilService";
 
 type DebouncedFunc = () => void;
 

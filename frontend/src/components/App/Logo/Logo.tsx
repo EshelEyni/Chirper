@@ -26,12 +26,12 @@ export const Logo = ({ options }: LogoProps) => {
       style={style}
     >
       {options?.staticLogo ? (
-        <div className="logo">
+        <div className="logo" data-testid="static-logo">
           <AiOutlineTwitter size={options.height * 0.65} color="white" />
         </div>
       ) : (
         <div className="logo-wrapper">
-          <div className="bird">
+          <div className="bird" data-testid="bird">
             <div className="body"></div>
             <div className="body-top-cut-left"></div>
             <div className="tail-cut"></div>

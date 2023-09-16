@@ -3,7 +3,7 @@ const projectRoot = path.resolve(process.cwd());
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/components/App/CustomSelect";
+const root = "src/components/App/Tippy";
 
 export default defineConfig({
   test: {

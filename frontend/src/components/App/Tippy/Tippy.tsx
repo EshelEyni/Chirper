@@ -8,5 +8,5 @@ type TippyProps = {
 export const Tippy: FC<TippyProps> = ({ isModalAbove, isFullScreen = false }) => {
   const className =
     "tippy" + (isModalAbove ? " down" : " up") + (isFullScreen ? " full-screen" : "");
-  return <div className={className} />;
+  return <div className={className} data-testid="tippy" />;
 };

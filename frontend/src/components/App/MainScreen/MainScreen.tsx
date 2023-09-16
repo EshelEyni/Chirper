@@ -7,5 +7,11 @@ type MainScreenProps = {
 };
 
 export const MainScreen: FC<MainScreenProps> = ({ mode, zIndex }) => {
-  return <div className={`main-screen ${mode ? mode : ""}`} style={{ zIndex }} />;
+  return (
+    <div
+      className={`main-screen ${mode ? mode : ""}`}
+      style={{ zIndex }}
+      data-testid="main-screen"
+    />
+  );
 };

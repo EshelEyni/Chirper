@@ -44,6 +44,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       onBlur={() => {
         onBlurred(input.type);
       }}
+      data-testid="custom-select"
     >
       <div className="custom-select">
         <div className="custom-select-data-text">

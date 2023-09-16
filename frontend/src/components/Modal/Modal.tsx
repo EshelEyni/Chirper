@@ -324,6 +324,7 @@ const Window: FC<WindowProps> = ({
         ref={hoverControl ? undefined : outsideClickRef}
         onMouseEnter={() => hoverControl && handleMouseEnter()}
         onMouseLeave={() => hoverControl && handleMouseLeave()}
+        data-testid="modal-window"
       >
         {includeTippy && <Tippy isModalAbove={!!isModalAbove} />}
         {children}

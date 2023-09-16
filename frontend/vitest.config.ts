@@ -1,11 +1,14 @@
 import path from "path";
 const projectRoot = path.resolve(process.cwd());
+import svgr from "vite-plugin-svgr";
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/store/slices";
+const root = "src/components/Btns";
 
 export default defineConfig({
+  plugins: [svgr()],
+
   test: {
     environment: "jsdom",
     coverage: {

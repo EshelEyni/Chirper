@@ -7,7 +7,7 @@ import { PostEditOption } from "../../Modal/PostEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { AppDispatch } from "../../../types/app";
 
-export const BtnToggleRepliers: FC = () => {
+export const BtnRepliers: FC = () => {
   const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
 

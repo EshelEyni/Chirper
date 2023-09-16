@@ -8,17 +8,17 @@ import { uploadFileToCloudinary } from "../../../services/cloudinary/cloudinaryS
 import { BtnClose } from "../../Btns/BtnClose/BtnClose";
 import { MiniPostPreview } from "../PostPreview/MiniPostPreview";
 import { RepliedPostContent } from "../PostPreview/RepliedPostContent";
-import { BtnToggleAudience } from "../../Btns/BtnToggleAudience/BtnToggleAudience";
+import { BtnAudience } from "../../Btns/BtnAudience/BtnAudience";
 import { PostDateTitle } from "../PostDateTitle/PostDateTitle";
 import { PostEditTextArea } from "./PostEditTextArea";
 import { UserImg } from "../../User/UserImg/UserImg";
 import { PostEditImgList } from "./PostEditImgList";
 import { GifEdit } from "../../Gif/GifEdit/GifEdit";
 import { PollEdit } from "../../Poll/PollEdit/PollEdit";
-import { BtnToggleRepliers } from "../../Btns/BtnToggleRepliers/BtnToggleRepliers";
+import { BtnRepliers } from "../../Btns/BtnRepliers/BtnRepliers";
 import { PostEditTitleLocation } from "./PostEditTitleLocation";
 import { QuotedPostContent } from "../PostPreview/QuotedPostContent";
-import { TextIndicator } from "../../App/TextIndicator/TextIndicator";
+import { TextIndicator } from "./TextIndicator";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 import { toast } from "react-hot-toast";
@@ -232,7 +232,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
       <div className="content-container">
         <UserImg imgUrl={loggedInUser?.imgUrl} />
         <main className={"main-content" + (isHomePage && !isPickerShown ? " gap-0" : "")}>
-          {isBtnToggleAudienceShown && <BtnToggleAudience />}
+          {isBtnToggleAudienceShown && <BtnAudience />}
           {isPostDateTitleShown && (
             <PostDateTitle date={currNewPost.schedule!} isLink={isPickerShown} />
           )}
@@ -251,7 +251,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {!!currNewPost?.gif && <GifEdit />}
           {!!currNewPost?.poll && <PollEdit />}
           <div className="btn-replries-location-container">
-            {isPickerShown && <BtnToggleRepliers />}
+            {isPickerShown && <BtnRepliers />}
             <PostEditTitleLocation />
           </div>
           {isQueotePostShown && (

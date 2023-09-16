@@ -15,7 +15,11 @@ export const BtnTogglePlay: FC<BtnTogglePlayProps> = ({ isPlaying, setIsPlaying,
 
   return (
     <button className="btn-toggle-play" onClick={onTogglePlay}>
-      {isPlaying ? <IoIosPause size={size} /> : <IoPlaySharp size={size} />}
+      {isPlaying ? (
+        <IoIosPause size={size} data-testid="btn-toggle-play-pause-icon" />
+      ) : (
+        <IoPlaySharp size={size} data-testid="btn-toggle-play-play-icon" />
+      )}
     </button>
   );
 };

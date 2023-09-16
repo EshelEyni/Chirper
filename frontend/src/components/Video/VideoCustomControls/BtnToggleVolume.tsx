@@ -1,7 +1,7 @@
 import { FC, useRef } from "react";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
 import localForageService from "../../../services/localForage/localForageService";
-import { VideoVolumeSlider } from "../../Video/VideoVolumeSlider/VideoVolumeSlider";
+import { VideoVolumeSlider } from "../VideoVolumeSlider/VideoVolumeSlider";
 import "./BtnToggleVolume.scss";
 import { useVideoPlayer } from "../../../contexts/VideoPlayerContext";
 import { useVideoCustomControls } from "../../../contexts/VideoCustomControlsContext";

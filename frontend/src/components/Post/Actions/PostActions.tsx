@@ -334,6 +334,7 @@ const Gif: FC = () => {
   function handleChange() {
     setIsPlaying(prev => !prev);
   }
+
   useEffect(() => {
     resetState();
   }, [openedModalName]);

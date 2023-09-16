@@ -9,7 +9,7 @@ import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption";
 import { AppDispatch } from "../../../types/app";
 
-export const BtnToggleAudience: FC = () => {
+export const BtnAudience: FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const { currNewPost } = usePostEdit();

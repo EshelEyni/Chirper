@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User, UserCredenitials } from "../../../../shared/types/user";
-import authService from "../../services/authApi/authApiService";
+import authApiService from "../../services/authApi/authApiService";
 import { setIsPageLoading } from "./systemSlice";
 import { AppThunk } from "../../types/app";
 
@@ -31,14 +31,14 @@ export default authSlice.reducer;
 
 export function signup(userCredentials: UserCredenitials): AppThunk {
   return async dispatch => {
-    const user = await authService.signup(userCredentials);
+    const user = await authApiService.signup(userCredentials);
     dispatch(setLoggedInUser(user));
   };
 }
 
 export function login(username: string, password: string): AppThunk {
   return async dispatch => {
-    const user = await authService.login(username, password);
+    const user = await authApiService.login(username, password);
     dispatch(setLoggedInUser(user));
   };
 }
@@ -46,14 +46,14 @@ export function login(username: string, password: string): AppThunk {
 export function loginWithToken(): AppThunk {
   return async dispatch => {
     dispatch(setIsPageLoading(true));
-    const user = await authService.loginWithToken();
+    const user = await authApiService.loginWithToken();
     dispatch(setLoggedInUser(user));
   };
 }
 
 export function userLogout(): AppThunk {
   return async dispatch => {
-    await authService.logout();
+    await authApiService.logout();
     dispatch(logout());
   };
 }

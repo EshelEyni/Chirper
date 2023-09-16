@@ -2,15 +2,14 @@ import { FC } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { GoGlobe } from "react-icons/go";
 import { ReactComponent as ChirperCircleIcon } from "../../../assets/svg/chirper-circle-solid.svg";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption";
-import { AppDispatch, RootState } from "../../../types/app";
+import { AppDispatch } from "../../../types/app";
 
 export const BtnToggleAudience: FC = () => {
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
 
   const { currNewPost } = usePostEdit();
@@ -31,7 +30,7 @@ export const BtnToggleAudience: FC = () => {
 
   function onOptionClick(option: string) {
     if (!currNewPost) return;
-    dispatch(updateNewPost({ newPost: { ...currNewPost, audience: option }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, audience: option } }));
   }
 
   return (

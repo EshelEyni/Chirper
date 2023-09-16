@@ -2,11 +2,11 @@ import { FC } from "react";
 import "./LocationList.scss";
 import { Location } from "../../../../../shared/types/location";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { NewPost } from "../../../../../shared/types/post";
 import { LocationPreview } from "../LocationPreview/LocationPreview";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
-import { AppDispatch, RootState } from "../../../types/app";
+import { AppDispatch } from "../../../types/app";
 
 interface LocationListProps {
   currNewPost: NewPost;
@@ -23,11 +23,10 @@ export const LocationList: FC<LocationListProps> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
 
   function onClickLocation(location: Location) {
     setSelectedLocation(location);
-    dispatch(updateNewPost({ newPost: { ...currNewPost, location }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, location } }));
     navigate("/home");
   }
 

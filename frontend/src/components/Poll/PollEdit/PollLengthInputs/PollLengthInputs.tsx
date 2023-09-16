@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useCustomSelect } from "../../../../hooks/useCustomSelect";
 import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
 import { usePostEdit } from "../../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../../store/slices/postEditSlice";
-import { AppDispatch, RootState } from "../../../../types/app";
+import { AppDispatch } from "../../../../types/app";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const { currNewPost } = usePostEdit();
   const pollDays = currNewPost!.poll!.length.days;
 
@@ -37,7 +36,7 @@ export const PollLengthInputs: FC = () => {
         length: setPollLength(inputType, value),
       },
     };
-    dispatch(updateNewPost({ newPost, newPostType }));
+    dispatch(updateNewPost({ newPost }));
   }
 
   const { inputs, setInputs, onFocused, onBlurred, onToggleDropdown, onSelected } = useCustomSelect(

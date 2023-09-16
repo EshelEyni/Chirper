@@ -1,8 +1,8 @@
 import { useRef } from "react";
-import { makeId } from "../services/util/utilService";
+import { createId } from "../services/util/utilService";
 
 function useUniqueID() {
-  const id = useRef(makeId()).current;
+  const id = useRef(createId()).current;
   return { id };
 }
 

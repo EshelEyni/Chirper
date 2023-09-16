@@ -37,7 +37,7 @@ export type BasicPost = {
   video?: NewPostVideo | null;
   videoUrl?: string;
   gif: Gif | null;
-  schedule?: string;
+  
   location?: Location;
   isPublic: boolean;
   isPinned?: boolean;
@@ -56,6 +56,7 @@ export interface NewPost extends BasicPost {
   isDraft?: boolean;
   repliesCount?: number;
   parentPostId?: string;
+  schedule?: Date;
 }
 
 // Post With no LoggedInUserActionState, Stat Counts and RepostedBy
@@ -81,6 +82,7 @@ export interface Post extends BasicPost {
   quotedPost?: QuotedPost;
   createdBy: User;
   loggedInUserActionState: LoggedInUserActionState;
+  schedule?: string;
 }
 
 export interface Repost extends Post {

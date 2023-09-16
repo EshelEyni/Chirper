@@ -10,8 +10,8 @@ import { PostPreviewText } from "./PostPreviewText";
 import { MiniPostPreviewAside } from "./MiniPostPreviewAside";
 import { useMemo } from "react";
 import { VideoPlayerProvider } from "../../../contexts/VideoPlayerContext";
-import { NewPostType } from "../../../store/slices/postEditSlice";
 import { RootState } from "../../../types/app";
+import { NewPostType } from "../../../types/Enums";
 
 type NewPostContentProps = {
   newPost: NewPost;

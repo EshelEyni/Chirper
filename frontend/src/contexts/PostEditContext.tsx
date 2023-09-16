@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { NewPost } from "../../../shared/types/post";
-import { NewPostType } from "../store/slices/postEditSlice";
 import { RootState } from "../types/app";
+import { NewPostType } from "../types/Enums";
 
 type PostEditContextType = {
   currNewPost: NewPost | null;

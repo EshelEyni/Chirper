@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { BtnClose } from "../../components/Btns/BtnClose/BtnClose";
 import { NewPost } from "../../../../shared/types/post";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateNewPost } from "../../store/slices/postEditSlice";
+import { AppDispatch } from "../../types/app";
 import "./PostScheduleHeader.scss";
-import { AppDispatch, RootState } from "../../types/app";
 
 type PostScheduleHeaderProps = {
   currNewPost: NewPost;
@@ -23,19 +23,18 @@ export const PostScheduleHeader: FC<PostScheduleHeaderProps> = ({
   isDateInvalid,
 }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
 
   function onConfirmSchedule() {
     onGoBack();
     const newPost = { ...currNewPost, schedule };
-    dispatch(updateNewPost({ newPost, newPostType }));
+    dispatch(updateNewPost({ newPost }));
   }
 
   function onClearSchedule() {
     onGoBack();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { schedule, ...postWithOutSchedule } = currNewPost;
-    dispatch(updateNewPost({ newPost: postWithOutSchedule, newPostType }));
+    dispatch(updateNewPost({ newPost: postWithOutSchedule }));
   }
 
   return (

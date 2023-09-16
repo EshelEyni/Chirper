@@ -24,11 +24,9 @@ import { VideoEdit } from "../../Video/VideoEdit/VideoEdit";
 import { toast } from "react-hot-toast";
 import { UserMsg } from "../../Msg/UserMsg/UserMsg";
 import { UserMsg as TypeOfUserMsg } from "../../../../../shared/types/system";
-
 import {
-  NewPostType,
   addNewPostToThread,
-  clearNewPosts,
+  clearAllNewPosts,
   removeNewPost,
   updateNewPost,
 } from "../../../store/slices/postEditSlice";
@@ -41,6 +39,7 @@ import { List } from "../../App/List/List";
 import { AppDispatch, BtnCreatePostTitle, RootState } from "../../../types/app";
 import { Button } from "../../App/Button/Button";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
+import { NewPostType } from "../../../types/Enums";
 
 interface PostEditProps {
   isHomePage?: boolean;
@@ -127,7 +126,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
   }
 
   function resetState() {
-    dispatch(clearNewPosts());
+    dispatch(clearAllNewPosts());
     setIsPickerShown(false);
     setArePostsValid(false);
     if (textAreaRef.current) textAreaRef.current.style.height = "auto";
@@ -145,9 +144,9 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
     if (!isPickerShown) return;
     if (isHomePage) {
       if (!currNewPost) return;
-      dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText }, newPostType }));
+      dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText } }));
       setIsPickerShown(false);
-      dispatch(addNewPostToThread(newPostType));
+      dispatch(addNewPostToThread());
       navigate("compose", { relative: "path" });
     } else {
       if (threadLength === threadLimit - 1) {
@@ -158,7 +157,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
         toast.success(<UserMsg userMsg={msg} />);
       }
 
-      dispatch(addNewPostToThread(newPostType));
+      dispatch(addNewPostToThread());
       textAreaRef.current?.focus();
     }
   }
@@ -240,7 +239,7 @@ const PostEdit: React.FC<PostEditProps> = ({ isHomePage = false, onClickBtnClose
           {isBtnRemovePostFromThreadShown && (
             <Button
               className="btn-remove-post-from-thread"
-              onClickFn={() => dispatch(removeNewPost(newPostType))}
+              onClickFn={() => dispatch(removeNewPost())}
             >
               <AiOutlineClose color="var(--color-primary)" size={15} />
             </Button>

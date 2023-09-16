@@ -3,7 +3,7 @@ const projectRoot = path.resolve(process.cwd());
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/components/App/Tippy";
+const root = "src/store/slices";
 
 export default defineConfig({
   test: {

@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewPost } from "../../../../../shared/types/post";
 import { debounce } from "../../../services/util/utilService";
 import { usePostEdit } from "../../../contexts/PostEditContext";
-import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { AppDispatch, RootState } from "../../../types/app";
+import { NewPostType } from "../../../types/Enums";
 
 type PostTextInputProps = {
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
@@ -45,9 +46,9 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
           video: { url: youtubeURL, isLoading: false, file: null },
         };
 
-        dispatch(updateNewPost({ newPost, newPostType }));
+        dispatch(updateNewPost({ newPost }));
       } else if (currPost.video)
-        dispatch(updateNewPost({ newPost: { ...currPost, text, video: null }, newPostType }));
+        dispatch(updateNewPost({ newPost: { ...currPost, text, video: null } }));
     }, 500).debouncedFunc
   );
 
@@ -61,7 +62,7 @@ export const PostEditTextArea: FC<PostTextInputProps> = ({ textAreaRef, isHomePa
 
   function handleTextBlur(): void {
     if (!currNewPost) return;
-    dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, text: newPostText } }));
   }
 
   function setTextPlaceholder() {

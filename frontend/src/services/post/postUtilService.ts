@@ -6,8 +6,10 @@ import {
   PostRepostResult,
   PromotionalPost,
   Repost,
+  repliedPostDetails,
 } from "../../../../shared/types/post";
 import { UserMsg } from "../../../../shared/types/system";
+import { createId } from "../util/utilService";
 
 type Data = Post | PostReplyResult | PostRepostResult;
 
@@ -82,6 +84,64 @@ function isPostReplyRes(data: Data): data is PostReplyResult {
   return "updatedPost" in data && "reply" in data;
 }
 
+function getDefaultNewPost(
+  repliedPostDetails?: repliedPostDetails[],
+  quotedPostId?: string
+): NewPost {
+  return {
+    tempId: createId(),
+    text: "",
+    audience: "everyone",
+    repliersType: "everyone",
+    parentPostId: repliedPostDetails?.length ? repliedPostDetails.at(-1)?.postId : undefined,
+    repliedPostDetails,
+    isPublic: true,
+    isPinned: false,
+    quotedPostId: quotedPostId,
+    imgs: [],
+    video: null,
+    videoUrl: "",
+    gif: null,
+    poll: null,
+  };
+}
+
+function getReply(repliedToPost: Post | null): {
+  repliedToPost: Post | null;
+  reply: NewPost | null;
+} {
+  if (!repliedToPost) return { repliedToPost: null, reply: null };
+  const {
+    createdBy: { id: userId, username },
+  } = repliedToPost;
+
+  const currRepliedPostDetails = {
+    postId: repliedToPost.id,
+    postOwner: { userId, username },
+  };
+
+  const repliedPostDetails = repliedToPost.repliedPostDetails?.length
+    ? [...repliedToPost.repliedPostDetails, currRepliedPostDetails]
+    : [currRepliedPostDetails];
+
+  return {
+    repliedToPost: repliedToPost,
+    reply: getDefaultNewPost(repliedPostDetails),
+  };
+}
+
+function getQuote(quotedPost: Post | null): { quotedPost: Post | null; quote: NewPost | null } {
+  return quotedPost
+    ? {
+        quotedPost: quotedPost,
+        quote: getDefaultNewPost(undefined, quotedPost.id),
+      }
+    : {
+        quotedPost: null,
+        quote: null,
+      };
+}
+
 export default {
   getPostAddedMsg,
   isPostTextValid,
@@ -92,4 +152,7 @@ export default {
   isPost,
   isPostRepostRes,
   isPostReplyRes,
+  getDefaultNewPost,
+  getReply,
+  getQuote,
 };

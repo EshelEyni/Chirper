@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useState, createContext, useContext, useRef, useEffect } from "react";
 import { NewPost, Post, Poll as TypeOfPoll } from "../../../../../shared/types/post";
-import {
-  NewPostType,
-  setNewPostType,
-  setNewPosts,
-  updateNewPost,
-} from "../../../store/slices/postEditSlice";
+import { setNewQuote, setNewReply, updateNewPost } from "../../../store/slices/postEditSlice";
 import {
   copyToClipboard,
   formatNumToK,
@@ -71,7 +66,6 @@ type PostEditActionsContextType = {
   newPostText?: string;
   setNewPostText?: React.Dispatch<React.SetStateAction<string>>;
   loggedInUser: RootState["auth"]["loggedInUser"];
-  newPostType: RootState["postEdit"]["newPostType"];
   sideBar: RootState["postEdit"]["sideBar"];
   homePage: RootState["postEdit"]["homePage"];
   tooltipStyle: React.CSSProperties;
@@ -93,7 +87,7 @@ export const PostActions: FC<PostEditActionsProps> & {
   Share: FC;
 } = ({ children, newPost, post, isPickerShown, newPostText, setNewPostText, className }) => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
-  const { newPostType, sideBar, homePage } = useSelector((state: RootState) => state.postEdit);
+  const { sideBar, homePage } = useSelector((state: RootState) => state.postEdit);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -108,7 +102,6 @@ export const PostActions: FC<PostEditActionsProps> & {
     dispatch,
     navigate,
     loggedInUser,
-    newPostType,
     sideBar,
     homePage,
     tooltipStyle,
@@ -126,7 +119,6 @@ const Media: FC = () => {
     newPost: post,
     isPickerShown,
     dispatch,
-    newPostType,
     loggedInUser,
     tooltipStyle,
   } = useContext(PostEditActionsContext)!;
@@ -217,10 +209,10 @@ const Media: FC = () => {
         if (!file) return;
         const currIdx = newImgs.length;
         newImgs.push({ url: "", isLoading: true, file });
-        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
+        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] } }));
         const dataUrl = await readAsDataURL(file);
         newImgs[currIdx] = { url: dataUrl, isLoading: false, file };
-        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] }, newPostType }));
+        dispatch(updateNewPost({ newPost: { ...post, imgs: [...newImgs] } }));
       } catch (error) {
         console.error("Error reading file:", error);
       }
@@ -231,10 +223,10 @@ const Media: FC = () => {
     if (!post) return;
     try {
       const newPostPreLoad = { ...post, video: { url: "", isLoading: true, file } };
-      dispatch(updateNewPost({ newPost: newPostPreLoad, newPostType }));
+      dispatch(updateNewPost({ newPost: newPostPreLoad }));
       const dataUrl = await readAsDataURL(file);
       const newPost = { ...post, video: { url: dataUrl, isLoading: false, file } };
-      dispatch(updateNewPost({ newPost, newPostType }));
+      dispatch(updateNewPost({ newPost }));
     } catch (error) {
       console.error("Error reading file:", error);
     }
@@ -287,7 +279,6 @@ const Gif: FC = () => {
   const {
     isPickerShown,
     newPost: post,
-    newPostType,
     dispatch,
     tooltipStyle,
   } = useContext(PostEditActionsContext)!;
@@ -336,7 +327,7 @@ const Gif: FC = () => {
 
   function handleGifClick(gif: TypeOfGif) {
     if (!post) return;
-    dispatch(updateNewPost({ newPost: { ...post, gif }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...post, gif } }));
     setOpenedModalName("");
   }
 
@@ -446,7 +437,6 @@ const Poll: FC = () => {
     newPost: post,
     isPickerShown,
     dispatch,
-    newPostType,
     tooltipStyle,
   } = useContext(PostEditActionsContext)!;
   const { id: btnId } = useUniqueID();
@@ -474,7 +464,7 @@ const Poll: FC = () => {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    dispatch(updateNewPost({ newPost: { ...post, poll: defaultPoll }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...post, poll: defaultPoll } }));
   }
 
   return (
@@ -513,7 +503,6 @@ const Emoji: FC = () => {
     tooltipStyle,
   } = useContext(PostEditActionsContext)!;
 
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
   const [openedModalName, setOpenedModalName] = useState("");
   const { id: btnId } = useUniqueID();
 
@@ -527,7 +516,7 @@ const Emoji: FC = () => {
     const nativeEmoji = emoji.native;
     const newText = newPostText + nativeEmoji;
     setNewPostText(newText);
-    dispatch(updateNewPost({ newPost: { ...post, text: newText }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...post, text: newText } }));
     setOpenedModalName("");
   }
 
@@ -673,8 +662,8 @@ const Reply: FC = () => {
   const { id: btnId } = useUniqueID();
 
   function handleBtnClick() {
-    dispatch(setNewPostType(NewPostType.Reply));
-    dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Reply, post }));
+    if (!post) return;
+    dispatch(setNewReply({ repliedToPost: post }));
     navigate("compose", { relative: "path" });
   }
 
@@ -717,8 +706,8 @@ const Repost: FC = () => {
   const isReposted = post?.loggedInUserActionState.isReposted;
 
   async function onQuotePost() {
-    dispatch(setNewPostType(NewPostType.Quote));
-    dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Quote, post }));
+    if (!post) return;
+    dispatch(setNewQuote({ quotedPost: post }));
     navigate("compose", { relative: "path" });
   }
 

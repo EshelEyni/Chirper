@@ -10,8 +10,11 @@ export interface UserCredenitialsWithId extends UserCredenitials {
   readonly id: string;
 }
 
-export interface User extends UserCredenitials {
+export interface User {
   readonly id: string;
+  username: string;
+  fullname: string;
+  email: string;
   bio: string;
   imgUrl: string;
   isAdmin: boolean;
@@ -20,7 +23,7 @@ export interface User extends UserCredenitials {
   isApprovedLocation: boolean;
   followingCount: number;
   followersCount: number;
-  createdAt: number;
+  createdAt: string;
   isFollowing?: boolean;
   isMuted?: boolean;
   isBlocked?: boolean;

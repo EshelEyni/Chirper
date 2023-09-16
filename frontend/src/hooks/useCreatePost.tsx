@@ -4,9 +4,9 @@ import postApiService from "../services/post/postApiService";
 import postUtilService from "../services/post/postUtilService";
 import { UserMsg } from "../components/Msg/UserMsg/UserMsg";
 import { NewPost, Post, PostReplyResult } from "../../../shared/types/post";
-import { NewPostType } from "../store/slices/postEditSlice";
 import { UserMsg as TypeOfUserMsg } from "../../../shared/types/system";
 import { getDefaultErrorMsg } from "../services/util/utilService";
+import { NewPostType } from "../types/Enums";
 
 type OnCreatePostProps = {
   posts: NewPost[];

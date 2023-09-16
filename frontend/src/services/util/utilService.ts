@@ -83,7 +83,7 @@ function formatNumToK(count: number): string {
   }
 }
 
-function makeId(length = 12): string {
+function createId(length = 12): string {
   let txt = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < length; i++) {
@@ -183,7 +183,7 @@ function getToolTipStyles(options?: React.CSSProperties): React.CSSProperties {
 export {
   formatDateToRelativeTime,
   formatNumToK,
-  makeId,
+  createId,
   debounce,
   getTimeZone,
   getDaysInMonth,

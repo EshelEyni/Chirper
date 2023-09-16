@@ -1,16 +1,15 @@
 import { FC } from "react";
 import { FaAt, FaGlobeAmericas, FaUserCheck } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { Modal } from "../../Modal/Modal";
 import { PostEditOption } from "../../Modal/PostEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
-import { AppDispatch, RootState } from "../../../types/app";
+import { AppDispatch } from "../../../types/app";
 
 export const BtnToggleRepliers: FC = () => {
   const { currNewPost } = usePostEdit();
   const dispatch: AppDispatch = useDispatch();
-  const { newPostType } = useSelector((state: RootState) => state.postEdit);
 
   if (!currNewPost) return null;
   const repliersType = currNewPost?.repliersType || "everyone";
@@ -32,7 +31,7 @@ export const BtnToggleRepliers: FC = () => {
 
   function onOptionClick(value: string) {
     if (!currNewPost) return;
-    dispatch(updateNewPost({ newPost: { ...currNewPost, repliersType: value }, newPostType }));
+    dispatch(updateNewPost({ newPost: { ...currNewPost, repliersType: value } }));
   }
 
   return (

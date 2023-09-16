@@ -8,10 +8,10 @@ import { PostScheduleDateInputs } from "./PostScheduleDateInputs";
 import { PostScheduleTimeInputs } from "./PostScheduleTimeInputs";
 import { TimeZoneDisplay } from "./TimeZoneDisplay";
 import { Footer } from "../../components/App/Footer/Footer";
-import { NewPostType } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import "./PostSchedule.scss";
 import { RootState } from "../../types/app";
+import { NewPostType } from "../../types/Enums";
 
 export type invalidDateStatus = {
   status: boolean;

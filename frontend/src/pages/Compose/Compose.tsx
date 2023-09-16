@@ -6,16 +6,19 @@ import { MainScreen } from "../../components/App/MainScreen/MainScreen";
 import { PostEditProvider } from "../../contexts/PostEditContext";
 import { SpinnerLoader } from "../../components/Loaders/SpinnerLoader/SpinnerLoader";
 import {
-  NewPostType,
-  clearNewPosts,
+  clearNewHomePosts,
+  clearAllNewPosts,
+  clearNewQuote,
+  clearNewReply,
+  clearNewSideBarPosts,
   setNewPostType,
-  setNewPosts,
 } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { useGoBack } from "../../hooks/useGoBack";
 import { Modal } from "../../components/Modal/Modal";
 import postUtilService from "../../services/post/postUtilService";
 import { AppDispatch, RootState } from "../../types/app";
+import { NewPostType } from "../../types/Enums";
 const PostEdit = lazy(() => import("../../components/Post/PostEdit/PostEdit"));
 
 const ComposePage = () => {
@@ -39,19 +42,19 @@ const ComposePage = () => {
   async function discardPostThread() {
     switch (newPostType) {
       case NewPostType.HomePage:
-        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.HomePage }));
+        dispatch(clearNewHomePosts());
         break;
       case NewPostType.SideBar:
-        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.SideBar }));
+        dispatch(clearNewSideBarPosts());
         break;
       case NewPostType.Reply:
-        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Reply, post: null }));
+        dispatch(clearNewReply());
         break;
       case NewPostType.Quote:
-        dispatch(setNewPosts({ newPosts: [], newPostType: NewPostType.Quote, post: null }));
+        dispatch(clearNewQuote());
         break;
       default:
-        dispatch(clearNewPosts());
+        dispatch(clearAllNewPosts());
         break;
     }
     dispatch(setNewPostType(NewPostType.HomePage));

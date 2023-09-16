@@ -9,10 +9,11 @@ import { SpinnerLoader } from "../../components/Loaders/SpinnerLoader/SpinnerLoa
 import { LocationSearchBar } from "../../components/Location/LocationSearchBar/LocationSearchBar";
 import { BtnClose } from "../../components/Btns/BtnClose/BtnClose";
 import { MainScreen } from "../../components/App/MainScreen/MainScreen";
-import { NewPostType, updateNewPost } from "../../store/slices/postEditSlice";
+import { updateNewPost } from "../../store/slices/postEditSlice";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import "./PostLocation.scss";
 import { AppDispatch, RootState } from "../../types/app";
+import { NewPostType } from "../../types/Enums";
+import "./PostLocation.scss";
 
 const PostLocation = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -44,9 +45,7 @@ const PostLocation = () => {
   function onConfirmLocation() {
     onGoBack();
     if (!selectedLocation || !currNewPost) return;
-    dispatch(
-      updateNewPost({ newPost: { ...currNewPost, location: selectedLocation }, newPostType })
-    );
+    dispatch(updateNewPost({ newPost: { ...currNewPost, location: selectedLocation } }));
   }
 
   function onClearLocation() {
@@ -54,7 +53,7 @@ const PostLocation = () => {
     if (!currNewPost) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { location, ...postWithOutLocation } = currNewPost;
-    dispatch(updateNewPost({ newPost: postWithOutLocation, newPostType }));
+    dispatch(updateNewPost({ newPost: postWithOutLocation }));
   }
 
   const fetchLocations = useCallback(async () => {

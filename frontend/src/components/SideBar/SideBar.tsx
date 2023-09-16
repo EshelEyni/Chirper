@@ -13,7 +13,8 @@ import { IoIosBrush } from "react-icons/io";
 import { Modal } from "../Modal/Modal";
 import { AppDispatch, RootState } from "../../types/app";
 import { Button } from "../App/Button/Button";
-import { NewPostType, setNewPostType } from "../../store/slices/postEditSlice";
+import { setNewPostType } from "../../store/slices/postEditSlice";
+import { NewPostType } from "../../types/Enums";
 
 export const SideBar = () => {
   const { loggedInUser } = useSelector((state: RootState) => state.auth);

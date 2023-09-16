@@ -3,9 +3,10 @@ import { createRef, useState, useEffect, FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PollEditOption } from "./PollEditOption/PollEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
-import { NewPostType, updateNewPost } from "../../../store/slices/postEditSlice";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { AppDispatch, RootState } from "../../../types/app";
 import "./PollOptionsList.scss";
+import { NewPostType } from "../../../types/Enums";
 
 export const PollOptionsList: FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -26,7 +27,7 @@ export const PollOptionsList: FC = () => {
         options: [...currNewPost.poll!.options, defaultOption],
       },
     };
-    dispatch(updateNewPost({ newPost, newPostType }));
+    dispatch(updateNewPost({ newPost }));
   }
 
   function onFocusChoice(idx: number) {
@@ -51,7 +52,7 @@ export const PollOptionsList: FC = () => {
         options,
       },
     };
-    dispatch(updateNewPost({ newPost, newPostType }));
+    dispatch(updateNewPost({ newPost }));
   }
 
   useEffect(() => {

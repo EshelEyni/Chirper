@@ -28,7 +28,11 @@ export const GifEdit: FC = () => {
   return (
     <>
       {isLoading && <SpinnerLoader />}
-      <div className="gif-edit" style={{ visibility: isLoading ? "hidden" : "visible" }}>
+      <div
+        className="gif-edit"
+        style={{ visibility: isLoading ? "hidden" : "visible" }}
+        data-testid="gif-edit"
+      >
         <BtnRemoveContent onRemoveContent={onRemoveGif} />
         <img
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -37,6 +41,7 @@ export const GifEdit: FC = () => {
           alt={currNewPost.gif!.description}
           onClick={onTogglePlay}
           onLoad={() => setIsLoading(false)}
+          data-testid="gif-edit-img"
         />
         {!isPlaying && (
           <Button className="btn-play" onClickFn={onTogglePlay}>

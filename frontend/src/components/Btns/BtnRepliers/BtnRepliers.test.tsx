@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { it, describe, expect, afterEach, vi } from "vitest";
+import { it, describe, expect, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { BtnRepliers } from "./BtnRepliers";
-import * as PostEditContextModule from "../../../contexts/PostEditContext";
 import { Provider } from "react-redux";
 import { store } from "../../../store/store";
+import testService from "../../../../test/service/testService";
 
 describe("BtnRepliers", () => {
   afterEach(() => {
@@ -13,7 +13,7 @@ describe("BtnRepliers", () => {
   });
 
   it("renders the button with the correct initial title", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     render(
       <Provider store={store}>
@@ -29,7 +29,7 @@ describe("BtnRepliers", () => {
   });
 
   it("renders the modal after clicking the button", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     render(
       <Provider store={store}>
@@ -45,7 +45,7 @@ describe("BtnRepliers", () => {
   });
 
   it("renders the modal with the correct options", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     render(
       <Provider store={store}>
@@ -63,7 +63,7 @@ describe("BtnRepliers", () => {
   });
 
   it("should update current post repliers type after a click on Everyone option", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     const { rerender } = render(
       <Provider store={store}>
@@ -77,10 +77,10 @@ describe("BtnRepliers", () => {
     fireEvent.click(button);
     const modal = screen.getByTestId("modal-window");
     fireEvent.click(within(modal).getByText("Everyone"));
-    const updatedPost = getCurrNewPostFromStore();
+    const updatedPost = testService.getCurrNewPostFromStore();
     expect(updatedPost.repliersType).toBe("everyone");
 
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     rerender(
       <Provider store={store}>
@@ -94,7 +94,7 @@ describe("BtnRepliers", () => {
   });
 
   it("should update current post repliers type after a click on followed option", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     const { rerender } = render(
       <Provider store={store}>
@@ -108,10 +108,10 @@ describe("BtnRepliers", () => {
     fireEvent.click(button);
     const modal = screen.getByTestId("modal-window");
     fireEvent.click(within(modal).getByText("Only people you follow"));
-    const updatedPost = getCurrNewPostFromStore();
+    const updatedPost = testService.getCurrNewPostFromStore();
     expect(updatedPost.repliersType).toBe("followed");
 
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     rerender(
       <Provider store={store}>
@@ -125,7 +125,7 @@ describe("BtnRepliers", () => {
   });
 
   it("should update current post repliers type after a click on mentioned option", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     const { rerender } = render(
       <Provider store={store}>
@@ -139,10 +139,10 @@ describe("BtnRepliers", () => {
     fireEvent.click(button);
     const modal = screen.getByTestId("modal-window");
     fireEvent.click(within(modal).getByText("Only people you mentioned"));
-    const updatedPost = getCurrNewPostFromStore();
+    const updatedPost = testService.getCurrNewPostFromStore();
     expect(updatedPost.repliersType).toBe("mentioned");
 
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     rerender(
       <Provider store={store}>
@@ -156,7 +156,7 @@ describe("BtnRepliers", () => {
   });
 
   it("should close the modal after a click on an option", () => {
-    setSpyUsePostEdit();
+    testService.setSpyUsePostEdit();
 
     render(
       <Provider store={store}>
@@ -173,14 +173,3 @@ describe("BtnRepliers", () => {
     expect(modal).not.toBeInTheDocument();
   });
 });
-
-function getCurrNewPostFromStore() {
-  const state = store.getState();
-  return state.postEdit.homePage.posts[0];
-}
-
-function setSpyUsePostEdit() {
-  vi.spyOn(PostEditContextModule, "usePostEdit").mockReturnValue({
-    currNewPost: getCurrNewPostFromStore(),
-  } as any);
-}

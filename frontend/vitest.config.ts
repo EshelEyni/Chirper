@@ -4,7 +4,7 @@ import svgr from "vite-plugin-svgr";
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/components/Btns";
+const root = "src/components/Gif";
 
 export default defineConfig({
   plugins: [svgr()],

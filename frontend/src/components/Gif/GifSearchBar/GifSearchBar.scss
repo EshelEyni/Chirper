@@ -12,7 +12,7 @@
   transition: box-shadow 0.2s ease-in-out;
   padding: rem(5px) rem(15px);
 
-  &.focused {
+  &:focus-within {
     border: 2px var(--color-primary) solid;
     .gif-search-bar-input {
       width: 100%;

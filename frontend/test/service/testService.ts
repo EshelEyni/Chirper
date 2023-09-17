@@ -1,6 +1,10 @@
+import { vi } from "vitest";
+import { Gif } from "../../../shared/types/GIF";
 import { Post } from "../../../shared/types/post";
 import { User } from "../../../shared/types/user";
 import { createId } from "../../src/services/util/utilService";
+import { store } from "../../src/store/store";
+import * as PostEditContextModule from "../../src/contexts/PostEditContext";
 
 function createMantTestPosts(count: number): Post[] {
   return Array.from({ length: count }, () => createTestPost());
@@ -64,9 +68,34 @@ function createTestLoggedInUserActionState() {
   };
 }
 
+function createTestGif(): Gif {
+  return {
+    url: "https://example.com/gif.gif",
+    staticUrl: "https://example.com/static.gif",
+    description: "Funny GIF",
+    size: { height: 300, width: 400 },
+    placeholderUrl: "https://example.com/placeholder.gif",
+    staticPlaceholderUrl: "https://example.com/static-placeholder.gif",
+  };
+}
+
+function getCurrNewPostFromStore() {
+  const state = store.getState();
+  return state.postEdit.homePage.posts[0];
+}
+
+function setSpyUsePostEdit() {
+  vi.spyOn(PostEditContextModule, "usePostEdit").mockReturnValue({
+    currNewPost: getCurrNewPostFromStore(),
+  } as any);
+}
+
 export default {
   createMantTestPosts,
   createTestPost,
   createTestUser,
   createTestLoggedInUserActionState,
+  createTestGif,
+  getCurrNewPostFromStore,
+  setSpyUsePostEdit,
 };

@@ -21,14 +21,10 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
   isAutoPlay = true,
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(isAutoPlay);
-  const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
-  const { ref, inView } = useInView({
-    threshold: 0.5,
-  });
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
   function onTogglePlay() {
     setIsPlaying(prev => !prev);
-    setIsUserPaused(prev => !prev);
   }
 
   useEffect(() => {
@@ -39,7 +35,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({
     <article className="gif-display">
       <img
         src={isPlaying ? url : staticUrl}
-        ref={isUserPaused || !isAutoPlay ? undefined : ref}
+        ref={!isPlaying ? undefined : ref}
         alt={description}
         loading="lazy"
         style={{

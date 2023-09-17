@@ -10,7 +10,7 @@ type ButtonProps = {
 
 export const Button: FC<ButtonProps> = ({ className, children, isDisabled = false, onClickFn }) => {
   return (
-    <button className={className} onClick={onClickFn} disabled={isDisabled}>
+    <button className={className} onClick={onClickFn} disabled={isDisabled} data-testid={className}>
       {children}
     </button>
   );

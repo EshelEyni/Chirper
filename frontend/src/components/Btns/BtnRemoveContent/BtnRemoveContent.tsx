@@ -8,7 +8,11 @@ type BtnRemoveContentProps = {
 
 export const BtnRemoveContent: FC<BtnRemoveContentProps> = ({ onRemoveContent }) => {
   return (
-    <button className="btn-remove-content" onClick={onRemoveContent}>
+    <button
+      className="btn-remove-content"
+      onClick={onRemoveContent}
+      data-testid="btn-remove-content"
+    >
       <AiOutlineClose className="remove-content-icon" />
     </button>
   );

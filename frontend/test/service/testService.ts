@@ -5,6 +5,8 @@ import { User } from "../../../shared/types/user";
 import { createId } from "../../src/services/util/utilService";
 import { store } from "../../src/store/store";
 import * as PostEditContextModule from "../../src/contexts/PostEditContext";
+import { Location } from "../../../shared/types/location";
+import { act } from "@testing-library/react";
 
 function createMantTestPosts(count: number): Post[] {
   return Array.from({ length: count }, () => createTestPost());
@@ -79,6 +81,19 @@ function createTestGif(): Gif {
   };
 }
 
+function createManyMockLocations(count: number): Location[] {
+  return Array.from({ length: count }, (_, idx) => createMockLocation(idx));
+}
+
+function createMockLocation(idx?: number): Location {
+  return {
+    name: idx ? `locationName_${idx}` : "locationName",
+    lat: 0,
+    lng: 0,
+    placeId: idx ? `placeId_${idx}` : "placeId",
+  };
+}
+
 function getCurrNewPostFromStore() {
   const state = store.getState();
   return state.postEdit.homePage.posts[0];
@@ -90,6 +105,12 @@ function setSpyUsePostEdit() {
   } as any);
 }
 
+async function waitForTick() {
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
+}
+
 export default {
   createMantTestPosts,
   createTestPost,
@@ -98,4 +119,7 @@ export default {
   createTestGif,
   getCurrNewPostFromStore,
   setSpyUsePostEdit,
+  createManyMockLocations,
+  createMockLocation,
+  waitForTick,
 };

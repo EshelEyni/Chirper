@@ -18,30 +18,27 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
   setIsLoading,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isSearchBarFocused, setIsSearchBarFocused] = useState<boolean>(false);
   const SearchBarInputRef = useRef<HTMLInputElement>(null);
 
   async function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
     try {
       const { value } = ev.target;
       setSearchTerm(value);
-      if (!value) {
-        fetchLocations();
-        return;
-      }
+      if (!value) return fetchLocations();
       setIsLoading(true);
       const locations = await locationService.getLocationsBySearchTerm(value);
       setIsLoading(false);
       setLocations(locations);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
   function onClearSearch() {
     setSearchTerm("");
     fetchLocations();
-    SearchBarInputRef.current!.value = "";
+    SearchBarInputRef.current?.value && (SearchBarInputRef.current.value = "");
+    setTimeout(() => SearchBarInputRef.current?.focus(), 0);
   }
 
   useEffect(() => {
@@ -52,8 +49,12 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
   }, [fetchLocations, setLocations]);
 
   return (
-    <div className={"location-search-bar" + (isSearchBarFocused ? " focused" : "")}>
-      <label className="magnifing-glass-icon-label" htmlFor="search-bar-input">
+    <div className="location-search-bar">
+      <label
+        className="location-search-bar-label"
+        htmlFor="search-bar-input"
+        data-testid="location-search-bar-label"
+      >
         <SlMagnifier className="magnifing-glass-icon" />
       </label>
       <input
@@ -62,12 +63,15 @@ export const LocationSearchBar: FC<locationSearchBarProps> = ({
         type="text"
         placeholder="Search locations"
         onChange={debounce(handleChange, 1000).debouncedFunc}
-        onFocus={() => setIsSearchBarFocused(true)}
-        onBlur={() => setIsSearchBarFocused(false)}
+        autoFocus={true}
         ref={SearchBarInputRef}
       />
       {searchTerm && (
-        <AiFillCloseCircle className="close-icon" onMouseDown={() => onClearSearch()} />
+        <AiFillCloseCircle
+          className="close-icon"
+          onMouseDown={() => onClearSearch()}
+          data-testid="location-search-bar-close-icon"
+        />
       )}
     </div>
   );

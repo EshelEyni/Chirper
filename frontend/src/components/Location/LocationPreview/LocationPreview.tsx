@@ -17,7 +17,9 @@ export const LocationPreview: FC<LocationPreviewProps> = ({
   return (
     <li className="location-preview" onClick={() => onClickLocation(location)}>
       <span className="location-name">{location.name}</span>
-      {selectedLocation?.placeId === location.placeId && <AiOutlineCheck className="check-icon" />}
+      {selectedLocation?.placeId === location.placeId && (
+        <AiOutlineCheck className="check-icon" data-testid="check-icon" />
+      )}
     </li>
   );
 };

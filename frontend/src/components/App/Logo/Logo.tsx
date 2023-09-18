@@ -1,36 +1,64 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineTwitter } from "react-icons/ai";
 import "./Logo.scss";
 
-type LogoProps = {
-  options?: {
-    staticLogo: boolean;
-    autoAnimate: boolean;
+type StaticLogoProps = {
+  staticLogo: true;
+  autoAnimate?: boolean;
+  linkEnabled?: boolean;
+  size: {
     height: number;
     width: number;
   };
 };
 
-export const Logo = ({ options }: LogoProps) => {
-  const style = options
+type DynamicLogoProps = {
+  staticLogo?: false;
+  autoAnimate?: boolean;
+  linkEnabled?: boolean;
+  size?: {
+    height: number;
+    width: number;
+  };
+};
+
+type LogoProps = StaticLogoProps | DynamicLogoProps;
+
+export const Logo = (
+  { staticLogo, autoAnimate, linkEnabled, size }: LogoProps = {
+    staticLogo: false,
+    autoAnimate: false,
+    linkEnabled: false,
+    size: undefined,
+  }
+) => {
+  const navigate = useNavigate();
+
+  const style = size
     ? {
-        height: `${options.height}px`,
-        width: `${options.width}px`,
-        fontSize: `${options.height * 0.33}px`,
+        height: `${size.height}px`,
+        width: `${size.width}px`,
+        fontSize: `${size.height * 0.33}px`,
       }
     : undefined;
+
+  function handleLogoClick() {
+    if (!linkEnabled) return;
+    navigate("/");
+  }
+
   return (
-    <Link
-      className={`logo-container ${options?.autoAnimate ? "auto-animation" : ""}`}
-      to="/"
+    <section
+      className={`logo-container ${autoAnimate ? "auto-animation" : ""}`}
       style={style}
+      onClick={handleLogoClick}
     >
-      {options?.staticLogo ? (
+      {staticLogo ? (
         <div className="logo" data-testid="static-logo">
-          <AiOutlineTwitter size={options.height * 0.65} color="white" />
+          <AiOutlineTwitter size={size.height * 0.65} color="white" />
         </div>
       ) : (
-        <div className="logo-wrapper">
+        <div className="logo-wrapper" data-testid="logo">
           <div className="bird" data-testid="bird">
             <div className="body"></div>
             <div className="body-top-cut-left"></div>
@@ -55,6 +83,6 @@ export const Logo = ({ options }: LogoProps) => {
           </div>
         </div>
       )}
-    </Link>
+    </section>
   );
 };

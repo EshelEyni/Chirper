@@ -1,50 +1,76 @@
 import { it, describe, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { Logo } from "./Logo";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MockExplorePage, MockHomePage } from "../../../../test/service/MockComponents";
 
 describe("Logo", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it("renders static logo when staticLogo option is true", () => {
+  it("renders the static logo when staticLogo is true", () => {
     render(
       <MemoryRouter>
-        <Logo options={{ staticLogo: true, autoAnimate: false, height: 50, width: 50 }} />
+        <Logo staticLogo={true} size={{ height: 100, width: 100 }} />
       </MemoryRouter>
     );
-    expect(screen.getByRole("link")).toHaveClass("logo-container");
     expect(screen.getByTestId("static-logo")).toBeInTheDocument();
   });
 
-  it("applies auto-animation class when autoAnimate option is true", () => {
+  it("renders the dynamic logo when staticLogo is false", () => {
     render(
       <MemoryRouter>
-        <Logo options={{ staticLogo: false, autoAnimate: true, height: 50, width: 50 }} />
+        <Logo />
       </MemoryRouter>
     );
-    expect(screen.getByRole("link")).toHaveClass("auto-animation");
+    expect(screen.getByTestId("logo")).toBeInTheDocument();
   });
 
-  it("sets height and width styles when provided", () => {
+  it("navigates to home page when clicked and linkEnabled is true", () => {
     render(
-      <MemoryRouter>
-        <Logo options={{ staticLogo: false, autoAnimate: false, height: 50, width: 50 }} />
+      <MemoryRouter initialEntries={["/explore"]} initialIndex={0}>
+        <Routes>
+          <Route path="/explore" element={<MockExplorePage />} />
+          <Route path="/" element={<MockHomePage />} />
+        </Routes>
+        <Logo linkEnabled={true} />
       </MemoryRouter>
     );
-    const linkElement = screen.getByRole("link");
-    expect(linkElement).toHaveStyle({ height: "50px", width: "50px" });
+
+    expect(screen.getByTestId("explore-page")).toBeInTheDocument();
+    expect(screen.queryByTestId("home-page")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("logo"));
+
+    expect(screen.queryByTestId("explore-page")).not.toBeInTheDocument();
+    expect(screen.getByTestId("home-page")).toBeInTheDocument();
   });
 
-  it("renders animated logo when staticLogo option is false", () => {
+  it("does not navigate when clicked and linkEnabled is false", () => {
     render(
-      <MemoryRouter>
-        <Logo options={{ staticLogo: false, autoAnimate: false, height: 50, width: 50 }} />
+      <MemoryRouter initialEntries={["/explore"]} initialIndex={0}>
+        <Routes>
+          <Route path="/" element={<MockHomePage />} />
+          <Route path="/explore" element={<MockExplorePage />} />
+        </Routes>
+        <Logo linkEnabled={false} />
       </MemoryRouter>
     );
-    expect(screen.getByRole("link")).toHaveClass("logo-container");
-    expect(screen.getByTestId("bird")).toBeInTheDocument();
+
+    expect(screen.getByTestId("explore-page")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("logo"));
+    expect(screen.getByTestId("explore-page")).toBeInTheDocument();
+    expect(screen.queryByTestId("home-page")).not.toBeInTheDocument();
+  });
+
+  it("applies auto-animation class when autoAnimate is true", () => {
+    render(
+      <MemoryRouter>
+        <Logo autoAnimate={true} />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId("logo").closest(".logo-container")).toHaveClass("auto-animation");
   });
 });

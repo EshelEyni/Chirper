@@ -380,7 +380,7 @@ const PostPreviewUserModalContent: FC = () => {
           {user.isVerified && (
             <BlueCheckMark className="post-preview-modal-user-info-blue-check-mark" />
           )}
-          {user.isAdmin && <Logo />}
+          {user.isAdmin && <Logo staticLogo={true} size={{ height: 18, width: 18 }} />}
         </div>
         <span className="post-preview-modal-user-info-username">@{user.username}</span>
         <p className="post-preview-modal-user-info-bio">{user.bio}</p>

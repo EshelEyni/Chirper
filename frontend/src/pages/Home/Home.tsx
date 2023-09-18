@@ -20,7 +20,7 @@ const Homepage = () => {
   const { posts, isLoading, isSuccess, isError, isEmpty } = useQueryPosts();
 
   return (
-    <main className="home">
+    <main className="home" data-testid="home-page">
       <div className="title-container">
         <h1>Home</h1>
       </div>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
-import { Logo } from "../../components/App/Logo/Logo";
 
 const ExplorePage = () => {
   const params = useParams();
@@ -16,7 +15,6 @@ const ExplorePage = () => {
     <div>
       <h1>Explore Page</h1>
       {currHashtag && <h2>{currHashtag}</h2>}
-      <Logo />
       <Outlet />
     </div>
   );

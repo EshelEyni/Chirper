@@ -66,7 +66,7 @@ export const SideBar = () => {
   return (
     <div className="side-bar">
       <div className="main-container">
-        <Logo />
+        <Logo linkEnabled={true} />
         <NavList />
         <Button className="btn-create-post" onClickFn={handleBtnClick}>
           Chirp

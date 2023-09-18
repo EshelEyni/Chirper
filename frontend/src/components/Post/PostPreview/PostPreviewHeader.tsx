@@ -60,7 +60,6 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
 
   if (!postUtilService.isPost(post)) return null;
   const user = post.createdBy;
-  const logoOptions = { staticLogo: true, autoAnimate: false, width: 18, height: 18 };
 
   function handleBtnToggleFollow() {
     onToggleFollow();
@@ -104,7 +103,7 @@ export const PostPreviewHeader: React.FC<PostPreviewHeaderProps> = ({ isMiniPrev
               >
                 <span className="post-preview-header-full-name">{user.fullname}</span>
                 {user.isVerified && <BlueCheckMark className="post-preview-blue-check-mark" />}
-                {user.isAdmin && <Logo options={logoOptions} />}
+                {user.isAdmin && <Logo staticLogo={true} size={{ height: 18, width: 18 }} />}
                 {user.isBot && <FaRobot size={20} color="var(--color-primary)" />}
               </div>
             </Modal.ModalHoverOpen>

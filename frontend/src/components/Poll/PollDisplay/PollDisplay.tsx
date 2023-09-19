@@ -1,20 +1,17 @@
 import { FC } from "react";
-import { PollDisplayOptionsList } from "./PollDisplayOptionsList/PollDisplayOptionsList";
-import { PollDisplayDetails } from "./PollDisplayDetails/PollDisplayDetails";
+import { PollDisplayOptionsList } from "./PollDisplayOptionsList";
+import { PollDisplayDetails } from "./PollDisplayDetails";
 import { usePostPreview } from "../../../contexts/PostPreviewContext";
 import { useAddPollVote } from "../../../hooks/useAddPollVote";
 
-type PollDisplayProps = {
-  postStartDate: string;
-};
-
-export const PollDisplay: FC<PollDisplayProps> = ({ postStartDate }) => {
+export const PollDisplay: FC = () => {
   const { addPollVote } = useAddPollVote();
   const { post } = usePostPreview();
 
   const poll = post?.poll;
   if (!post || !poll) return null;
   const postId = post.id;
+  const postStartDate = post.schedule ? post.schedule : post.createdAt;
 
   async function onVote(idx: number) {
     addPollVote({ postId, optionIdx: idx });

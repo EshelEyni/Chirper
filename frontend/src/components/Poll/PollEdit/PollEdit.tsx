@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useDispatch } from "react-redux";
 import { PollOptionsList } from "../PollOptionsList/PollOptionsList";
-import { PollLengthInputs } from "./PollLengthInputs/PollLengthInputs";
+import { PollLengthInputs } from "./PollLengthInputs";
 import "./PollEdit.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";

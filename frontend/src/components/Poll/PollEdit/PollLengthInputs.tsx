@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useCustomSelect } from "../../../../hooks/useCustomSelect";
-import { CustomSelect } from "../../../App/CustomSelect/CustomSelect";
+import { useCustomSelect } from "../../../hooks/useCustomSelect";
+import { CustomSelect } from "../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
-import { usePostEdit } from "../../../../contexts/PostEditContext";
-import { updateNewPost } from "../../../../store/slices/postEditSlice";
-import { AppDispatch } from "../../../../types/app";
+import { usePostEdit } from "../../../contexts/PostEditContext";
+import { updateNewPost } from "../../../store/slices/postEditSlice";
+import { AppDispatch } from "../../../types/app";
 
 export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { currNewPost } = usePostEdit();
   const pollDays = currNewPost!.poll!.length.days;
+  // console.log("pollDays", currNewPost!.poll);
 
   function handleValueChange(inputType: string, value: number | string) {
     if (!currNewPost || !currNewPost.poll) return;
@@ -44,7 +45,7 @@ export const PollLengthInputs: FC = () => {
       {
         label: "Days",
         type: "days",
-        value: currNewPost!.poll!.length.days,
+        value: pollDays,
         isDisabled: false,
         isFocused: false,
         isDropdownOpen: false,
@@ -54,7 +55,7 @@ export const PollLengthInputs: FC = () => {
         label: "Hours",
         type: "hours",
         value: currNewPost!.poll!.length.hours,
-        isDisabled: currNewPost!.poll!.length.days === 7,
+        isDisabled: pollDays === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(24).keys()],
@@ -63,7 +64,7 @@ export const PollLengthInputs: FC = () => {
         label: "Minutes",
         type: "minutes",
         value: currNewPost!.poll!.length.minutes,
-        isDisabled: currNewPost!.poll!.length.days === 7,
+        isDisabled: pollDays === 7,
         isFocused: false,
         isDropdownOpen: false,
         selectValues: [...Array(60).keys()],
@@ -78,8 +79,8 @@ export const PollLengthInputs: FC = () => {
         if (input.type === "hours" || input.type === "minutes") {
           return {
             ...input,
-            isDisabled: currNewPost!.poll!.length.days === 7,
-            value: currNewPost!.poll!.length.days === 7 ? 0 : input.value,
+            isDisabled: pollDays === 7,
+            value: pollDays === 7 ? 0 : input.value,
           };
         }
         return input;

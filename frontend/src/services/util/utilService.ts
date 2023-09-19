@@ -1,6 +1,10 @@
 import { AnyFunction, JsendResponse, UserMsg } from "../../../../shared/types/system";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const HOUR_IN_MS = 60 * 60 * 1000;
+const MINUTE_IN_MS = 60 * 1000;
+
 const SECONDS_IN_MINUTE = 60;
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
@@ -194,4 +198,7 @@ export {
   getBasePathName,
   getDefaultErrorMsg,
   getToolTipStyles,
+  DAY_IN_MS,
+  HOUR_IN_MS,
+  MINUTE_IN_MS,
 };

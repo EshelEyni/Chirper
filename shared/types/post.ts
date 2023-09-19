@@ -135,8 +135,8 @@ export interface Poll {
     minutes: number;
   };
   isVotingOff: boolean;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface NewPoll {

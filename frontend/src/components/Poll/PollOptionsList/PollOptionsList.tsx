@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createRef, useState, useEffect, FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PollEditOption } from "./PollEditOption/PollEditOption";
+import { PollEditOption } from "./PollEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { AppDispatch, RootState } from "../../../types/app";

@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { PollOption } from "../../../../../../shared/types/post";
-import { PollDisplayOptionResult } from "../PollDisplayResult/PollDisplayResult";
-import { PollDisplayOption } from "../PollDisplayOption/PollDisplayOption";
+import { PollOption } from "../../../../../shared/types/post";
+import { PollDisplayOptionResult } from "./PollDisplayOptionResult";
+import { PollDisplayOption } from "./PollDisplayOption";
 import "./PollDisplayOptionsList.scss";
 
 type PollDisplayOptionsListProps = {

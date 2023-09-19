@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import "./PollDisplayDetails.scss";
+import { DAY_IN_MS, HOUR_IN_MS, MINUTE_IN_MS } from "../../../services/util/utilService";
 
 type PollDisplayDetailsProps = {
   pollVoteCount: number;
@@ -24,14 +25,11 @@ export const PollDisplayDetails: FC<PollDisplayDetailsProps> = ({
       const nowTimestamp = new Date().getTime();
       const { days, hours, minutes } = pollLength;
       const pollEndTimestamp =
-        postStartTimestamp +
-        days * 24 * 60 * 60 * 1000 +
-        hours * 60 * 60 * 1000 +
-        minutes * 60 * 1000;
+        postStartTimestamp + days * DAY_IN_MS + hours * HOUR_IN_MS + minutes * MINUTE_IN_MS;
 
-      const daysLeft = Math.floor((pollEndTimestamp - nowTimestamp) / (1000 * 60 * 60 * 24));
-      const hoursLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / (1000 * 60 * 60)) % 24);
-      const minutesLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / (1000 * 60)) % 60);
+      const daysLeft = Math.floor((pollEndTimestamp - nowTimestamp) / DAY_IN_MS);
+      const hoursLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / HOUR_IN_MS) % 24);
+      const minutesLeft = Math.floor(((pollEndTimestamp - nowTimestamp) / MINUTE_IN_MS) % 60);
 
       if (daysLeft > 0) return `${daysLeft}d`;
       if (hoursLeft > 0) return `${hoursLeft}h`;

@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
-import { PollOption } from "../../../../../../shared/types/post";
+import { PollOption } from "../../../../../shared/types/post";
 import { AiOutlineCheckCircle } from "react-icons/ai";
-import "./PollDisplayResult.scss";
+import "./PollDisplayOptionResult.scss";
 
 type PollDisplayOptionResultProps = {
   option: PollOption;
@@ -18,14 +18,17 @@ export const PollDisplayOptionResult: FC<PollDisplayOptionResultProps> = ({
   }, [option.voteCount, pollVoteCount]);
 
   return (
-    <li className="poll-display-option-result">
+    <li className="poll-display-option-result" data-testid="poll-display-option-result">
       <div
         className="poll-display-option-result-progress-bar"
         style={{ width: `${Math.max(percentage, 1)}%` }}
+        data-testid="poll-display-option-result-progress-bar"
       />
       <div className="poll-option-content">
         <span>{option.text}</span>
-        {option.isLoggedInUserVoted && <AiOutlineCheckCircle />}
+        {option.isLoggedInUserVoted && (
+          <AiOutlineCheckCircle data-testid="poll-display-option-result-check-icon" />
+        )}
       </div>
       <span className="poll-option-percentage">{percentage + "%"}</span>
     </li>

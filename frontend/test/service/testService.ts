@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Mock, vi } from "vitest";
 import { Gif } from "../../../shared/types/GIF";
-import { Post } from "../../../shared/types/post";
+import { Poll, PollOption, Post } from "../../../shared/types/post";
 import { User } from "../../../shared/types/user";
 import { createId } from "../../src/services/util/utilService";
 import { store } from "../../src/store/store";
@@ -116,6 +116,27 @@ function createUsrMsg(options?: {
   return options ? { ...defaultUserMsg, ...options } : defaultUserMsg;
 }
 
+function createTestPoll(options?: {
+  isVotingOff?: boolean;
+  options?: PollOption[];
+  length?: Poll["length"];
+  createdAt?: Poll["createdAt"];
+  updatedAt?: Poll["updatedAt"];
+}): Poll {
+  const defaultPoll: Poll = {
+    isVotingOff: false,
+    options: [
+      { text: "Option 1", voteCount: 5, isLoggedInUserVoted: false },
+      { text: "Option 2", voteCount: 3, isLoggedInUserVoted: false },
+    ],
+    length: { days: 1, hours: 0, minutes: 0 },
+    createdAt: "2021-01-01T00:00:00.000Z",
+    updatedAt: "2021-01-01T00:00:00.000Z",
+  };
+
+  return options ? { ...defaultPoll, ...options } : defaultPoll;
+}
+
 function getCurrNewPostFromStore() {
   const state = store.getState();
   return state.postEdit.homePage.posts[0];
@@ -144,5 +165,6 @@ export default {
   createManyMockLocations,
   createMockLocation,
   createUsrMsg,
+  createTestPoll,
   waitForTick,
 };

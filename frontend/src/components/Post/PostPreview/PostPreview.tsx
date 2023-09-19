@@ -30,7 +30,6 @@ import { Button } from "../../App/Button/Button";
 export const PostPreview: React.FC = () => {
   const { post, onNavigateToPostDetails } = usePostPreview();
   const { isViewed } = post.loggedInUserActionState;
-  const postStartDate = post.schedule ? post.schedule : post.createdAt;
   const { loggedInUser } = useSelector((state: RootState) => state.auth);
   const isPostReplyFromPostOwner =
     post?.repliedPostDetails &&
@@ -79,7 +78,7 @@ export const PostPreview: React.FC = () => {
               </VideoPlayerProvider>
             )}
             {post.gif && <GifDisplay gif={post.gif} />}
-            {post.poll && <PollDisplay postStartDate={postStartDate} />}
+            {post.poll && <PollDisplay />}
             {post.quotedPost && (
               <MiniPostPreview type={"quoted-post"}>
                 <QuotedPostContent />

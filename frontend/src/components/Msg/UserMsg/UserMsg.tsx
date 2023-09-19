@@ -16,7 +16,12 @@ export const UserMsg: FC<UserMsgProps> = ({ userMsg, onDissmisToast }) => {
     <div className={"user-msg " + type}>
       <p>{text}</p>
       {link && (
-        <Link to={link.url} className="user-msg-link" onClick={onDissmisToast}>
+        <Link
+          to={link.url}
+          className="user-msg-link"
+          onClick={onDissmisToast}
+          data-testid="user-msg-link"
+        >
           {link.text || "View"}
         </Link>
       )}
@@ -27,6 +32,7 @@ export const UserMsg: FC<UserMsgProps> = ({ userMsg, onDissmisToast }) => {
             btn.fn();
             onDissmisToast?.();
           }}
+          data-testid="user-msg-btn"
         >
           {btn.text}
         </button>

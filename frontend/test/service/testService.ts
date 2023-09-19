@@ -1,4 +1,5 @@
-import { vi } from "vitest";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Mock, vi } from "vitest";
 import { Gif } from "../../../shared/types/GIF";
 import { Post } from "../../../shared/types/post";
 import { User } from "../../../shared/types/user";
@@ -7,6 +8,7 @@ import { store } from "../../src/store/store";
 import * as PostEditContextModule from "../../src/contexts/PostEditContext";
 import { Location } from "../../../shared/types/location";
 import { act } from "@testing-library/react";
+import { UserMsg } from "../../../shared/types/system";
 
 function createMantTestPosts(count: number): Post[] {
   return Array.from({ length: count }, () => createTestPost());
@@ -94,6 +96,26 @@ function createMockLocation(idx?: number): Location {
   };
 }
 
+function createUsrMsg(options?: {
+  type?: "info" | "success" | "error" | "warning" | "";
+  text?: string;
+  link?: {
+    text?: string;
+    url: string;
+  };
+  btn?: {
+    text: string;
+    fn: Mock<any, any>;
+  };
+}): UserMsg {
+  const defaultUserMsg: UserMsg = {
+    type: "info",
+    text: "test user msg",
+  };
+
+  return options ? { ...defaultUserMsg, ...options } : defaultUserMsg;
+}
+
 function getCurrNewPostFromStore() {
   const state = store.getState();
   return state.postEdit.homePage.posts[0];
@@ -121,5 +143,6 @@ export default {
   setSpyUsePostEdit,
   createManyMockLocations,
   createMockLocation,
+  createUsrMsg,
   waitForTick,
 };

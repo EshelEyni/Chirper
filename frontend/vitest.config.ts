@@ -4,7 +4,7 @@ import svgr from "vite-plugin-svgr";
 
 import { configDefaults, defineConfig } from "vitest/config";
 
-const root = "src/components/Location";
+const root = "src/components/Msg";
 
 export default defineConfig({
   plugins: [svgr()],

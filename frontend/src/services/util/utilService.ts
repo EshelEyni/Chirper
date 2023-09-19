@@ -1,6 +1,5 @@
-import { JsendResponse, UserMsg } from "../../../../shared/types/system";
+import { AnyFunction, JsendResponse, UserMsg } from "../../../../shared/types/system";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyFunction = (...args: any[]) => any;
 
 const SECONDS_IN_MINUTE = 60;
 const MINUTES_IN_HOUR = 60;

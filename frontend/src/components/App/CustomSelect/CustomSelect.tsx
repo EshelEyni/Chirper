@@ -34,16 +34,12 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       }
       key={input.type}
       tabIndex={0}
-      onFocus={() => {
-        onFocused(input.type);
-      }}
+      onFocus={() => onFocused(input.type)}
       onClick={() => {
         if (input.isDisabled) return;
         onToggleDropdown(input.type);
       }}
-      onBlur={() => {
-        onBlurred(input.type);
-      }}
+      onBlur={() => onBlurred(input.type)}
       data-testid="custom-select"
     >
       <div className="custom-select">
@@ -59,9 +55,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             <div
               className="custom-select-dropdown-item"
               key={value}
-              onClick={e => {
-                onSelected(e, value, input.type);
-              }}
+              onClick={e => onSelected(e, value, input.type)}
             >
               {value}
             </div>

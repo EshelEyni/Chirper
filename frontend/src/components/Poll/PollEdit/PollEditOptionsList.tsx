@@ -5,7 +5,7 @@ import { PollEditOption } from "./PollEditOption";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 import { updateNewPost } from "../../../store/slices/postEditSlice";
 import { AppDispatch, RootState } from "../../../types/app";
-import "./PollOptionsList.scss";
+import "./PollEditOptionsList.scss";
 import { NewPostType } from "../../../types/Enums";
 
 export const PollOptionsList: FC = () => {

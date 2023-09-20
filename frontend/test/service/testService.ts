@@ -1,14 +1,15 @@
+import { store } from "./../../src/store/store";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Mock, vi } from "vitest";
+import { Mock, expect, vi } from "vitest";
 import { Gif } from "../../../shared/types/GIF";
 import { Poll, PollOption, Post } from "../../../shared/types/post";
 import { User } from "../../../shared/types/user";
 import { createId } from "../../src/services/util/utilService";
-import { store } from "../../src/store/store";
 import * as PostEditContextModule from "../../src/contexts/PostEditContext";
 import { Location } from "../../../shared/types/location";
-import { act } from "@testing-library/react";
+import { act, fireEvent } from "@testing-library/react";
 import { UserMsg } from "../../../shared/types/system";
+import { updateNewPost } from "../../src/store/slices/postEditSlice";
 
 function createMantTestPosts(count: number): Post[] {
   return Array.from({ length: count }, () => createTestPost());
@@ -154,6 +155,31 @@ async function waitForTick() {
   });
 }
 
+function disptachUpdateNewPostWithPoll(poll = createTestPoll()) {
+  store.dispatch(
+    updateNewPost({
+      newPost: {
+        ...getCurrNewPostFromStore(),
+        poll,
+      },
+    })
+  );
+}
+
+function selectAndCheckValue(
+  selectElement: HTMLElement,
+  indexToClick: number,
+  expectedValue: string
+) {
+  fireEvent.click(selectElement);
+
+  const dropdownItems = selectElement.querySelectorAll(".custom-select-dropdown-item");
+  fireEvent.click(dropdownItems[indexToClick]);
+
+  const actualValue = selectElement.querySelector(".custom-select-value")?.textContent;
+  expect(actualValue).toBe(expectedValue);
+}
+
 export default {
   createMantTestPosts,
   createTestPost,
@@ -167,4 +193,6 @@ export default {
   createUsrMsg,
   createTestPoll,
   waitForTick,
+  disptachUpdateNewPostWithPoll,
+  selectAndCheckValue,
 };

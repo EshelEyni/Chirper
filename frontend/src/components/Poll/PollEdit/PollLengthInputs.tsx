@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useCustomSelect } from "../../../hooks/useCustomSelect";
+import { CustomSelectInput, useCustomSelect } from "../../../hooks/useCustomSelect";
 import { CustomSelect } from "../../App/CustomSelect/CustomSelect";
 import "./PollLengthInputs.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
@@ -12,31 +12,20 @@ export const PollLengthInputs: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { currNewPost } = usePostEdit();
   const pollDays = currNewPost!.poll!.length.days;
-  // console.log("pollDays", currNewPost!.poll);
 
-  function handleValueChange(inputType: string, value: number | string) {
-    if (!currNewPost || !currNewPost.poll) return;
-    const setPollLength = (inputType: string, value: number | string) => {
-      if (inputType === "days" && value === 7) {
-        return {
-          days: value,
-          hours: 0,
-          minutes: 0,
-        };
-      } else {
-        return {
-          ...currNewPost.poll!.length,
-          [inputType]: value,
-        };
-      }
-    };
-    const newPost = {
-      ...currNewPost,
-      poll: {
-        ...currNewPost.poll!,
-        length: setPollLength(inputType, value),
-      },
-    };
+  function handleValueChange(
+    inputType: CustomSelectInput["type"],
+    value: CustomSelectInput["value"]
+  ) {
+    if (!currNewPost?.poll) return;
+    const { poll } = currNewPost;
+    const isSevenDaysSelected = inputType === "days" && value === 7;
+
+    const length = isSevenDaysSelected
+      ? { days: value, hours: 0, minutes: 0 }
+      : { ...poll.length, [inputType]: value };
+
+    const newPost = { ...currNewPost, poll: { ...poll, length } };
     dispatch(updateNewPost({ newPost }));
   }
 
@@ -74,18 +63,21 @@ export const PollLengthInputs: FC = () => {
   );
 
   useEffect(() => {
-    setInputs(prevInputs => {
-      return prevInputs.map(input => {
-        if (input.type === "hours" || input.type === "minutes") {
-          return {
+    const isSevenDays = pollDays === 7;
+
+    const updateInput = (input: CustomSelectInput) => {
+      const isTimeInput = input.type === "hours" || input.type === "minutes";
+
+      return isTimeInput
+        ? {
             ...input,
-            isDisabled: pollDays === 7,
-            value: pollDays === 7 ? 0 : input.value,
-          };
-        }
-        return input;
-      });
-    });
+            isDisabled: isSevenDays,
+            value: isSevenDays ? 0 : input.value,
+          }
+        : input;
+    };
+
+    setInputs(prevInputs => prevInputs.map(updateInput));
   }, [pollDays, currNewPost, setInputs]);
 
   return (

@@ -16,6 +16,7 @@ export const PollEdit: FC = () => {
     dispatch(updateNewPost({ newPost: { ...currNewPost, poll: null } }));
   }
 
+  if (!currNewPost?.poll) return null;
   return (
     <div className="poll-edit">
       <PollOptionsList />

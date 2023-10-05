@@ -117,7 +117,7 @@ function _getPollObj(options: string[]) {
       minutes: 0,
     },
     isVotingOff: false,
-    createdAt: Date.now(),
+    createdAt: Date.now().toString(),
   } as Poll;
 
   return poll;

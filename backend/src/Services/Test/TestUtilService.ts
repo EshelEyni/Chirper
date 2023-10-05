@@ -64,7 +64,7 @@ async function createTestUser({
 }: CreateTestUserOptions = {}): Promise<User> {
   const validId = id || getMongoId();
   await UserModel.findByIdAndDelete(validId).setOptions({ active: false });
-  const user = createValidUserCreds(validId) as User;
+  const user = createValidUserCreds(validId) as unknown as User;
   if (isAdmin) user.isAdmin = true;
   if (isBot) user.isBot = true;
   return (await UserModel.create(user)).toObject() as unknown as User;

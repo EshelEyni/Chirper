@@ -1,7 +1,7 @@
 import { Outlet, useParams } from "react-router-dom";
-import { useQueryPostById } from "../../hooks/reactQuery/post/useQueryPostById";
 import { PostPreview } from "../../components/Post/PostPreview/PostPreview";
 import { PostPreviewProvider } from "../../contexts/PostPreviewContext";
+import { useQueryPostById } from "../../hooks/useQueryPostById";
 
 const PostDetails = () => {
   const params = useParams<{ id: string }>();

@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 // const isGlobalTesting = true;
 const isGlobalTesting = false;
 
-const currPath = "/services/prompt";
+const currPath = "/controllers/post";
 const baseDir = isGlobalTesting ? "<rootDir>" : `<rootDir>/src/${currPath}`;
 // const specifiedPath = baseDir + "/Add.test.ts";
 const collectCoverage = true;

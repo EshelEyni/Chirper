@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import "./TextIndicator.scss";
 import { usePostEdit } from "../../../contexts/PostEditContext";
 
-export function generateGradient(percentage: number, colorVar: string) {
+function _generateGradient(percentage: number, colorVar: string) {
   return `radial-gradient(closest-side, white 79%, transparent 80% 100%),
     conic-gradient(var(${colorVar}) ${percentage > 100 ? 100 : percentage}%, rgb(239,243,244) 0)`;
 }
@@ -15,9 +15,9 @@ export const TextIndicator: React.FC = () => {
     const percentage = (textLength / 247) * 100;
     let background;
 
-    if (textLength < 227) background = generateGradient(percentage, "--color-primary");
-    else if (textLength < 247) background = generateGradient(percentage, "--color-warning");
-    else if (textLength < 257) background = generateGradient(100, "--color-danger");
+    if (textLength < 227) background = _generateGradient(percentage, "--color-primary");
+    else if (textLength < 247) background = _generateGradient(percentage, "--color-warning");
+    else if (textLength < 257) background = _generateGradient(100, "--color-danger");
     else background = `none`;
 
     return { background };

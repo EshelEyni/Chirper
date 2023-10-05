@@ -23,7 +23,6 @@ import {
   updatePost,
   updatePostStats,
 } from "./postController";
-import { asyncErrorCatcher } from "../../services/error/errorService";
 import { getMockPostStats, getMongoId } from "../../services/test/testUtilService";
 import { PostBookmarkModel } from "../../models/postBookmark/postBookmarkModel";
 import { getLoggedInUserIdFromReq } from "../../services/ALSService";
@@ -102,14 +101,19 @@ jest.mock("../../models/postStats/postStatsModel", () => ({
 
 const nextMock = jest.fn() as jest.MockedFunction<NextFunction>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-(asyncErrorCatcher as jest.Mock) = jest.fn().mockImplementation(fn => {
-  return async (...args: unknown[]) => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      return nextMock(error);
-    }
+jest.mock("../../services/error/errorService", () => {
+  const originalModule = jest.requireActual("../../services/error/errorService");
+  return {
+    ...originalModule,
+    asyncErrorCatcher: jest.fn().mockImplementation(fn => {
+      return async (...args: unknown[]) => {
+        try {
+          return await fn(...args);
+        } catch (error) {
+          return nextMock(error);
+        }
+      };
+    }),
   };
 });
 
@@ -365,12 +369,11 @@ describe("Post Controller", () => {
 
       expect(PostModel.findById).toHaveBeenCalledWith(result.insertedIds[0]);
 
-      // FIXME: This test is failing because there are two async calls, that for some reason are causing the test to fail
-      // expect(res.status).toHaveBeenCalledWith(201);
-      // expect(res.send).toHaveBeenCalledWith({
-      //   status: "success",
-      //   data: mockPost,
-      // });
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.send).toHaveBeenCalledWith({
+        status: "success",
+        data: mockPost,
+      });
     });
 
     it("should throw an error if loggedInUserId is invalid", async () => {
@@ -457,15 +460,14 @@ describe("Post Controller", () => {
 
       expect(PostModel.findById).toHaveBeenCalledWith(req.params!.id);
 
-      // FIXME: This test is failing because there are two async calls, that for some reason are causing the test to fail
-      // expect(res.status).toHaveBeenCalledWith(201);
-      // expect(res.send).toHaveBeenCalledWith({
-      //   status: "success",
-      //   data: {
-      //     post: mockPost,
-      //     reply: mockReply,
-      //   },
-      // });
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.send).toHaveBeenCalledWith({
+        status: "success",
+        data: {
+          post: mockPost,
+          reply: mockReply,
+        },
+      });
     });
 
     it("should throw an error if loggedInUserId is invalid", async () => {
@@ -901,11 +903,10 @@ describe("Post Controller", () => {
 
       expect(PostModel.findById).toHaveBeenCalledWith(req.params!.id);
 
-      // FIXME: This test is failing because there are two async calls, that for some reason are causing the test to fail
-      // expect(res.send).toHaveBeenCalledWith({
-      //   status: "success",
-      //   data: post,
-      // });
+      expect(res.send).toHaveBeenCalledWith({
+        status: "success",
+        data: post,
+      });
     });
 
     it("should successfully add a poll vote and respond with the updated post even if optionIdx is string typed", async () => {
@@ -921,11 +922,10 @@ describe("Post Controller", () => {
 
       expect(PostModel.findById).toHaveBeenCalledWith(req.params!.id);
 
-      // FIXME: This test is failing because there are two async calls, that for some reason are causing the test to fail
-      // expect(res.send).toHaveBeenCalledWith({
-      //   status: "success",
-      //   data: post,
-      // });
+      expect(res.send).toHaveBeenCalledWith({
+        status: "success",
+        data: post,
+      });
 
       req.body.optionIdx = 0;
     });
